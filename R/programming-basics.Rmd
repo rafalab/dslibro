@@ -1,0 +1,350 @@
+# Conceptos básicos de programación
+
+
+Enseñamos R porque facilita enormemente el análisis de datos, el tema principal de este libro. Al codificar en R, podemos realizar eficientemente análisis de datos exploratorios, construir canales de análisis de datos y preparar la visualización de datos para comunicar los resultados. Sin embargo, R no es solo un entorno de análisis de datos sino un lenguaje de programación. Los programadores avanzados de R pueden desarrollar paquetes complejos e incluso mejorar la propia R, pero no cubrimos la programación avanzada en este libro. No obstante, en esta sección, presentamos tres conceptos clave de programación: expresiones condicionales, bucles for y funciones. Estos no son solo bloques de construcción clave para la programación avanzada, sino que a veces son útiles durante el análisis de datos. También notamos que hay varias funciones que se usan ampliamente para programar en R pero que no cubriremos en este libro. Éstos incluyen `split`, `cut`, `do.call` y `Reduce`, así como el paquete __data.table__. Vale la pena aprenderlos si planea convertirse en un programador experto de R.
+
+## Expresiones condicionales {#conditionals}
+
+Las expresiones condicionales son una de las características básicas de la programación. Se utilizan para lo que se llama _flow control_. La expresión condicional más común es la declaración if-else. En R, podemos realizar bastante análisis de datos sin condicionales. Sin embargo, aparecen ocasionalmente, y los necesitará una vez que comience a escribir sus propias funciones y paquetes.
+
+Aquí hay un ejemplo muy simple que muestra la estructura general de una instrucción if-else. La idea básica es imprimir el recíproco de `a` a no ser que `a` es 0:
+
+```{r}
+a <- 0
+
+if(a!=0){
+print(1/a)
+} else{
+print("No reciprocal for 0.")
+}
+```
+
+
+Veamos un ejemplo más usando el marco de datos de asesinatos de Estados Unidos:
+
+```{r}
+library(dslabs)
+data(murders)
+murder_rate <- murders$total/ murders$population*100000
+```
+
+
+Aquí hay un ejemplo muy simple que nos dice qué estados, si los hay, tienen una tasa de homicidios inferior a 0.5 por 100,000. los `if` declaración nos protege del caso en el que ningún estado satisface la condición.
+
+```{r}
+ind <- which.min(murder_rate)
+
+if(murder_rate[ind] < 0.5){
+print(murders$state[ind])
+} else{
+print("No state has murder rate that low")
+}
+```
+
+Si lo intentamos nuevamente con una tasa de 0.25, obtenemos una respuesta diferente:
+
+```{r}
+if(murder_rate[ind] < 0.25){
+print(murders$state[ind])
+} else{
+print("No state has a murder rate that low.")
+}
+```
+
+
+Una función relacionada que es muy útil es `ifelse`. Esta función toma tres argumentos: una lógica y dos posibles respuestas. Si lo lógico es `TRUE`, se devuelve el valor en el segundo argumento y si `FALSE`, se devuelve el valor en el tercer argumento. Aquí hay un ejemplo:
+
+```{r}
+a <- 0
+ifelse(a > 0, 1/a, NA)
+```
+
+La función es particularmente útil porque funciona en vectores. Examina cada entrada del vector lógico y devuelve elementos del vector proporcionado en el segundo argumento, si la entrada es `TRUE`, o elementos del vector proporcionados en el tercer argumento, si la entrada es `FALSE`.
+
+```{r}
+a <- c(0, 1, 2, -4, 5)
+result <- ifelse(a > 0, 1/a, NA)
+```
+
+Esta tabla nos ayuda a ver qué sucedió:
+```{r, echo=FALSE}
+tmp <- data.frame(a = a, is_a_positive = a > 0, answer1 = 1/a, answer2 = NA, result = result)
+if(knitr::is_html_output()){
+knitr::kable(tmp, "html") %>%
+kableExtra::kable_styling(bootstrap_options = "striped", full_width = FALSE)
+} else{
+knitr::kable(tmp, "latex", booktabs = TRUE) %>%
+kableExtra::kable_styling(font_size = 8)
+}
+```
+
+Aquí hay un ejemplo de cómo esta función se puede usar fácilmente para reemplazar todos los valores faltantes en un vector con ceros:
+
+```{r}
+data(na_example)
+no_nas <- ifelse(is.na(na_example), 0, na_example)
+sum(is.na(no_nas))
+```
+
+Otras dos funciones útiles son `any` y `all`. Los `any` la función toma un vector de lógicas y devuelve `TRUE` si alguna de las entradas es `TRUE`. Los `all` la función toma un vector de lógicas y devuelve `TRUE` si todas las entradas son `TRUE`. Aquí hay un ejemplo:
+
+```{r}
+z <- c(TRUE, TRUE, FALSE)
+any(z)
+all(z)
+```
+
+## Definiendo funciones
+
+A medida que adquieras más experiencia, necesitarás realizar las mismas operaciones una y otra vez. Un ejemplo simple es el cálculo de promedios. Podemos calcular el promedio de un vector `x` utilizando la `sum` y `length` funciones: `sum(x)/length(x)`. Debido a que hacemos esto repetidamente, es mucho más eficiente escribir una función que realice esta operación. Esta operación particular es tan común que alguien ya escribió el `mean` función y se incluye en la base R. Sin embargo, se encontrará con situaciones en las que la función aún no existe, por lo que R le permite escribir la suya. Una versión simple de una función que calcula el promedio se puede definir así:
+
+```{r}
+avg <- function(x){
+s <- sum(x)
+n <- length(x)
+s/n
+}
+```
+
+Ahora `avg` es una función que calcula la media:
+
+```{r}
+x <- 1:100
+identical(mean(x), avg(x))
+```
+
+Observe que las variables definidas dentro de una función no se guardan en el espacio de trabajo. Entonces mientras usamos `s` y `n` cuando llamamos `avg`, los valores se crean y cambian solo durante la llamada. Aquí hay un ejemplo ilustrativo:
+
+```{r}
+s <- 3
+avg(1:10)
+s
+```
+
+Tenga en cuenta cómo `s` es todavía `r s` después de que llamemos `avg`.
+
+
+En general, las funciones son objetos, por lo que las asignamos a nombres de variables con `<-`. La función `function` le dice a R que está a punto de definir una función. La forma general de una definición de función se ve así:
+
+```{r, eval=FALSE}
+my_function <- function(VARIABLE_NAME){
+perform operations on VARIABLE_NAME and calculate VALUE
+VALUE
+}
+```
+
+Las funciones que defina pueden tener múltiples argumentos, así como valores predeterminados. Por ejemplo, podemos definir una función que calcule el promedio aritmético o geométrico dependiendo de una variable definida por el usuario como esta:
+
+```{r}
+avg <- function(x, arithmetic = TRUE){
+n <- length(x)
+ifelse(arithmetic, sum(x)/n, prod(x)^(1/n))
+}
+```
+
+Aprenderemos más sobre cómo crear funciones a través de la experiencia a medida que nos enfrentamos a tareas más complejas.
+
+## Espacios de nombres
+
+Una vez que comience a convertirse en un usuario experto de R, es probable que necesite cargar varios paquetes de complementos para algunos de sus análisis. Una vez que comience a hacer esto, es probable que dos paquetes usen el mismo nombre para dos funciones diferentes. Y a menudo estas funciones hacen cosas completamente diferentes. De hecho, ya te has encontrado con esto porque tanto __dplyr__como el paquete R__base__stats__ definen un `filter` función. Hay otros cinco ejemplos en __dplyr__. Sabemos esto porque cuando cargamos __dplyr__ por primera vez, vemos el siguiente mensaje:
+
+```
+The following objects are masked from ‘package:stats’:
+
+filter, lag
+
+The following objects are masked from ‘package:base’:
+
+intersect, setdiff, setequal, union
+```
+
+Entonces, ¿qué hace R cuando escribimos `filter`? ¿Utiliza la función __dplyr__o la función__stats__? De nuestro trabajo anterior sabemos que usa el __dplyr__ uno. Pero, ¿qué pasa si queremos usar la versión __stats__?
+
+Estas funciones viven en diferentes espacios de nombres. R seguirá un cierto orden cuando busque una función en estos espacios de nombres. Puede ver el pedido escribiendo:
+
+```{r, eval=FALSE}
+search()
+```
+
+La primera entrada en esta lista es el entorno global que incluye todos los objetos que defina.
+
+Entonces, ¿qué pasa si queremos usar las __stats__ `filter` en lugar del filtro __dplyr__pero__dplyr__ aparece primero en la lista de búsqueda? Puede forzar el uso de un espacio de nombre específico utilizando dos puntos dobles ( `::`) me gusta esto:
+
+```{r, eval=FALSE}
+stats::filter
+```
+
+Si queremos estar absolutamente seguros de que usamos el __dplyr__ `filter` nosotros podemos usar
+
+```{r, eval=FALSE}
+dplyr::filter
+```
+
+También tenga en cuenta que si queremos usar una función en un paquete sin cargar el paquete completo, también podemos usar los dos puntos dobles.
+
+Para más información sobre este tema más avanzado, recomendamos el libro de paquetes R^[http://r-pkgs.had.co.nz/namespace.html].
+
+## For-loops
+
+La fórmula para la suma de la serie. $1+2+\dots+n$ es $n(n+1)/2$. ¿Qué pasaría si no estuviéramos seguros de que esa era la función correcta? ¿Cómo podríamos verificar? Usando lo que aprendimos sobre las funciones, podemos crear una que calcule $S_n$:
+
+```{r}
+compute_s_n <- function(n){
+x <- 1:n
+sum(x)
+}
+```
+
+¿Cómo podemos calcular $S_n$ para varios valores de $n$ decir $n=1,\dots,25$? ¿Escribimos 25 líneas de código `compute_s_n`? No, para eso están los bucles for en la programación. En este caso, estamos realizando exactamente la misma tarea una y otra vez, y lo único que está cambiando es el valor de $n$. Los bucles for nos permiten definir el rango que toma nuestra variable (en nuestro ejemplo $n=1,\dots,10$), luego cambie el valor y evalúe la expresión a medida que realiza un bucle.
+
+Quizás el ejemplo más simple de un bucle for es este código inútil:
+```{r}
+for(i in 1:5){
+print(i)
+}
+```
+
+Aquí está el ciclo for que escribiríamos para nuestro $S_n$ ejemplo:
+
+```{r}
+m <- 25
+s_n <- vector(length = m) # create an empty vector
+for(n in 1:m){
+s_n[n] <- compute_s_n(n)
+}
+```
+En cada iteración $n=1$, $n=2$, etc ..., calculamos $S_n$ y guardarlo en el $n$ th entrada de `s_n`.
+
+Ahora podemos crear un diagrama para buscar un patrón:
+
+```{r eval=FALSE}
+n <- 1:m
+plot(n, s_n)
+```
+
+```{r sum-of-consecutive-squares, out.width="50%", echo=FALSE}
+rafalib::mypar()
+n <- 1:m
+plot(n, s_n)
+```
+
+
+Si notó que parece ser un elemento cuadrático, está en el camino correcto porque la fórmula es $n(n+1)/2$.
+<!--
+que podemos confirmar con una tabla:
+
+```{r show_s_n_table}
+head(data.frame(s_n = s_n, formula = n*(n+1)/2))
+```
+
+También podemos superponer los dos resultados usando la función `lines` para dibujar una línea sobre los puntos trazados previamente:
+
+```{r s_n-v-n}
+plot(n, s_n)
+lines(n, n*(n+1)/2)
+```
+
+-->
+
+## Vectorización y funcionales {#vectorization}
+
+Aunque los bucles for son un concepto importante para entender, en R rara vez los usamos. A medida que aprenda más R, se dará cuenta de que se prefiere la _vectorización_ sobre los bucles for ya que da como resultado un código más corto y claro. Ya vimos ejemplos en la sección Aritmética de vectores. Una función _vectorizada_ es una función que aplicará la misma operación en cada uno de los vectores.
+
+```{r}
+x <- 1:10
+sqrt(x)
+y <- 1:10
+x*y
+```
+
+Para hacer este cálculo, no hay necesidad de for-loops. Sin embargo, no todas las funciones funcionan de esta manera. Por ejemplo, la función que acabamos de escribir, `compute_s_n`, no funciona por elementos, ya que espera un escalar. Este fragmento de código no ejecuta la función en cada entrada de `n`:
+
+```{r, eval=FALSE}
+n <- 1:25
+compute_s_n(n)
+```
+
+_Funcionales_ son funciones que nos ayudan a aplicar la misma función a cada entrada en un vector, matriz, marco de datos o lista. Aquí cubrimos el funcional que opera en vectores numéricos, lógicos y de caracteres: `sapply`.
+
+La función `sapply` nos permite realizar operaciones basadas en elementos en cualquier función. Así es como funciona:
+
+```{r}
+x <- 1:10
+sapply(x, sqrt)
+```
+
+Cada elemento de `x` se pasa a la función `sqrt` y se devuelve el resultado. Estos resultados están concatenados. En este caso, el resultado es un vector de la misma longitud que el original `x`. Esto implica que el ciclo for anterior puede escribirse de la siguiente manera:
+
+```{r s_n-v-n-sapply, eval=FALSE}
+n <- 1:25
+s_n <- sapply(n, compute_s_n)
+```
+
+Otros funcionales son `apply`, `lapply`, `tapply`, `mapply`, `vapply` y `replicate`. Usamos principalmente `sapply`, `apply` y `replicate` en este libro, pero recomendamos familiarizarse con los demás, ya que pueden ser muy útiles.
+
+## Ejercicios
+
+1\. ¿Qué devolverá esta expresión condicional?
+
+```{r, eval=FALSE}
+x <- c(1,2,-3,4)
+
+if(all(x>0)){
+print("All Postives")
+} else{
+print("Not all positives")
+}
+```
+
+
+2\. ¿Cuál de las siguientes expresiones es siempre `FALSE` cuando al menos una entrada de un vector lógico `x` ¿es verdad?
+
+a. `all(x)`
+si. `any(x)`
+c. `any(!x)`
+re. `all(!x)`
+
+3\. La función `nchar` le dice cuántos caracteres tiene un vector de caracteres. Escriba una línea de código que se asigne al objeto. `new_names` la abreviatura del estado cuando el nombre del estado tiene más de 8 caracteres.
+
+
+4\. Crear una función `sum_n` que para cualquier valor dado, digamos $n$, calcula la suma de los enteros de 1 a n (inclusive). Use la función para determinar la suma de los enteros de 1 a 5,000.
+
+5\. Crear una función `altman_plot` eso toma dos argumentos, `x` y `y`, y traza la diferencia contra la suma.
+
+6\. Después de ejecutar el siguiente código, ¿cuál es el valor de `x`?
+
+```{r, eval=FALSE}
+x <- 3
+my_func <- function(y){
+x <- 5
+y+5
+}
+```
+
+7\. Escribir una función `compute_s_n` que para cualquier $n$ calcula la suma $S_n = 1^2 + 2^2 + 3^2 + \dots n^2$. Informe el valor de la suma cuando $n=10$.
+
+8\. Definir un vector numérico vacío. `s_n` de tamaño 25 usando `s_n <- vector("numeric", 25)` y almacenar en los resultados de $S_1, S_2, \dots S_{25}$ usando un bucle for.
+
+9\. Repita el ejercicio 8, pero esta vez use `sapply`.
+
+10\. Repita el ejercicio 8, pero esta vez use `map_dbl`.
+
+11\. Trama $S_n$ versus $n$. Use puntos definidos por $n=1,\dots,25$.
+
+12\. Confirme que la fórmula para esta suma es $S_n= n(n+1)(2n+1)/6$.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

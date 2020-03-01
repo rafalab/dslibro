@@ -1,0 +1,831 @@
+# El tidyverse {#tidyverse}
+
+Hasta ahora hemos estado manipulando vectores reordenándolos y subconjuntándolos mediante indexación. Sin embargo, una vez que comenzamos los análisis más avanzados, la unidad preferida para el almacenamiento de datos no es el vector sino el marco de datos. En este capítulo aprendemos a trabajar directamente con marcos de datos, que facilitan enormemente la organización de la información. Utilizaremos marcos de datos para la mayoría de este libro. Nos centraremos en un formato de datos específico denominado _tidy_y en una colección específica de paquetes que son particularmente útiles para trabajar con_tidy_datos denominados_tidyverse_.
+
+Podemos cargar todos los paquetes tidyverse a la vez instalando y cargando el paquete __tidyverse__:
+
+```{r, message=FALSE, warning=FALSE}
+library(tidyverse)
+```
+
+Aprenderemos cómo implementar el enfoque tidyverse a lo largo del libro, pero antes de profundizar en los detalles, en este capítulo presentamos algunas de las funciones tidyverse más utilizadas, comenzando con el paquete __dplyr__para manipular marcos de datos y el paquete__purrr__ para trabajar con funciones Tenga en cuenta que tidyverse también incluye un paquete de gráficos, __ggplot2__, que presentaremos más adelante en el Capítulo \@ref(ggplot2) en la parte de visualización de datos del libro; el paquete __readr__ discutido en el Capítulo \@ref(importing-data); y muchos otros. En este capítulo, primero presentamos el concepto de _tidy data_ y luego demostramos cómo usamos el tidyverse para trabajar con marcos de datos en este formato.
+
+## Datos ordenados {#tidy-data}
+
+Decimos que una tabla de datos está en formato _tidy_ si cada fila representa una observación y las columnas representan las diferentes variables disponibles para cada una de estas observaciones. los `murders` el conjunto de datos es un ejemplo de un marco de datos ordenado.
+
+```{r, echo=FALSE}
+library(dslabs)
+data(murders)
+head(murders)
+```
+
+Cada fila representa un estado con cada una de las cinco columnas que proporcionan una variable diferente relacionada con estos estados: nombre, abreviatura, región, población y asesinatos totales.
+
+Para ver cómo se puede proporcionar la misma información en diferentes formatos, considere el siguiente ejemplo:
+
+```{r, echo=FALSE}
+library(dslabs)
+data("gapminder")
+tidy_data <- gapminder %>%
+filter(country %in% c("South Korea", "Germany") & !is.na(fertility)) %>%
+select(country, year, fertility)
+head(tidy_data, 6)
+```
+
+Este conjunto de datos ordenado proporciona tasas de fertilidad para dos países a lo largo de los años. Este es un conjunto de datos ordenado porque cada fila presenta una observación con las tres variables: país, año y tasa de fecundidad. Sin embargo, este conjunto de datos originalmente vino en otro formato y se reformó para el paquete __dslabs__. Originalmente, los datos estaban en el siguiente formato:
+
+
+```{r, echo=FALSE, message=FALSE}
+path <- system.file("extdata", package="dslabs")
+filename <- file.path(path, "fertility-two-countries-example.csv")
+wide_data <- read_csv(filename)
+select(wide_data, country, `1960`:`1962`) %>% as.data.frame
+```
+
+Se proporciona la misma información, pero hay dos diferencias importantes en el formato: 1) cada fila incluye varias observaciones y 2) una de las variables, año, se almacena en el encabezado. Para que los paquetes tidyverse se utilicen de manera óptima, los datos deben ser reformados en `tidy` formato, que aprenderá a hacer en la parte del Libro de disputas de datos. Hasta entonces, utilizaremos conjuntos de datos de ejemplo que ya están en formato ordenado.
+
+Aunque no es inmediatamente obvio, a medida que avance en el libro comenzará a apreciar las ventajas de trabajar en un marco en el que las funciones usan formatos ordenados tanto para las entradas como para las salidas. Verá cómo esto permite que el analista de datos se centre en aspectos más importantes del análisis en lugar del formato de los datos.
+
+## Ejercicios
+
+
+1\. Examinar el conjunto de datos incorporado. `co2`. Cual de los siguientes es verdadero:
+
+a. `co2` son datos ordenados: tiene un año para cada fila.
+si. `co2` no es ordenado: necesitamos al menos una columna con un vector de caracteres.
+c. `co2` no es ordenado: es una matriz en lugar de un marco de datos.
+re. `co2` no es ordenado: para ser ordenado tendríamos que arreglarlo para tener tres columnas (año, mes y valor), luego cada observación de CO2 tendría una fila.
+
+
+2\. Examinar el conjunto de datos incorporado. `ChickWeight`. Cual de los siguientes es verdadero:
+
+a. `ChickWeight` no está ordenado: cada pollito tiene más de una fila.
+si. `ChickWeight` es ordenado: cada observación (un peso) está representada por una fila. La chica de la que provino esta medición es una de las variables.
+c. `ChickWeight` no está ordenado: nos falta la columna del año.
+re. `ChickWeight` es ordenado: se almacena en un marco de datos.
+
+
+3\. Examinar el conjunto de datos incorporado. `BOD`. Cual de los siguientes es verdadero:
+
+a. `BOD` no está ordenado: solo tiene seis filas.
+si. `BOD` no es ordenado: la primera columna es solo un índice.
+c. `BOD` es ordenado: cada fila es una observación con dos valores (tiempo y demanda)
+re. `BOD` es ordenado: todos los conjuntos de datos pequeños son ordenados por definición.
+
+
+4\. ¿Cuál de los siguientes conjuntos de datos integrados está ordenado (puede elegir más de uno):
+
+a. `BJsales`
+si. `EuStockMarkets`
+re. `DNase`
+re. `Formaldehyde`
+mi. `Orange`
+f. `UCBAdmissions`
+
+
+## Manipulación de marcos de datos
+
+El paquete __dplyr__del__tidyverse__ introduce funciones que realizan algunas de las operaciones más comunes cuando se trabaja con marcos de datos y usa nombres para estas funciones que son relativamente fáciles de recordar. Por ejemplo, para cambiar la tabla de datos agregando una nueva columna, utilizamos `mutate`. Para filtrar la tabla de datos a un subconjunto de filas, utilizamos `filter`. Finalmente, para subdividir los datos seleccionando columnas específicas, usamos `select`.
+
+### Agregar una columna con `mutate`
+
+Queremos que toda la información necesaria para nuestro análisis se incluya en la tabla de datos. Entonces, la primera tarea es agregar las tasas de asesinatos a nuestro marco de datos de asesinatos. La función `mutate` toma el marco de datos como primer argumento y el nombre y los valores de la variable como segundo argumento usando la convención `name = values`. Entonces, para agregar tasas de asesinatos, usamos:
+
+```{r, message=FALSE}
+library(dslabs)
+data("murders")
+murders <- mutate(murders, rate = total/ population * 100000)
+```
+
+Tenga en cuenta que aquí usamos `total` y `population` dentro de la función, que son objetos **no** definidos en nuestro espacio de trabajo. Pero, ¿por qué no recibimos un error?
+
+Esta es una de las principales características de __dplyr__. Funciones en este paquete, como `mutate`, sepa buscar variables en el marco de datos proporcionado en el primer argumento. En la llamada a mutar arriba, `total` tendrá los valores en `murders$total`. Este enfoque hace que el código sea mucho más legible.
+
+Podemos ver que se agrega la nueva columna:
+
+```{r}
+head(murders)
+```
+
+Aunque hemos sobrescrito el original `murders` objeto, esto no cambia el objeto que se cargó con `data(murders)`. Si cargamos el `murders` nuevamente, el original sobrescribirá nuestra versión mutada.
+
+### Subconjunto con `filter`
+
+Ahora suponga que queremos filtrar la tabla de datos para mostrar solo las entradas para las que la tasa de homicidios es inferior a 0,71. Para hacer esto usamos el `filter` función, que toma la tabla de datos como primer argumento y luego la declaración condicional como el segundo. Me gusta `mutate`, podemos usar los nombres de variables sin comillas de `murders` dentro de la función y sabrá que nos referimos a las columnas y no a los objetos en el espacio de trabajo.
+
+```{r}
+filter(murders, rate <= 0.71)
+```
+
+
+### Seleccionar columnas con `select`
+
+Aunque nuestra tabla de datos solo tiene seis columnas, algunas tablas de datos incluyen cientos. Si queremos ver solo algunos, podemos usar el __dplyr__ `select` función. En el siguiente código seleccionamos tres columnas, asignamos esto a un nuevo objeto y luego filtramos el nuevo objeto:
+
+```{r}
+new_table <- select(murders, state, region, rate)
+filter(new_table, rate <= 0.71)
+```
+
+En la llamada a `select`, el primer argumento `murders` es un objeto, pero `state`, `region` y `rate` son nombres de variables
+
+## Ejercicios
+
+1\. Cargue el paquete __dplyr__ y el conjunto de datos de asesinatos.
+
+```{r, eval=FALSE}
+library(dplyr)
+library(dslabs)
+data(murders)
+```
+
+Puede agregar columnas usando la función __dplyr__ `mutate`. Esta función conoce los nombres de columna y dentro de la función puede llamarlos sin comillas:
+
+
+```{r, eval=FALSE}
+murders <- mutate(murders, population_in_millions = population/ 10^6)
+```
+
+Podemos escribir `population` más bien que `murders$population`. La función `mutate` sabe que estamos agarrando columnas de `murders`.
+
+Usa la función `mutate` para agregar una columna de asesinatos llamada `rate` con la tasa de asesinatos por 100,000 como en el código de ejemplo anterior. Asegúrate de redefinir `murders` como se hizo en el código de ejemplo anterior (asesinatos <- [su código]) para que podamos seguir usando esta variable.
+
+2\. Si `rank(x)` te da las filas de `x` de menor a mayor, `rank(-x)` te da los rangos de mayor a menor. Usa la función `mutate` para agregar una columna `rank` que contiene el rango, de mayor a menor índice de asesinatos. Asegúrate de redefinir `murders` para que podamos seguir usando esta variable.
+
+
+
+3\. Con __dplyr__, podemos usar `select` para mostrar solo ciertas columnas. Por ejemplo, con este código solo mostraríamos los estados y los tamaños de población:
+
+```{r, eval=FALSE}
+select(murders, state, population) %>% head()
+```
+
+Utilizar `select` para mostrar los nombres de estado y abreviaturas en `murders`. No redefinir `murders`, solo muestra los resultados.
+
+
+4\. La función __dplyr__ `filter` se utiliza para elegir filas específicas del marco de datos para mantener. diferente a `select` que es para columnas, `filter` es para filas Por ejemplo, puede mostrar solo la fila de Nueva York de esta manera:
+
+```{r, eval=FALSE}
+filter(murders, state == "New York")
+```
+
+Puede usar otros vectores lógicos para filtrar filas.
+
+Utilizar `filter` para mostrar los 5 principales estados con las tasas de asesinatos más altas. Después de agregar la tasa y rango de asesinatos, no cambie el conjunto de datos de asesinatos, solo muestre el resultado. Recuerde que puede filtrar en función de `rank` columna.
+
+
+5\. Podemos eliminar filas usando el `!=` operador. Por ejemplo, para eliminar Florida, haríamos esto:
+
+```{r, eval=FALSE}
+no_florida <- filter(murders, state != "Florida")
+```
+
+Crear un nuevo marco de datos llamado `no_south` que elimina estados de la región sur. ¿Cuántos estados hay en esta categoría? Puedes usar la función `nrow` para esto.
+
+
+6\. También podemos usar `%in%` para filtrar con __dplyr__. Por lo tanto, puede ver los datos de Nueva York y Texas de esta manera:
+
+```{r, eval=FALSE}
+filter(murders, state %in% c("New York", "Texas"))
+```
+
+Crear un nuevo marco de datos llamado `murders_nw` con solo los estados del noreste y oeste. ¿Cuántos estados hay en esta categoría?
+
+
+7\. Suponga que desea vivir en el noreste u oeste **y** desea que la tasa de homicidios sea inferior a 1. Queremos ver los datos de los estados que satisfacen estas opciones. Tenga en cuenta que puede usar operadores lógicos con `filter`. Aquí hay un ejemplo en el que filtramos para mantener solo estados pequeños en la región noreste.
+
+```{r, eval=FALSE}
+filter(murders, population < 5000000 & region == "Northeast")
+```
+
+Asegurarse `murders` ha sido definido con `rate` y `rank` y todavía tiene todos los estados. Crea una tabla llamada `my_states` que contiene filas para estados que satisfacen ambas condiciones: está en el noreste u oeste y la tasa de homicidios es inferior a 1. Use `select` para mostrar solo el nombre del estado, la tasa y el rango.
+
+## El tubo: `%>%`
+
+Con __dplyr__ podemos realizar una serie de operaciones, por ejemplo `select` y entonces `filter`, enviando los resultados de una función a otra usando lo que se llama _pipe operator_: `%>%`. Algunos detalles se incluyen a continuación.
+
+Escribimos el código anterior para mostrar tres variables (estado, región, tasa) para los estados que tienen tasas de asesinatos por debajo de 0,71. Para hacer esto, definimos el objeto intermedio `new_table`. En __dplyr__ podemos escribir código que se parezca más a una descripción de lo que queremos hacer sin objetos intermedios:
+
+$$ \mbox {original data }
+\rightarrow \mbox { select }
+\rightarrow \mbox { filter } $$
+
+
+Para tal operación, podemos usar la tubería `%>%`. El código se ve así:
+
+```{r}
+murders %>% select(state, region, rate) %>% filter(rate <= 0.71)
+```
+
+Esta línea de código es equivalente a las dos líneas de código anteriores. ¿Que esta pasando aqui?
+
+En general, la tubería envía el resultado del lado izquierdo de la tubería como el primer argumento de la función en el lado derecho de la tubería. Aquí hay un ejemplo muy simple:
+
+```{r}
+16 %>% sqrt()
+```
+Podemos continuar canalizando valores a lo largo de:
+
+```{r}
+16 %>% sqrt() %>% log2()
+```
+La declaración anterior es equivalente a `log2(sqrt(16))`.
+
+Recuerde que la tubería envía valores al primer argumento, por lo que podemos definir otros argumentos como si el primer argumento ya estuviera definido:
+
+```{r}
+16 %>% sqrt() %>% log(base = 2)
+```
+
+Por lo tanto, al usar la tubería con marcos de datos y __dplyr__, ya no necesitamos especificar el primer argumento requerido ya que las funciones __dplyr__ que hemos descrito toman todos los datos como el primer argumento. En el código que escribimos:
+
+```{r, eval=FALSE}
+murders %>% select(state, region, rate) %>% filter(rate <= 0.71)
+```
+`murders` es el primer argumento de la `select` función, y el nuevo marco de datos (anteriormente `new_table`) es el primer argumento de la `filter` función.
+
+Tenga en cuenta que la tubería funciona bien con funciones donde el primer argumento son los datos de entrada. Las funciones en los paquetes __tidyverse__como__dplyr__ tienen este formato y se pueden usar fácilmente con la tubería.
+
+## Ejercicios
+
+1\. El tubo `%>%` se puede usar para realizar operaciones secuencialmente sin tener que definir objetos intermedios. Comience redefiniendo el asesinato para incluir la tasa y el rango.
+
+```{r, eval=FALSE}
+murders <- mutate(murders, rate = total/ population * 100000,
+rank = rank(-rate))
+```
+
+En la solución al ejercicio anterior, hicimos lo siguiente:
+```{r, eval=FALSE}
+my_states <- filter(murders, region %in% c("Northeast", "West") &
+rate < 1)
+
+select(my_states, state, rate, rank)
+```
+
+El tubo `%>%` nos permite realizar ambas operaciones secuencialmente sin tener que definir una variable intermedia `my_states`. Por lo tanto, podríamos haber mutado y seleccionado en la misma línea de esta manera:
+
+```{r, eval=FALSE}
+mutate(murders, rate = total/ population * 100000,
+rank = rank(-rate)) %>%
+select(state, rate, rank)
+```
+
+Darse cuenta de `select` ya no tiene un marco de datos como primer argumento. Se supone que el primer argumento es el resultado de la operación realizada justo antes de `%>%`.
+
+Repita el ejercicio anterior, pero ahora, en lugar de crear un nuevo objeto, muestre el resultado y solo incluya las columnas de estado, velocidad y rango. Usar una pipa `%>%` para hacer esto en una sola línea.
+
+2\. Reiniciar `murders` a la tabla original usando `data(murders)`. Use una tubería para crear un nuevo marco de datos llamado `my_states` que considera solo los estados del noreste u oeste que tienen una tasa de homicidios inferior a 1 y contiene solo las columnas de estado, tasa y rango. La tubería también debe tener cuatro componentes separados por tres `%>%`. El código debería verse así:
+
+```{r, eval=FALSE}
+my_states <- murders %>%
+mutate SOMETHING %>%
+filter SOMETHING %>%
+select SOMETHING
+```
+
+## Resumiendo datos
+
+Una parte importante del análisis exploratorio de datos es resumir los datos. La desviación promedio y estándar son dos ejemplos de estadísticas de resumen ampliamente utilizadas. A menudo se pueden obtener resúmenes más informativos dividiendo primero los datos en grupos. En esta sección, cubrimos dos nuevos verbos __dplyr__ que facilitan estos cálculos: `summarize` y `group_by`. Aprendemos a acceder a los valores resultantes utilizando el `pull` función.
+
+```{r, message=FALSE, echo=FALSE}
+library(tidyverse)
+```
+
+### `summarize` {#summarize}
+
+Los `summarize` la función __dplyr__ proporciona una forma de calcular estadísticas de resumen con código intuitivo y legible. Comenzamos con un ejemplo simple basado en alturas. los `heights` el conjunto de datos incluye las alturas y el sexo reportado por los estudiantes en una encuesta en clase.
+
+```{r}
+library(dplyr)
+library(dslabs)
+data(heights)
+```
+
+El siguiente código calcula la desviación promedio y estándar para las mujeres:
+
+```{r}
+s <- heights %>%
+filter(sex == "Female") %>%
+summarize(average = mean(height), standard_deviation = sd(height))
+s
+```
+
+Esto toma nuestra tabla de datos original como entrada, la filtra para mantener solo a las mujeres y luego produce una nueva tabla resumida con solo el promedio y la desviación estándar de las alturas. Podemos elegir los nombres de las columnas de la tabla resultante. Por ejemplo, arriba decidimos usar `average` y `standard_deviation`, pero podríamos haber usado otros nombres de la misma manera.
+
+Porque la tabla resultante almacenada en `s` es un marco de datos, podemos acceder a los componentes con el descriptor de acceso `$`:
+
+```{r}
+s$average
+s$standard_deviation
+```
+
+Como con la mayoría de las otras funciones __dplyr__, `summarize` conoce los nombres de las variables y podemos usarlos directamente. Entonces, dentro de la llamada al `summarize` función que escribimos `mean(height)`, la función accede a la columna con el nombre "altura" y luego calcula el promedio del vector numérico resultante. Podemos calcular cualquier otro resumen que opera en vectores y devuelve un solo valor. Por ejemplo, podemos agregar las alturas mediana, mínima y máxima de esta manera:
+
+```{r}
+heights %>%
+filter(sex == "Female") %>%
+summarize(median = median(height), minimum = min(height),
+maximum = max(height))
+```
+
+Podemos obtener estos tres valores con solo una línea usando el `quantile` función: por ejemplo, `quantile(x, c(0,0.5,1))` devuelve el mínimo (percentil 0), la mediana (percentil 50) y el máximo (percentil 100) del vector `x`. Sin embargo, si intentamos usar una función como esta que devuelve dos o más valores dentro `summarize`:
+
+```{r, eval=FALSE}
+heights %>%
+filter(sex == "Female") %>%
+summarize(range = quantile(height, c(0, 0.5, 1)))
+```
+
+recibiremos un error: `Error: expecting result of length one, got : 2`. Con la función `summarize`, solo podemos llamar a funciones que devuelven un solo valor. En la sección \@ref(do), aprenderemos cómo lidiar con funciones que devuelven más de un valor.
+
+Para otro ejemplo de cómo podemos usar el `summarize` función, calculemos la tasa promedio de asesinatos en los Estados Unidos. Recuerde que nuestra tabla de datos incluye asesinatos totales y el tamaño de la población para cada estado y ya hemos usado __dplyr__ para agregar una columna de índice de asesinatos:
+
+```{r}
+murders <- murders %>% mutate(rate = total/population*100000)
+```
+
+Recuerde que la tasa de asesinatos en EE. UU. Es **no** el promedio de las tasas de asesinatos estatales:
+
+```{r}
+summarize(murders, mean(rate))
+```
+
+Esto se debe a que en el cálculo anterior, los estados pequeños tienen el mismo peso que los grandes. La tasa de homicidios en los Estados Unidos es el número total de asesinatos en los Estados Unidos dividido por la población total de los Estados Unidos. Entonces el cálculo correcto es:
+
+```{r}
+us_murder_rate <- murders %>%
+summarize(rate = sum(total)/ sum(population) * 100000)
+us_murder_rate
+```
+
+Este cálculo cuenta estados más grandes proporcionalmente a su tamaño, lo que da como resultado un valor mayor.
+
+### `pull`
+
+Los `us_murder_rate` el objeto definido anteriormente representa solo un número. Sin embargo, lo estamos almacenando en un marco de datos:
+
+```{r}
+class(us_murder_rate)
+```
+
+ya que, como la mayoría de las funciones __dplyr__, `summarize` siempre devuelve un marco de datos.
+
+Esto podría ser problemático si queremos usar este resultado con funciones que requieren un valor numérico. Aquí mostramos un truco útil para acceder a los valores almacenados en los datos cuando se usan tuberías: cuando un objeto de datos se canaliza a ese objeto y se puede acceder a sus columnas usando el `pull` función. Para entender lo que queremos decir, eche un vistazo a esta línea de código:
+
+```{r}
+us_murder_rate %>% pull(rate)
+```
+
+Esto devuelve el valor en el `rate` columna de `us_murder_rate` haciéndolo equivalente a `us_murder_rate$rate`.
+
+Para obtener un número de la tabla de datos original con una línea de código, podemos escribir:
+
+```{r}
+us_murder_rate <- murders %>%
+summarize(rate = sum(total)/ sum(population) * 100000) %>%
+pull(rate)
+
+us_murder_rate
+```
+
+que ahora es numérico:
+
+```{r}
+class(us_murder_rate)
+```
+
+### Agrupe y luego resuma con `group_by` {#group-by}
+
+Una operación común en la exploración de datos es dividir primero los datos en grupos y luego calcular resúmenes para cada grupo. Por ejemplo, podemos querer calcular la desviación promedio y estándar para las alturas de hombres y mujeres por separado. los `group_by` la función nos ayuda a hacer esto.
+
+Si escribimos esto:
+
+```{r}
+heights %>% group_by(sex)
+```
+
+El resultado no se ve muy diferente de `heights`, excepto que vemos `Groups: sex [2]` cuando imprimimos el objeto. Aunque no es inmediatamente obvio por su apariencia, ahora es un marco de datos especial llamado _marco de datos agrupados_y funciones__dplyr__, en particular `summarize`, se comportará de manera diferente cuando actúe sobre este objeto. Conceptualmente, puede pensar en esta tabla como muchas tablas, con las mismas columnas pero no necesariamente el mismo número de filas, apiladas juntas en un objeto. Cuando resumimos los datos después de la agrupación, esto es lo que sucede:
+
+```{r}
+heights %>%
+group_by(sex) %>%
+summarize(average = mean(height), standard_deviation = sd(height))
+```
+
+Los `summarize` la función aplica el resumen a cada grupo por separado.
+
+Para otro ejemplo, calculemos la tasa media de asesinatos en las cuatro regiones del país:
+
+```{r}
+murders %>%
+group_by(region) %>%
+summarize(median_rate = median(rate))
+```
+
+## Ordenar marcos de datos
+
+Al examinar un conjunto de datos, a menudo es conveniente ordenar la tabla por las diferentes columnas. Sabemos sobre el `order` y `sort` función, pero para ordenar tablas enteras, la función __dplyr__ `arrange` es útil. Por ejemplo, aquí ordenamos los estados por tamaño de población:
+
+```{r}
+murders %>%
+arrange(population) %>%
+head()
+```
+
+Con `arrange` podemos decidir por qué columna ordenar. Para ver los estados por población, de menor a mayor, organizamos por `rate` en lugar:
+
+```{r}
+murders %>%
+arrange(rate) %>%
+head()
+```
+
+Tenga en cuenta que el comportamiento predeterminado es ordenar en orden ascendente. En __dplyr__, la función `desc` transforma un vector para que esté en orden descendente. Para ordenar la tabla en orden descendente, podemos escribir:
+
+```{r, eval=FALSE}
+murders %>%
+arrange(desc(rate))
+```
+
+### Clasificación anidada
+
+Si estamos ordenando por una columna con empates, podemos usar una segunda columna para romper el empate. Del mismo modo, se puede usar una tercera columna para romper los lazos entre la primera y la segunda, y así sucesivamente. Aquí ordenamos por `region`, luego dentro de la región ordenamos por índice de asesinatos:
+
+```{r}
+murders %>%
+arrange(region, rate) %>%
+head()
+```
+
+
+### La parte superior $n$
+
+En el código anterior, hemos usado la función `head` para evitar que la página se llene con todo el conjunto de datos. Si queremos ver una mayor proporción, podemos usar el `top_n` función. Esta función toma un marco de datos como primer argumento, el número de filas para mostrar en el segundo y la variable para filtrar en el tercero. Aquí hay un ejemplo de cómo ver las 5 filas superiores:
+
+```{r}
+murders %>% top_n(5, rate)
+```
+
+Tenga en cuenta que las filas no están ordenadas por `rate`, solo filtrado. Si queremos ordenar, necesitamos usar `arrange`.
+Tenga en cuenta que si el tercer argumento se deja en blanco, `top_n`, filtra por la última columna.
+
+
+## Ejercicios
+
+Para estos ejercicios, utilizaremos los datos de la encuesta recopilada por el Centro Nacional de Estadísticas de Salud de los Estados Unidos (NCHS). Este centro ha realizado una serie de encuestas de salud y nutrición desde la década de 1960. A partir de 1999, alrededor de 5,000 individuos de todas las edades han sido entrevistados cada año y completan el componente de examen de salud de la encuesta. Parte de los datos está disponible a través del paquete __NHANES__. Una vez que instale el paquete __NHANES__, puede cargar los datos de esta manera:
+
+```{r}
+library(NHANES)
+data(NHANES)
+```
+
+Los datos __NHANES__ tienen muchos valores faltantes. Recuerde que la función de resumen principal en R devolverá `NA` si alguna de las entradas del vector de entrada es un `NA`. Aquí hay un ejemplo:
+
+```{r}
+library(dslabs)
+data(na_example)
+mean(na_example)
+sd(na_example)
+```
+
+Ignorar el `NA` s podemos usar el `na.rm` argumento:
+
+```{r}
+mean(na_example, na.rm = TRUE)
+sd(na_example, na.rm = TRUE)
+```
+
+Exploremos ahora los datos de NHANES.
+
+1\. Le proporcionaremos algunos datos básicos sobre la presión arterial. Primero, seleccionemos un grupo para establecer el estándar. Utilizaremos hembras de 20 a 29 años. `AgeDecade` es una variable categórica con estas edades. Tenga en cuenta que la categoría está codificada como "20-29", ¡con un espacio al frente! ¿Cuál es la desviación promedio y estándar de la presión arterial sistólica como se guarda en el `BPSysAve` ¿variable? Guárdelo en una variable llamada `ref`.
+
+Sugerencia: uso `filter` y `summarize` y usa el `na.rm = TRUE` argumento al calcular el promedio y la desviación estándar. También puede filtrar los valores de NA utilizando `filter`.
+
+
+2\. Usando una tubería, asigne el promedio a una variable numérica `ref_avg`. Sugerencia: use el código similar al anterior y luego `pull`.
+
+
+3\. Ahora informe los valores mínimo y máximo para el mismo grupo.
+
+
+4\. Calcule el promedio y la desviación estándar para las mujeres, pero para cada grupo de edad por separado en lugar de una década seleccionada como en la pregunta 1. Tenga en cuenta que los grupos de edad se definen por `AgeDecade`. Sugerencia: en lugar de filtrar por edad y género, filtre por `Gender` y luego usar `group_by`.
+
+5\. Repita el ejercicio 4 para hombres.
+
+6\. De hecho, podemos combinar ambos resúmenes para los ejercicios 4 y 5 en una línea de código. Esto es porque `group_by` nos permite agrupar por más de una variable. Obtenga una gran tabla resumen usando `group_by(AgeDecade, Gender)`.
+
+7\. Para los hombres entre las edades de 40-49, compare la presión arterial sistólica a través de la raza como se informa en el `Race1` variable. Ordene la tabla resultante de la presión arterial sistólica promedio más baja a más alta.
+
+
+
+## Tibbles
+
+Los datos ordenados deben almacenarse en marcos de datos. Introdujimos el marco de datos en la Sección \@ref(data-frames) y he estado usando el `murders` marco de datos en todo el libro. En la sección \@ref(group-by) presentamos el `group_by` función, que permite estratificar datos antes de calcular estadísticas resumidas. Pero, ¿dónde se almacena la información del grupo en el marco de datos?
+
+```{r}
+murders %>% group_by(region)
+```
+
+Tenga en cuenta que no hay columnas con esta información. Pero, si observa de cerca la salida anterior, verá la línea `A tibble` seguido por dimensiones. Podemos aprender la clase del objeto devuelto usando:
+
+```{r}
+murders %>% group_by(region) %>% class()
+```
+
+Los `tbl`, pronunciado tibble, es un tipo especial de marco de datos. Las funciones `group_by` y `summarize` siempre devuelve este tipo de marco de datos. los `group_by` la función devuelve un tipo especial de `tbl`, el `grouped_df`. Diremos más sobre esto más adelante. Por coherencia, los verbos de manipulación __dplyr__ ( `select`, `filter`, `mutate` y `arrange`) preservar la clase de la entrada: si reciben un marco de datos regular, devuelven un marco de datos regular, mientras que si reciben un tibble, devuelven un tibble. Pero los tibbles son el formato preferido en el tidyverse y, como resultado, las funciones tidyverse que producen un marco de datos desde cero devuelven un tibble. Por ejemplo, en el capítulo \@ref(importing-data) veremos que las funciones tidyverse usadas para importar datos crean tibbles.
+
+Los tibbles son muy similares a los marcos de datos. De hecho, puede pensar en ellos como una versión moderna de marcos de datos. Sin embargo, hay tres diferencias importantes que describiremos en el siguiente.
+
+
+### Tibbles se muestran mejor
+
+El método de impresión para tibbles es más legible que el de un marco de datos. Para ver esto, compare los resultados de escribir `murders` y la salida de asesinatos si lo convertimos en un tibble. Podemos hacer esto usando `as_tibble(murders)`. Si usa RStudio, la salida para un tibble se ajusta al tamaño de su ventana. Para ver esto, cambie el ancho de su consola R y observe cómo se muestran más/ menos columnas.
+
+### Los subconjuntos de tibbles son tibbles
+
+Si subconjuntos las columnas de un marco de datos, puede recuperar un objeto que no es un marco de datos, como un vector o escalar. Por ejemplo:
+
+```{r}
+class(murders[,4])
+```
+
+no es un marco de datos. Con tibbles esto no sucede:
+
+```{r}
+class(as_tibble(murders)[,4])
+```
+
+Esto es útil en tidyverse ya que las funciones requieren marcos de datos como entrada.
+
+Con tibbles, si desea acceder al vector que define una columna y no recuperar un marco de datos, debe usar el descriptor de acceso `$`:
+
+```{r}
+class(as_tibble(murders)$population)
+```
+
+Una característica relacionada es que tibbles le dará una advertencia si intenta acceder a una columna que no existe. Si escribimos accidentalmente `Population` en lugar de `population` esta:
+
+```{r}
+murders$Population
+```
+
+devuelve un `NULL` sin advertencia, lo que puede dificultar la depuración. Por el contrario, si intentamos esto con un tibble, obtenemos una advertencia informativa:
+
+```{r}
+as_tibble(murders)$Population
+```
+
+
+### Tibbles puede tener entradas complejas
+
+Si bien las columnas del marco de datos deben ser vectores de números, cadenas o valores lógicos, los tibbles pueden tener objetos más complejos, como listas o funciones. Además, podemos crear tibbles con funciones:
+
+```{r}
+tibble(id = c(1, 2, 3), func = c(mean, median, sd))
+```
+
+
+### Tibbles se pueden agrupar
+
+La función `group_by` devuelve un tipo especial de tibble: un tibble agrupado. Esta clase almacena información que le permite saber qué filas están en qué grupos. Las funciones tidyverse, en particular la `summarize` función, son conscientes de la información del grupo.
+
+### Crear un tibble usando `tibble` en lugar de `data.frame`
+
+A veces es útil para nosotros crear nuestros propios marcos de datos. Para crear un marco de datos en formato tibble, puede hacerlo utilizando el `tibble` función.
+
+```{r}
+grades <- tibble(names = c("John", "Juan", "Jean", "Yao"),
+exam_1 = c(95, 80, 90, 85),
+exam_2 = c(90, 85, 85, 90))
+```
+
+Tenga en cuenta que la base R (sin paquetes cargados) tiene una función con un nombre muy similar, `data.frame`, que se puede usar para crear un marco de datos regular en lugar de un tibble. Otra diferencia importante es que por defecto `data.frame` coacciona los caracteres en factores sin proporcionar una advertencia o mensaje:
+
+```{r}
+grades <- data.frame(names = c("John", "Juan", "Jean", "Yao"),
+exam_1 = c(95, 80, 90, 85),
+exam_2 = c(90, 85, 85, 90))
+class(grades$names)
+```
+
+Para evitar esto, usamos el argumento bastante engorroso `stringsAsFactors`:
+```{r}
+grades <- data.frame(names = c("John", "Juan", "Jean", "Yao"),
+exam_1 = c(95, 80, 90, 85),
+exam_2 = c(90, 85, 85, 90),
+stringsAsFactors = FALSE)
+class(grades$names)
+```
+
+Para convertir un marco de datos normal en un tibble, puede usar el `as_tibble` función.
+
+```{r}
+as_tibble(grades) %>% class()
+```
+
+
+## El operador punto
+
+Una de las ventajas de utilizar la tubería. `%>%` es que no tenemos que seguir nombrando nuevos objetos mientras manipulamos el marco de datos. Como recordatorio rápido, si queremos calcular la tasa de asesinatos promedio para los estados del sur, en lugar de escribir:
+
+```{r}
+tab_1 <- filter(murders, region == "South")
+tab_2 <- mutate(tab_1, rate = total/ population * 10^5)
+rates <- tab_2$rate
+median(rates)
+```
+
+Podemos evitar definir nuevos objetos intermedios escribiendo en su lugar:
+
+```{r}
+filter(murders, region == "South") %>%
+mutate(rate = total/ population * 10^5) %>%
+summarize(median = median(rate)) %>%
+pull(median)
+```
+
+Podemos hacer esto porque cada una de estas funciones toma un marco de datos como primer argumento. Pero, ¿qué pasa si queremos acceder a un componente del marco de datos? Por ejemplo, ¿qué pasa si el `pull` la función no estaba disponible y queríamos acceder `tab_2$rate`? ¿Qué nombre de marco de datos usaríamos? La respuesta es el operador de puntos.
+
+Por ejemplo, para acceder al vector de velocidad sin el `pull` función que podríamos usar
+
+```{r}
+rates <-filter(murders, region == "South") %>%
+mutate(rate = total/ population * 10^5) %>%
+.$rate
+median(rates)
+```
+
+En la siguiente sección, veremos otras instancias en las que usar el `.` es útil.
+
+## `do` {#do}
+
+Las funciones tidyverse saben interpretar tibbles agrupados. Además, para facilitar la secuencia de comandos a través de la tubería `%>%`, las funciones tidyverse devuelven constantemente marcos de datos, ya que esto asegura que la salida de una función sea aceptada como la entrada de otra. Pero la mayoría de las funciones R no reconocen los tibbles agrupados ni devuelven marcos de datos. los `quantile` la función es un ejemplo que describimos en la Sección \@ref(summarize). Los `do` la función sirve como puente entre las funciones R, como `quantile` y el tidyverse. los `do` la función comprende tibbles agrupados y siempre devuelve un marco de datos.
+
+En la sección \@ref(summarize), notamos que si intentamos usar `quantile` para obtener el mínimo, la mediana y el máximo en una llamada, recibiremos un error: `Error: expecting result of length one, got : 2`.
+
+```{r, eval=FALSE}
+data(heights)
+heights %>%
+filter(sex == "Female") %>%
+summarize(range = quantile(height, c(0, 0.5, 1)))
+```
+
+Podemos usar el `do` función para arreglar esto.
+
+Primero tenemos que escribir una función que se ajuste al enfoque tidyverse: es decir, recibe un marco de datos y devuelve un marco de datos.
+
+```{r}
+my_summary <- function(dat){
+x <- quantile(dat$height, c(0, 0.5, 1))
+tibble(min = x[1], median = x[2], max = x[3])
+}
+```
+
+Ahora podemos aplicar la función al conjunto de datos de alturas para obtener los resúmenes:
+
+```{r}
+heights %>%
+group_by(sex) %>%
+my_summary
+```
+
+Pero esto no es lo que queremos. Queremos un resumen para cada sexo y el código devolvió solo un resumen. Esto es porque `my_summary` no es parte del tidyverse y no sabe cómo manejar los tibbles agrupados. `do` hace esta conexión:
+
+```{r}
+heights %>%
+group_by(sex) %>%
+do(my_summary(.))
+```
+
+Tenga en cuenta que aquí necesitamos usar el operador de punto. El tibble creado por `group_by` se canaliza a `do`. Dentro de la llamada a `do`, el nombre de este tibble es `.` y queremos enviarlo a `my_summary`. Si no usa el punto, entonces `my_summary` no tiene ningún argumento y devuelve un error que nos dice que `argument "dat"` está perdido. Puede ver el error escribiendo:
+
+```{r, eval=FALSE}
+heights %>%
+group_by(sex) %>%
+do(my_summary())
+```
+
+Si no usa el paréntesis, entonces la función no se ejecuta y en su lugar `do` intenta devolver la función. Esto da un error porque `do` siempre debe devolver un marco de datos. Puede ver el error escribiendo:
+
+
+```{r, eval=FALSE}
+heights %>%
+group_by(sex) %>%
+do(my_summary)
+```
+
+## El paquete __purrr__
+
+En la sección \@ref(vectorization) aprendimos sobre el `sapply` función, que nos permitió aplicar la misma función a cada elemento de un vector. Construimos una función y utilizamos `sapply` para calcular la suma de la primera `n` enteros para varios valores de `n` me gusta esto:
+
+
+```{r}
+compute_s_n <- function(n){
+x <- 1:n
+sum(x)
+}
+n <- 1:25
+s_n <- sapply(n, compute_s_n)
+```
+
+Este tipo de operación, que aplica la misma función o procedimiento a elementos de un objeto, es bastante común en el análisis de datos. El paquete __purrr__ incluye funciones similares a `sapply` pero eso interactúa mejor con otras funciones tidyverse. La principal ventaja es que podemos controlar mejor el tipo de funciones de salida. A diferencia de, `sapply` puede devolver varios tipos de objetos diferentes; por ejemplo, podríamos esperar un resultado numérico de una línea de código, pero `sapply` podría convertir nuestro resultado en carácter en algunas circunstancias. Las funciones __purrr__ nunca harán esto: devolverán objetos de un tipo específico o devolverán un error si esto no es posible.
+
+La primera función __purrr__ que aprenderemos es `map`, que funciona muy similar a `sapply` pero siempre, sin excepción, devuelve una lista:
+
+```{r}
+library(purrr)
+s_n <- map(n, compute_s_n)
+class(s_n)
+```
+
+Si queremos un vector numérico, podemos usar `map_dbl` que siempre devuelve un vector de valores numéricos.
+
+```{r}
+s_n <- map_dbl(n, compute_s_n)
+class(s_n)
+```
+
+Esto produce los mismos resultados que el `sapply` llamada que se muestra arriba.
+
+Una función __purrr__ particularmente útil para interactuar con el resto del tidyverse es `map_df`, que siempre devuelve un marco de datos tibble. Sin embargo, la función que se llama debe devolver un vector o una lista con nombres. Por esta razón, el siguiente código daría como resultado un `Argument 1 must have names` error:
+
+```{r, eval=FALSE}
+s_n <- map_df(n, compute_s_n)
+```
+
+Necesitamos cambiar la función para que esto funcione:
+
+```{r}
+compute_s_n <- function(n){
+x <- 1:n
+tibble(sum = sum(x))
+}
+s_n <- map_df(n, compute_s_n)
+```
+
+El paquete __purrr__ proporciona mucha más funcionalidad no cubierta aquí. Para obtener más detalles, puede consultar [este recurso en línea] (https://jennybc.github.io/purrr-tutorial/).
+
+## Tidyverse condicionales
+
+Un análisis de datos típico a menudo implicará una o más operaciones condicionales. En la sección \@ref(conditionals) describimos el `ifelse` función, que utilizaremos ampliamente en este libro. En esta sección presentamos dos funciones __dplyr__ que proporcionan una funcionalidad adicional para realizar operaciones condicionales.
+
+### `case_when`
+
+Los `case_when` la función es útil para vectorizar declaraciones condicionales. Esto es similar a `ifelse` pero puede generar cualquier cantidad de valores, en lugar de solo `TRUE` o `FALSE`. Aquí hay un ejemplo que divide los números en negativo, positivo y 0:
+
+```{r}
+x <- c(-2, -1, 0, 1, 2)
+case_when(x < 0 ~ "Negative", x > 0 ~ "Positive", TRUE ~ "Zero")
+```
+
+Un uso común de esta función es definir variables categóricas basadas en variables existentes. Por ejemplo, supongamos que queremos comparar las tasas de homicidios en tres grupos de estados: _Nueva Inglaterra_, _West Coast_, _South_y_other_. Para cada estado, debemos preguntar si está en Nueva Inglaterra, si no es así, preguntamos si está en la costa oeste, si no, preguntamos si está en el sur, y si no, asignamos otros. Así es como usamos `case_when` para hacer esto:
+
+```{r}
+murders %>%
+mutate(group = case_when(
+abb %in% c("ME", "NH", "VT", "MA", "RI", "CT") ~ "New England",
+abb %in% c("WA", "OR", "CA") ~ "West Coast",
+region == "South" ~ "South",
+TRUE ~ "Other")) %>%
+group_by(group) %>%
+summarize(rate = sum(total)/ sum(population) * 10^5)
+```
+
+### `between`
+
+Una operación común en el análisis de datos es determinar si un valor cae dentro de un intervalo. Podemos verificar esto usando condicionales. Por ejemplo para verificar si los elementos de un vector `x` están entre `a` y `b` podemos escribir
+
+```{r, eval=FALSE}
+x >= a & x <= b
+```
+
+Sin embargo, esto puede volverse engorroso, especialmente dentro del enfoque tidyverse. los `between` la función realiza la misma operación.
+
+```{r, eval = FALSE}
+between(x, a, b)
+```
+
+## Ejercicios
+
+1\. Carga el `murders` conjunto de datos ¿Cual de los siguientes es verdadero?
+
+a. `murders` está en formato ordenado y se almacena en un tibble.
+si. `murders` está en formato ordenado y se almacena en un marco de datos.
+c. `murders` no está en formato ordenado y se almacena en un tibble.
+re. `murders` no está en formato ordenado y se almacena en un marco de datos.
+
+2\. Utilizar `as_tibble` para convertir el `murders` tabla de datos en un tibble y guárdelo en un objeto llamado `murders_tibble`.
+
+3\. Utilizar el `group_by` función para convertir asesinatos en un tibble que se agrupa por región.
+
+4\. Escriba el código tidyverse que sea equivalente a este código:
+
+```{r, eval=FALSE}
+exp(mean(log(murders$population)))
+```
+
+Escríbalo usando la tubería para que cada función se llame sin argumentos. Use el operador de puntos para acceder a la población. Sugerencia: el código debe comenzar con `murders %>%`.
+
+5\. Utilizar el `map_df` para crear un marco de datos con tres columnas llamadas `n`, `s_n` y `s_n_2`. La primera columna debe contener los números del 1 al 100. La segunda y la tercera columna deben contener la suma del 1 al 100 $n$ con $n$ el número de fila.
