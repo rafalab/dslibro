@@ -23,4 +23,3 @@ knitr::opts_chunk$set(
 
 options(dplyr.print_min = 5, dplyr.print_max = 5)
 
-
