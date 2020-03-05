@@ -1,7 +1,7 @@
 * commands (r4ds: comando; en el net he visto órdenes y comandos; the latter more popular)
 * script (r4ds: _scripts_ )
 * machine learning
-* data wrangling (r4ds: manejo de datos)
+* data wrangling (r4ds: manejo/doma de datos)
 * data management
 * motivating case studies
 * motivating dataset
@@ -25,7 +25,7 @@
 * File (r4ds: "Archivo ( _File_)")
 * New File (r4ds: "Nuevo Archivo ( _New File_ )")
 * backup (r4ds: respaldar)
-* EDA (r4ds: Análisis exploratorio de datos o EDA (por sus siglas en inglés exploratory data * analysis) entocnes us _EDA_ throughout
+* EDA (r4ds: Análisis exploratorio de datos o EDA (por sus siglas en inglés exploratory data * analysis) entonces usan _EDA_ throughout
 * tidy data (r4ds: datos ordenados)
 * functions (r4ds: funciones)
 * tibbles (r4ds: usa tibbles; no traduce)
