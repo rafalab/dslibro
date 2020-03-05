@@ -1,6 +1,6 @@
 Este es el codigo del libro [Introducción a la Ciencia de Datos ](https://rafalab.github.io/dslibro/) 
 
-[Book web page](https://rafalab.github.io/dslibro/)
+[Página Web del libro](https://rafalab.github.io/dslibro/)
 
 Hacemos anuncios relacionados al libro en Twitter. Para la información más reciente, siga [\@rafalab](https://twitter.com/rafalab).
 
