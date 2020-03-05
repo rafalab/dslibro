@@ -4,6 +4,7 @@ machine learning
 data wrangling - (r4ds: manejo de datos)
 data management
 motivating case studies
+motivating dataset
 sofware - software
 software engineer - ingeniero de programa, ingeniero de software
 web scraping
@@ -30,3 +31,4 @@ functions (r4ds: funciones)
 tibbles (r4ds: usa tibbles; no traduce)
 R software environment
 R environment
+character strings
