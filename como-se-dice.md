@@ -29,6 +29,6 @@
 * tidy data (r4ds: datos ordenados) MX: datos ordenados
 * functions (r4ds: funciones) MX: funciones
 * tibbles (r4ds: usa tibbles; no traduce) MX: tibbles, no se traduce
-* R software environment MX: ambiente de trabajo en R
-* R environment MX: ambiente de R/ambiente de trabajo
+* R software environment MX: entorno de trabajo en R
+* R environment MX: entorno de R/ambiente de trabajo
 * character strings*  MX: cadenas de caracter
