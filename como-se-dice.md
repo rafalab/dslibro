@@ -32,3 +32,5 @@
 * R software environment MX: ambiente de trabajo en R
 * R environment MX: ambiente de R/ambiente de trabajo
 * character strings*  MX: cadenas de caracter
+workspace
+access operator
