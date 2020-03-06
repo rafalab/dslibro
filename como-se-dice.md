@@ -1,7 +1,7 @@
 | English term | definición | MX | ES |
 |--------------|------------|----|----|
 | commands | órdenes y comandos ; the latter more popular | comando (singular) o comandos (plural) | comandos |
-| script | _scripts_ | script | script, archivo de órdenes, de procesamiento por lotes en MSDOS |
+| script | _scripts_ | script | script, archivo de procesamiento por lotes en MSDOS |
 | machine learning | | machine learning o la traducción literal aprendizaje de máquina | [aprendizaje automático](http://portal.uned.es/portal/page?_pageid=93,61703783&_dad=portal&_schema=PORTAL&idAsignatura=71014023) |
 | data wrangling | manejo/doma de datos | procesamiento de datos | procesamiento de datos |
 | data management | | manejo de datos | gestión de datos |
