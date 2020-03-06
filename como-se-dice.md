@@ -21,7 +21,7 @@
 * key bindings
 * boxplot (r4ds: "diagrama de cajas ( _boxplot_ en inglés)"") MX: diagrama de caja y bigote 
 * pipes (r4ds: usa _pipes_ o Pipes; no traduce) MX: _pipes_
-* keyboard shortcut (r4ds: atajo del teclado) MX: atajo del teclado
+* keyboard shortcut (r4ds: atajo del teclado) MX: atajo del teclado o método abreviados de teclado
 * File (r4ds: "Archivo ( _File_)") MX: Archivo
 * New File (r4ds: "Nuevo Archivo ( _New File_ )") MX: Nuevo Archivo
 * backup (r4ds: respaldar) MX: respaldar
