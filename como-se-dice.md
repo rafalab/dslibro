@@ -75,4 +75,6 @@
 workspace
 access operator
 indexing/to index
+plot - gráfico
+scatterplot - diagrama de dispersión
 =======
