@@ -1,12 +1,16 @@
 | English term | definición | MX | ES |
 |--------------|------------|----|----|
-
 | add-ons | add-ons | complementos | complementos o plugins |
 | access operator |    | |
 | accessor |   | |
 | backup | respaldar | respaldar | respaldo o copia de seguridad |
+<<<<<<< HEAD
 | boxplot | diagrama de cajas ( _boxplot_ en inglés) | diagrama de caja y bigote | gráfico de | character strings | secuencia de caracteres | cadenas de caracteres | |
 caja |
+=======
+| boxplot | diagrama de cajas ( _boxplot_ en inglés) | diagrama de caja y bigote | gráfico de |
+| character strings | | cadenas de caracter | cadenas de caracteres | caja |
+>>>>>>> c4077b9282a2530d968b0653aa91fa794266924a
 | commands | órdenes y comandos ; the latter more popular | comando (singular) o comandos (plural) | comandos |
 | command | la del teclado | command o cmd | |
 | data streaming processing | | procesamiento continuo de datos | procesamiento de flujos de datos |
