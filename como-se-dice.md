@@ -1,6 +1,5 @@
 | English term | definición | MX | ES |
 |--------------|------------|----|----|
-
 | add-ons | add-ons | complementos | complementos o plugins |
 | access operator |    | |
 | accessor |   | |
