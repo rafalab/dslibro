@@ -4,11 +4,7 @@
 | access operator |    | |
 | accessor |   | |
 | backup | respaldar | respaldar | respaldo o copia de seguridad |
-<<<<<<< HEAD
-| boxplot | diagrama de cajas ( _boxplot_ en inglés) | diagrama de caja y bigote | gráfico de | character strings | secuencia de caracteres | cadenas de caracteres | |
-caja |
-=======
-| boxplot | diagrama de cajas ( _boxplot_ en inglés) | diagrama de caja y bigote | gráfico de |
+| boxplot | diagrama de cajas ( _boxplot_ en inglés) | diagrama de caja y bigote | gráfico de | character strings | secuencia de caracteres | cadenas de caracteres | | caja |
 | character strings | | cadenas de caracter | cadenas de caracteres | caja |
 | commands | órdenes y comandos ; the latter more popular | comando (singular) o comandos (plural) | comandos |
 | command | la del teclado | command o cmd | |
