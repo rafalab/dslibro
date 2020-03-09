@@ -5,14 +5,14 @@
 | access operator |    | |
 | accessor |   | |
 | backup | respaldar | respaldar | respaldo o copia de seguridad |
-| boxplot | diagrama de cajas ( _boxplot_ en inglés) | diagrama de caja y bigote | gráfico de | character strings | | cadenas de caracter | cadenas de caracteres |
+| boxplot | diagrama de cajas ( _boxplot_ en inglés) | diagrama de caja y bigote | gráfico de | character strings | secuencia de caracteres | cadenas de caracteres | |
 caja |
 | commands | órdenes y comandos ; the latter more popular | comando (singular) o comandos (plural) | comandos |
 | command | la del teclado | command o cmd | |
 | data streaming processing | | procesamiento continuo de datos | procesamiento de flujos de datos |
 | data wrangling | manejo/doma de datos | procesamiento de datos | procesamiento de datos |
 | data management | | manejo de datos | gestión de datos |
-| EDA | Análisis exploratorio de datos o EDA (por sus siglas n inglés exploratory data * analysis) | Análisis exploratorio de datos | |
+| EDA | Análisis exploratorio de datos o EDA (por sus siglas en inglés exploratory data * analysis) | Análisis exploratorio de datos | |
 | File | Archivo ( _File_) | Archivo | archivo o fichero |
 | functions | funciones | funciones | funciones o rutina |
 | indentation | | indentar | indentación |
@@ -21,7 +21,7 @@ caja |
 | key bindings | | | combinaciones de teclas |
 | keyboard shortcut | atajo del teclado | atajo del teclado | atajo de teclado |
 | machine learning | | machine learning o la traducción literal aprendizaje de máquina | [aprendizaje automático](http://portal.uned.es/portal/page?_pageid=93,61703783&_dad=portal&_schema=PORTAL&idAsignatura=71014023) |
-| motivating case studies || caso de estudio | |
+| motivating case studies || casos de estudio | |
 | motivating dataset | | conjunto de datos | |
 | New File | Nuevo Archivo ( _New File_ ) | Nuevo Archivo | nuevo archivo o nuevo fichero |
 | pipes | _pipes_ o Pipes |  _pipes_ | tuberías |
@@ -39,7 +39,7 @@ caja |
 | tidy data | datos ordenados | datos ordenados | datos limpios |
 | web-based | | en linea/disponible en la web | en la web |
 | web scraping | | no creo recordar una traducción para esto pero quizá se pueda usar "descarga/extracción de información en linea" | rastreo web |
-| workspace | espacion de trabajo? | |
+| workspace | espacio de trabajo | |
 
 
 
@@ -79,9 +79,9 @@ caja |
 * R software environment MX: ambiente de trabajo en R
 * R environment MX: ambiente de R/ambiente de trabajo
 * character strings*  MX: cadenas de caracter
-workspace
-access operator
-indexing/to index
-plot - gráfico
-scatterplot - diagrama de dispersión
+* workspace
+* access operator
+* indexing/to index
+* plot - gráfico
+* scatterplot - diagrama de dispersión
 =======
