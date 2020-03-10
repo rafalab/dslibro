@@ -5,7 +5,7 @@
 | access operator | as in, the access operator $ | | operador de acceso a |
 | accessor | por ej, "the accessor: $"  | |  |
 | backup | respaldar | respaldar | respaldo o copia de seguridad |
-| boxplot | diagrama de cajas ( _boxplot_ en inglés) | diagrama de caja y bigote | gráfico de caja|
+| boxplot | _boxplot_ en inglés | diagrama de caja y bigote | gráfico de | character strings | secuencia de caracteres | cadenas de caracteres | | caja |
 | character strings | | cadenas de caracter | cadenas de caracteres | secuencia de caracteres |
 | commands | órdenes y comandos ; the latter more popular | comando (singular) o comandos (plural) | comandos |
 | command | la del teclado | command o cmd | tecla de comando |
@@ -48,9 +48,8 @@
 | tibbles | tibbles | tibbles, no se traduce | |
 | tidy data | datos ordenados | datos ordenados | datos limpios/ordenados |
 | web-based | | en linea/disponible en la web | en la web |
-| web scraping | | no creo recordar una traducción para esto pero quizá se pueda usar "descarga/extracción de información en linea" | extracción de la web |
+| web scraping | | no creo recordar una traducción para esto pero quizá se pueda usar "descarga/extracción de información en linea" | extracción de la web, rastreo web |
 | workspace | espacio de trabajo | |
-
 
 
 ## Previous version 
