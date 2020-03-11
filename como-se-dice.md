@@ -33,6 +33,8 @@
 | motivating section | |  | sección |
 | output | | | salida/resultado |
 | New File | Nuevo Archivo ( _New File_ ) | Nuevo Archivo | nuevo archivo o nuevo fichero |
+| operators | as in "logical operators"| | 
+| output| "For the output, R has.." or computer output | |
 | pipes | _pipes_ o Pipes |  _pipes_ | tuberías |
 | plot | gráfico | | gráfico |
 | point-and-click | señalar/apuntar y hacer clic | apuntar y hacer click | [cliquear](https://www.fundeu.es/recomendacion/hacer-clic-clicar-y-cliquear-formas-validas-en-espanol) |
