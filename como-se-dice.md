@@ -4,6 +4,7 @@
 | access (verb) | as in, you access with $ | | acceder a |
 | access operator | as in, the access operator $ | | operador de acceso a |
 | accessor | por ej, "the accessor: $"  | |  |
+| arithmetic operators| | símbolos operaciones aritméticas| | 
 | backup | respaldar | respaldar | respaldo o copia de seguridad |
 | boxplot | _boxplot_ en inglés | diagrama de caja y bigote | gráfico de | character strings | secuencia de caracteres | cadenas de caracteres | | caja |
 | character strings | | cadenas de caracter | cadenas de caracteres | secuencia de caracteres |
@@ -26,6 +27,8 @@
 | K-nearest neighbors | | K-nearest neighbors o la traducción literal K vecinos más cercanos | K-vecinos mas cercanos |
 | key bindings | | | combinaciones de teclas |
 | keyboard shortcut | atajo del teclado | atajo del teclado | atajo de teclado |
+| logical vectores| | | 
+| logical operators| | | 
 | machine learning | | machine learning o la traducción literal aprendizaje de máquina | [aprendizaje automático](http://portal.uned.es/portal/page?_pageid=93,61703783&_dad=portal&_schema=PORTAL&idAsignatura=71014023) |
 | motivating | used as an adjetive, see below -- is it always omitted? (I think is not used much in Spanish) |  | 
 | motivating case studies || casos de estudio | |
@@ -41,6 +44,7 @@
 | R software environment | | ambiente de trabajo en R | entorno de R |
 | R environment | | ambiente de R/ambiente de trabajo | entorno de R |
 | random forests | | random forest | [árbol aleatorio](https://iartificial.net/random-forest-bosque-aleatorio)|
+| relational operators || símbolos de relación| |  
 | scatterplot || diagrama de dispersión ||
 | script | _scripts_ | script | script, archivo de procesamiento por lotes (en MSDOS, Unix/Linux, etc.) |
 | sofware | software | software | software |
