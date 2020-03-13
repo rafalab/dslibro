@@ -35,6 +35,7 @@
 | motivating dataset | | conjunto de datos | |
 | motivating section | |  | sección |
 | output | | | salida/resultado |
+
 | New File | Nuevo Archivo ( _New File_ ) | Nuevo Archivo | nuevo archivo o nuevo fichero |
 | operators | as in "logical operators"| | 
 | output| "For the output, R has.." or computer output | |
