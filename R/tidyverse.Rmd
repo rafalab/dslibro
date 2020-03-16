@@ -249,7 +249,7 @@ Tenga en cuenta que el _pipe_ funciona bien con funciones donde el primer argume
 
 ## Ejercicios
 
-1\. El _pipe_ `%>%` se puede usar para realizar operaciones secuencialmente sin tener que definir objetos intermedios. Comience redefiniendo asesinato ( _murder_ en inglés) para incluir la tasa y el rango.
+1\. El _pipe_ `%>%` se puede usar para realizar operaciones secuencialmente sin tener que definir objetos intermedios. Comience redefiniendo asesinatos ( _murders_ en inglés) para incluir la tasa y el rango.
 
 ```{r, eval=FALSE}
 murders <- mutate(murders, rate = total/ population * 100000,
@@ -264,7 +264,7 @@ rate < 1)
 select(my_states, state, rate, rank)
 ```
 
-El tubo `%>%` nos permite realizar ambas operaciones secuencialmente sin tener que definir una variable intermedia `my_states`. Por lo tanto, podríamos haber mutado y seleccionado en la misma línea de esta manera:
+El _pipe_ `%>%` nos permite realizar ambas operaciones secuencialmente sin tener que definir una variable intermedia `my_states`. Por lo tanto, podríamos haber mutado y seleccionado en la misma línea de esta manera:
 
 ```{r, eval=FALSE}
 mutate(murders, rate = total/ population * 100000,
@@ -272,11 +272,11 @@ rank = rank(-rate)) %>%
 select(state, rate, rank)
 ```
 
-Darse cuenta de `select` ya no tiene un _data frame_ como primer argumento. Se supone que el primer argumento es el resultado de la operación realizada justo antes de `%>%`.
+Observe que `select` ya no tiene un _data frame_ como primer argumento. Se supone que el primer argumento sea el resultado de la operación realizada justo antes de `%>%`.
 
-Repita el ejercicio anterior, pero ahora, en lugar de crear un nuevo objeto, muestre el resultado y solo incluya las columnas de estado, velocidad y rango. Usar una pipa `%>%` para hacer esto en una sola línea.
+Repita el ejercicio anterior, pero ahora, en lugar de crear un nuevo objeto, muestre el resultado y solo incluya las columnas de estado, velocidad y rango. Use un _pipe_ `%>%` para hacer esto en una sola línea.
 
-2\. Reiniciar `murders` a la tabla original usando `data(murders)`. Use una tubería para crear un nuevo _data frame_ llamado `my_states` que considera solo los estados del noreste u oeste que tienen una tasa de homicidios inferior a 1 y contiene solo las columnas de estado, tasa y rango. El _pipe_ también debe tener cuatro componentes separados por tres `%>%`. El código debería verse así:
+2\. Reinicie `murders` a la tabla original usando `data(murders)`. Use un _pipe_  para crear un nuevo _data frame_ llamado `my_states` que considera solo los estados del noreste u oeste que tienen una tasa de homicidios inferior a 1 y contiene solo las columnas de estado, tasa y rango. El _pipe_ también debe tener cuatro componentes separados por tres `%>%`. El código debería verse algo similar a lo siguiente:
 
 ```{r, eval=FALSE}
 my_states <- murders %>%
@@ -287,7 +287,7 @@ select SOMETHING
 
 ## Resumiendo datos
 
-Una parte importante del análisis exploratorio de datos es resumir los datos. La desviación promedio y estándar son dos ejemplos de estadísticas de resumen ampliamente utilizadas. A menudo se pueden obtener resúmenes más informativos dividiendo primero los datos en grupos. En esta sección, cubrimos dos nuevos verbos __dplyr__ que facilitan estos cálculos: `summarize` y `group_by`. Aprendemos a acceder a los valores resultantes utilizando el `pull` función.
+Una parte importante del análisis exploratorio de datos es resumir los datos. La desviación promedio y estándar son dos ejemplos de estadísticas de resumen ampliamente utilizadas. A menudo se pueden obtener resúmenes más informativos dividiendo primero los datos en grupos. En esta sección, cubrimos dos nuevos verbos de __dplyr__ que facilitan estos cálculos: `summarize` y `group_by`. Aprendemos a acceder a los valores resultantes utilizando el `pull` función.
 
 ```{r, message=FALSE, echo=FALSE}
 library(tidyverse)
@@ -295,7 +295,7 @@ library(tidyverse)
 
 ### `summarize` {#summarize}
 
-Los `summarize` la función __dplyr__ proporciona una forma de calcular estadísticas de resumen con código intuitivo y legible. Comenzamos con un ejemplo simple basado en alturas. los `heights` el conjunto de datos incluye las alturas y el sexo reportado por los estudiantes en una encuesta en clase.
+La función  `summarize`de __dplyr__ proporciona una forma de calcular estadísticas de resumen con código intuitivo y legible. Comenzamos con un ejemplo simple basado en alturas. El conjunto de datos `heights`  incluye las alturas y el sexo reportado por los estudiantes en una encuesta en clase.
 
 ```{r}
 library(dplyr)
@@ -312,16 +312,16 @@ summarize(average = mean(height), standard_deviation = sd(height))
 s
 ```
 
-Esto toma nuestra tabla de datos original como entrada, la filtra para mantener solo a las mujeres y luego produce una nueva tabla resumida con solo el promedio y la desviación estándar de las alturas. Podemos elegir los nombres de las columnas de la tabla resultante. Por ejemplo, arriba decidimos usar `average` y `standard_deviation`, pero podríamos haber usado otros nombres de la misma manera.
+Esto toma nuestra tabla de datos original como entrada, la filtra para mantener solo a las mujeres y luego produce [FIX:] una nueva summarized table/tabla resumida con solo el promedio y la desviación estándar de las alturas. Podemos elegir los nombres de las columnas de la tabla resultante. Por ejemplo, arriba decidimos usar `average` y `standard_deviation`, pero podríamos haber usado otros nombres de la misma manera.
 
-Porque la tabla resultante almacenada en `s` es un _data frame_, podemos acceder a los componentes con el descriptor de acceso `$`:
+Como la tabla resultante almacenada en `s` es un _data frame_, podemos acceder a los componentes con [FIX:] el accesor/el operador de acceso `$`:
 
 ```{r}
 s$average
 s$standard_deviation
 ```
 
-Como con la mayoría de las otras funciones __dplyr__, `summarize` conoce los nombres de las variables y podemos usarlos directamente. Entonces, dentro de la llamada al `summarize` función que escribimos `mean(height)`, la función accede a la columna con el nombre "altura" y luego calcula el promedio del vector numérico resultante. Podemos calcular cualquier otro resumen que opera en vectores y devuelve un solo valor. Por ejemplo, podemos agregar las alturas mediana, mínima y máxima de esta manera:
+Como con la mayoría de las otras funciones de __dplyr__, `summarize` conoce los nombres de las variables y podemos usarlas directamente. Entonces, dentro de la llamada a la función `summarize` escribimos `mean(height)`, la función accede a la columna con el nombre "altura" y luego calcula el promedio del vector numérico resultante. Podemos calcular cualquier otro resumen que opera en vectores y devuelve un solo valor. Por ejemplo, podemos agregar las alturas mediana, mínima y máxima de esta manera:
 
 ```{r}
 heights %>%
@@ -330,7 +330,7 @@ summarize(median = median(height), minimum = min(height),
 maximum = max(height))
 ```
 
-Podemos obtener estos tres valores con solo una línea usando el `quantile` función: por ejemplo, `quantile(x, c(0,0.5,1))` devuelve el mínimo (percentil 0), la mediana (percentil 50) y el máximo (percentil 100) del vector `x`. Sin embargo, si intentamos usar una función como esta que devuelve dos o más valores dentro `summarize`:
+Podemos obtener estos tres valores con solo una línea usando la función `quantile`: por ejemplo, `quantile(x, c(0,0.5,1))` devuelve el mínimo (percentil 0), la mediana (percentil 50) y el máximo (percentil 100) del vector `x`. Sin embargo, si intentamos usar una función como esta que devuelve dos o más valores dentro de `summarize`:
 
 ```{r, eval=FALSE}
 heights %>%
@@ -338,21 +338,21 @@ filter(sex == "Female") %>%
 summarize(range = quantile(height, c(0, 0.5, 1)))
 ```
 
-recibiremos un error: `Error: expecting result of length one, got : 2`. Con la función `summarize`, solo podemos llamar a funciones que devuelven un solo valor. En la sección \@ref(do), aprenderemos cómo lidiar con funciones que devuelven más de un valor.
+recibiremos un error: `Error: expecting result of length one, got : 2`. Con la función `summarize`, solo podemos llamar a funciones que devuelven un solo valor. En la sección \@ref(do), aprenderemos cómo [FIX:] how to deal with/trabajar/lidiar con funciones que devuelven más de un valor.
 
-Para otro ejemplo de cómo podemos usar el `summarize` función, calculemos la tasa promedio de asesinatos en los Estados Unidos. Recuerde que nuestra tabla de datos incluye asesinatos totales y el tamaño de la población para cada estado y ya hemos usado __dplyr__ para agregar una columna de índice de asesinatos:
+Para otro ejemplo de cómo podemos usar la función `summarize`, calculemos la tasa promedio de asesinatos en Estados Unidos. Recuerde que nuestra tabla de datos incluye asesinatos totales y el tamaño de la población para cada estado y ya hemos usado __dplyr__ para agregar una columna de índice de asesinatos:
 
 ```{r}
 murders <- murders %>% mutate(rate = total/population*100000)
 ```
 
-Recuerde que la tasa de asesinatos en EE. UU. Es **no** el promedio de las tasas de asesinatos estatales:
+Recuerde que la tasa de asesinatos en EE. UU. **no** es el promedio de las tasas de asesinatos estatales:
 
 ```{r}
 summarize(murders, mean(rate))
 ```
 
-Esto se debe a que en el cálculo anterior, los estados pequeños tienen el mismo peso que los grandes. La tasa de homicidios en los Estados Unidos es el número total de asesinatos en los Estados Unidos dividido por la población total de los Estados Unidos. Entonces el cálculo correcto es:
+Esto se debe a que en el cálculo anterior, los estados pequeños tienen el mismo peso que los grandes. La tasa de homicidios Estados Unidos es el número total de asesinatos en Estados Unidos dividido por la población total de Estados Unidos. Entonces el cálculo correcto es:
 
 ```{r}
 us_murder_rate <- murders %>%
@@ -364,21 +364,21 @@ Este cálculo cuenta estados más grandes proporcionalmente a su tamaño, lo que
 
 ### `pull`
 
-Los `us_murder_rate` el objeto definido anteriormente representa solo un número. Sin embargo, lo estamos almacenando en un _data frame_:
+El objeto `us_murder_rate` definido anteriormente representa solo un número. Sin embargo, lo estamos almacenando en un _data frame_:
 
 ```{r}
 class(us_murder_rate)
 ```
 
-ya que, como la mayoría de las funciones __dplyr__, `summarize` siempre devuelve un _data frame_.
+ya que, como la mayoría de las funciones de __dplyr__, `summarize` siempre devuelve un _data frame_.
 
-Esto podría ser problemático si queremos usar este resultado con funciones que requieren un valor numérico. Aquí mostramos un truco útil para acceder a los valores almacenados en los datos cuando se usan tuberías: cuando un objeto de datos se canaliza a ese objeto y se puede acceder a sus columnas usando el `pull` función. Para entender lo que queremos decir, eche un vistazo a esta línea de código:
+Esto podría ser problemático si queremos usar este resultado con funciones que requieren un valor numérico. Aquí mostramos un truco útil para acceder a los valores almacenados en los datos cuando usamos _pipes_: cuando un objeto de datos [FIX:] se canaliza/ _is piped_, ese objeto y sus columnas se pueden acceder usando la función `pull`. Para entender lo que queremos decir, considere esta línea de código:
 
 ```{r}
 us_murder_rate %>% pull(rate)
 ```
 
-Esto devuelve el valor en el `rate` columna de `us_murder_rate` haciéndolo equivalente a `us_murder_rate$rate`.
+Esto devuelve el valor en la columna `rate` de `us_murder_rate` haciéndolo equivalente a `us_murder_rate$rate`.
 
 Para obtener un número de la tabla de datos original con una línea de código, podemos escribir:
 
@@ -398,7 +398,7 @@ class(us_murder_rate)
 
 ### Agrupe y luego resuma con `group_by` {#group-by}
 
-Una operación común en la exploración de datos es dividir primero los datos en grupos y luego calcular resúmenes para cada grupo. Por ejemplo, podemos querer calcular la desviación promedio y estándar para las alturas de hombres y mujeres por separado. los `group_by` la función nos ayuda a hacer esto.
+Una operación común en la exploración de datos es dividir primero los datos en grupos y luego calcular resúmenes para cada grupo. Por ejemplo, podemos querer calcular la desviación promedio y estándar para las alturas de hombres y mujeres por separado. La función `group_by` nos ayuda a hacer esto.
 
 Si escribimos esto:
 
@@ -406,7 +406,7 @@ Si escribimos esto:
 heights %>% group_by(sex)
 ```
 
-El resultado no se ve muy diferente de `heights`, excepto que vemos `Groups: sex [2]` cuando imprimimos el objeto. Aunque no es inmediatamente obvio por su apariencia, ahora es un _data frame_ especial llamado __data frame_ agrupados_y funciones__dplyr__, en particular `summarize`, se comportará de manera diferente cuando actúe sobre este objeto. Conceptualmente, puede pensar en esta tabla como muchas tablas, con las mismas columnas pero no necesariamente el mismo número de filas, apiladas juntas en un objeto. Cuando resumimos los datos después de la agrupación, esto es lo que sucede:
+El resultado no se ve muy diferente de `heights`, excepto que vemos `Groups: sex [2]` cuando imprimimos el objeto. Aunque no es inmediatamente obvio por su apariencia, esto ahora es un _data frame_ especial llamado un __grouped data frame__, y las funciones de __dplyr__, en particular `summarize`, se comportarán de manera diferente cuando actúen sobre este objeto. Conceptualmente, puede pensar en esta tabla como muchas tablas, con las mismas columnas pero no necesariamente el mismo número de filas, apiladas juntas en un objeto. Cuando resumimos los datos después de la agrupación, esto es lo que sucede:
 
 ```{r}
 heights %>%
@@ -414,7 +414,7 @@ group_by(sex) %>%
 summarize(average = mean(height), standard_deviation = sd(height))
 ```
 
-Los `summarize` la función aplica el resumen a cada grupo por separado.
+La función `summarize` aplica el resumen a cada grupo por separado.
 
 Para otro ejemplo, calculemos la tasa media de asesinatos en las cuatro regiones del país:
 
@@ -424,9 +424,9 @@ group_by(region) %>%
 summarize(median_rate = median(rate))
 ```
 
-## Ordenar _data frames_
+## [FIX:] Ordenar _data frames_
 
-Al examinar un conjunto de datos, a menudo es conveniente ordenar la tabla por las diferentes columnas. Sabemos sobre el `order` y `sort` función, pero para ordenar tablas enteras, la función __dplyr__ `arrange` es útil. Por ejemplo, aquí ordenamos los estados por tamaño de población:
+Al examinar un conjunto de datos, a menudo es conveniente [FIX:] ordenar la tabla por las diferentes columnas/poner la tabla en orden según.... Conocemos las funciones `order` y `sort`, pero para ordenar tablas enteras, la función __dplyr__ `arrange` es útil. Por ejemplo, aquí ordenamos los estados por tamaño de población:
 
 ```{r}
 murders %>%
@@ -434,7 +434,7 @@ arrange(population) %>%
 head()
 ```
 
-Con `arrange` podemos decidir por qué columna ordenar. Para ver los estados por población, de menor a mayor, organizamos por `rate` en lugar:
+Con `arrange` podemos decidir por qué columna ordenar. Para ver los estados por población, de menor a mayor, organizamos según el `rate` :
 
 ```{r}
 murders %>%
@@ -442,16 +442,16 @@ arrange(rate) %>%
 head()
 ```
 
-Tenga en cuenta que el comportamiento predeterminado es ordenar en orden ascendente. En __dplyr__, la función `desc` transforma un vector para que esté en orden descendente. Para ordenar la tabla en orden descendente, podemos escribir:
+Tenga en cuenta que el comportamiento por defecto es ordenar en orden ascendente. En __dplyr__, la función `desc` transforma un vector para que esté en orden descendente. Para ordenar la tabla en orden descendente, podemos escribir:
 
 ```{r, eval=FALSE}
 murders %>%
 arrange(desc(rate))
 ```
 
-### Clasificación anidada
+### _Nested sorting_
 
-Si estamos ordenando por una columna con empates, podemos usar una segunda columna para romper el empate. Del mismo modo, se puede usar una tercera columna para romper los lazos entre la primera y la segunda, y así sucesivamente. Aquí ordenamos por `region`, luego dentro de la región ordenamos por índice de asesinatos:
+Si estamos [FIX:] ordenando una columna con empates, podemos usar una segunda columna para romper el empate. Del mismo modo, se puede usar una tercera columna para romper los lazos entre la primera y la segunda, y así sucesivamente. Aquí ordenamos por `region`, luego dentro de la región ordenamos por tasa de asesinatos:
 
 ```{r}
 murders %>%
@@ -460,28 +460,27 @@ head()
 ```
 
 
-### La parte superior $n$
+### [FIX:] La parte superior $n$/The top 
 
-En el código anterior, hemos usado la función `head` para evitar que la página se llene con todo el conjunto de datos. Si queremos ver una mayor proporción, podemos usar el `top_n` función. Esta función toma un _data frame_ como primer argumento, el número de filas para mostrar en el segundo y la variable para filtrar en el tercero. Aquí hay un ejemplo de cómo ver las 5 filas superiores:
+En el código anterior, usamos la función `head` para evitar que la página se llene con todo el conjunto de datos. Si queremos ver una mayor proporción, podemos usar la función`top_n`. Esta función toma un _data frame_ como primer argumento, el número de filas para mostrar en el segundo y la variable para filtrar en el tercero. Aquí hay un ejemplo de cómo ver las 5 filas superiores:
 
 ```{r}
 murders %>% top_n(5, rate)
 ```
 
-Tenga en cuenta que las filas no están ordenadas por `rate`, solo filtrado. Si queremos ordenar, necesitamos usar `arrange`.
-Tenga en cuenta que si el tercer argumento se deja en blanco, `top_n`, filtra por la última columna.
+Tenga en cuenta que las filas no están [FIX:] ordenadas por `rate`, solo filtradas. Si queremos ordenar, necesitamos usar `arrange`. Recuerden que si el tercer argumento se deja en blanco, `top_n` filtra por la última columna.
 
 
 ## Ejercicios
 
-Para estos ejercicios, utilizaremos los datos de la encuesta recopilada por el Centro Nacional de Estadísticas de Salud de los Estados Unidos (NCHS). Este centro ha realizado una serie de encuestas de salud y nutrición desde la década de 1960. A partir de 1999, alrededor de 5,000 individuos de todas las edades han sido entrevistados cada año y completan el componente de examen de salud de la encuesta. Parte de los datos está disponible a través del paquete __NHANES__. Una vez que instale el paquete __NHANES__, puede cargar los datos de esta manera:
+Para estos ejercicios, utilizaremos los datos de la encuesta recopilada por el Centro Nacional de Estadísticas de Salud de Estados Unidos (NCHS, por sus siglas en inglés). Este centro ha realizado una serie de encuestas de salud y nutrición desde la década de 1960. A partir de 1999, alrededor de 5,000 individuos de todas las edades han sido entrevistados cada año y completan el componente de examen de salud de la encuesta. Parte de los datos está disponible a través del paquete __NHANES__. Una vez que instale el paquete __NHANES__, puede cargar los datos de esta manera:
 
 ```{r}
 library(NHANES)
 data(NHANES)
 ```
 
-Los datos __NHANES__ tienen muchos valores faltantes. Recuerde que la función de resumen principal en R devolverá `NA` si alguna de las entradas del vector de entrada es un `NA`. Aquí hay un ejemplo:
+[FIX:] Los datos __NHANES__ tienen muchos valores faltantes. Recuerde que la función de resumen principal/main summarization function en R devolverá `NA` si alguna de las entradas del vector de entrada es un `NA`. Aquí hay un ejemplo:
 
 ```{r}
 library(dslabs)
@@ -490,7 +489,7 @@ mean(na_example)
 sd(na_example)
 ```
 
-Ignorar el `NA` s podemos usar el `na.rm` argumento:
+Para ignorar los `NA`s podemos usar el argumento `na.rm`:
 
 ```{r}
 mean(na_example, na.rm = TRUE)
@@ -499,59 +498,59 @@ sd(na_example, na.rm = TRUE)
 
 Exploremos ahora los datos de NHANES.
 
-1\. Le proporcionaremos algunos datos básicos sobre la presión arterial. Primero, seleccionemos un grupo para establecer el estándar. Utilizaremos hembras de 20 a 29 años. `AgeDecade` es una variable categórica con estas edades. Tenga en cuenta que la categoría está codificada como "20-29", ¡con un espacio al frente! ¿Cuál es la desviación promedio y estándar de la presión arterial sistólica como se guarda en el `BPSysAve` ¿variable? Guárdelo en una variable llamada `ref`.
+1\. Le proporcionaremos algunos datos básicos sobre la presión arterial. Primero, seleccionemos un grupo para establecer el estándar. Utilizaremos hembras de 20 a 29 años. `AgeDecade` es una variable categórica con estas edades. Tenga en cuenta que la categoría está codificada como "20-29", ¡con un espacio al frente! [FIX:] ¿Cuál es la desviación promedio y estándar de la presión arterial sistólica como se guarda en el variable `BPSysAve`? Guárdela en una variable llamada `ref`.
 
-Sugerencia: uso `filter` y `summarize` y usa el `na.rm = TRUE` argumento al calcular el promedio y la desviación estándar. También puede filtrar los valores de NA utilizando `filter`.
+Sugerencia: use `filter` y `summarize` y usa el argumento  `na.rm = TRUE` al calcular el promedio y la desviación estándar. También puede filtrar los valores de NA utilizando `filter`.
 
 
-2\. Usando una tubería, asigne el promedio a una variable numérica `ref_avg`. Sugerencia: use el código similar al anterior y luego `pull`.
+2\. Usando un _pipe_, asigne el promedio a una variable numérica `ref_avg`. Sugerencia: use el código similar al anterior y luego `pull`.
 
 
 3\. Ahora informe los valores mínimo y máximo para el mismo grupo.
 
 
-4\. Calcule el promedio y la desviación estándar para las mujeres, pero para cada grupo de edad por separado en lugar de una década seleccionada como en la pregunta 1. Tenga en cuenta que los grupos de edad se definen por `AgeDecade`. Sugerencia: en lugar de filtrar por edad y género, filtre por `Gender` y luego usar `group_by`.
+4\. Calcule el promedio y la desviación estándar para las mujeres, pero para cada grupo de edad por separado en lugar de una década seleccionada como en la pregunta 1. Tenga en cuenta que los grupos de edad se definen por `AgeDecade`. Sugerencia: en lugar de filtrar por edad y género, filtre por `Gender` y luego use `group_by`.
 
 5\. Repita el ejercicio 4 para hombres.
 
-6\. De hecho, podemos combinar ambos resúmenes para los ejercicios 4 y 5 en una línea de código. Esto es porque `group_by` nos permite agrupar por más de una variable. Obtenga una gran tabla resumen usando `group_by(AgeDecade, Gender)`.
+6\. Podemos combinar ambos resúmenes para los ejercicios 4 y 5 en una línea de código. Esto es porque `group_by` nos permite agrupar por más de una variable. Obtenga una gran tabla de resumen usando `group_by(AgeDecade, Gender)`.
 
-7\. Para los hombres entre las edades de 40-49, compare la presión arterial sistólica a través de la raza como se informa en el `Race1` variable. Ordene la tabla resultante de la presión arterial sistólica promedio más baja a más alta.
+7\. Para los hombres entre las edades de 40-49, compare la presión arterial sistólica según raza como [FIX:] se informa en el variable `Race1`. [FIX:] Ordene la tabla resultante de presión arterial sistólica promedio de más baja a más alta.
 
 
 
-## Tibbles
+## _Tibbles_
 
-Los datos ordenados deben almacenarse en _data frames_. Introdujimos el _data frame_ en la Sección \@ref(data-frames) y he estado usando el `murders` _data frame_ en todo el libro. En la sección \@ref(group-by) presentamos el `group_by` función, que permite estratificar datos antes de calcular estadísticas resumidas. Pero, ¿dónde se almacena la información del grupo en el _data frame_?
+Los datos _tidy_ deben almacenarse en _data frames_. Discutimos el _data frame_ en la Sección \@ref(data-frames) y hemos estado usando el _data frame_ `murders` en todo el libro. En la sección \@ref(group-by) presentamos la función `group_by`, que permite estratificar datos antes de calcular estadísticas de resumen. Pero, ¿dónde se almacena la información del grupo en el _data frame_?
 
 ```{r}
 murders %>% group_by(region)
 ```
 
-Tenga en cuenta que no hay columnas con esta información. Pero, si observa de cerca la salida anterior, verá la línea `A tibble` seguido por dimensiones. Podemos aprender la clase del objeto devuelto usando:
+Observen que no hay columnas con esta información. Pero, si estudia de cerca [FIX:] al output/la salida anterior, verá la línea `A tibble` seguida por dimensiones. Podemos aprender la clase del objeto devuelto usando:
 
 ```{r}
 murders %>% group_by(region) %>% class()
 ```
 
-Los `tbl`, pronunciado tibble, es un tipo especial de _data frame_. Las funciones `group_by` y `summarize` siempre devuelve este tipo de _data frame_. los `group_by` la función devuelve un tipo especial de `tbl`, el `grouped_df`. Diremos más sobre esto más adelante. Por coherencia, los verbos de manipulación __dplyr__ ( `select`, `filter`, `mutate` y `arrange`) preservar la clase de la entrada: si reciben un _data frame_ regular, devuelven un _data frame_ regular, mientras que si reciben un tibble, devuelven un tibble. Pero los tibbles son el formato preferido en el _tidyverse_ y, como resultado, las funciones _tidyverse_ que producen un _data frame_ desde cero devuelven un tibble. Por ejemplo, en el capítulo \@ref(importing-data) veremos que las funciones _tidyverse_ usadas para importar datos crean tibbles.
+El `tbl`,[FIX:]  (pronunciado "ti-bel" en inglés), es un tipo especial de _data frame_. Las funciones `group_by` y `summarize` siempre devuelven este tipo de _data frame_. La función `group_by` devuelve un tipo especial de `tbl`, el `grouped_df`. Diremos más sobre esto más adelante. Por coherencia, los verbos de manipulación __dplyr__ ( `select`, `filter`, `mutate` y `arrange`) preservan la clase del [FIX:] input: si reciben un _data frame_ regular, devuelven un _data frame_ regular, mientras que si reciben un _tibble_, devuelven un tibble. Pero los _tibbles_ son el formato preferido en el _tidyverse_ y, como resultado, las funciones _tidyverse_ que producen un _data frame_ desde cero devuelven un _tibble_. Por ejemplo, en el capítulo \@ref(importing-data) veremos que las funciones _tidyverse_ usadas para importar datos crean _tibbles_.
 
-Los tibbles son muy similares a los _data frames_. De hecho, puede pensar en ellos como una versión moderna de _data frames_. Sin embargo, hay tres diferencias importantes que describiremos en el siguiente.
+Los _tibbles_ son muy similares a los _data frames_. De hecho, puede pensar en ellos como una versión moderna de _data frames_. Sin embargo, hay tres diferencias importantes que describiremos a continuación.
 
 
-### Tibbles se muestran mejor
+### Los _tibbles_ se muestran/presentan mejor/display better [FIX:]
 
-El método de impresión para tibbles es más legible que el de un _data frame_. Para ver esto, compare los resultados de escribir `murders` y la salida de asesinatos si lo convertimos en un tibble. Podemos hacer esto usando `as_tibble(murders)`. Si usa RStudio, la salida para un tibble se ajusta al tamaño de su ventana. Para ver esto, cambie el ancho de su consola R y observe cómo se muestran más/ menos columnas.
+El método de impresión para _tibbles_ es más legible que el de un _data frame_. Para ver esto, compare los resultados de escribir `murders` y [FIX:] el output/el resultaod la salida de asesinatos si lo convertimos en un _tibble_. Podemos hacer esto usando `as_tibble(murders)`. Si usa RStudio, la salida para un _tibble_ se ajusta al tamaño de su ventana. Para ver esto, cambie el ancho de su consola R y observe cómo se muestran más/ menos columnas.
 
-### Los subconjuntos de tibbles son tibbles
+### Los subconjuntos de _tibbles_ son _tibbles_
 
-Si subconjuntos las columnas de un _data frame_, puede recuperar un objeto que no es un _data frame_, como un vector o escalar. Por ejemplo:
+Si creamos subconjuntos de las columnas de un _data frame_, puede que le devuelvan un objeto que no es un _data frame_, como un vector o escalar. Por ejemplo:
 
 ```{r}
 class(murders[,4])
 ```
 
-no es un _data frame_. Con tibbles esto no sucede:
+no es un _data frame_. Con _tibbles_ esto no sucede:
 
 ```{r}
 class(as_tibble(murders)[,4])
@@ -559,13 +558,13 @@ class(as_tibble(murders)[,4])
 
 Esto es útil en _tidyverse_ ya que las funciones requieren _data frames_ como entrada.
 
-Con tibbles, si desea acceder al vector que define una columna y no recuperar un _data frame_, debe usar el descriptor de acceso `$`:
+Con _tibbles_, si desea acceder al vector que define una columna y no recuperar un _data frame_, debe usar el descriptor de acceso `$`:
 
 ```{r}
 class(as_tibble(murders)$population)
 ```
 
-Una característica relacionada es que tibbles le dará una advertencia si intenta acceder a una columna que no existe. Si escribimos accidentalmente `Population` en lugar de `population` esta:
+Una característica relacionada es que _tibbles_ le dará una advertencia si intenta acceder a una columna que no existe. Si escribimos accidentalmente `Population` en lugar de `population` esta:
 
 ```{r}
 murders$Population
@@ -580,20 +579,20 @@ as_tibble(murders)$Population
 
 ### Tibbles puede tener entradas complejas
 
-Si bien las columnas del _data frame_ deben ser vectores de números, cadenas o valores lógicos, los tibbles pueden tener objetos más complejos, como listas o funciones. Además, podemos crear tibbles con funciones:
+Si bien las columnas del _data frame_ deben ser vectores de números, cadenas o valores lógicos, los _tibbles_ pueden tener objetos más complejos, como listas o funciones. Además, podemos crear _tibbles_ con funciones:
 
 ```{r}
 tibble(id = c(1, 2, 3), func = c(mean, median, sd))
 ```
 
 
-### Tibbles se pueden agrupar
+### _tibbles_ se pueden agrupar
 
-La función `group_by` devuelve un tipo especial de tibble: un tibble agrupado. Esta clase almacena información que le permite saber qué filas están en qué grupos. Las funciones _tidyverse_, en particular la `summarize` función, son conscientes de la información del grupo.
+La función `group_by` devuelve un tipo especial de _tibble_: un _tibble_ agrupado. Esta clase almacena información que le permite saber qué filas están en qué grupos. Las funciones _tidyverse_, en particular la `summarize` función, son conscientes de la información del grupo.
 
 ### Crear un tibble usando `tibble` en lugar de `data.frame`
 
-A veces es útil para nosotros crear nuestros propios _data frames_. Para crear un _data frame_ en formato tibble, puede hacerlo utilizando el `tibble` función.
+A veces es útil para nosotros crear nuestros propios _data frames_. Para crear un _data frame_ en formato _tibble_, puede hacerlo utilizando el `tibble` función.
 
 ```{r}
 grades <- tibble(names = c("John", "Juan", "Jean", "Yao"),
@@ -601,7 +600,7 @@ exam_1 = c(95, 80, 90, 85),
 exam_2 = c(90, 85, 85, 90))
 ```
 
-Tenga en cuenta que la base R (sin paquetes cargados) tiene una función con un nombre muy similar, `data.frame`, que se puede usar para crear un _data frame_ regular en lugar de un tibble. Otra diferencia importante es que por defecto `data.frame` coacciona los caracteres en factores sin proporcionar una advertencia o mensaje:
+Tenga en cuenta que la base R (sin paquetes cargados) tiene una función con un nombre muy similar, `data.frame`, que se puede usar para crear un _data frame_ regular en lugar de un _tibble_. Otra diferencia importante es que por defecto `data.frame` coacciona los caracteres en factores sin proporcionar una advertencia o mensaje:
 
 ```{r}
 grades <- data.frame(names = c("John", "Juan", "Jean", "Yao"),
@@ -619,7 +618,7 @@ stringsAsFactors = FALSE)
 class(grades$names)
 ```
 
-Para convertir un _data frame_ normal en un tibble, puede usar el `as_tibble` función.
+Para convertir un _data frame_ normal en un _tibble_, puede usar el `as_tibble` función.
 
 ```{r}
 as_tibble(grades) %>% class()
@@ -661,7 +660,7 @@ En la siguiente sección, veremos otras instancias en las que usar el `.` es út
 
 ## `do` {#do}
 
-Las funciones _tidyverse_ saben interpretar tibbles agrupados. Además, para facilitar la secuencia de comandos a través de el _pipe_ `%>%`, las funciones _tidyverse_ devuelven constantemente _data frames_, ya que esto asegura que la salida de una función sea aceptada como la entrada de otra. Pero la mayoría de las funciones R no reconocen los tibbles agrupados ni devuelven _data frames_. los `quantile` la función es un ejemplo que describimos en la Sección \@ref(summarize). Los `do` la función sirve como puente entre las funciones R, como `quantile` y el _tidyverse_. los `do` la función comprende tibbles agrupados y siempre devuelve un _data frame_.
+Las funciones _tidyverse_ saben interpretar _tibbles_ agrupados. Además, para facilitar la secuencia de comandos a través de el _pipe_ `%>%`, las funciones _tidyverse_ devuelven constantemente _data frames_, ya que esto asegura que la salida de una función sea aceptada como la entrada de otra. Pero la mayoría de las funciones R no reconocen los _tibbles_ agrupados ni devuelven _data frames_. los `quantile` la función es un ejemplo que describimos en la Sección \@ref(summarize). Los `do` la función sirve como puente entre las funciones R, como `quantile` y el _tidyverse_. los `do` la función comprende _tibbles_ agrupados y siempre devuelve un _data frame_.
 
 En la sección \@ref(summarize), notamos que si intentamos usar `quantile` para obtener el mínimo, la mediana y el máximo en una llamada, recibiremos un error: `Error: expecting result of length one, got : 2`.
 
@@ -691,7 +690,7 @@ group_by(sex) %>%
 my_summary
 ```
 
-Pero esto no es lo que queremos. Queremos un resumen para cada sexo y el código devolvió solo un resumen. Esto es porque `my_summary` no es parte del _tidyverse_ y no sabe cómo manejar los tibbles agrupados. `do` hace esta conexión:
+Pero esto no es lo que queremos. Queremos un resumen para cada sexo y el código devolvió solo un resumen. Esto es porque `my_summary` no es parte del _tidyverse_ y no sabe cómo manejar los _tibbles_ agrupados. `do` hace esta conexión:
 
 ```{r}
 heights %>%
@@ -699,7 +698,7 @@ group_by(sex) %>%
 do(my_summary(.))
 ```
 
-Tenga en cuenta que aquí necesitamos usar el operador de punto. El tibble creado por `group_by` se canaliza a `do`. Dentro de la llamada a `do`, el nombre de este tibble es `.` y queremos enviarlo a `my_summary`. Si no usa el punto, entonces `my_summary` no tiene ningún argumento y devuelve un error que nos dice que `argument "dat"` está perdido. Puede ver el error escribiendo:
+Tenga en cuenta que aquí necesitamos usar el operador de punto. El _tibble_ creado por `group_by` se canaliza a `do`. Dentro de la llamada a `do`, el nombre de este _tibble_ es `.` y queremos enviarlo a `my_summary`. Si no usa el punto, entonces `my_summary` no tiene ningún argumento y devuelve un error que nos dice que `argument "dat"` está perdido. Puede ver el error escribiendo:
 
 ```{r, eval=FALSE}
 heights %>%
@@ -816,9 +815,9 @@ b. `murders` está en formato ordenado y se almacena en un _data frame_.
 c. `murders` no está en formato ordenado y se almacena en un tibble.
 d. `murders` no está en formato ordenado y se almacena en un _data frame_.
 
-2\. Utilizar `as_tibble` para convertir el `murders` tabla de datos en un tibble y guárdelo en un objeto llamado `murders_tibble`.
+2\. Utilizar `as_tibble` para convertir el `murders` tabla de datos en un _tibble_ y guárdelo en un objeto llamado `murders_tibble`.
 
-3\. Utilizar el `group_by` función para convertir asesinatos en un tibble que se agrupa por región.
+3\. Utilizar el `group_by` función para convertir asesinatos en un _tibble_ que se agrupa por región.
 
 4\. Escriba el código _tidyverse_ que sea equivalente a este código:
 

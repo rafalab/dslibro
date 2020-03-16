@@ -34,8 +34,8 @@
 | motivating case studies || casos de estudio | |
 | motivating dataset | | conjunto de datos | |
 | motivating section | |  | sección |
+|operator | the != operator| | |
 | output | | | salida/resultado |
-
 | New File | Nuevo Archivo ( _New File_ ) | Nuevo Archivo | nuevo archivo o nuevo fichero |
 | operators | as in "logical operators"| | 
 | output| "For the output, R has.." or computer output | |
@@ -50,13 +50,14 @@
 | script | _scripts_ | script | script, archivo de procesamiento por lotes (en MSDOS, Unix/Linux, etc.) |
 | sofware | software | software | software |
 | software engineer | ingeniero de programa, ingeniero de software | ingeniero de software | ingeniero de software, ingeniero informático |
+| sorting/to sort| as in, "to sort" or sorting data frames" | ||
 | Subsetting | as in, subsetting with logicals| | (crear un) subconjunto |
 | TABS | pestañas | pestañas | pestañas |
 | tibbles | tibbles | tibbles, no se traduce | |
 | tidy data | datos ordenados | datos ordenados | datos limpios/ordenados |
 | web-based | | en linea/disponible en la web | en la web |
 | web scraping | | no creo recordar una traducción para esto pero quizá se pueda usar "descarga/extracción de información en linea" | extracción de la web, rastreo web |
-| workspace | espacio de trabajo | |
+| workspace | espacio de trabajo | ||
 
 
 ## Previous version 
