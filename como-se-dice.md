@@ -4,7 +4,7 @@
 | access (verb) | as in, you access with $ | | acceder a |
 | access operator | as in, the access operator $ | | operador de acceso a |
 | accessor | por ej, "the accessor: $"  | |  |
-| arithmetic operators| | símbolos operaciones aritméticas| | 
+| arithmetic operators| | símbolos de operaciones aritméticas| | 
 | backup | respaldar | respaldar | respaldo o copia de seguridad |
 | boxplot | _boxplot_ en inglés | diagrama de caja y bigote | gráfico de | character strings | secuencia de caracteres | cadenas de caracteres | | caja |
 | character strings | | cadenas de caracter | cadenas de caracteres | secuencia de caracteres |
