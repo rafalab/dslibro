@@ -2,11 +2,11 @@
 |--------------|------------|----|----|
 | add-ons | add-ons | complementos | complementos o plugins |
 | access (verb) | as in, you access with $ | | acceder a |
-| access operator | as in, the access operator $ | | operador de acceso a |
-| accessor | por ej, "the accessor: $"  | |  |
+| __access operator__ | as in, the access operator $ | | operador de acceso a |
+| __accessor__ | por ej, "the accessor: $"  | |  |
 | arithmetic operators| | símbolos de operaciones aritméticas| | 
 | backup | respaldar | respaldar | respaldo o copia de seguridad |
-| boxplot | _boxplot_ en inglés | diagrama de caja y bigote | gráfico de | character strings | secuencia de caracteres | cadenas de caracteres | | caja |
+| boxplot |  | diagrama de caja y bigote | gráfico de | character strings | secuencia de caracteres | cadenas de caracteres | | caja |
 | character strings | | cadenas de caracter | cadenas de caracteres | secuencia de caracteres |
 | commands | órdenes y comandos ; the latter more popular | comando (singular) o comandos (plural) | comandos |
 | command | la del teclado | command o cmd | tecla de comando |
@@ -14,6 +14,7 @@
 | data types | | tipos de datos | tipos de datos|
 | data wrangling | manejo/doma de datos | procesamiento de datos | procesamiento de datos |
 | data management | | manejo de datos | gestión de datos |
+| __(to) debug__ | for ex, "makes it more difficult to debug"|  |  |
 | EDA | Análisis exploratorio de datos o EDA (por sus siglas en inglés exploratory data * analysis) | Análisis exploratorio de datos | Análisis exploratorio de datos |
 | File | Archivo ( _File_) | Archivo | archivo o fichero |
 | function call | funciones | | llamadas a funciones |
@@ -21,26 +22,26 @@
 | indentation | | indentar | indentación |
 | index (verb) | as in, allows us to index vectors |  | poner/asignar en un índice (los vectores) |
 | Indexing | |  | indexación |
-| input | por ej, 'takes a vector as input'| | entrada |
-| input | por ej, 'input vector| | (vector de) entrada |  
+| __input__ | por ej, 'takes a vector as input'| | entrada |
+| __input__ | por ej, 'input vector| | (vector de) entrada |  
 | Integrated Development Environment (IDE) | | ambiente integrado de desarrollo o en ocasiones no se traduce | IDE |
 | K-nearest neighbors | | K-nearest neighbors o la traducción literal K vecinos más cercanos | K-vecinos mas cercanos |
 | key bindings | | | combinaciones de teclas |
 | keyboard shortcut | atajo del teclado | atajo del teclado | atajo de teclado |
-| logical vectores| | | 
-| logical operators| | | 
+| __logical vectores__| | | 
+| __logical operators__| | | 
 | machine learning | | machine learning o la traducción literal aprendizaje de máquina | [aprendizaje automático](http://portal.uned.es/portal/page?_pageid=93,61703783&_dad=portal&_schema=PORTAL&idAsignatura=71014023) |
-| motivating | used as an adjetive, see below -- is it always omitted? (I think is not used much in Spanish) |  | 
+| __motivating__ | used as an adjetive, see below -- is it always omitted? |  | 
 | motivating case studies || casos de estudio | |
 | motivating dataset | | conjunto de datos | |
 | motivating section | |  | sección |
-|operator | the != operator| | |
-| output | | | salida/resultado? |
 | New File | Nuevo Archivo ( _New File_ ) | Nuevo Archivo | nuevo archivo o nuevo fichero |
-| operators | as in "logical operators"| | 
-| output| for example "the output for a tibble"" | |
+| __operator__ | the != operator| | |
+| __operators__ | as in "logical operators" or "the dot operator| | |
+| __output__ | | | salida/resultado? podemos no traducir? |
 | pipes | _pipes_ o Pipes |  _pipes_ | tuberías |
-| plot | gráfico | | gráfico |
+| __plot__ | gráfico | | gráfico |
+| __(to) plot__ |  | |  |
 | point-and-click | señalar/apuntar y hacer clic | apuntar y hacer click | [cliquear](https://www.fundeu.es/recomendacion/hacer-clic-clicar-y-cliquear-formas-validas-en-espanol) |
 | R software environment | | ambiente de trabajo en R | entorno de R |
 | R environment | | ambiente de R/ambiente de trabajo | entorno de R |
@@ -53,11 +54,11 @@
 | sorting/to sort| as in, "to sort" or sorting data frames" | ||
 | Subsetting | as in, subsetting with logicals| | (crear un) subconjunto |
 | TABS | pestañas | pestañas | pestañas |
-| tibbles | tibbles | tibbles, no se traduce | |
-| tidy data | datos ordenados | datos ordenados | datos limpios/ordenados |
+| tidy data | datos ordenados; data _tidy_? | datos ordenados | datos limpios/ordenados |
+| tidy format | en formato _tidy_ o en formato ordenado? |  |  |
 | web-based | | en linea/disponible en la web | en la web |
 | web scraping | | no creo recordar una traducción para esto pero quizá se pueda usar "descarga/extracción de información en linea" | extracción de la web, rastreo web |
-| workspace | espacio de trabajo | ||
+| __workspace__ | espacio de trabajo | ||
 
 
 ## Previous version 
