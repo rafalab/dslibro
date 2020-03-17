@@ -40,6 +40,7 @@
 | __operators__ | as in "logical operators" or "the dot operator| | |
 | __output__ | | | salida/resultado? podemos no traducir? |
 | pipes | _pipes_ o Pipes |  _pipes_ | tuberías |
+| __(to) pipe__ | por ej, "We can continue to pipe values along"" |  |  |
 | __plot__ | gráfico | | gráfico |
 | __(to) plot__ |  | |  |
 | point-and-click | señalar/apuntar y hacer clic | apuntar y hacer click | [cliquear](https://www.fundeu.es/recomendacion/hacer-clic-clicar-y-cliquear-formas-validas-en-espanol) |

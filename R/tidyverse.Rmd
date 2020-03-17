@@ -1,18 +1,18 @@
 # El _tidyverse_ {#tidyverse}
 
-Hasta ahora hemos estado manipulando vectores [FIX:] reordenándolos y creando subconjuntos mediante la indexación. Sin embargo, una vez comencemos los análisis más avanzados, la unidad preferida para el almacenamiento de datos no es el vector sino el _data frame_. En este capítulo aprenderemos a trabajar directamente con _data frames_, que facilitan enormemente la organización de la información. Utilizaremos _data frames_ para la mayoría de este libro. Nos enfocaremos en un formato de datos específico denominado _tidy_ y en una colección específica de paquetes que son particularmente útiles para trabajar con data _tidy_ que se denomina el _tidyverse_.
+Hasta ahora hemos estado manipulando vectores reordenándolos y creando subconjuntos mediante la indexación. Sin embargo, una vez comencemos los análisis más avanzados, la unidad preferida para el almacenamiento de datos no es el vector sino el _data frame_. En este capítulo aprenderemos a trabajar directamente con _data frames_, que facilitan enormemente la organización de la información. Utilizaremos _data frames_ para la mayoría de este libro. Nos enfocaremos en un formato de datos específico denominado _tidy_ y en una colección específica de paquetes que son particularmente útiles para trabajar con data _tidy_ que se denomina el _tidyverse_.
 
-Podemos cargar todos los paquetes _tidyverse_ a la vezal instalar y cargar el paquete __tidyverse__:
+Podemos cargar todos los paquetes _tidyverse_ a la vez al instalar y cargar el paquete __tidyverse__:
 
 ```{r, message=FALSE, warning=FALSE}
 library(tidyverse)
 ```
 
-Aprenderemos cómo implementar el enfoque _tidyverse_ a lo largo del libro, pero antes de profundizar en los detalles, en este capítulo presentamos algunas de las funciones _tidyverse_ más utilizadas, comenzando con el paquete __dplyr__ para manipular _data frames_ y el paquete __purrr__ para trabajar con funciones. Tengan en cuenta que _tidyverse_ también incluye [FIX:] un paquete de gráficos/graphing package, __ggplot2__, que presentaremos más adelante en el Capítulo \@ref(ggplot2) en la parte de visualización de datos del libro; el paquete __readr__ discutido en el Capítulo \@ref(importing-data); y muchos otros. En este capítulo, primero presentamos [FIX:] el concepto de datos ordenados (o _tidy data_ en inglés) y luego demostramos cómo usamos el _tidyverse_ para trabajar con _data frames_ en este formato.
+Aprenderemos cómo implementar el enfoque _tidyverse_ a lo largo del libro, pero antes de profundizar en los detalles, en este capítulo presentamos algunas de las funciones _tidyverse_ más utilizadas, comenzando con el paquete __dplyr__ para manipular _data frames_ y el paquete __purrr__ para trabajar con funciones. Tengan en cuenta que _tidyverse_ también incluye un paquete para graficar, __ggplot2__, que presentaremos más adelante en el Capítulo \@ref(ggplot2) en la parte de visualización de datos del libro; el paquete __readr__ discutido en el Capítulo \@ref(importing-data); y muchos otros. En este capítulo, primero presentamos el concepto de data _tidy_ y luego demostramos cómo usamos el _tidyverse_ para trabajar con _data frames_ en este formato.
 
-## Datos ordenados {#tidy-data}
+## Data _tidy_ {#tidy-data}
 
-[FIX:]  Decimos que una tabla de datos está en formato ordenado ( _tidy_ en inglés) si cada fila representa una observación y las columnas representan las diferentes variables disponibles para cada una de estas observaciones. El conjunto de datos `murders` es un ejemplo de un _data frame_ ordenado.
+Decimos que una tabla de datos está en formato _tidy_ si cada fila representa una observación y las columnas representan las diferentes variables disponibles para cada una de estas observaciones. El conjunto de datos `murders` es un ejemplo de un _tidy data frame_.
 
 ```{r, echo=FALSE}
 library(dslabs)
@@ -33,7 +33,7 @@ select(country, year, fertility)
 head(tidy_data, 6)
 ```
 
-Este conjunto de datos ordenado proporciona tasas de fertilidad para dos países a lo largo de los años. Este es un conjunto de datos ordenado porque cada fila presenta una observación con las tres variables: país, año y tasa de fecundidad. Sin embargo, este conjunto de datos originalmente vino en otro formato y [FIX:] was reshaped/se reformó/se remodeló para [uso con el?] el paquete __dslabs__. Originalmente, los datos estaban en el siguiente formato:
+Este conjunto de datos _tidy_ proporciona tasas de fertilidad para dos países a lo largo de los años. Este es un conjunto de datos _tidy_ porque cada fila presenta una observación con las tres variables: país, año y tasa de fecundidad. Sin embargo, este conjunto de datos originalmente vino en otro formato y [FIX:] was reshaped/se reformó/se remodeló para [uso con el?] el paquete __dslabs__. Originalmente, los datos estaban en el siguiente formato:
 
 
 ```{r, echo=FALSE, message=FALSE}
@@ -43,38 +43,38 @@ wide_data <- read_csv(filename)
 select(wide_data, country, `1960`:`1962`) %>% as.data.frame
 ```
 
-Se proporciona la misma información, pero hay dos diferencias importantes en el formato: 1) cada fila incluye varias observaciones y 2) una de las variables, año, se almacena en el encabezado. Para que los paquetes _tidyverse_ se utilicen de manera óptima, los datos deben ser [FIX:] reshaped/reformados en formato `tidy`, que aprenderá a hacer en la sección _Data Wrangling_ del libro. Hasta entonces, utilizaremos ejemplos de conjuntos de datosque ya están en formato ordenado.
+Se proporciona la misma información, pero hay dos diferencias importantes en el formato: 1) cada fila incluye varias observaciones y 2) una de las variables, año, se almacena en el encabezado. Para que los paquetes _tidyverse_ se utilicen de manera óptima, los datos deben ser [FIX:] reshaped/reformados en formato `tidy`, que aprenderán a hacer en la sección _Data Wrangling_ del libro. Hasta entonces, utilizaremos ejemplos de conjuntos de datos que ya están en formato _tidy_.
 
-Aunque no es inmediatamente obvio, a medida que avance en el libro comenzará a apreciar las ventajas de trabajar en [FIX:] un marco/framework en el que las funciones usan formatos ordenados tanto para [FIX:] for both inputs and outputs/ las entradas como para las salidas. Verá cómo esto permite que los analistas de datos se enfoquen en aspectos más importantes del análisis en lugar del formato de los datos.
+Aunque no es inmediatamente obvio, a medida que avance en el libro comenzará a apreciar las ventajas de trabajar en un marco en el que las funciones usan formatos _tidy_ tanto para _inputs_ como para _outputs_. Verá cómo esto permite que los analistas de datos se enfoquen en aspectos más importantes del análisis en lugar del formato de los datos.
 
 ## Ejercicios [FIX:]
 
 
 1\. Examine el conjunto de datos incluidos en base R `co2`. ¿Cuál de los siguientes es cierto?
 
-a. `co2` son datos ordenados: tiene un año para cada fila.
-b. `co2` no es ordenado: necesitamos al menos una columna con un vector de caracteres.
-c. `co2` no es ordenado: es una matriz en lugar de un _data frame_.
-d. `co2` no es ordenado: para ser ordenado tendríamos [FIX:] que arreglarlo para tener tres columnas (año, mes y valor), y luego cada observación de CO2 tendría una fila.
+a. `co2` son datos _tidy_: tiene un año para cada fila.
+b. `co2` no es _tidy_: necesitamos al menos una columna con un vector de caracteres.
+c. `co2` no es _tidy_: es una matriz en lugar de un _data frame_.
+d. `co2` no es _tidy_: para ser _tidy_ tendríamos [FIX:] que _wrangle it_ para tener tres columnas (año, mes y valor), y luego cada observación de CO2 tendría una fila.
 
 
 2\. Examine el conjunto de datos incluidos en base R `ChickWeight`. ¿Cuál de los siguientes es cierto?
 
-a. `ChickWeight` no está ordenado: cada pollito tiene más de una fila.
-b. `ChickWeight` está ordenado: cada observación (un peso) está representada por una fila. La pollito de que provino esta medida es una de las variables.
-c. `ChickWeight` no está ordenado: nos falta la columna del año.
-d. `ChickWeight` está ordenado: se almacena en un _data frame_.
+a. `ChickWeight` no es _tidy_: cada pollito tiene más de una fila.
+b. `ChickWeight` es _tidy_: cada observación (un peso) está representada por una fila. La pollito de que provino esta medida es una de las variables.
+c. `ChickWeight` no es _tidy_: nos falta la columna del año.
+d. `ChickWeight` es _tidy_: se almacena en un _data frame_.
 
 
 3\. Examine el conjunto de datos incorporado. `BOD`. ¿Cuál de los siguientes es cierto?
 
-a. `BOD` no está ordenado: solo tiene seis filas.
-b. `BOD` no es ordenado: la primera columna es solo un índice.
-c. `BOD` es ordenado: cada fila es una observación con dos valores (tiempo y demanda)
-d. `BOD` es ordenado: todos los conjuntos de datos pequeños son ordenados por definición.
+a. `BOD` no es _tidy_: solo tiene seis filas.
+b. `BOD` no es _tidy_: la primera columna es solo un índice.
+c. `BOD` es _tidy_: cada fila es una observación con dos valores (tiempo y demanda)
+d. `BOD` es _tidy_: todos los conjuntos de datos pequeños son _tidy_ por definición.
 
 
-4\. ¿Cuál de los siguientes conjuntos de datos integrados está ordenado (puede elegir más de uno)?
+4\. ¿Cuál de los siguientes conjuntos de datos integrados es _tidy_ (puede elegir más de uno)?
 
 a. `BJsales`
 b. `EuStockMarkets`
@@ -98,9 +98,9 @@ data("murders")
 murders <- mutate(murders, rate = total/ population * 100000)
 ```
 
-Tenga en cuenta que aquí usamos `total` y `population` dentro de la función, que son objetos **no** definidos en nuestro _espacio de trabajo espacio de trabajo. Pero, ¿por qué no recibimos un error?
+Tenga en cuenta que aquí usamos `total` y `population` dentro de la función, que son objetos **no** definidos en nuestro espacio de trabajo. Pero, ¿por qué no recibimos un error?
 
-Esta es una de las principales características de __dplyr__. Funciones en este paquete, como `mutate`, saben buscar variables en el _data frame_ proporcionado en el primer argumento. En la llamada a mutar que vemos arribo, `total` tendrá los valores en `murders$total`. Este enfoque hace que el código sea mucho más legible.
+Esta es una de las principales características de __dplyr__. Funciones en este paquete, como `mutate`, saben buscar variables en el _data frame_ proporcionado en el primer argumento. En la llamada a mutar que vemos arriba, `total` tendrá los valores en `murders$total`. Este enfoque hace que el código sea mucho más legible.
 
 Podemos ver que se agrega la nueva columna:
 
@@ -112,7 +112,7 @@ Aunque hemos sobrescrito el original objeto `murders`, esto no cambia el objeto 
 
 ### Crear subconjuntos con `filter`
 
-Ahora suponga que queremos filtrar la tabla de datos para mostrar solo las entradas para las cuales la tasa de homicidios es inferior a 0,71. Para hacer esto usamos la función `filter`, que toma la tabla de datos como primer argumento y luego la declaración condicional como el segundo. Como `mutate`, podemos usar los nombres de variables sin comillas de `murders` dentro de la función y sabrá que nos referimos a las columnas y no a los objetos en el espacio de trabajo.
+Ahora supongamos que queremos filtrar la tabla de datos para mostrar solo las entradas para las cuales la tasa de homicidios es inferior a 0,71. Para hacer esto usamos la función `filter`, que toma la tabla de datos como primer argumento y luego la declaración condicional como el segundo. Como `mutate`, podemos usar los nombres de variables sin comillas de `murders` dentro de la función y sabrá que nos referimos a las columnas y no a los objetos en el espacio de trabajo.
 
 ```{r}
 filter(murders, rate <= 0.71)
@@ -121,7 +121,7 @@ filter(murders, rate <= 0.71)
 
 ### Seleccionar columnas con `select`
 
-Aunque nuestra tabla de datos solo tiene seis columnas, algunas tablas de datos incluyen cientos. Si queremos ver solo algunos, podemos usar la función `select`de __dplyr__. En el siguiente código seleccionamos tres columnas, [FIX:] asignamos esto a un nuevo objeto y luego filtramos el nuevo objeto:
+Aunque nuestra tabla de datos solo tiene seis columnas, algunas tablas de datos incluyen cientos. Si queremos ver solo algunos, podemos usar la función `select` de __dplyr__. En el siguiente código seleccionamos tres columnas, [FIX:] asignamos esto/estas a un nuevo objeto y luego filtramos el nuevo objeto:
 
 ```{r}
 new_table <- select(murders, state, region, rate)
@@ -149,7 +149,7 @@ murders <- mutate(murders, population_in_millions = population/ 10^6)
 
 Podemos escribir `population` en vez de `murders$population`. La función `mutate` sabe que estamos agarrando columnas de `murders`.
 
-Use la función `mutate` para agregar una columna de asesinatos llamada `rate` con la tasa de asesinatos por 100,000 como en el código de ejemplo anterior. Asegúrese de redefinir `murders` como se hizo en el código de ejemplo anterior (asesinatos <- [su código]) para que podamos seguir usando esta variable.
+Use la función `mutate` para agregar una columna de asesinatos llamada `rate` con la tasa de asesinatos por 100,000 como en el código de ejemplo anterior. Asegúrese de redefinir `murders` como se hizo en el código de ejemplo anterior (murders <- [su código]) para que podamos seguir usando esta variable.
 
 2\. Si `rank(x)` te da [FIX:] ranks of/las filas de `x` de menor a mayor, `rank(-x)` te da [FIX:] los rangos de mayor a menor. Use la función `mutate` para agregar una columna `rank` que contiene el rango, [FIX:] from highest to lowest murder rates/de mayor a menor tasa/índice de asesinatos. Asegúrese de redefinir `murders` para que podamos seguir usando esta variable.
 
@@ -164,7 +164,7 @@ select(murders, state, population) %>% head()
 Utilice `select` para mostrar los nombres de estado y las abreviaturas en `murders`. No redefina `murders`, solo muestre los resultados.
 
 
-4\. La función `filter` de __dplyr__ se utiliza para elegir filas específicas del _data frame_ para [FIX:] keep/mantener. A diferencia de `select` que es para columnas, `filter` es para filas Por ejemplo, puede mostrar solo la fila de Nueva York de esta manera:
+4\. La función `filter` de __dplyr__ se utiliza para elegir filas específicas del _data frame_ para guardar. A diferencia de `select` que es para columnas, `filter` es para filas Por ejemplo, puede mostrar solo la fila de Nueva York de esta manera:
 
 ```{r, eval=FALSE}
 filter(murders, state == "New York")
@@ -172,10 +172,10 @@ filter(murders, state == "New York")
 
 Puede usar otros vectores lógicos para filtrar filas.
 
-Utilice `filter` para mostrar los cinco estados con las tasas de asesinatos más altas. Después de agregar la tasa y el rango de asesinatos, no cambie el conjunto de datos de asesinatos, solo muestre el resultado. Recuerde que puede filtrar [FIX:] based on/basado en la columna `rank`.
+Utilice `filter` para mostrar los cinco estados con las tasas de asesinatos más altas. Después de agregar la tasa y el rango de asesinatos, no cambie el conjunto de datos de asesinatos, solo muestre el resultado. Recuerde que puede filtrar [FIX:] based on/basado en/basándose en la columna `rank`.
 
 
-5\. Podemos eliminar filas usando el [FIX:] operator `!=`. Por ejemplo, para eliminar Florida, haríamos esto:
+5\. Podemos eliminar filas usando el [FIX:]`!=` _operator_. Por ejemplo, para eliminar Florida, haríamos esto:
 
 ```{r, eval=FALSE}
 no_florida <- filter(murders, state != "Florida")
@@ -193,7 +193,7 @@ filter(murders, state %in% c("New York", "Texas"))
 Crea un nuevo _data frame_ llamado `murders_nw` con solo los estados del noreste y oeste. ¿Cuántos estados hay en esta categoría?
 
 
-7\. Suponga que desea vivir en el noreste u oeste **y** desea que la tasa de homicidios sea inferior a 1. Queremos ver los datos de los estados que satisfacen estas opciones. Tenga en cuenta que puede usar [FIX:] operadores lógicos con `filter`. Aquí hay un ejemplo en el que filtramos para mantener solo estados pequeños en la región noreste.
+7\. Suponga que desea vivir en el noreste u oeste **y** desea que la tasa de homicidios sea inferior a 1. Queremos ver los datos de los estados que satisfacen estas opciones. Tenga en cuenta que puede usar [FIX:] _logical operators_ con `filter`. Aquí hay un ejemplo en el que filtramos para mantener solo estados pequeños en la región noreste.
 
 ```{r, eval=FALSE}
 filter(murders, population < 5000000 & region == "Northeast")
@@ -249,7 +249,7 @@ Tenga en cuenta que el _pipe_ funciona bien con funciones donde el primer argume
 
 ## Ejercicios
 
-1\. El _pipe_ `%>%` se puede usar para realizar operaciones secuencialmente sin tener que definir objetos intermedios. Comience redefiniendo asesinatos ( _murders_ en inglés) para incluir la tasa y el rango.
+1\. El _pipe_ `%>%` se puede usar para realizar operaciones secuencialmente sin tener que definir objetos intermedios. Comience redefiniendo _murders_ para incluir la tasa y el rango.
 
 ```{r, eval=FALSE}
 murders <- mutate(murders, rate = total/ population * 100000,
@@ -527,24 +527,24 @@ Los datos _tidy_ deben almacenarse en _data frames_. Discutimos el _data frame_ 
 murders %>% group_by(region)
 ```
 
-Observen que no hay columnas con esta información. Pero, si estudia de cerca [FIX:] al output/la salida anterior, verá la línea `A tibble` seguida por dimensiones. Podemos aprender la clase del objeto devuelto usando:
+Observe que no hay columnas con esta información. Pero, mira al _output_, verá la línea `A tibble` seguida por dimensiones. Podemos aprender la clase del objeto devuelto usando:
 
 ```{r}
 murders %>% group_by(region) %>% class()
 ```
 
-El `tbl`,[FIX:]  (pronunciado "ti-bel" en inglés), es un tipo especial de _data frame_. Las funciones `group_by` y `summarize` siempre devuelven este tipo de _data frame_. La función `group_by` devuelve un tipo especial de `tbl`, el `grouped_df`. Diremos más sobre esto más adelante. Por coherencia, los verbos de manipulación __dplyr__ ( `select`, `filter`, `mutate` y `arrange`) preservan la clase del [FIX:] input: si reciben un _data frame_ regular, devuelven un _data frame_ regular, mientras que si reciben un _tibble_, devuelven un tibble. Pero los _tibbles_ son el formato preferido en el _tidyverse_ y, como resultado, las funciones _tidyverse_ que producen un _data frame_ desde cero devuelven un _tibble_. Por ejemplo, en el capítulo \@ref(importing-data) veremos que las funciones _tidyverse_ usadas para importar datos crean _tibbles_.
+El `tbl`,[FIX:]  (pronunciado "ti-bel" en inglés), es un tipo especial de _data frame_. Las funciones `group_by` y `summarize` siempre devuelven este tipo de _data frame_. La función `group_by` devuelve un tipo especial de `tbl`, el `grouped_df`. Diremos más sobre esto más adelante. Por coherencia, los verbos de manipulación __dplyr__ ( `select`, `filter`, `mutate` y `arrange`) preservan la clase del _input_: si reciben un _data frame_ regular, devuelven un _data frame_ regular, mientras que si reciben un _tibble_, devuelven un tibble. Pero los _tibbles_ son el formato preferido en el _tidyverse_ y, como resultado, las funciones _tidyverse_ que producen un _data frame_ desde cero devuelven un _tibble_. Por ejemplo, en el capítulo \@ref(importing-data) veremos que las funciones _tidyverse_ usadas para importar datos crean _tibbles_.
 
 Los _tibbles_ son muy similares a los _data frames_. De hecho, puede pensar en ellos como una versión moderna de _data frames_. Sin embargo, hay tres diferencias importantes que describiremos a continuación.
 
 
 ### Los _tibbles_ se muestran/presentan mejor/display better [FIX:]
 
-El método de impresión para _tibbles_ es más legible que el de un _data frame_. Para ver esto, compare los resultados de escribir `murders` y [FIX:] el output/el resultaod la salida de asesinatos si lo convertimos en un _tibble_. Podemos hacer esto usando `as_tibble(murders)`. Si usa RStudio, la salida para un _tibble_ se ajusta al tamaño de su ventana. Para ver esto, cambie el ancho de su consola R y observe cómo se muestran más/ menos columnas.
+El método de impresión para _tibbles_ es más legible que el de un _data frame_. Para ver esto, compare los resultados de escribir `murders` y el _output_ de asesinatos si lo convertimos en un _tibble_. Podemos hacer esto usando `as_tibble(murders)`. Si usa RStudio, el _output_ para un _tibble_ se ajusta al tamaño de su ventana. Para ver esto, cambie el ancho de su consola R y observe cómo se muestran más/ menos columnas.
 
 ### Los subconjuntos de _tibbles_ son _tibbles_
 
-Si creamos subconjuntos de las columnas de un _data frame_, puede que le devuelvan un objeto que no es un _data frame_, como un vector o escalar. Por ejemplo:
+Si creamos subconjuntos de las columnas de un _data frame_, le pueden devolver un objeto que no es un _data frame_, como un vector o escalar. Por ejemplo:
 
 ```{r}
 class(murders[,4])
@@ -556,28 +556,28 @@ no es un _data frame_. Con _tibbles_ esto no sucede:
 class(as_tibble(murders)[,4])
 ```
 
-Esto es útil en _tidyverse_ ya que las funciones requieren _data frames_ como entrada.
+Esto es útil en el _tidyverse_ ya que las funciones requieren _data frames_ como _input_.
 
-Con _tibbles_, si desea acceder al vector que define una columna y no recuperar un _data frame_, debe usar el descriptor de acceso `$`:
+Con _tibbles_, si desea acceder al vector que define una columna y no recuperar un _data frame_, debe usar [FIX:] the accessor `$`:
 
 ```{r}
 class(as_tibble(murders)$population)
 ```
 
-Una característica relacionada es que _tibbles_ le dará una advertencia si intenta acceder a una columna que no existe. Si escribimos accidentalmente `Population` en lugar de `population` esta:
+Una característica relacionada es que _tibbles_ le dará una advertencia si intenta acceder a una columna que no existe. Si escribimos accidentalmente `Population` en lugar de `population` vemos que:
 
 ```{r}
 murders$Population
 ```
 
-devuelve un `NULL` sin advertencia, lo que puede dificultar la depuración. Por el contrario, si intentamos esto con un tibble, obtenemos una advertencia informativa:
+devuelve un `NULL` sin advertencia, lo que puede dificultar [FIX] la depuración/makes it more difficult to debug. Por el contrario, si intentamos esto con un _tibble_, obtenemos una advertencia informativa:
 
 ```{r}
 as_tibble(murders)$Population
 ```
 
 
-### Tibbles puede tener entradas complejas
+### Los _tibbles_ pueden tener entradas complejas
 
 Si bien las columnas del _data frame_ deben ser vectores de números, cadenas o valores lógicos, los _tibbles_ pueden tener objetos más complejos, como listas o funciones. Además, podemos crear _tibbles_ con funciones:
 
@@ -586,13 +586,13 @@ tibble(id = c(1, 2, 3), func = c(mean, median, sd))
 ```
 
 
-### _tibbles_ se pueden agrupar
+### Los _tibbles_ se pueden agrupar
 
-La función `group_by` devuelve un tipo especial de _tibble_: un _tibble_ agrupado. Esta clase almacena información que le permite saber qué filas están en qué grupos. Las funciones _tidyverse_, en particular la `summarize` función, son conscientes de la información del grupo.
+La función `group_by` devuelve un tipo especial de _tibble_: un _tibble_ agrupado. Esta clase almacena información que le permite saber qué filas están en qué grupos. Las funciones _tidyverse_, en particular la función `summarize`, son conscientes de la información del grupo.
 
-### Crear un tibble usando `tibble` en lugar de `data.frame`
+### Crear un _tibble_ usando `tibble` en lugar de `data.frame`
 
-A veces es útil para nosotros crear nuestros propios _data frames_. Para crear un _data frame_ en formato _tibble_, puede hacerlo utilizando el `tibble` función.
+A veces es útil para nosotros crear nuestros propios _data frames_. Para crear un _data frame_ en formato _tibble_, puede hacerlo utilizando la función `tibble`.
 
 ```{r}
 grades <- tibble(names = c("John", "Juan", "Jean", "Yao"),
@@ -618,14 +618,14 @@ stringsAsFactors = FALSE)
 class(grades$names)
 ```
 
-Para convertir un _data frame_ normal en un _tibble_, puede usar el `as_tibble` función.
+Para convertir un _data frame_ normal en un _tibble_, puede usar la función `as_tibble`.
 
 ```{r}
 as_tibble(grades) %>% class()
 ```
 
 
-## El operador punto
+## El operador punto [FIX] The dot operator
 
 Una de las ventajas de utilizar el _pipe_ `%>%` es que no tenemos que seguir nombrando nuevos objetos mientras manipulamos el _data frame_. Como recordatorio rápido, si queremos calcular la tasa de asesinatos promedio para los estados del sur, en lugar de escribir:
 
@@ -645,9 +645,9 @@ summarize(median = median(rate)) %>%
 pull(median)
 ```
 
-Podemos hacer esto porque cada una de estas funciones toma un _data frame_ como primer argumento. Pero, ¿qué pasa si queremos acceder a un componente del _data frame_? Por ejemplo, ¿qué pasa si el `pull` la función no estaba disponible y queríamos acceder `tab_2$rate`? ¿Qué nombre de _data frame_ usaríamos? La respuesta es el operador de puntos.
+Podemos hacer esto porque cada una de estas funciones toma un _data frame_ como primer argumento. Pero, ¿qué pasa si queremos acceder a un componente del _data frame_? Por ejemplo, ¿qué pasa si la función `pull` no estaba disponible y queríamos acceder `tab_2$rate`? ¿Qué nombre de _data frame_ usaríamos? La respuesta es el _dot operator_.
 
-Por ejemplo, para acceder al vector de velocidad sin el `pull` función que podríamos usar
+Por ejemplo, para acceder al vector de velocidad sin la función `pull`, podríamos usar:
 
 ```{r}
 rates <-filter(murders, region == "South") %>%
@@ -660,7 +660,7 @@ En la siguiente sección, veremos otras instancias en las que usar el `.` es út
 
 ## `do` {#do}
 
-Las funciones _tidyverse_ saben interpretar _tibbles_ agrupados. Además, para facilitar la secuencia de comandos a través de el _pipe_ `%>%`, las funciones _tidyverse_ devuelven constantemente _data frames_, ya que esto asegura que la salida de una función sea aceptada como la entrada de otra. Pero la mayoría de las funciones R no reconocen los _tibbles_ agrupados ni devuelven _data frames_. los `quantile` la función es un ejemplo que describimos en la Sección \@ref(summarize). Los `do` la función sirve como puente entre las funciones R, como `quantile` y el _tidyverse_. los `do` la función comprende _tibbles_ agrupados y siempre devuelve un _data frame_.
+Las funciones _tidyverse_ saben interpretar _tibbles_ agrupados. Además, para facilitar la secuencia de comandos a través del _pipe_ `%>%`, las funciones _tidyverse_ devuelven constantemente _data frames_, ya que esto asegura que el _output_ de una función sea aceptada como el _input_ de otra. Pero la mayoría de las funciones R no reconocen los _tibbles_ agrupados ni devuelven _data frames_. La función `quantile` es un ejemplo que describimos en la Sección \@ref(summarize). La función `do` sirve como puente entre las funciones de R, como `quantile` y el _tidyverse_. La función `do`entiende _tibbles_ agrupados y siempre devuelve un _data frame_.
 
 En la sección \@ref(summarize), notamos que si intentamos usar `quantile` para obtener el mínimo, la mediana y el máximo en una llamada, recibiremos un error: `Error: expecting result of length one, got : 2`.
 
@@ -671,9 +671,9 @@ filter(sex == "Female") %>%
 summarize(range = quantile(height, c(0, 0.5, 1)))
 ```
 
-Podemos usar el `do` función para arreglar esto.
+Podemos usar la función `do` para arreglar esto.
 
-Primero tenemos que escribir una función que se ajuste al enfoque _tidyverse_: es decir, recibe un _data frame_ y devuelve un _data frame_.
+Primero tenemos que escribir una función que se ajuste al [FIX] enfoque/acercamiento/approach de _tidyverse_: es decir, recibe un _data frame_ y devuelve un _data frame_.
 
 ```{r}
 my_summary <- function(dat){
@@ -698,7 +698,7 @@ group_by(sex) %>%
 do(my_summary(.))
 ```
 
-Tenga en cuenta que aquí necesitamos usar el operador de punto. El _tibble_ creado por `group_by` se canaliza a `do`. Dentro de la llamada a `do`, el nombre de este _tibble_ es `.` y queremos enviarlo a `my_summary`. Si no usa el punto, entonces `my_summary` no tiene ningún argumento y devuelve un error que nos dice que `argument "dat"` está perdido. Puede ver el error escribiendo:
+Recuerden que aquí necesitamos usar el _dot operator_. El _tibble_ creado por `group_by` [FIX] is piped to/se canaliza a `do`. Dentro de la llamada a `do`, el nombre de este _tibble_ es `.` y queremos enviarlo a `my_summary`. Si no usa el punto, entonces `my_summary` no tiene ningún argumento y devuelve un error que nos dice que falta el `argument "dat" . Puede ver el error escribiendo:
 
 ```{r, eval=FALSE}
 heights %>%
@@ -717,7 +717,7 @@ do(my_summary)
 
 ## El paquete __purrr__
 
-En la sección \@ref(vectorization) aprendimos sobre el `sapply` función, que nos permitió aplicar la misma función a cada elemento de un vector. Construimos una función y utilizamos `sapply` para calcular la suma de la primera `n` enteros para varios valores de `n` me gusta esto:
+En la sección \@ref(vectorization) aprendimos sobre la función `sapply`, que nos permitió aplicar la misma función a cada elemento de un vector. Construimos una función y utilizamos `sapply` para calcular la suma de la primera `n` enteros para varios valores de `n` me gusta esto:
 
 
 ```{r}
@@ -729,7 +729,7 @@ n <- 1:25
 s_n <- sapply(n, compute_s_n)
 ```
 
-Este tipo de operación, que aplica la misma función o procedimiento a elementos de un objeto, es bastante común en el análisis de datos. El paquete __purrr__ incluye funciones similares a `sapply` pero eso interactúa mejor con otras funciones _tidyverse_. La principal ventaja es que podemos controlar mejor el tipo de funciones de salida. A diferencia de, `sapply` puede devolver varios tipos de objetos diferentes; por ejemplo, podríamos esperar un resultado numérico de una línea de código, pero `sapply` podría convertir nuestro resultado en carácter en algunas circunstancias. Las funciones __purrr__ nunca harán esto: devolverán objetos de un tipo específico o devolverán un error si esto no es posible.
+Este tipo de operación, que aplica la misma función o procedimiento a elementos de un objeto, es bastante común en el análisis de datos. El paquete __purrr__ incluye funciones similares a `sapply` pero eso interactúa mejor con otras funciones _tidyverse_. La principal ventaja es que podemos controlar mejor [FIX] THE OUTPUT TYPE OF FUNCTIONS/el tipo de funciones. En cambio, `sapply` puede devolver varios tipos de objetos diferentes; por ejemplo, podríamos esperar un resultado numérico de una línea de código, pero `sapply` podría convertir nuestro resultado en carácter en algunas circunstancias. Las funciones __purrr__ nunca harán esto: devolverán objetos de un tipo específico o devolverán un error si esto no es posible.
 
 La primera función __purrr__ que aprenderemos es `map`, que funciona muy similar a `sapply` pero siempre, sin excepción, devuelve una lista:
 
@@ -746,9 +746,9 @@ s_n <- map_dbl(n, compute_s_n)
 class(s_n)
 ```
 
-Esto produce los mismos resultados que el `sapply` llamada que se muestra arriba.
+Esto produce los mismos resultados que la llamada `sapply` que se muestra arriba.
 
-Una función __purrr__ particularmente útil para interactuar con el resto del _tidyverse_ es `map_df`, que siempre devuelve un _data frame_ tibble. Sin embargo, la función que se llama debe devolver un vector o una lista con nombres. Por esta razón, el siguiente código daría como resultado un `Argument 1 must have names` error:
+Una función de __purrr__ particularmente útil para interactuar con el resto del _tidyverse_ es `map_df`, que siempre devuelve un _tibble data frame_. Sin embargo, la función que se llama debe devolver un vector o una lista con nombres. Por esta razón, el siguiente código daría como resultado un error `Argument 1 must have names`:
 
 ```{r, eval=FALSE}
 s_n <- map_df(n, compute_s_n)
@@ -764,22 +764,22 @@ tibble(sum = sum(x))
 s_n <- map_df(n, compute_s_n)
 ```
 
-El paquete __purrr__ proporciona mucha más funcionalidad no cubierta aquí. Para obtener más detalles, puede consultar [este recurso en línea] (https://jennybc.github.io/purrr-tutorial/).
+El paquete __purrr__ proporciona mucha más funcionalidad no discutida aquí. Para obtener más detalles, puede consultar [este recurso en línea](https://jennybc.github.io/purrr-tutorial/).
 
-## _tidyverse_ condicionales
+## Los condicionales de _tidyverse_
 
-Un análisis de datos típico a menudo implicará una o más operaciones condicionales. En la sección \@ref(conditionals) describimos el `ifelse` función, que utilizaremos ampliamente en este libro. En esta sección presentamos dos funciones __dplyr__ que proporcionan una funcionalidad adicional para realizar operaciones condicionales.
+Un análisis de datos típicos frecuentemente implicará una o más operaciones condicionales. En la sección \@ref(conditionals) describimos la función `ifelse`, que utilizaremos ampliamente en este libro. En esta sección presentamos dos funciones __dplyr__ que proporcionan una funcionalidad adicional para realizar operaciones condicionales.
 
 ### `case_when`
 
-Los `case_when` la función es útil para vectorizar declaraciones condicionales. Esto es similar a `ifelse` pero puede generar cualquier cantidad de valores, en lugar de solo `TRUE` o `FALSE`. Aquí hay un ejemplo que divide los números en negativo, positivo y 0:
+La función `case_when` es útil para vectorizar declaraciones condicionales. Esto es similar a `ifelse` pero puede generar cualquier cantidad de valores, en lugar de solo `TRUE` o `FALSE`. Aquí hay un ejemplo que divide los números en negativo, positivo y 0:
 
 ```{r}
 x <- c(-2, -1, 0, 1, 2)
 case_when(x < 0 ~ "Negative", x > 0 ~ "Positive", TRUE ~ "Zero")
 ```
 
-Un uso común de esta función es definir variables categóricas basadas en variables existentes. Por ejemplo, supongamos que queremos comparar las tasas de homicidios en tres grupos de estados: _Nueva Inglaterra_, _West Coast_, _South_y_other_. Para cada estado, debemos preguntar si está en Nueva Inglaterra, si no es así, preguntamos si está en la costa oeste, si no, preguntamos si está en el sur, y si no, asignamos otros. Así es como usamos `case_when` para hacer esto:
+Un uso común de esta función es definir variables categóricas basadas en variables existentes. Por ejemplo, supongamos que queremos comparar las tasas de homicidios en [FIX] tres grupos de estados: _Nueva Inglaterra_, _West Coast_, _South_ y _other_. Para cada estado, debemos preguntar si está en Nueva Inglaterra, si no es así, preguntamos si está en la costa oeste, si no, preguntamos si está en el sur, y si no, asignamos otros. Así es como usamos `case_when` para hacer esto:
 
 ```{r}
 murders %>%
@@ -794,13 +794,13 @@ summarize(rate = sum(total)/ sum(population) * 10^5)
 
 ### `between`
 
-Una operación común en el análisis de datos es determinar si un valor cae dentro de un intervalo. Podemos verificar esto usando condicionales. Por ejemplo para verificar si los elementos de un vector `x` están entre `a` y `b` podemos escribir
+Una operación común en el análisis de datos es determinar si un valor cae dentro de un intervalo. Podemos verificar esto usando condicionales. Por ejemplo, para verificar si los elementos de un vector `x` están entre `a` y `b` podemos escribir
 
 ```{r, eval=FALSE}
 x >= a & x <= b
 ```
 
-Sin embargo, esto puede volverse engorroso, especialmente dentro del enfoque _tidyverse_. los `between` la función realiza la misma operación.
+Sin embargo, esto puede volverse engorroso, especialmente dentro del enfoque _tidyverse_. La función `between` realiza la misma operación.
 
 ```{r, eval = FALSE}
 between(x, a, b)
@@ -808,23 +808,23 @@ between(x, a, b)
 
 ## Ejercicios
 
-1\. Carga el `murders` conjunto de datos ¿Cual de los siguientes es verdadero?
+1\. Cargue el conjunto de datos `murders`. ¿Cuál de los siguientes es cierto?
 
-a. `murders` está en formato ordenado y se almacena en un tibble.
+a. `murders` está en formato ordenado y se almacena en un _tibble_.
 b. `murders` está en formato ordenado y se almacena en un _data frame_.
-c. `murders` no está en formato ordenado y se almacena en un tibble.
+c. `murders` no está en formato ordenado y se almacena en un _tibble_.
 d. `murders` no está en formato ordenado y se almacena en un _data frame_.
 
-2\. Utilizar `as_tibble` para convertir el `murders` tabla de datos en un _tibble_ y guárdelo en un objeto llamado `murders_tibble`.
+2\. Utilice `as_tibble` para convertir la tabla de datos `murders` en un _tibble_ y guárdelo en un objeto llamado `murders_tibble`.
 
-3\. Utilizar el `group_by` función para convertir asesinatos en un _tibble_ que se agrupa por región.
+3\. Utilice la función `group_by` para convertir [FIX] asesinatos en un _tibble_ que se agrupa por región.
 
-4\. Escriba el código _tidyverse_ que sea equivalente a este código:
+4\. Escriba el código _tidyverse_ que es equivalente a este código:
 
 ```{r, eval=FALSE}
 exp(mean(log(murders$population)))
 ```
 
-Escríbalo usando el _pipe_ para que cada función se llame sin argumentos. Use el operador de puntos para acceder a la población. Sugerencia: el código debe comenzar con `murders %>%`.
+Escríbalo usando el _pipe_ para que cada función se llame sin argumentos. Use el _dot operator_ para acceder a la población. Sugerencia: el código debe comenzar con `murders %>%`.
 
-5\. Utilizar el `map_df` para crear un _data frame_ con tres columnas llamadas `n`, `s_n` y `s_n_2`. La primera columna debe contener los números del 1 al 100. La segunda y la tercera columna deben contener la suma del 1 al 100 $n$ con $n$ el número de fila.
+5\. Utilice el `map_df` para crear un _data frame_ con tres columnas llamadas `n`, `s_n` y `s_n_2`. La primera columna debe contener los números del 1 al 100. La segunda y la tercera columna deben contener la suma del 1 al 100 $n$ con $n$ [FIX] (add: siendo) el número de fila.
