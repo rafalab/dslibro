@@ -28,17 +28,16 @@
 | K-nearest neighbors | | K-nearest neighbors o la traducción literal K vecinos más cercanos | K-vecinos mas cercanos |
 | key bindings | | | combinaciones de teclas |
 | keyboard shortcut | atajo del teclado | atajo del teclado | atajo de teclado |
-| __logical vectores__| | | 
-| __logical operators__| | | 
 | machine learning | | machine learning o la traducción literal aprendizaje de máquina | [aprendizaje automático](http://portal.uned.es/portal/page?_pageid=93,61703783&_dad=portal&_schema=PORTAL&idAsignatura=71014023) |
 | __motivating__ | used as an adjetive, see below -- is it always omitted? |  | 
 | motivating case studies || casos de estudio | |
 | motivating dataset | | conjunto de datos | |
 | motivating section | |  | sección |
+| nested |s in, "nested sorting"  | |  |
 | New File | Nuevo Archivo ( _New File_ ) | Nuevo Archivo | nuevo archivo o nuevo fichero |
 | __operator__ | the != operator| | |
 | __operators__ | as in "logical operators" or "the dot operator| | |
-| __output__ | | | salida/resultado? podemos no traducir? |
+| __output__ | as in, "the output of the function" | |  |
 | pipes | _pipes_ o Pipes |  _pipes_ | tuberías |
 | __(to) pipe__ | por ej, "We can continue to pipe values along"" |  |  |
 | __plot__ | gráfico | | gráfico |
