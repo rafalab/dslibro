@@ -1,12 +1,11 @@
 # Pending translation
 
 | English term | Examples | Suggestions (MX) | Suggestions (ES) |
-|--------------|------------|----|----|
-| access (verb) | as in, you access with $ | | acceder a |
-| __access operator__ | as in, the access operator $ | | operador de acceso a |
-| __accessor__ | por ej, "the accessor: $"  | |  |
+|---------------|------------||---------------|---------------|
+| access (verb) | you access the column with `$` | | acceder a |
+| __access operator__ | `$` is the access operator  | | operador de acceso a |
+| __accessor__ | `$` is called the accessor   | |  |
 | backup | backup your work | respaldar | respaldo o copia de seguridad |
-| data management | This book does covers data analysis more than data managment | manejo de datos | gestión de datos |
 | __debug__ | makes it more difficult to debug the code |  |  |
 | File | Save the script in a file | Archivo | archivo o fichero |
 | function call | There is no difference between this function call and the previous one | funciones | | llamadas a funciones |
@@ -45,10 +44,11 @@
 | character strings | cadenas de caracteres | vector of character strings | secuencia de caracteres | cadenas de caracteres | 
 | commands | comandos | type in the command | comando (singular) o comandos (plural) | comandos |
 | command | la del teclado | hit the command key |command o cmd | tecla de comando |
-| dataset| set de datos | | | | 
+| data management | manejo de datos |  | manejo de datos | gestión de datos |
 | data streaming processing | procesamiento de flujos de datos | | procesamiento continuo de datos | procesamiento de flujos de datos |
 | data types | tipos de datos | data types can be numeric, logical, ... | tipos de datos | tipos de datos|
 | data wrangling | data wrangling | | procesamiento de datos | procesamiento de datos |
+| dataset| set de datos | | | | 
 | EDA | Análisis exploratorio de datos o EDA (por sus siglas en inglés) | exploratory data analysis (EDA) |Análisis exploratorio de datos | Análisis exploratorio de datos |
 | file | archivar | to file |  |  |
 | functions | funciones | We will use the functions `mean` and `sd` | funciones | funciones o rutina |
