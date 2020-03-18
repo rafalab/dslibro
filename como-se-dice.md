@@ -7,7 +7,7 @@
 | __accessor__ | por ej, "the accessor: $"  | |  |
 | backup | backup your work | respaldar | respaldo o copia de seguridad |
 | data management | This book does covers data analysis more than data managment | manejo de datos | gestión de datos |
-| __(to) debug__ | for ex, "makes it more difficult to debug"|  |  |
+| __debug__ | makes it more difficult to debug the code |  |  |
 | File | Save the script in a file | Archivo | archivo o fichero |
 | function call | There is no difference between this function call and the previous one | funciones | | llamadas a funciones |
 | indentation | | indentar | indentación |
@@ -32,7 +32,7 @@
 | scatterplot || diagrama de dispersión, diagrama de puntos ||
 | subset | subset this dataset  with logicals| | (crear un) subconjunto |
 | web-based | | en linea/disponible en la web | en la web |
-| web scraping | | no creo recordar una traducción para esto pero quizá se pueda usar "descarga/extracción de información en linea" | extracción de la web, rastreo web |
+| web scraping | | descarga/extracción de información en linea | extracción de la web, rastreo web |
 | __workspace__ | Save it in the workspace | | | 
 
 # Accepted translations
