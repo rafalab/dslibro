@@ -1,7 +1,7 @@
 # Pending translation
 
 | English term | Examples | Suggestions (MX) | Suggestions (ES) |
-|---------------|------------||---------------|---------------|
+|---------------|------------|---------------|---------------|
 | access (verb) | you access the column with `$` | | acceder a |
 | __access operator__ | `$` is the access operator  | | operador de acceso a |
 | __accessor__ | `$` is called the accessor   | |  |
