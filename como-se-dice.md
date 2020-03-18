@@ -5,23 +5,25 @@
 | access (verb) | you access the column with `$` | | acceder a |
 | __access operator__ | `$` is the access operator  | | operador de acceso a |
 | __accessor__ | `$` is called the accessor   | |  |
+| arithmetic operator | addition is an arithmentic operator | | |
 | backup | backup your work | respaldar | respaldo o copia de seguridad |
 | __debug__ | makes it more difficult to debug the code |  |  |
-| File | Save the script in a file | Archivo | archivo o fichero |
-| function call | There is no difference between this function call and the previous one | funciones | | llamadas a funciones |
+| file | save the script in a file | Archivo | archivo o fichero |
+| for-loop | for-loop | | | |
+| function call | there is no difference between this function call and the previous one | | llamadas a funciones |
 | indentation | | indentar | indentación |
-| index (verb) | integers are used to index something | poner/asignar en un índice (los vectores) |
-| Indexing | R provides a powerful and convenient way of indexing vectors |  | indexación |
-| __input__ (noun) | This function takes a vector as input | | entrada |
-| __input__ (adjuetive) | `x` is the input vector | |  |
-| K-nearest neighbors | | K-nearest neighbors o la traducción literal K vecinos más cercanos | K-vecinos mas cercanos |
+| index (verb) | integers are used to index vectors | índice | | 
+| indexing | R provides a convenient way of indexing vectors |  | indexación |
+| __input__ (noun) | `mean` takes a vector as input | input | entrada |
+| __input__ (adjuetive) | `x` is the input vector | input |  |
+| K-nearest neighbors | | K-nearest neighbors, K vecinos más cercanos | K-vecinos mas cercanos |
 | key bindings | | | combinaciones de teclas |
-| keyboard shortcut | atajo del teclado | atajo del teclado | atajo de teclado |
-| __motivating__ | used as an adjetive as in "motivating examples", "motivating case studies" |  | 
-| nested | nested sorting. nested design | |  |
+| keyboard shortcut | Use the keyboard shortcut command-S | atajo del teclado | atajo de teclado |
+| __motivating__ | motivating examples, motivating case studies |  | 
+| nested | nested sorting, nested design | |  |
 | New File | click on the  _New File_ button | Nuevo Archivo | nuevo archivo o nuevo fichero |
 | __operator__ | the `!=` operator| | |
-| __operators__ | "logical operators" or "the dot operator| | |
+| __operators__ | logical operators, the dot operator| | |
 | __output__ | the output of the function is a vector | |  |
 | __plot__ (noun) | make a plot of the data | | gráfico |
 | __plot__ (veb) |  plot the data | |  |
@@ -32,14 +34,13 @@
 | subset | subset this dataset  with logicals| | (crear un) subconjunto |
 | web-based | | en linea/disponible en la web | en la web |
 | web scraping | | descarga/extracción de información en linea | extracción de la web, rastreo web |
-| __workspace__ | Save it in the workspace | | | 
+| __workspace__ | save it in the workspace | | | 
 
 # Accepted translations
 
 | English term | What we are using | Examples | MX | ES | 
 |--------------|------------|------| ----|----|
 | add-ons | complementos|  add-ons | complementos | complementos o plugins |
-| arithmetic operators | símbolos de operaciones aritméticas| | | |
 | boxplot | diagrama de caja | display the data in a boxplot|diagrama de caja y bigote | gráfico de | 
 | character strings | cadenas de caracteres | vector of character strings | secuencia de caracteres | cadenas de caracteres | 
 | commands | comandos | type in the command | comando (singular) o comandos (plural) | comandos |
@@ -62,6 +63,7 @@
 | sofware | software | | software | software |
 | software engineer | ingeniero de software |  | ingeniero de software | ingeniero de software, ingeniero informático |
 | sort| ordenar alfabeticamente o numericamente | sort the rows of this data frame | ||
+| string | cadenas | | | |
 | tabs | pestañas | RStudio has a Viewer tab | pestañas | pestañas |
 | tidy data | datos tidy | |  | datos ordenados | datos limpios/ordenados |
 | tidy format | formato tidy | this data is in tidy format | | | 
