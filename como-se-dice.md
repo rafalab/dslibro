@@ -1,105 +1,71 @@
-| English term | definición | MX | ES |
+# Pending translation
+
+| English term | Examples | Suggestions (MX) | Suggestions (ES) |
 |--------------|------------|----|----|
-| add-ons | add-ons | complementos | complementos o plugins |
 | access (verb) | as in, you access with $ | | acceder a |
 | __access operator__ | as in, the access operator $ | | operador de acceso a |
 | __accessor__ | por ej, "the accessor: $"  | |  |
-| arithmetic operators| | símbolos de operaciones aritméticas| | 
-| backup | respaldar | respaldar | respaldo o copia de seguridad |
-| boxplot |  | diagrama de caja y bigote | gráfico de | character strings | secuencia de caracteres | cadenas de caracteres | | caja |
-| character strings | | cadenas de caracter | cadenas de caracteres | secuencia de caracteres |
-| commands | órdenes y comandos ; the latter more popular | comando (singular) o comandos (plural) | comandos |
-| command | la del teclado | command o cmd | tecla de comando |
-| data streaming processing | | procesamiento continuo de datos | procesamiento de flujos de datos |
-| data types | | tipos de datos | tipos de datos|
-| data wrangling | manejo/doma de datos | procesamiento de datos | procesamiento de datos |
-| data management | | manejo de datos | gestión de datos |
+| backup | backup your work | respaldar | respaldo o copia de seguridad |
+| data management | This book does covers data analysis more than data managment | manejo de datos | gestión de datos |
 | __(to) debug__ | for ex, "makes it more difficult to debug"|  |  |
-| EDA | Análisis exploratorio de datos o EDA (por sus siglas en inglés exploratory data * analysis) | Análisis exploratorio de datos | Análisis exploratorio de datos |
-| File | Archivo ( _File_) | Archivo | archivo o fichero |
-| function call | funciones | | llamadas a funciones |
-| functions | funciones | funciones | funciones o rutina |
+| File | Save the script in a file | Archivo | archivo o fichero |
+| function call | There is no difference between this function call and the previous one | funciones | | llamadas a funciones |
 | indentation | | indentar | indentación |
-| index (verb) | as in, allows us to index vectors |  | poner/asignar en un índice (los vectores) |
-| Indexing | |  | indexación |
-| __input__ | por ej, 'takes a vector as input'| | entrada |
-| __input__ | por ej, 'input vector| | (vector de) entrada |  
-| Integrated Development Environment (IDE) | | ambiente integrado de desarrollo o en ocasiones no se traduce | IDE |
+| index (verb) | integers are used to index something | poner/asignar en un índice (los vectores) |
+| Indexing | R provides a powerful and convenient way of indexing vectors |  | indexación |
+| __input__ (noun) | This function takes a vector as input | | entrada |
+| __input__ (adjuetive) | `x` is the input vector | |  |
 | K-nearest neighbors | | K-nearest neighbors o la traducción literal K vecinos más cercanos | K-vecinos mas cercanos |
 | key bindings | | | combinaciones de teclas |
 | keyboard shortcut | atajo del teclado | atajo del teclado | atajo de teclado |
-| machine learning | | machine learning o la traducción literal aprendizaje de máquina | [aprendizaje automático](http://portal.uned.es/portal/page?_pageid=93,61703783&_dad=portal&_schema=PORTAL&idAsignatura=71014023) |
-| __motivating__ | used as an adjetive, see below -- is it always omitted? |  | 
-| motivating case studies || casos de estudio | |
-| motivating dataset | | conjunto de datos | |
-| motivating section | |  | sección |
-| nested |s in, "nested sorting"  | |  |
-| New File | Nuevo Archivo ( _New File_ ) | Nuevo Archivo | nuevo archivo o nuevo fichero |
-| __operator__ | the != operator| | |
-| __operators__ | as in "logical operators" or "the dot operator| | |
-| __output__ | as in, "the output of the function" | |  |
-| pipes | _pipes_ o Pipes |  _pipes_ | tuberías |
-| __(to) pipe__ | por ej, "We can continue to pipe values along"" |  |  |
-| __plot__ | gráfico | | gráfico |
-| __(to) plot__ |  | |  |
-| point-and-click | señalar/apuntar y hacer clic | apuntar y hacer click | [cliquear](https://www.fundeu.es/recomendacion/hacer-clic-clicar-y-cliquear-formas-validas-en-espanol) |
-| R software environment | | ambiente de trabajo en R | entorno de R |
-| R environment | | ambiente de R/ambiente de trabajo | entorno de R |
+| __motivating__ | used as an adjetive as in "motivating examples", "motivating case studies" |  | 
+| nested | nested sorting. nested design | |  |
+| New File | click on the  _New File_ button | Nuevo Archivo | nuevo archivo o nuevo fichero |
+| __operator__ | the `!=` operator| | |
+| __operators__ | "logical operators" or "the dot operator| | |
+| __output__ | the output of the function is a vector | |  |
+| __plot__ (noun) | make a plot of the data | | gráfico |
+| __plot__ (veb) |  plot the data | |  |
+| point-and-click | avoid point-and-click software  | señalar/apuntar y hacer clic | apuntar y hacer click | [cliquear](https://www.fundeu.es/recomendacion/hacer-clic-clicar-y-cliquear-formas-validas-en-espanol) |
 | random forests | | random forest | [árbol aleatorio](https://iartificial.net/random-forest-bosque-aleatorio)|
-| relational operators || símbolos de relación| |  
-| scatterplot || diagrama de dispersión ||
-| script | _scripts_ | script | script, archivo de procesamiento por lotes (en MSDOS, Unix/Linux, etc.) |
-| sofware | software | software | software |
-| software engineer | ingeniero de programa, ingeniero de software | ingeniero de software | ingeniero de software, ingeniero informático |
-| sorting/to sort| as in, "to sort" or sorting data frames" | ||
-| Subsetting | as in, subsetting with logicals| | (crear un) subconjunto |
-| TABS | pestañas | pestañas | pestañas |
-| tidy data | datos ordenados; data _tidy_? | datos ordenados | datos limpios/ordenados |
-| tidy format | en formato _tidy_ o en formato ordenado? |  |  |
+| relational operators | `>` and `<` are relational operators | símbolos de relación| |  
+| scatterplot || diagrama de dispersión, diagrama de puntos ||
+| subset | subset this dataset  with logicals| | (crear un) subconjunto |
 | web-based | | en linea/disponible en la web | en la web |
 | web scraping | | no creo recordar una traducción para esto pero quizá se pueda usar "descarga/extracción de información en linea" | extracción de la web, rastreo web |
-| __workspace__ | espacio de trabajo | ||
+| __workspace__ | Save it in the workspace | | | 
+
+# Accepted translations
+
+| English term | What we are using | Examples | MX | ES | 
+|--------------|------------|------| ----|----|
+| add-ons | complementos|  add-ons | complementos | complementos o plugins |
+| arithmetic operators | símbolos de operaciones aritméticas| | | |
+| boxplot | diagrama de caja | display the data in a boxplot|diagrama de caja y bigote | gráfico de | 
+| character strings | cadenas de caracteres | vector of character strings | secuencia de caracteres | cadenas de caracteres | 
+| commands | comandos | type in the command | comando (singular) o comandos (plural) | comandos |
+| command | la del teclado | hit the command key |command o cmd | tecla de comando |
+| dataset| set de datos | | | | 
+| data streaming processing | procesamiento de flujos de datos | | procesamiento continuo de datos | procesamiento de flujos de datos |
+| data types | tipos de datos | data types can be numeric, logical, ... | tipos de datos | tipos de datos|
+| data wrangling | data wrangling | | procesamiento de datos | procesamiento de datos |
+| EDA | Análisis exploratorio de datos o EDA (por sus siglas en inglés) | exploratory data analysis (EDA) |Análisis exploratorio de datos | Análisis exploratorio de datos |
+| file | archivar | to file |  |  |
+| functions | funciones | We will use the functions `mean` and `sd` | funciones | funciones o rutina |
+| Integrated Development Environment (IDE) | _Integrated Development Environment_ (IDE) | ambiente integrado de desarrollo o en ocasiones no se traduce | IDE |
+| machine learning | machine learning | | machine learning o la traducción literal aprendizaje de máquina | [aprendizaje automático](http://portal.uned.es/portal/page?_pageid=93,61703783&_dad=portal&_schema=PORTAL&idAsignatura=71014023) |
+| pipes | pipes | `%>%` |  _pipes_ | tuberías |
+| pipe (verb) | canalizar (_pipe_ en inglés) | We can continue to pipe values along |  |  |
+| R software environment | ambiente de software R | |ambiente de trabajo en R | entorno de R |
+| R environment | ambiente de R | | ambiente de R/ambiente de trabajo | entorno de R |
+| script | _scripts_ | write an R script | script | script, archivo de procesamiento por lotes (en MSDOS, Unix/Linux, etc.) |
+| sofware | software | | software | software |
+| software engineer | ingeniero de software |  | ingeniero de software | ingeniero de software, ingeniero informático |
+| sort| ordenar alfabeticamente o numericamente | sort the rows of this data frame | ||
+| tabs | pestañas | RStudio has a Viewer tab | pestañas | pestañas |
+| tidy data | datos tidy | |  | datos ordenados | datos limpios/ordenados |
+| tidy format | formato tidy | this data is in tidy format | | | 
 
 
-## Previous version 
 
-* commands (r4ds: comando; en el net he visto órdenes y comandos; the latter more popular) MX: comando (singular) o comandos (plural) 
-* script (r4ds: _scripts_ ) MX: script
-* machine learning MX: machine learning o la traducción literal aprendizaje de máquina
-* data wrangling (r4ds: manejo/doma de datos)  MX: procesamiento de datos 
-* data management MX: manejo de datos
-* motivating case studies MX: caso de estudio
-* motivating dataset MX:  conjunto de datos
-* sofware - software MX: software
-* software engineer - ingeniero de programa, ingeniero de software MX: ingeniero de software
-* web scraping MX: no creo recordar una traducción para esto pero quizá se pueda usar "descarga/extracción de información en linea"
-* K-nearest neighbors MX: K-nearest neighbors o la traducción literal K vecinos más cercanos
-* random forests MX: random forest
-* data streaming processing MX: procesamiento continuo de datos
-* add-ons add-ons MX: complementos
-* command (la del teclado) MX: command o cmd
-* point-and-click: lots of variety on web. una opcion: 'señalar/apuntar y hacer clic"" MX: apuntar y hacer click
-* web-based MX: en linea/disponible en la web
-* TABS (google translate: pestañas) MX: pestañas
-* Integrated Development Environment (IDE) MX: ambiente integrado de desarrollo o en ocasiones no se traduce
-* indentation MX: indentar
-* key bindings
-* boxplot (r4ds: "diagrama de cajas ( _boxplot_ en inglés)"") MX: diagrama de caja y bigote 
-* pipes (r4ds: usa _pipes_ o Pipes; no traduce) MX: _pipes_
-* keyboard shortcut (r4ds: atajo del teclado) MX: atajo del teclado
-* File (r4ds: "Archivo ( _File_)") MX: Archivo
-* New File (r4ds: "Nuevo Archivo ( _New File_ )") MX: Nuevo Archivo
-* backup (r4ds: respaldar) MX: respaldar
-* EDA (r4ds: Análisis exploratorio de datos o EDA (por sus siglas en inglés exploratory data * analysis) entonces usan _EDA_ throughout MX: Análisis exploratorio de datos
-* tidy data (r4ds: datos ordenados) MX: datos ordenados
-* functions (r4ds: funciones) MX: funciones
-* tibbles (r4ds: usa tibbles; no traduce) MX: tibbles, no se traduce
-* R software environment MX: ambiente de trabajo en R
-* R environment MX: ambiente de R/ambiente de trabajo
-* character strings*  MX: cadenas de caracter
-* workspace
-* access operator
-* indexing/to index
-* plot - gráfico
-* scatterplot - diagrama de dispersión
-=======
+
