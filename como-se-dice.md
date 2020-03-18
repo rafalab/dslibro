@@ -7,6 +7,7 @@
 | __accessor__ | `$` is called the accessor   | |  |
 | arithmetic operator | addition is an arithmentic operator | | |
 | backup | backup your work | respaldar | respaldo o copia de seguridad |
+| case study |  | |  |
 | __debug__ | makes it more difficult to debug the code |  |  |
 | file | save the script in a file | Archivo | archivo o fichero |
 | for-loop | for-loop | | | |
