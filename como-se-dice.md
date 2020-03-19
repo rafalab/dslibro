@@ -15,6 +15,7 @@
 | __execute__ (verb)| to execute the code |  |  |
 | file | save the script in a file | Archivo | archivo o fichero |
 | for-loop | for-loop | | | |
+| __features__ | Rstudio offers many features | | | |
 | __function call__ | there is no difference between this function call and the previous one | | llamadas a funciones |
 | _logicals_ | to get a vector of logicals |  |  |
 | indentation | | indentar | indentación |
