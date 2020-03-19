@@ -38,10 +38,12 @@
 | __prebuilt objects__  |   | |  |
 | point-and-click | avoid point-and-click software  | señalar/apuntar y hacer clic | apuntar y hacer click | [cliquear](https://www.fundeu.es/recomendacion/hacer-clic-clicar-y-cliquear-formas-validas-en-espanol) |
 | random forests | | random forest | [árbol aleatorio](https://iartificial.net/random-forest-bosque-aleatorio)|
+| __read-in__  |   | |  |
 | relational operators | `>` and `<` are relational operators | símbolos de relación| | 
 | __return key__|  |  |  |
 | __run__| to run the code |  |  |
 | scatterplot || diagrama de dispersión, diagrama de puntos ||
+| __spreadsheets__ |   | |  |
 | subset | subset this dataset  with logicals| | (crear un) subconjunto |
 | web-based | | en linea/disponible en la web | en la web |
 | web scraping | | descarga/extracción de información en linea | extracción de la web, rastreo web |
