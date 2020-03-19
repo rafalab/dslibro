@@ -1,3 +1,9 @@
+# Resources
+
+*[Traducción del libro "R for Data Science"](https://github.com/cienciadedatos/documentacion-traduccion-r4ds/blob/master/orientaciones-traduccion.md)
+
+*[The Carpentries Spanish translation efforts](https://github.com/Carpentries-ES/board/blob/master/Convenciones_Traduccion.md)
+
 # Pending translation
 
 | English term | Examples | Suggestions (MX) | Suggestions (ES) |
@@ -8,7 +14,7 @@
 | arithmetic operator | addition is an arithmentic operator | | |
 | backup | backup your work | respaldar | respaldo o copia de seguridad |
 | case study | one case study which is helpful | |  |
-| __coerce__ (verb)| R coerced the data into characters  | | convertir |
+| __coerce__ (verb)| R coerced the data into characters  |forzar | convertir |
 | __debug__ | makes it more difficult to debug the code |  | depurar |
 | __default values__ |  |  | valores por defecto |
 | editing panel| the editing panel |  |  |
