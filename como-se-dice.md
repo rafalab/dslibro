@@ -8,18 +8,18 @@
 | arithmetic operator | addition is an arithmentic operator | | |
 | backup | backup your work | respaldar | respaldo o copia de seguridad |
 | case study | one case study which is helpful | |  |
-| __coerce__ (verb)| R coerced the data into characters  | |  |
-| __debug__ | makes it more difficult to debug the code |  |  |
-| __default values__ |  |  |  |
+| __coerce__ (verb)| R coerced the data into characters  | | convertir |
+| __debug__ | makes it more difficult to debug the code |  | depurar |
+| __default values__ |  |  | valores por defecto |
 | editing panel| the editing panel |  |  |
-| __execute__ (verb)| to execute the code |  |  |
+| __execute__ (verb)| to execute the code |  | ejecutar |
 | file | save the script in a file | Archivo | archivo o fichero |
-| for-loop | for-loop | | | |
-| __features__ | Rstudio offers many features | | | |
+| for-loop | for-loop | | | bucle-for |
+| __features__ | Rstudio offers many features | | | características |
 | __function call__ | there is no difference between this function call and the previous one | | llamadas a funciones |
 | _logicals_ | to get a vector of logicals |  |  |
 | indentation | | indentar | indentación |
-| __index (verb)__ | integers are used to index vectors |  | | 
+| __index (verb)__ | integers are used to index vectors |  | indexar | 
 | indexing | R provides a convenient way of indexing vectors |  | indexación |
 | __input__ (noun) | `mean` takes a vector as input | input | entrada |
 | __input__ (adjuetive) | `x` is the input vector | input |  |
@@ -30,10 +30,10 @@
 | __motivating__ | motivating examples, motivating case studies |  | 
 | nested | nested sorting, nested design | |  |
 | New File | click on the  _New File_ button | Nuevo Archivo | nuevo archivo o nuevo fichero |
-| __operator__ | the `!=` operator| | |
+| __operator__ | the `!=` operator| | operador |
 | __operators__ | logical operators, the dot operator| | |
-| __output__ | the output of the function is a vector | |  |
-| __paths__  | Relative and full paths, the path of a file list | |  |
+| __output__ | the output of the function is a vector | | salida |
+| __paths__  | Relative and full paths, the path of a file list | | ruta |
 | __plot__ (noun) | make a plot of the data | | gráfico |
 | __plot__ (verb) |  plot the data | |  |
 | __prebuilt objects__  |   | |  |
@@ -41,14 +41,14 @@
 | random forests | | random forest | [árbol aleatorio](https://iartificial.net/random-forest-bosque-aleatorio)|
 | __read-in__  |   | |  |
 | relational operators | `>` and `<` are relational operators | símbolos de relación| | 
-| __return key__|  |  |  |
-| __run__| to run the code |  |  |
+| __return key__|  |  | tecla de retorno |
+| __run__| to run the code |  | ejecutar |
 | scatterplot || diagrama de dispersión, diagrama de puntos ||
-| __spreadsheets__ |   | |  |
+| __spreadsheets__ |   | | Hoja de cálculo |
 | subset | subset this dataset  with logicals| | (crear un) subconjunto |
 | web-based | | en linea/disponible en la web | en la web |
 | web scraping | | descarga/extracción de información en linea | extracción de la web, rastreo web |
-| __workspace__ | save it in the workspace | | | 
+| __workspace__ | save it in the workspace | | espacio de trabajo | 
 
 # Accepted translations
 
