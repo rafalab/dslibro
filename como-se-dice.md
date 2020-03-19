@@ -10,22 +10,22 @@
 |---------------|------------|---------------|---------------|
 | access (verb) | you access the column with `$` | | acceder a |
 | __access operator__ | `$` is the access operator  | | operador de acceso a |
-| __accessor__ | `$` is called the accessor   | |  |
+| __accessor__ | `$` is called the accessor   | accesador? |  |
 | arithmetic operator | addition is an arithmentic operator | | |
 | backup | backup your work | respaldar | respaldo o copia de seguridad |
 | case study | one case study which is helpful | |  |
-| __coerce__ (verb)| R coerced the data into characters  |forzar | convertir |
-| __debug__ | makes it more difficult to debug the code |  | depurar |
-| __default values__ |  | valores predeterminado   | valores por defecto |
+| __coerce__ (verb)| R coerced the data into characters  | forzar | convertir |
+| __debug__ | makes it more difficult to debug the code | depurar | depurar |
+| __default values__ |  | valores predeterminado, valor inicial | valores por defecto, valores predeterminados |
 | editing panel| the editing panel |  |  |
-| __execute__ (verb)| to execute the code |  | ejecutar |
+| __execute__ (verb)| to execute the code | ejecutar | ejecutar |
 | file | save the script in a file | Archivo | archivo o fichero |
 | for-loop | for-loop | | | bucle-for |
-| __features__ | Rstudio offers many features | variables | características |
-| __function call__ | there is no difference between this function call and the previous one | invocar función | llamadas a funciones |
+| __features__ | Rstudio offers many features | variables, características | variables, características |
+| __function call__ | there is no difference between this function call and the previous one | llamada a función | llamadas a funciones, invocar función|
 | _logicals_ | to get a vector of logicals |  |  |
 | indentation | | indentar | indentación |
-| __index (verb)__ | integers are used to index vectors | indexar  | indexar | 
+| __index (verb)__ | integers are used to index vectors | indexar, indizar  | indexar | 
 | indexing | R provides a convenient way of indexing vectors |  | indexación |
 | __input__ (noun) | `mean` takes a vector as input | input, entrada | entrada |
 | __input__ (adjetive) | `x` is the input vector | input |  |
@@ -33,15 +33,15 @@
 | key bindings | | | combinaciones de teclas |
 | keyboard shortcut | Use the keyboard shortcut command-S | atajo del teclado | atajo de teclado |
 | __missing data__ |  |  |
-| __motivating__ | motivating examples, motivating case studies |  | 
+| __motivating__ | motivating examples, motivating case studies |ilustrativo, estimulante| | 
 | nested | nested sorting, nested design | |  |
 | New File | click on the  _New File_ button | Nuevo Archivo | nuevo archivo o nuevo fichero |
-| __operator__ | the `!=` operator| | operador |
+| __operator__ | the `!=` operator| operador | operador |
 | __operators__ | logical operators, the dot operator| | |
-| __output__ | the output of the function is a vector | salida | salida |
+| __output__ | the output of the function is a vector |  | salida |
 | __paths__  | Relative and full paths, the path of a file list | rutas | ruta |
-| __plot__ (noun) | make a plot of the data | | gráfico |
-| __plot__ (verb) |  plot the data | |  |
+| __plot__ (noun) | make a plot of the data | gráfico, gráfica | gráfico |
+| __plot__ (verb) |  plot the data | graficar |  |
 | __prebuilt objects__  |   | |  |
 | point-and-click | avoid point-and-click software  | señalar/apuntar y hacer clic | apuntar y hacer click | [cliquear](https://www.fundeu.es/recomendacion/hacer-clic-clicar-y-cliquear-formas-validas-en-espanol) |
 | random forests | | random forest | [árbol aleatorio](https://iartificial.net/random-forest-bosque-aleatorio)|
