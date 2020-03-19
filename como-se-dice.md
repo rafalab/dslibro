@@ -8,31 +8,38 @@
 | arithmetic operator | addition is an arithmentic operator | | |
 | backup | backup your work | respaldar | respaldo o copia de seguridad |
 | case study | one case study which is helpful | |  |
+| __coerce__ (verb)| R coerced the data into characters  | |  |
 | __debug__ | makes it more difficult to debug the code |  |  |
+| __default values__ |  |  |  |
 | editing panel| the editing panel |  |  |
 | __execute__ (verb)| to execute the code |  |  |
 | file | save the script in a file | Archivo | archivo o fichero |
 | for-loop | for-loop | | | |
-| function call | there is no difference between this function call and the previous one | | llamadas a funciones |
+| __function call__ | there is no difference between this function call and the previous one | | llamadas a funciones |
+| _logicals_ | to get a vector of logicals |  |  |
 | indentation | | indentar | indentación |
-| index (verb) | integers are used to index vectors | índice | | 
+| __index (verb)__ | integers are used to index vectors |  | | 
 | indexing | R provides a convenient way of indexing vectors |  | indexación |
 | __input__ (noun) | `mean` takes a vector as input | input | entrada |
 | __input__ (adjuetive) | `x` is the input vector | input |  |
 | K-nearest neighbors | | K-nearest neighbors, K vecinos más cercanos | K-vecinos mas cercanos |
 | key bindings | | | combinaciones de teclas |
 | keyboard shortcut | Use the keyboard shortcut command-S | atajo del teclado | atajo de teclado |
+| __missing data__ |  |  |
 | __motivating__ | motivating examples, motivating case studies |  | 
 | nested | nested sorting, nested design | |  |
 | New File | click on the  _New File_ button | Nuevo Archivo | nuevo archivo o nuevo fichero |
 | __operator__ | the `!=` operator| | |
 | __operators__ | logical operators, the dot operator| | |
 | __output__ | the output of the function is a vector | |  |
+| __paths__  | Relative and full paths, the path of a file list | |  |
 | __plot__ (noun) | make a plot of the data | | gráfico |
-| __plot__ (veb) |  plot the data | |  |
+| __plot__ (verb) |  plot the data | |  |
+| __prebuilt objects__  |   | |  |
 | point-and-click | avoid point-and-click software  | señalar/apuntar y hacer clic | apuntar y hacer click | [cliquear](https://www.fundeu.es/recomendacion/hacer-clic-clicar-y-cliquear-formas-validas-en-espanol) |
 | random forests | | random forest | [árbol aleatorio](https://iartificial.net/random-forest-bosque-aleatorio)|
 | relational operators | `>` and `<` are relational operators | símbolos de relación| | 
+| __return key__|  |  |  |
 | __run__| to run the code |  |  |
 | scatterplot || diagrama de dispersión, diagrama de puntos ||
 | subset | subset this dataset  with logicals| | (crear un) subconjunto |
