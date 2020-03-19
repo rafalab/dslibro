@@ -1,8 +1,8 @@
 # Resources
 
-*[Traducción del libro "R for Data Science"](https://github.com/cienciadedatos/documentacion-traduccion-r4ds/blob/master/orientaciones-traduccion.md)
+* [Traducción del libro "R for Data Science"](https://github.com/cienciadedatos/documentacion-traduccion-r4ds/blob/master/orientaciones-traduccion.md)
 
-*[The Carpentries Spanish translation efforts](https://github.com/Carpentries-ES/board/blob/master/Convenciones_Traduccion.md)
+* [The Carpentries Spanish translation efforts](https://github.com/Carpentries-ES/board/blob/master/Convenciones_Traduccion.md)
 
 # Pending translation
 
@@ -16,19 +16,19 @@
 | case study | one case study which is helpful | |  |
 | __coerce__ (verb)| R coerced the data into characters  |forzar | convertir |
 | __debug__ | makes it more difficult to debug the code |  | depurar |
-| __default values__ |  |  | valores por defecto |
+| __default values__ |  | valores predeterminado   | valores por defecto |
 | editing panel| the editing panel |  |  |
 | __execute__ (verb)| to execute the code |  | ejecutar |
 | file | save the script in a file | Archivo | archivo o fichero |
 | for-loop | for-loop | | | bucle-for |
-| __features__ | Rstudio offers many features | | | características |
-| __function call__ | there is no difference between this function call and the previous one | | llamadas a funciones |
+| __features__ | Rstudio offers many features | variables | características |
+| __function call__ | there is no difference between this function call and the previous one | invocar función | llamadas a funciones |
 | _logicals_ | to get a vector of logicals |  |  |
 | indentation | | indentar | indentación |
-| __index (verb)__ | integers are used to index vectors |  | indexar | 
+| __index (verb)__ | integers are used to index vectors | indexar  | indexar | 
 | indexing | R provides a convenient way of indexing vectors |  | indexación |
-| __input__ (noun) | `mean` takes a vector as input | input | entrada |
-| __input__ (adjuetive) | `x` is the input vector | input |  |
+| __input__ (noun) | `mean` takes a vector as input | input, entrada | entrada |
+| __input__ (adjetive) | `x` is the input vector | input |  |
 | K-nearest neighbors | | K-nearest neighbors, K vecinos más cercanos | K-vecinos mas cercanos |
 | key bindings | | | combinaciones de teclas |
 | keyboard shortcut | Use the keyboard shortcut command-S | atajo del teclado | atajo de teclado |
@@ -48,7 +48,7 @@
 | __read-in__  |   | |  |
 | relational operators | `>` and `<` are relational operators | símbolos de relación| | 
 | __return key__|  |  | tecla de retorno |
-| __run__| to run the code |  | ejecutar |
+| __run__| to run the code | correr | ejecutar |
 | scatterplot || diagrama de dispersión, diagrama de puntos ||
 | __spreadsheets__ |   | | Hoja de cálculo |
 | subset | subset this dataset  with logicals| | (crear un) subconjunto |
