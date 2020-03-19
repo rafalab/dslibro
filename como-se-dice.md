@@ -7,8 +7,10 @@
 | __accessor__ | `$` is called the accessor   | |  |
 | arithmetic operator | addition is an arithmentic operator | | |
 | backup | backup your work | respaldar | respaldo o copia de seguridad |
-| case study |  | |  |
+| case study | one case study which is helpful | |  |
 | __debug__ | makes it more difficult to debug the code |  |  |
+| editing panel| the editing panel |  |  |
+| __execute__ (verb)| to execute the code |  |  |
 | file | save the script in a file | Archivo | archivo o fichero |
 | for-loop | for-loop | | | |
 | function call | there is no difference between this function call and the previous one | | llamadas a funciones |
@@ -30,7 +32,8 @@
 | __plot__ (veb) |  plot the data | |  |
 | point-and-click | avoid point-and-click software  | señalar/apuntar y hacer clic | apuntar y hacer click | [cliquear](https://www.fundeu.es/recomendacion/hacer-clic-clicar-y-cliquear-formas-validas-en-espanol) |
 | random forests | | random forest | [árbol aleatorio](https://iartificial.net/random-forest-bosque-aleatorio)|
-| relational operators | `>` and `<` are relational operators | símbolos de relación| |  
+| relational operators | `>` and `<` are relational operators | símbolos de relación| | 
+| __run__| to run the code |  |  |
 | scatterplot || diagrama de dispersión, diagrama de puntos ||
 | subset | subset this dataset  with logicals| | (crear un) subconjunto |
 | web-based | | en linea/disponible en la web | en la web |
