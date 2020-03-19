@@ -38,8 +38,8 @@
 | New File | click on the  _New File_ button | Nuevo Archivo | nuevo archivo o nuevo fichero |
 | __operator__ | the `!=` operator| | operador |
 | __operators__ | logical operators, the dot operator| | |
-| __output__ | the output of the function is a vector | | salida |
-| __paths__  | Relative and full paths, the path of a file list | | ruta |
+| __output__ | the output of the function is a vector | salida | salida |
+| __paths__  | Relative and full paths, the path of a file list | rutas | ruta |
 | __plot__ (noun) | make a plot of the data | | gráfico |
 | __plot__ (verb) |  plot the data | |  |
 | __prebuilt objects__  |   | |  |
