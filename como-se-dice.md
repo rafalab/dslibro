@@ -14,8 +14,10 @@
 | arithmetic operator | addition is an arithmentic operator | | operador aritmético |
 | assignment operator |  |operador de asignación  | |
 | backup | backup your work | respaldar | respaldo o copia de seguridad |
+| call |  | llamada |  |
 | case study | one case study which is helpful | | caso de estudio |
 | __coerce__ (verb)| R coerced the data into characters  | forzar | convertir |
+|dashboard |  |un _dashboard_  |  |
 | __debug__ | makes it more difficult to debug the code | depurar | depurar |
 | __default values__ |  | valores predeterminado, valor inicial | valores por defecto, valores predeterminados |
 | editing panel| the editing panel |  | panel de edición |
@@ -27,7 +29,7 @@
 | __function call__ | there is no difference between this function call and the previous one | llamada a función | llamadas a funciones, invocar función|
 | list-columns |columnas-listas  |  |  |
 | log transformation | transformación logarítmica |  |  |
-| _logicals_ | to get a vector of logicals |  | lógicos o booleanos |
+| __logicals__ | to get a vector of logicals |  | lógicos o booleanos |
 | indentation | | indentar | indentación |
 | __index (verb)__ | integers are used to index vectors | indexar, indizar  | indexar | 
 | indexing | R provides a convenient way of indexing vectors |  | indexación |
@@ -37,33 +39,41 @@
 | K-nearest neighbors | | K-nearest neighbors, K vecinos más cercanos | K-vecinos mas cercanos |
 | key bindings | | | combinaciones de teclas |
 | keyboard shortcut | Use the keyboard shortcut command-S | atajo del teclado | atajo de teclado |
-| match | coincidencia  |  |  |
-| mapping | mapear  |  |  |
+| match |  | coincidencia |  |
+| mapping |  | mapear |  |
 | __missing data__ |  | datos perdidos |
-| missing values | valores faltantes |  |  
-| modelling| modelado  |  |  ||
+| missing values || valores faltantes |  |  
+| modelling|  |modelado  |  |
 | __motivating__ | motivating examples, motivating case studies |ilustrativo, estimulante| ilustrativo | 
-| named list | lista nombrada  |  |  |
+| named list |  | lista nombrada  |  |
 | nested | nested sorting, nested design | | diseño anidado |
 | New File | click on the  _New File_ button | Nuevo Archivo | nuevo archivo o nuevo fichero |
-|parse | segmentar o analizar (depende del contexto)  |  |  |
-| partial matching | coincidencia parcial |  |  |
+|notebook |  | un _notebook_ |  |
+|parse |   |segmentar o analizar (depende del contexto)  |  |
+| partial matching | l coincidencia parcia |  |  |
 | __operator__ | the `!=` operator| operador | operador |
 | __operators__ | logical operators, the dot operator| | operadores |
-| __output__ | the output of the function is a vector |  | salida |
+| __output__ | the output of the function is a vector |un _output_ (no se traduce)  | salida |
 | __paths__  | Relative and full paths, the path of a file list | rutas | ruta |
+|placeholder |  |marcador de posición  |  |
 | __plot__ (noun) | make a plot of the data | gráfico, gráfica | gráfico |
 | __plot__ (verb) |  plot the data | graficar | graficar, representar |
 | __prebuilt objects__  |   | |  |
 | point-and-click | avoid point-and-click software  | señalar/apuntar y hacer clic | apuntar y hacer click | [cliquear](https://www.fundeu.es/recomendacion/hacer-clic-clicar-y-cliquear-formas-validas-en-espanol) |
+|query |  | consulta |  |
 | random forests | | random forest | [árbol aleatorio](https://iartificial.net/random-forest-bosque-aleatorio)|
+| raw data |  | datos sin procesar |  |
 | __read-in__  |   | | leer |
+|regular expression |  |expresión regular  |  |
 | relational operators | `>` and `<` are relational operators | símbolos de relación| operadores relacionales | 
 | __return key__|  |  | tecla de retorno, <ENTER> |
 | __run__| to run the code | correr | ejecutar |
 | scatterplot || diagrama de dispersión, diagrama de puntos | diagrama de dispersión |
+|spline |  | un _spline_  |  |
 | __spreadsheets__ |   | | hoja de cálculo |
 | subset | subset this dataset  with logicals| | (crear un) subconjunto |
+| test set |  | set/datos de validación |  |
+|training set |  | set/datos de entrenamiento  |  |
 | web-based | | en linea/disponible en la web | en la web |
 | web scraping | | descarga/extracción de información en linea | extracción de la web, rastreo web |
 | __workspace__ | save it in the workspace | | espacio de trabajo | 
@@ -88,7 +98,7 @@
 | functions | funciones | We will use the functions `mean` and `sd` | funciones | funciones o rutina |
 | Integrated Development Environment (IDE) | _Integrated Development Environment_ (IDE) | ambiente integrado de desarrollo o en ocasiones no se traduce | IDE |
 | machine learning | machine learning | | machine learning o la traducción literal aprendizaje de máquina | [aprendizaje automático](http://portal.uned.es/portal/page?_pageid=93,61703783&_dad=portal&_schema=PORTAL&idAsignatura=71014023) |
-| pipes | pipes | `%>%` |  _pipes_ | tuberías |
+| pipes | _pipes_ | `%>%` |  _pipes_ | tuberías |
 | pipe (verb) | canalizar (_pipe_ en inglés) | We can continue to pipe values along |  |  |
 | R software environment | ambiente de software R | |ambiente de trabajo en R | entorno de R |
 | R environment | ambiente de R | | ambiente de R/ambiente de trabajo | entorno de R |
@@ -98,7 +108,7 @@
 | sort| ordenar alfabeticamente o numericamente | sort the rows of this data frame | ||
 | string | cadenas | | | |
 | tabs | pestañas | RStudio has a Viewer tab | pestañas | pestañas |
-| tidy data | datos tidy | |  | datos ordenados | datos limpios/ordenados |
+| tidy data | datos _tidy_ | |  | datos ordenados | datos limpios/ordenados |
 | tidy format | formato tidy | this data is in tidy format | | | 
 
 
