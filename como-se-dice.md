@@ -10,15 +10,15 @@
 |---------------|------------|---------------|---------------|
 | access (verb) | you access the column with `$` | | acceder a |
 | __access operator__ | `$` is the access operator  | | operador de acceso a |
-| __accessor__ | `$` is called the accessor   | accesador? |  |
-| arithmetic operator | addition is an arithmentic operator | | |
+| __accessor__ | `$` is called the accessor   | accesador? | acceso |
+| arithmetic operator | addition is an arithmentic operator | | operador aritmético |
 | assignment operator |  |operador de asignación  | |
 | backup | backup your work | respaldar | respaldo o copia de seguridad |
-| case study | one case study which is helpful | |  |
+| case study | one case study which is helpful | | caso de estudio |
 | __coerce__ (verb)| R coerced the data into characters  | forzar | convertir |
 | __debug__ | makes it more difficult to debug the code | depurar | depurar |
 | __default values__ |  | valores predeterminado, valor inicial | valores por defecto, valores predeterminados |
-| editing panel| the editing panel |  |  |
+| editing panel| the editing panel |  | panel de edición |
 | __execute__ (verb)| to execute the code | ejecutar | ejecutar |
 | facet |  | separar facetas |  |
 | file | save the script in a file | Archivo | archivo o fichero |
@@ -27,42 +27,42 @@
 | __function call__ | there is no difference between this function call and the previous one | llamada a función | llamadas a funciones, invocar función|
 | list-columns |columnas-listas  |  |  |
 | log transformation | transformación logarítmica |  |  |
-| _logicals_ | to get a vector of logicals |  |  |
+| _logicals_ | to get a vector of logicals |  | lógicos o booleanos |
 | indentation | | indentar | indentación |
 | __index (verb)__ | integers are used to index vectors | indexar, indizar  | indexar | 
 | indexing | R provides a convenient way of indexing vectors |  | indexación |
-| __input__ (noun) | `mean` takes a vector as input | input (la palabra existe como anglicismo en español), entrada | entrada |
-| __input__ (adjetive) | `x` is the input vector | input |  |
+| __input__ (noun) | `mean` takes a vector as input | input, entrada | entrada |
+| __input__ (adjetive) | `x` is the input vector | input | de entreda |
 | intercept |  | intercepto |  |
 | K-nearest neighbors | | K-nearest neighbors, K vecinos más cercanos | K-vecinos mas cercanos |
 | key bindings | | | combinaciones de teclas |
 | keyboard shortcut | Use the keyboard shortcut command-S | atajo del teclado | atajo de teclado |
 | match | coincidencia  |  |  |
 | mapping | mapear  |  |  |
-| __missing data__ |  |  |
+| __missing data__ |  | datos perdidos |
 | missing values | valores faltantes |  |  
 | modelling| modelado  |  |  ||
-| __motivating__ | motivating examples, motivating case studies |ilustrativo, estimulante| | 
+| __motivating__ | motivating examples, motivating case studies |ilustrativo, estimulante| ilustrativo | 
 | named list | lista nombrada  |  |  |
-| nested | nested sorting, nested design | |  |
+| nested | nested sorting, nested design | | diseño anidado |
 | New File | click on the  _New File_ button | Nuevo Archivo | nuevo archivo o nuevo fichero |
 |parse | segmentar o analizar (depende del contexto)  |  |  |
 | partial matching | coincidencia parcial |  |  |
 | __operator__ | the `!=` operator| operador | operador |
-| __operators__ | logical operators, the dot operator| | |
+| __operators__ | logical operators, the dot operator| | operadores |
 | __output__ | the output of the function is a vector |  | salida |
 | __paths__  | Relative and full paths, the path of a file list | rutas | ruta |
 | __plot__ (noun) | make a plot of the data | gráfico, gráfica | gráfico |
-| __plot__ (verb) |  plot the data | graficar |  |
+| __plot__ (verb) |  plot the data | graficar | graficar, representar |
 | __prebuilt objects__  |   | |  |
 | point-and-click | avoid point-and-click software  | señalar/apuntar y hacer clic | apuntar y hacer click | [cliquear](https://www.fundeu.es/recomendacion/hacer-clic-clicar-y-cliquear-formas-validas-en-espanol) |
 | random forests | | random forest | [árbol aleatorio](https://iartificial.net/random-forest-bosque-aleatorio)|
-| __read-in__  |   | |  |
-| relational operators | `>` and `<` are relational operators | símbolos de relación| | 
-| __return key__|  |  | tecla de retorno |
+| __read-in__  |   | | leer |
+| relational operators | `>` and `<` are relational operators | símbolos de relación| operadores relacionales | 
+| __return key__|  |  | tecla de retorno, <ENTER> |
 | __run__| to run the code | correr | ejecutar |
-| scatterplot || diagrama de dispersión, diagrama de puntos ||
-| __spreadsheets__ |   | | Hoja de cálculo |
+| scatterplot || diagrama de dispersión, diagrama de puntos | diagrama de dispersión |
+| __spreadsheets__ |   | | hoja de cálculo |
 | subset | subset this dataset  with logicals| | (crear un) subconjunto |
 | web-based | | en linea/disponible en la web | en la web |
 | web scraping | | descarga/extracción de información en linea | extracción de la web, rastreo web |
