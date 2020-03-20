@@ -12,6 +12,7 @@
 | __access operator__ | `$` is the access operator  | | operador de acceso a |
 | __accessor__ | `$` is called the accessor   | accesador? |  |
 | arithmetic operator | addition is an arithmentic operator | | |
+| assignment operator |  |operador de asignación  | |
 | backup | backup your work | respaldar | respaldo o copia de seguridad |
 | case study | one case study which is helpful | |  |
 | __coerce__ (verb)| R coerced the data into characters  | forzar | convertir |
@@ -19,23 +20,34 @@
 | __default values__ |  | valores predeterminado, valor inicial | valores por defecto, valores predeterminados |
 | editing panel| the editing panel |  |  |
 | __execute__ (verb)| to execute the code | ejecutar | ejecutar |
+| facet |  | separar facetas |  |
 | file | save the script in a file | Archivo | archivo o fichero |
 | for-loop | for-loop | | | bucle-for |
 | __features__ | Rstudio offers many features | variables, características | variables, características |
 | __function call__ | there is no difference between this function call and the previous one | llamada a función | llamadas a funciones, invocar función|
+| list-columns |columnas-listas  |  |  |
+| log transformation | transformación logarítmica |  |  |
 | _logicals_ | to get a vector of logicals |  |  |
 | indentation | | indentar | indentación |
 | __index (verb)__ | integers are used to index vectors | indexar, indizar  | indexar | 
 | indexing | R provides a convenient way of indexing vectors |  | indexación |
-| __input__ (noun) | `mean` takes a vector as input | input, entrada | entrada |
+| __input__ (noun) | `mean` takes a vector as input | input (la palabra existe como anglicismo en español), entrada | entrada |
 | __input__ (adjetive) | `x` is the input vector | input |  |
+| intercept |  | intercepto |  |
 | K-nearest neighbors | | K-nearest neighbors, K vecinos más cercanos | K-vecinos mas cercanos |
 | key bindings | | | combinaciones de teclas |
 | keyboard shortcut | Use the keyboard shortcut command-S | atajo del teclado | atajo de teclado |
+| match | coincidencia  |  |  |
+| mapping | mapear  |  |  |
 | __missing data__ |  |  |
+| missing values | valores faltantes |  |  
+| modelling| modelado  |  |  ||
 | __motivating__ | motivating examples, motivating case studies |ilustrativo, estimulante| | 
+| named list | lista nombrada  |  |  |
 | nested | nested sorting, nested design | |  |
 | New File | click on the  _New File_ button | Nuevo Archivo | nuevo archivo o nuevo fichero |
+|parse | segmentar o analizar (depende del contexto)  |  |  |
+| partial matching | coincidencia parcial |  |  |
 | __operator__ | the `!=` operator| operador | operador |
 | __operators__ | logical operators, the dot operator| | |
 | __output__ | the output of the function is a vector |  | salida |
@@ -66,6 +78,7 @@
 | commands | comandos | type in the command | comando (singular) o comandos (plural) | comandos |
 | command | la del teclado | hit the command key |command o cmd | tecla de comando |
 | data management | manejo de datos |  | manejo de datos | gestión de datos |
+| data set| set de datos |  |  |  |
 | data streaming processing | procesamiento de flujos de datos | | procesamiento continuo de datos | procesamiento de flujos de datos |
 | data types | tipos de datos | data types can be numeric, logical, ... | tipos de datos | tipos de datos|
 | data wrangling | data wrangling | | procesamiento de datos | procesamiento de datos |
