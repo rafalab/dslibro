@@ -17,6 +17,7 @@
 | call |  | llamada |  |
 | case study | one case study which is helpful | | caso de estudio |
 | __coerce__ (verb)| R coerced the data into characters  | forzar | convertir |
+| click |  | clic |  |
 |dashboard |  |un _dashboard_  |  |
 | __debug__ | makes it more difficult to debug the code | depurar | depurar |
 | __default values__ |  | valores predeterminado, valor inicial | valores por defecto, valores predeterminados |
@@ -27,33 +28,34 @@
 | for-loop | for-loop | | | bucle-for |
 | __features__ | Rstudio offers many features | variables, características | variables, características |
 | __function call__ | there is no difference between this function call and the previous one | llamada a función | llamadas a funciones, invocar función|
-| list-columns |columnas-listas  |  |  |
-| log transformation | transformación logarítmica |  |  |
+| list-columns | | columnas-listas   |  |
+| log transformation | | transformación logarítmica   |  |
 | __logicals__ | to get a vector of logicals |  | lógicos o booleanos |
 | indentation | | indentar | indentación |
 | __index (verb)__ | integers are used to index vectors | indexar, indizar  | indexar | 
 | indexing | R provides a convenient way of indexing vectors |  | indexación |
-| __input__ (noun) | `mean` takes a vector as input | input, entrada | entrada |
+| __input__ (noun) | `mean` takes a vector as input | input (no se traduce; anglicismo aceptado), entrada | entrada |
 | __input__ (adjetive) | `x` is the input vector | input | de entreda |
 | intercept |  | intercepto |  |
 | K-nearest neighbors | | K-nearest neighbors, K vecinos más cercanos | K-vecinos mas cercanos |
 | key bindings | | | combinaciones de teclas |
 | keyboard shortcut | Use the keyboard shortcut command-S | atajo del teclado | atajo de teclado |
+| loop |  | bucle |  |
 | match |  | coincidencia |  |
 | mapping |  | mapear |  |
 | __missing data__ |  | datos perdidos |
 | missing values || valores faltantes |  |  
 | modelling|  |modelado  |  |
-| __motivating__ | motivating examples, motivating case studies |ilustrativo, estimulante| ilustrativo | 
+| __motivating__ | motivating examples, motivating case studies |ilustrativo, estimulante, motivante| ilustrativo | 
 | named list |  | lista nombrada  |  |
 | nested | nested sorting, nested design | | diseño anidado |
 | New File | click on the  _New File_ button | Nuevo Archivo | nuevo archivo o nuevo fichero |
 |notebook |  | un _notebook_ |  |
 |parse |   |segmentar o analizar (depende del contexto)  |  |
-| partial matching | l coincidencia parcia |  |  |
+| partial matching | coincidencia parcial |  |  |
 | __operator__ | the `!=` operator| operador | operador |
 | __operators__ | logical operators, the dot operator| | operadores |
-| __output__ | the output of the function is a vector |un _output_ (no se traduce)  | salida |
+| __output__ | the output of the function is a vector |un _output_ (no se traduce),resultado, salida  | salida |
 | __paths__  | Relative and full paths, the path of a file list | rutas | ruta |
 |placeholder |  |marcador de posición  |  |
 | __plot__ (noun) | make a plot of the data | gráfico, gráfica | gráfico |
@@ -61,21 +63,24 @@
 | __prebuilt objects__  |   | |  |
 | point-and-click | avoid point-and-click software  | señalar/apuntar y hacer clic | apuntar y hacer click | [cliquear](https://www.fundeu.es/recomendacion/hacer-clic-clicar-y-cliquear-formas-validas-en-espanol) |
 |query |  | consulta |  |
+|quote |  | entrecomillar |  |
 | random forests | | random forest | [árbol aleatorio](https://iartificial.net/random-forest-bosque-aleatorio)|
 | raw data |  | datos sin procesar |  |
 | __read-in__  |   | | leer |
+| refresh |  | actualizar |  |
 |regular expression |  |expresión regular  |  |
 | relational operators | `>` and `<` are relational operators | símbolos de relación| operadores relacionales | 
 | __return key__|  |  | tecla de retorno, <ENTER> |
-| __run__| to run the code | correr | ejecutar |
+| __run__| to run the code | correr, ejecutar | ejecutar |
 | scatterplot || diagrama de dispersión, diagrama de puntos | diagrama de dispersión |
 |spline |  | un _spline_  |  |
-| __spreadsheets__ |   | | hoja de cálculo |
+| __spreadsheets__ |   | planilla de cálculo | hoja de cálculo |
 | subset | subset this dataset  with logicals| | (crear un) subconjunto |
 | test set |  | set/datos de validación |  |
 |training set |  | set/datos de entrenamiento  |  |
 | web-based | | en linea/disponible en la web | en la web |
 | web scraping | | descarga/extracción de información en linea | extracción de la web, rastreo web |
+| working directory |  | directorio de trabajo |  |
 | __workspace__ | save it in the workspace | | espacio de trabajo | 
 
 # Accepted translations
