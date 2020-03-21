@@ -25,20 +25,20 @@
 | __execute__ (verb)| to execute the code | ejecutar | ejecutar |
 | facet |  | separar facetas |  |
 | file | save the script in a file | Archivo | archivo o fichero |
-| for-loop | for-loop | | | bucle-for |
+| for-loop | for-loop | |bucle-for | bucle-for |
 | __features__ | Rstudio offers many features | variables, características | variables, características |
 | __function call__ | there is no difference between this function call and the previous one | llamada a función | llamadas a funciones, invocar función|
 | list-columns | | columnas-listas   |  |
 | log transformation | | transformación logarítmica   |  |
-| __logicals__ | to get a vector of logicals |  | lógicos o booleanos |
+| __logicals__ | to get a vector of logicals | operadores lógicos o booleanos | lógicos o booleanos |
 | indentation | | indentar | indentación |
 | __index (verb)__ | integers are used to index vectors | indexar, indizar  | indexar | 
 | indexing | R provides a convenient way of indexing vectors |  | indexación |
 | __input__ (noun) | `mean` takes a vector as input | input (no se traduce; anglicismo aceptado), entrada | entrada |
-| __input__ (adjetive) | `x` is the input vector | input | de entreda |
-| intercept |  | intercepto |  |
+| __input__ (adjetive) | `x` is the input vector | input, de entrada | de entreda |
+| intercept |  | intercepto, intersección |  |
 | K-nearest neighbors | | K-nearest neighbors, K vecinos más cercanos | K-vecinos mas cercanos |
-| key bindings | | | combinaciones de teclas |
+| key bindings | | combinaciones de teclas | combinaciones de teclas |
 | keyboard shortcut | Use the keyboard shortcut command-S | atajo del teclado | atajo de teclado |
 | loop |  | bucle |  |
 | match |  | coincidencia |  |
@@ -48,25 +48,25 @@
 | modelling|  |modelado  |  |
 | __motivating__ | motivating examples, motivating case studies |ilustrativo, estimulante, motivante| ilustrativo | 
 | named list |  | lista nombrada  |  |
-| nested | nested sorting, nested design | | diseño anidado |
+| nested | nested sorting, nested design | ordenar por categorías? orden anidado?, diseño anidado| diseño anidado |
 | New File | click on the  _New File_ button | Nuevo Archivo | nuevo archivo o nuevo fichero |
 |notebook |  | un _notebook_ |  |
-|parse |   |segmentar o analizar (depende del contexto)  |  |
+|parse |   |segmentar o analizar (depende del contexto), parsear  |  |
 | partial matching | coincidencia parcial |  |  |
 | __operator__ | the `!=` operator| operador | operador |
-| __operators__ | logical operators, the dot operator| | operadores |
+| __operators__ | logical operators, the dot operator| operadores | operadores |
 | __output__ | the output of the function is a vector |un _output_ (no se traduce),resultado, salida  | salida |
 | __paths__  | Relative and full paths, the path of a file list | rutas | ruta |
 |placeholder |  |marcador de posición  |  |
 | __plot__ (noun) | make a plot of the data | gráfico, gráfica | gráfico |
 | __plot__ (verb) |  plot the data | graficar | graficar, representar |
-| __prebuilt objects__  |   | |  |
+| __prebuilt objects__  |   | objetos predefinidos |  |
 | point-and-click | avoid point-and-click software  | señalar/apuntar y hacer clic | apuntar y hacer click | [cliquear](https://www.fundeu.es/recomendacion/hacer-clic-clicar-y-cliquear-formas-validas-en-espanol) |
 |query |  | consulta |  |
 |quote |  | entrecomillar |  |
 | random forests | | random forest | [árbol aleatorio](https://iartificial.net/random-forest-bosque-aleatorio)|
-| raw data |  | datos sin procesar |  |
-| __read-in__  |   | | leer |
+| raw data |  | datos sin procesar, datos crudos |  |
+| __read-in__  |   | leer (a veces "importar") | leer |
 | refresh |  | actualizar |  |
 |regular expression |  |expresión regular  |  |
 | relational operators | `>` and `<` are relational operators | símbolos de relación| operadores relacionales | 
@@ -75,13 +75,13 @@
 | scatterplot || diagrama de dispersión, diagrama de puntos | diagrama de dispersión |
 |spline |  | un _spline_  |  |
 | __spreadsheets__ |   | planilla de cálculo | hoja de cálculo |
-| subset | subset this dataset  with logicals| | (crear un) subconjunto |
+| subset | subset this dataset  with logicals| (extraer/crear) subconjunto  | (crear un) subconjunto |
 | test set |  | set/datos de validación |  |
 |training set |  | set/datos de entrenamiento  |  |
-| web-based | | en linea/disponible en la web | en la web |
+| web-based | | en linea/disponible en la web,  | en la web |
 | web scraping | | descarga/extracción de información en linea | extracción de la web, rastreo web |
 | working directory |  | directorio de trabajo |  |
-| __workspace__ | save it in the workspace | | espacio de trabajo | 
+| __workspace__ | save it in the workspace |espacio de trabajo | espacio de trabajo | 
 
 # Accepted translations
 
