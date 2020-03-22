@@ -17,26 +17,12 @@
 | __features__ | Rstudio offers many features | variables, características | variables, características |
 | __function call__ | there is no difference between this function call and the previous one | llamada a función | llamadas a funciones, invocar función|
 | list-columns | | columnas-listas   |  |
-| __logicals__ | to get a vector of logicals | operadores lógicos o booleanos | lógicos o booleanos |
-| indentation | | indentar | indentación |
-| __index (verb)__ | integers are used to index vectors | indexar, indizar  | indexar | 
-| indexing | R provides a convenient way of indexing vectors |  | indexación |
-| __input__ (noun) | `mean` takes a vector as input | input (no se traduce; anglicismo aceptado), entrada | entrada |
-| __input__ (adjetive) | `x` is the input vector | input, de entrada | de entreda |
-| intercept |  | intercepto, intersección |  |
-| K-nearest neighbors | | K-nearest neighbors, K vecinos más cercanos | K-vecinos mas cercanos |
-| key bindings | | combinaciones de teclas | combinaciones de teclas |
-| keyboard shortcut | Use the keyboard shortcut command-S | atajo del teclado | atajo de teclado |
-| loop |  | bucle |  |
 | match |  | coincidencia |  |
 | mapping |  | mapear |  |
 | __missing data__ |  | datos perdidos |
 | missing values || valores faltantes |  |  
-| modelling|  |modelado  |  |
-| __motivating__ | motivating examples, motivating case studies |ilustrativo, estimulante, motivante| ilustrativo | 
 | named list |  | lista nombrada  |  |
 | nested | nested sorting, nested design | ordenar por categorías? orden anidado?, diseño anidado| diseño anidado |
-| New File | click on the  _New File_ button | Nuevo Archivo | nuevo archivo o nuevo fichero |
 |notebook |  | un _notebook_ |  |
 |parse |   |segmentar o analizar (depende del contexto), parsear  |  |
 | partial matching | coincidencia parcial |  |  |
@@ -81,12 +67,15 @@
 | add-ons | complementos|  add-ons | complementos | complementos o plugins |
 | arithmetic operator |operador aritmético  | addition is an arithmentic operator | | operador aritmético |
 | assignment operator | operador de asignación |`<-` is the  assignment operator |operador de asignación  | |
+| B | | | | |
 | boxplot | diagrama de caja | display the data in a boxplot|diagrama de caja y bigote | gráfico de | 
+| C | | | | |
 | call |  | llamada |  |
 | character strings | cadenas de caracteres | vector of character strings | secuencia de caracteres | cadenas de caracteres | 
 | coerce (verb)| forzar una conversión |R coerced the data into characters  | forzar | convertir |
 | commands | comandos | type in the command | comando (singular) o comandos (plural) | comandos |
 | command | la del teclado | hit the command key |command o cmd | tecla de comando |
+| D | | | | |
 | dashboard | tablero |un _dashboard_  |  |
 | data management | manejo de datos |  | manejo de datos | gestión de datos |
 | data set| set de datos |  |  |  |
@@ -95,14 +84,36 @@
 | data wrangling | data wrangling | | procesamiento de datos | procesamiento de datos |
 | dataset| set de datos | | | | 
 | default values | valores predeterminado | | valores predeterminado, valor inicial | valores por defecto, valores predeterminados |
+| E | | | | |
 | editing panel | panel de edición | the editing panel |  | panel de edición |
 | EDA | Análisis exploratorio de datos (_EDA_ por sus siglas en inglés) | exploratory data analysis (EDA) |Análisis exploratorio de datos | Análisis exploratorio de datos |
 | execute (verb)| ejecutar |to execute the code | ejecutar | ejecutar |
+| F | | | | |
 | file (verb) | archivar | to file |  |  |
 | file (noun)| archivo |save the script in a file | Archivo | archivo o fichero |
 | functions | funciones | We will use the functions `mean` and `sd` | funciones | funciones o rutina |
-| log transformation | transformación logarítmica | | transformación logarítmica   |  |
+| G | | | | |
+| H | | | | |
+| I | | | | |
+| indentation | indentación | | indentar | indentación |
 | Integrated Development Environment (IDE) | _Integrated Development Environment_ (_IDE_) | ambiente integrado de desarrollo o en ocasiones no se traduce | IDE |
+| index (verb) | indexar | integers are used to index vectors | indexar, indizar  | indexar | 
+| indexing | indexación |R provides a convenient way of indexing vectors |  | indexación |
+| input (noun) | | entrada | `mean` takes a vector as input | input (no se traduce; anglicismo aceptado), entrada | entrada |
+| input (adjetive) | _input_, de entrada | `x` is the input vector | input, de entrada | de entreda |
+| intercept | intercepto | | intercepto, intersección |  |
+| J | | | | |
+| K | | | | |
+| K-nearest neighbors | _K-nearest neighbors_ | | K-nearest neighbors, K vecinos más cercanos | K-vecinos mas cercanos |
+| key bindings | | combinaciones de teclas | combinaciones de teclas |
+| keyboard shortcut | Use the keyboard shortcut command-S | atajo del teclado | atajo de teclado |
+| L | | | | |
+| log transformation | transformación logarítmica | | transformación logarítmica   |  |
+| logicals |  lógicos o booleanos | to get a vector of logicals | operadores lógicos o booleanos | lógicos o booleanos |
+| loop |  | bucle |  |
+| M | | | | |
+| modelling|  modelando ||modelado  |  |
+| motivating| motivante |motivating examples, motivating case studies |ilustrativo, estimulante, motivante| ilustrativo | 
 | machine learning | _machine learning_ | | machine learning o la traducción literal aprendizaje de máquina | [aprendizaje automático](http://portal.uned.es/portal/page?_pageid=93,61703783&_dad=portal&_schema=PORTAL&idAsignatura=71014023) |
 | pipe | _pipe_ | `%>%` |  _pipe_ | tubería |
 | pipe (verb) | canalizar (_pipe_ en inglés) | We can continue to pipe values along |  |  |
