@@ -8,14 +8,14 @@
 
 | English term | What we are using | Examples | MX | ES | 
 |--------------|------------|------| ----|----|
-| _A_ | | | | |
+| __A__ | | | | |
 | access (verb) | acceder | you access the column with `$` | | acceder a |
 | access operator | operador de acceso | `$` is the access operator  | | operador de acceso a |
 | accessor | operador de acceso | `$` is called the accessor   | accesador? | acceso |
 | add-ons | complementos|  add-ons | complementos | complementos o plugins |
 | arithmetic operator |operador aritmético  | addition is an arithmentic operator | | operador aritmético |
 | assignment operator | operador de asignación |`<-` is the  assignment operator |operador de asignación  | |
-| _B_ | | | | |
+| __B__ | | | | |
 | backup | respaldar |backup your work | respaldar | respaldo o copia de seguridad |
 | boxplot | diagrama de caja | display the data in a boxplot|diagrama de caja y bigote | gráfico de | 
 | C | | | | |
@@ -25,7 +25,7 @@
 | coerce (verb)| forzar una conversión |R coerced the data into characters  | forzar | convertir |
 | commands | comandos | type in the command | comando (singular) o comandos (plural) | comandos |
 | command | la del teclado | hit the command key |command o cmd | tecla de comando |
-| _D_ | | | | |
+| __D__ | | | | |
 | dashboard | tablero |un _dashboard_  |  |
 | data management | manejo de datos |  | manejo de datos | gestión de datos |
 | data set| set de datos |  |  |  |
@@ -34,19 +34,19 @@
 | data wrangling | data wrangling | | procesamiento de datos | procesamiento de datos |
 | dataset| set de datos | | | | 
 | default values | valores predeterminado | | valores predeterminado, valor inicial | valores por defecto, valores predeterminados |
-| _E_ | | | | |
+| __E__ | | | | |
 | editing panel | panel de edición | the editing panel |  | panel de edición |
 | Exploratory Data Analysis (EDA) | Análisis exploratorio de datos (_EDA_ por sus siglas en inglés) | exploratory data analysis (EDA) |Análisis exploratorio de datos | Análisis exploratorio de datos |
 | execute (verb)| ejecutar |to execute the code | ejecutar | ejecutar |
-| _F_ | | | | |
+| __F__ | | | | |
 | file (verb) | archivar | to file |  |  |
 | file (noun)| archivo |save the script in a file | Archivo | archivo o fichero |
 | for-loop | bucle-for |  | |bucle-for | bucle-for |
 | functions | funciones | We will use the functions `mean` and `sd` | funciones | funciones o rutina |
 | function call | llamada a función | there is no difference between this function call and the previous one | llamada a función | llamadas a funciones, invocar función|
-| _G_ | | | | |
-| _H_ | | | | |
-| _I_ | | | | |
+| __G__ | | | | |
+| __H__ | | | | |
+| __I__ | | | | |
 | indentation | indentación | | indentar | indentación |
 | Integrated Development Environment (IDE) | _Integrated Development Environment_ (_IDE_) | ambiente integrado de desarrollo o en ocasiones no se traduce | IDE |
 | index (verb) | indexar | integers are used to index vectors | indexar, indizar  | indexar | 
@@ -54,27 +54,27 @@
 | input (noun) | | entrada | `mean` takes a vector as input | input (no se traduce; anglicismo aceptado), entrada | entrada |
 | input (adjetive) | _input_, de entrada | `x` is the input vector | input, de entrada | de entreda |
 | intercept | intercepto | | intercepto, intersección |  |
-| _J_ | | | | |
-| _K_ | | | | |
+| __J__ | | | | |
+| __K__ | | | | |
 | K-nearest neighbors | _K-nearest neighbors_ | | K-nearest neighbors, K vecinos más cercanos | K-vecinos mas cercanos |
 | key bindings | | combinaciones de teclas | combinaciones de teclas |
 | keyboard shortcut | Use the keyboard shortcut command-S | atajo del teclado | atajo de teclado |
-| _L_ | | | | |
+| __L__ | | | | |
 | log transformation | transformación logarítmica | | transformación logarítmica   |  |
 | logicals |  lógicos o booleanos | to get a vector of logicals | operadores lógicos o booleanos | lógicos o booleanos |
 | loop |  | bucle |  |
-| _M_ | | | | |
+| __M__ | | | | |
 | modelling|  modelando ||modelado  |  |
 | motivating| motivante |motivating examples, motivating case studies |ilustrativo, estimulante, motivante| ilustrativo | 
 | machine learning | _machine learning_ | | machine learning o la traducción literal aprendizaje de máquina | [aprendizaje automático](http://portal.uned.es/portal/page?_pageid=93,61703783&_dad=portal&_schema=PORTAL&idAsignatura=71014023) |
-| _N_ | | | | |
+| __N__ | | | | |
 | named list | lista con nombres |  | lista nombrada  |  |
 | nested | anidado o anidada | nested sorting, nested design | ordenar por categorías? orden anidado?, diseño anidado| diseño anidado |
 | notebook |  | un _notebook_ |  |
-| _O_ | | | | |
+| __O__ | | | | |
 | operator | operador |the `!=` operator| operador | operador |
 | output | _output_, resultado, salida | the output of the function is a vector |un _output_ (no se traduce),resultado, salida  | salida |
-| _P_ | | | | |
+| __P__ | | | | |
 | pipe | _pipe_ | `%>%` |  _pipe_ | tubería |
 | pipe (verb) | canalizar (_pipe_ en inglés) | We can continue to pipe values along |  |  |
 | path  |ruta | Relative and full paths, the path of a file list | rutas | ruta |
@@ -82,9 +82,9 @@
 | plot (noun) | gráfica |make a plot of the data | gráfico, gráfica | gráfico |
 | plot (verb) | graficar |plot the data | graficar | graficar, representar |
 | __prebuilt objects__  | objetos predefinidos |   | objetos predefinidos |  |
-| _Q_ | | | | |
+| __Q__ | | | | |
 |quote (verb) | entrecomillar  | we need to quote strings |entrecomillar |  |
-| _R_ | | | | |
+| __R__ | | | | |
 | R software environment | ambiente de _software_ R | |ambiente de trabajo en R | entorno de R |
 | R environment | ambiente de R | | ambiente de R/ambiente de trabajo | entorno de R |
 | random forests | _random forest_| | random forest | [árbol aleatorio](https://iartificial.net/random-forest-bosque-aleatorio)|
@@ -94,7 +94,7 @@
 | regular expression | expresión regular  |  |expresión regular  |  |
 | relational operators | operadores relacionales |`>` and `<` are relational operators | símbolos de relación| operadores relacionales | 
 | run| correr, ejecutar |to run the code | correr, ejecutar | ejecutar |
-| _S_ | | | | |
+| __S__ | | | | |
 | scatterplot | diagrama de dispersión | | diagrama de dispersión, diagrama de puntos | diagrama de dispersión |
 | script | _script_ | write an R script | script | script, archivo de procesamiento por lotes (en MSDOS, Unix/Linux, etc.) |
 | sofware | _software_ | | software | software |
@@ -104,22 +104,22 @@
 | spreadsheets | hoja de cálculo|  | planilla de cálculo | hoja de cálculo |
 | subset | subset this dataset  with logicals| (extraer/crear) subconjunto  | (crear un) subconjunto |
 | string | cadenas | | | |
-| _T_ | | | | |
+| __T__ | | | | |
 | tabs | pestañas | RStudio has a Viewer tab | pestañas | pestañas |
 | test set | set de validación |  | set/datos de validación |  |
 | tidy data | datos _tidy_ | |  | datos ordenados | datos limpios/ordenados |
 | tidy format | formato _tidy_ | this data is in tidy format | | | 
 | training set |  set de entrenamiento |  set/datos de entrenamiento  |  |
-| _U_ | | | | |
-| _V_ | | | | |
-| _W_ | | | | |
+| __U__ | | | | |
+| __V__ | | | | |
+| __W__ | | | | |
 | web-based | disponible en la web | | en linea/disponible en la web,  | en la web |
 | web scraping | extracción de la web | | descarga/extracción de información en linea | extracción de la web, rastreo web |
 | working directory | directorio de trabajo |  | directorio de trabajo |  |
 | __workspace__ | save it in the workspace |espacio de trabajo | espacio de trabajo | 
-| _X_ | | | | |
-| _Y_ | | | | |
-| _Z_ | | | | |
+| __X__ | | | | |
+| __Y__ | | | | |
+| __Z__ | | | | |
 
 # Pending translation
 
