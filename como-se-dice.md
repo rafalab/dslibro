@@ -130,13 +130,12 @@
 | debug | makes it more difficult to debug the code | depurar | depurar |
 | facet |  | separar facetas |  |
 | features | Rstudio offers many features | variables, características | variables, características |
-| list-columns | | columnas-listas   |  |
-| match |  | coincidencia |  |
+| match (verb)|  | coincidencia |  |
+| match (noun)|  | coincidencia |  |
 | mapping |  | mapear |  |
 | missing data |  | datos perdidos |
 | missing values || valores faltantes |  |  
 | parse |   |segmentar o analizar (depende del contexto), parsear  |  |
-| partial matching |  |coincidencia parcial |    |
 | point-and-click | avoid point-and-click software  | señalar/apuntar y hacer clic | apuntar y hacer click | [cliquear](https://www.fundeu.es/recomendacion/hacer-clic-clicar-y-cliquear-formas-validas-en-espanol) |
 |query |  | consulta |  |
 
