@@ -107,7 +107,7 @@
 | pipe (verb) | canalizar (_pipe_ en inglés) | We can continue to pipe values along |  |  |
 | R software environment | ambiente de software R | |ambiente de trabajo en R | entorno de R |
 | R environment | ambiente de R | | ambiente de R/ambiente de trabajo | entorno de R |
-| script | _scripts_ | write an R script | script | script, archivo de procesamiento por lotes (en MSDOS, Unix/Linux, etc.) |
+| script | script | write an R script | script | script, archivo de procesamiento por lotes (en MSDOS, Unix/Linux, etc.) |
 | sofware | software | | software | software |
 | software engineer | ingeniero de software |  | ingeniero de software | ingeniero de software, ingeniero informático |
 | sort| ordenar alfabeticamente o numericamente | sort the rows of this data frame | ||
