@@ -4,47 +4,6 @@
 
 * [The Carpentries Spanish translation efforts](https://github.com/Carpentries-ES/board/blob/master/Convenciones_Traduccion.md)
 
-# Pending translation
-
-| English term | Examples | Suggestions (MX) | Suggestions (ES) |
-|---------------|------------|---------------|---------------|
-| backup | backup your work | respaldar | respaldo o copia de seguridad |
-| case study | one case study which is helpful | | caso de estudio |
-| click |  | clic |  |
-| __debug__ | makes it more difficult to debug the code | depurar | depurar |
-| facet |  | separar facetas |  |
-| for-loop | for-loop | |bucle-for | bucle-for |
-| __features__ | Rstudio offers many features | variables, características | variables, características |
-| __function call__ | there is no difference between this function call and the previous one | llamada a función | llamadas a funciones, invocar función|
-| list-columns | | columnas-listas   |  |
-| match |  | coincidencia |  |
-| mapping |  | mapear |  |
-| __missing data__ |  | datos perdidos |
-| missing values || valores faltantes |  |  
-| parse |   |segmentar o analizar (depende del contexto), parsear  |  |
-| partial matching |  |coincidencia parcial |    |
-| point-and-click | avoid point-and-click software  | señalar/apuntar y hacer clic | apuntar y hacer click | [cliquear](https://www.fundeu.es/recomendacion/hacer-clic-clicar-y-cliquear-formas-validas-en-espanol) |
-|query |  | consulta |  |
-|quote |  | entrecomillar |  |
-| random forests | | random forest | [árbol aleatorio](https://iartificial.net/random-forest-bosque-aleatorio)|
-| raw data |  | datos sin procesar, datos crudos |  |
-| __read-in__  |   | leer (a veces "importar") | leer |
-| refresh |  | actualizar |  |
-|regular expression |  |expresión regular  |  |
-| relational operators | `>` and `<` are relational operators | símbolos de relación| operadores relacionales | 
-| __return key__|  |  | tecla de retorno, <ENTER> |
-| __run__| to run the code | correr, ejecutar | ejecutar |
-| scatterplot || diagrama de dispersión, diagrama de puntos | diagrama de dispersión |
-|spline |  | un _spline_  |  |
-| __spreadsheets__ |   | planilla de cálculo | hoja de cálculo |
-| subset | subset this dataset  with logicals| (extraer/crear) subconjunto  | (crear un) subconjunto |
-| test set |  | set/datos de validación |  |
-|training set |  | set/datos de entrenamiento  |  |
-| web-based | | en linea/disponible en la web,  | en la web |
-| web scraping | | descarga/extracción de información en linea | extracción de la web, rastreo web |
-| working directory |  | directorio de trabajo |  |
-| __workspace__ | save it in the workspace |espacio de trabajo | espacio de trabajo | 
-
 # Accepted translations
 
 | English term | What we are using | Examples | MX | ES | 
@@ -57,9 +16,11 @@
 | arithmetic operator |operador aritmético  | addition is an arithmentic operator | | operador aritmético |
 | assignment operator | operador de asignación |`<-` is the  assignment operator |operador de asignación  | |
 | _B_ | | | | |
+| backup | respaldar |backup your work | respaldar | respaldo o copia de seguridad |
 | boxplot | diagrama de caja | display the data in a boxplot|diagrama de caja y bigote | gráfico de | 
 | C | | | | |
 | call |  | llamada |  |
+| case study | caso de estudio| one case study which is helpful | | caso de estudio |
 | character strings | cadenas de caracteres | vector of character strings | secuencia de caracteres | cadenas de caracteres | 
 | coerce (verb)| forzar una conversión |R coerced the data into characters  | forzar | convertir |
 | commands | comandos | type in the command | comando (singular) o comandos (plural) | comandos |
@@ -75,12 +36,14 @@
 | default values | valores predeterminado | | valores predeterminado, valor inicial | valores por defecto, valores predeterminados |
 | _E_ | | | | |
 | editing panel | panel de edición | the editing panel |  | panel de edición |
-| EDA | Análisis exploratorio de datos (_EDA_ por sus siglas en inglés) | exploratory data analysis (EDA) |Análisis exploratorio de datos | Análisis exploratorio de datos |
+| Exploratory Data Analysis (EDA) | Análisis exploratorio de datos (_EDA_ por sus siglas en inglés) | exploratory data analysis (EDA) |Análisis exploratorio de datos | Análisis exploratorio de datos |
 | execute (verb)| ejecutar |to execute the code | ejecutar | ejecutar |
 | _F_ | | | | |
 | file (verb) | archivar | to file |  |  |
 | file (noun)| archivo |save the script in a file | Archivo | archivo o fichero |
+| for-loop | bucle-for |  | |bucle-for | bucle-for |
 | functions | funciones | We will use the functions `mean` and `sd` | funciones | funciones o rutina |
+| function call | llamada a función | there is no difference between this function call and the previous one | llamada a función | llamadas a funciones, invocar función|
 | _G_ | | | | |
 | _H_ | | | | |
 | _I_ | | | | |
@@ -120,25 +83,63 @@
 | plot (verb) | graficar |plot the data | graficar | graficar, representar |
 | __prebuilt objects__  | objetos predefinidos |   | objetos predefinidos |  |
 | _Q_ | | | | |
+|quote (verb) | entrecomillar  | we need to quote strings |entrecomillar |  |
 | _R_ | | | | |
-| R software environment | ambiente de software R | |ambiente de trabajo en R | entorno de R |
+| R software environment | ambiente de _software_ R | |ambiente de trabajo en R | entorno de R |
 | R environment | ambiente de R | | ambiente de R/ambiente de trabajo | entorno de R |
+| random forests | _random forest_| | random forest | [árbol aleatorio](https://iartificial.net/random-forest-bosque-aleatorio)|
+| raw data | datos sin procesar  | | datos sin procesar, datos crudos |  |
+| read-in | leer, importar |   | leer (a veces "importar") | leer |
+| refresh | actualizar | | actualizar |  |
+| regular expression | expresión regular  |  |expresión regular  |  |
+| relational operators | operadores relacionales |`>` and `<` are relational operators | símbolos de relación| operadores relacionales | 
+| run| correr, ejecutar |to run the code | correr, ejecutar | ejecutar |
 | _S_ | | | | |
+| scatterplot | diagrama de dispersión | | diagrama de dispersión, diagrama de puntos | diagrama de dispersión |
 | script | _script_ | write an R script | script | script, archivo de procesamiento por lotes (en MSDOS, Unix/Linux, etc.) |
 | sofware | _software_ | | software | software |
 | software engineer | ingeniero de _software_ |  | ingeniero de software | ingeniero de software, ingeniero informático |
 | sort| ordenar alfabeticamente o numericamente | sort the rows of this data frame | ||
+| spline | _spline_ |  | un _spline_  |  |
+| spreadsheets | hoja de cálculo|  | planilla de cálculo | hoja de cálculo |
+| subset | subset this dataset  with logicals| (extraer/crear) subconjunto  | (crear un) subconjunto |
 | string | cadenas | | | |
 | _T_ | | | | |
 | tabs | pestañas | RStudio has a Viewer tab | pestañas | pestañas |
+| test set | set de validación |  | set/datos de validación |  |
 | tidy data | datos _tidy_ | |  | datos ordenados | datos limpios/ordenados |
 | tidy format | formato _tidy_ | this data is in tidy format | | | 
+| training set |  set de entrenamiento |  set/datos de entrenamiento  |  |
 | _U_ | | | | |
 | _V_ | | | | |
 | _W_ | | | | |
+| web-based | disponible en la web | | en linea/disponible en la web,  | en la web |
+| web scraping | extracción de la web | | descarga/extracción de información en linea | extracción de la web, rastreo web |
+| working directory | directorio de trabajo |  | directorio de trabajo |  |
+| __workspace__ | save it in the workspace |espacio de trabajo | espacio de trabajo | 
 | _X_ | | | | |
 | _Y_ | | | | |
 | _Z_ | | | | |
+
+# Pending translation
+
+| English term | Examples | Suggestions (MX) | Suggestions (ES) |
+|---------------|------------|---------------|---------------|
+| click (verb)|  | clic |  |
+| debug | makes it more difficult to debug the code | depurar | depurar |
+| facet |  | separar facetas |  |
+| features | Rstudio offers many features | variables, características | variables, características |
+| list-columns | | columnas-listas   |  |
+| match |  | coincidencia |  |
+| mapping |  | mapear |  |
+| missing data |  | datos perdidos |
+| missing values || valores faltantes |  |  
+| parse |   |segmentar o analizar (depende del contexto), parsear  |  |
+| partial matching |  |coincidencia parcial |    |
+| point-and-click | avoid point-and-click software  | señalar/apuntar y hacer clic | apuntar y hacer click | [cliquear](https://www.fundeu.es/recomendacion/hacer-clic-clicar-y-cliquear-formas-validas-en-espanol) |
+|query |  | consulta |  |
+| return key|  |  | tecla de retorno, <ENTER> |
+
 
 
 
