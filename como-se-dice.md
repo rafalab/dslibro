@@ -18,10 +18,11 @@
 | __B__ | | | | |
 | backup | respaldar |backup your work | respaldar | respaldo o copia de seguridad |
 | boxplot | diagrama de caja | display the data in a boxplot|diagrama de caja y bigote | gráfico de | 
-| C | | | | |
+| __C__ | | | | |
 | call |  | llamada |  |
 | case study | caso de estudio| one case study which is helpful | | caso de estudio |
 | character strings | cadenas de caracteres | vector of character strings | secuencia de caracteres | cadenas de caracteres | 
+| click (verb) | clic, pinchar |  | clic |  |
 | coerce (verb)| forzar una conversión |R coerced the data into characters  | forzar | convertir |
 | commands | comandos | type in the command | comando (singular) o comandos (plural) | comandos |
 | command | tecla _command_ | hit the command key |command o cmd | tecla de comando |
@@ -33,6 +34,7 @@
 | data types | tipos de datos | data types can be numeric, logical, ... | tipos de datos | tipos de datos|
 | data wrangling | data wrangling | | procesamiento de datos | procesamiento de datos |
 | dataset| set de datos | | | | 
+| debug | depurar |makes it more difficult to debug the code | depurar | depurar |
 | default values | valores predeterminado | | valores predeterminado, valor inicial | valores por defecto, valores predeterminados |
 | __E__ | | | | |
 | editing panel | panel de edición | the editing panel |  | panel de edición |
@@ -64,6 +66,7 @@
 | logicals |  lógicos o booleanos | to get a vector of logicals | operadores lógicos o booleanos | lógicos o booleanos |
 | loop |  | bucle |  |
 | __M__ | | | | |
+| mapping | correspondencia | | mapear |  |
 | modelling|  modelando ||modelado  |  |
 | motivating| motivante |motivating examples, motivating case studies |ilustrativo, estimulante, motivante| ilustrativo | 
 | machine learning | _machine learning_ | | machine learning o la traducción literal aprendizaje de máquina | [aprendizaje automático](http://portal.uned.es/portal/page?_pageid=93,61703783&_dad=portal&_schema=PORTAL&idAsignatura=71014023) |
@@ -83,7 +86,8 @@
 | plot (verb) | graficar |plot the data | graficar | graficar, representar |
 | __prebuilt objects__  | objetos predefinidos |   | objetos predefinidos |  |
 | __Q__ | | | | |
-|quote (verb) | entrecomillar  | we need to quote strings |entrecomillar |  |
+| query | consulta | | consulta |  |
+| quote (verb) | entrecomillar  | we need to quote strings |entrecomillar |  |
 | __R__ | | | | |
 | R software environment | ambiente de _software_ R | |ambiente de trabajo en R | entorno de R |
 | R environment | ambiente de R | | ambiente de R/ambiente de trabajo | entorno de R |
@@ -126,8 +130,6 @@
 
 | English term | Examples | Suggestions (MX) | Suggestions (ES) |
 |---------------|------------|---------------|---------------|
-| click (verb)|  | clic |  |
-| debug | makes it more difficult to debug the code | depurar | depurar |
 | facet |  | separar facetas |  |
 | features | Rstudio offers many features | variables, características | variables, características |
 | match (verb)|  | coincidencia |  |
@@ -137,7 +139,6 @@
 | missing values || valores faltantes |  |  
 | parse |   |segmentar o analizar (depende del contexto), parsear  |  |
 | point-and-click | avoid point-and-click software  | señalar/apuntar y hacer clic | apuntar y hacer click | [cliquear](https://www.fundeu.es/recomendacion/hacer-clic-clicar-y-cliquear-formas-validas-en-espanol) |
-|query |  | consulta |  |
 
 
 
