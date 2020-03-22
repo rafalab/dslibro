@@ -24,7 +24,7 @@
 | character strings | cadenas de caracteres | vector of character strings | secuencia de caracteres | cadenas de caracteres | 
 | coerce (verb)| forzar una conversión |R coerced the data into characters  | forzar | convertir |
 | commands | comandos | type in the command | comando (singular) o comandos (plural) | comandos |
-| command | la del teclado | hit the command key |command o cmd | tecla de comando |
+| command | tecla _command_ | hit the command key |command o cmd | tecla de comando |
 | __D__ | | | | |
 | dashboard | tablero |un _dashboard_  |  |
 | data management | manejo de datos |  | manejo de datos | gestión de datos |
@@ -93,6 +93,7 @@
 | refresh | actualizar | | actualizar |  |
 | regular expression | expresión regular  |  |expresión regular  |  |
 | relational operators | operadores relacionales |`>` and `<` are relational operators | símbolos de relación| operadores relacionales | 
+| return key | tecla _return_ |  |  | tecla de retorno, <ENTER> |
 | run| correr, ejecutar |to run the code | correr, ejecutar | ejecutar |
 | __S__ | | | | |
 | scatterplot | diagrama de dispersión | | diagrama de dispersión, diagrama de puntos | diagrama de dispersión |
@@ -116,7 +117,7 @@
 | web-based | disponible en la web | | en linea/disponible en la web,  | en la web |
 | web scraping | extracción de la web | | descarga/extracción de información en linea | extracción de la web, rastreo web |
 | working directory | directorio de trabajo |  | directorio de trabajo |  |
-| __workspace__ | save it in the workspace |espacio de trabajo | espacio de trabajo | 
+| workspace | save it in the workspace |espacio de trabajo | espacio de trabajo | 
 | __X__ | | | | |
 | __Y__ | | | | |
 | __Z__ | | | | |
@@ -138,7 +139,6 @@
 | partial matching |  |coincidencia parcial |    |
 | point-and-click | avoid point-and-click software  | señalar/apuntar y hacer clic | apuntar y hacer click | [cliquear](https://www.fundeu.es/recomendacion/hacer-clic-clicar-y-cliquear-formas-validas-en-espanol) |
 |query |  | consulta |  |
-| return key|  |  | tecla de retorno, <ENTER> |
 
 
 
