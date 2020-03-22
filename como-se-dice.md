@@ -8,28 +8,15 @@
 
 | English term | Examples | Suggestions (MX) | Suggestions (ES) |
 |---------------|------------|---------------|---------------|
-| access (verb) | you access the column with `$` | | acceder a |
-| __access operator__ | `$` is the access operator  | | operador de acceso a |
-| __accessor__ | `$` is called the accessor   | accesador? | acceso |
-| arithmetic operator | addition is an arithmentic operator | | operador aritmético |
-| assignment operator |  |operador de asignación  | |
 | backup | backup your work | respaldar | respaldo o copia de seguridad |
-| call |  | llamada |  |
 | case study | one case study which is helpful | | caso de estudio |
-| __coerce__ (verb)| R coerced the data into characters  | forzar | convertir |
 | click |  | clic |  |
-|dashboard |  |un _dashboard_  |  |
 | __debug__ | makes it more difficult to debug the code | depurar | depurar |
-| __default values__ |  | valores predeterminado, valor inicial | valores por defecto, valores predeterminados |
-| editing panel| the editing panel |  | panel de edición |
-| __execute__ (verb)| to execute the code | ejecutar | ejecutar |
 | facet |  | separar facetas |  |
-| file | save the script in a file | Archivo | archivo o fichero |
 | for-loop | for-loop | |bucle-for | bucle-for |
 | __features__ | Rstudio offers many features | variables, características | variables, características |
 | __function call__ | there is no difference between this function call and the previous one | llamada a función | llamadas a funciones, invocar función|
 | list-columns | | columnas-listas   |  |
-| log transformation | | transformación logarítmica   |  |
 | __logicals__ | to get a vector of logicals | operadores lógicos o booleanos | lógicos o booleanos |
 | indentation | | indentar | indentación |
 | __index (verb)__ | integers are used to index vectors | indexar, indizar  | indexar | 
@@ -87,34 +74,48 @@
 
 | English term | What we are using | Examples | MX | ES | 
 |--------------|------------|------| ----|----|
+| A | | | | |
+| access (verb) | acceder | you access the column with `$` | | acceder a |
+| access operator | operador de acceso | `$` is the access operator  | | operador de acceso a |
+| accessor | operador de acceso | `$` is called the accessor   | accesador? | acceso |
 | add-ons | complementos|  add-ons | complementos | complementos o plugins |
+| arithmetic operator |operador aritmético  | addition is an arithmentic operator | | operador aritmético |
+| assignment operator | operador de asignación |`<-` is the  assignment operator |operador de asignación  | |
 | boxplot | diagrama de caja | display the data in a boxplot|diagrama de caja y bigote | gráfico de | 
+| call |  | llamada |  |
 | character strings | cadenas de caracteres | vector of character strings | secuencia de caracteres | cadenas de caracteres | 
+| coerce (verb)| forzar una conversión |R coerced the data into characters  | forzar | convertir |
 | commands | comandos | type in the command | comando (singular) o comandos (plural) | comandos |
 | command | la del teclado | hit the command key |command o cmd | tecla de comando |
+| dashboard | tablero |un _dashboard_  |  |
 | data management | manejo de datos |  | manejo de datos | gestión de datos |
 | data set| set de datos |  |  |  |
 | data streaming processing | procesamiento de flujos de datos | | procesamiento continuo de datos | procesamiento de flujos de datos |
 | data types | tipos de datos | data types can be numeric, logical, ... | tipos de datos | tipos de datos|
 | data wrangling | data wrangling | | procesamiento de datos | procesamiento de datos |
 | dataset| set de datos | | | | 
-| EDA | Análisis exploratorio de datos o EDA (por sus siglas en inglés) | exploratory data analysis (EDA) |Análisis exploratorio de datos | Análisis exploratorio de datos |
-| file | archivar | to file |  |  |
+| default values | valores predeterminado | | valores predeterminado, valor inicial | valores por defecto, valores predeterminados |
+| editing panel | panel de edición | the editing panel |  | panel de edición |
+| EDA | Análisis exploratorio de datos (_EDA_ por sus siglas en inglés) | exploratory data analysis (EDA) |Análisis exploratorio de datos | Análisis exploratorio de datos |
+| execute (verb)| ejecutar |to execute the code | ejecutar | ejecutar |
+| file (verb) | archivar | to file |  |  |
+| file (noun)| archivo |save the script in a file | Archivo | archivo o fichero |
 | functions | funciones | We will use the functions `mean` and `sd` | funciones | funciones o rutina |
-| Integrated Development Environment (IDE) | _Integrated Development Environment_ (IDE) | ambiente integrado de desarrollo o en ocasiones no se traduce | IDE |
-| machine learning | machine learning | | machine learning o la traducción literal aprendizaje de máquina | [aprendizaje automático](http://portal.uned.es/portal/page?_pageid=93,61703783&_dad=portal&_schema=PORTAL&idAsignatura=71014023) |
-| pipes | _pipes_ | `%>%` |  _pipes_ | tuberías |
+| log transformation | transformación logarítmica | | transformación logarítmica   |  |
+| Integrated Development Environment (IDE) | _Integrated Development Environment_ (_IDE_) | ambiente integrado de desarrollo o en ocasiones no se traduce | IDE |
+| machine learning | _machine learning_ | | machine learning o la traducción literal aprendizaje de máquina | [aprendizaje automático](http://portal.uned.es/portal/page?_pageid=93,61703783&_dad=portal&_schema=PORTAL&idAsignatura=71014023) |
+| pipe | _pipe_ | `%>%` |  _pipe_ | tubería |
 | pipe (verb) | canalizar (_pipe_ en inglés) | We can continue to pipe values along |  |  |
 | R software environment | ambiente de software R | |ambiente de trabajo en R | entorno de R |
 | R environment | ambiente de R | | ambiente de R/ambiente de trabajo | entorno de R |
-| script | script | write an R script | script | script, archivo de procesamiento por lotes (en MSDOS, Unix/Linux, etc.) |
-| sofware | software | | software | software |
-| software engineer | ingeniero de software |  | ingeniero de software | ingeniero de software, ingeniero informático |
+| script | _script_ | write an R script | script | script, archivo de procesamiento por lotes (en MSDOS, Unix/Linux, etc.) |
+| sofware | _software_ | | software | software |
+| software engineer | ingeniero de _software_ |  | ingeniero de software | ingeniero de software, ingeniero informático |
 | sort| ordenar alfabeticamente o numericamente | sort the rows of this data frame | ||
 | string | cadenas | | | |
 | tabs | pestañas | RStudio has a Viewer tab | pestañas | pestañas |
 | tidy data | datos _tidy_ | |  | datos ordenados | datos limpios/ordenados |
-| tidy format | formato tidy | this data is in tidy format | | | 
+| tidy format | formato _tidy_ | this data is in tidy format | | | 
 
 
 
