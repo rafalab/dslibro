@@ -67,6 +67,10 @@
 | loop |  | bucle |  |
 | __M__ | | | | |
 | mapping | correspondencia | | mapear |  |
+| match (verb)| aparear  | | coincidencia |  |
+| match (noun)| apareado |  | coincidencia |  |
+| missing data | datos faltantes| | datos perdidos |
+| missing value | valor faltante | | valor faltante |  |  
 | modelling|  modelando ||modelado  |  |
 | motivating| motivante |motivating examples, motivating case studies |ilustrativo, estimulante, motivante| ilustrativo | 
 | machine learning | _machine learning_ | | machine learning o la traducción literal aprendizaje de máquina | [aprendizaje automático](http://portal.uned.es/portal/page?_pageid=93,61703783&_dad=portal&_schema=PORTAL&idAsignatura=71014023) |
@@ -121,7 +125,7 @@
 | web-based | disponible en la web | | en linea/disponible en la web,  | en la web |
 | web scraping | extracción de la web | | descarga/extracción de información en linea | extracción de la web, rastreo web |
 | working directory | directorio de trabajo |  | directorio de trabajo |  |
-| workspace | save it in the workspace |espacio de trabajo | espacio de trabajo | 
+| workspace | espacio de trabajo | save it in the workspace | espacio de trabajo | espacio de trabajo | 
 | __X__ | | | | |
 | __Y__ | | | | |
 | __Z__ | | | | |
@@ -132,11 +136,6 @@
 |---------------|------------|---------------|---------------|
 | facet |  | separar facetas |  |
 | features | Rstudio offers many features | variables, características | variables, características |
-| match (verb)|  | coincidencia |  |
-| match (noun)|  | coincidencia |  |
-| mapping |  | mapear |  |
-| missing data |  | datos perdidos |
-| missing values || valores faltantes |  |  
 | parse |   |segmentar o analizar (depende del contexto), parsear  |  |
 | point-and-click | avoid point-and-click software  | señalar/apuntar y hacer clic | apuntar y hacer click | [cliquear](https://www.fundeu.es/recomendacion/hacer-clic-clicar-y-cliquear-formas-validas-en-espanol) |
 
