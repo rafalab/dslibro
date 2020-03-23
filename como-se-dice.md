@@ -32,7 +32,7 @@
 | data set| set de datos |  |  |  |
 | data streaming processing | procesamiento de flujos de datos | | procesamiento continuo de datos | procesamiento de flujos de datos |
 | data types | tipos de datos | data types can be numeric, logical, ... | tipos de datos | tipos de datos|
-| data wrangling | data wrangling | | procesamiento de datos | procesamiento de datos |
+| data wrangling | wrangling de datos | | procesamiento de datos | procesamiento de datos |
 | dataset| set de datos | | | | 
 | debug | depurar |makes it more difficult to debug the code | depurar | depurar |
 | default values | valores predeterminado | | valores predeterminado, valor inicial | valores por defecto, valores predeterminados |
