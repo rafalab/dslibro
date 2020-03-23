@@ -86,7 +86,7 @@
 | pipe (verb) | canalizar (_pipe_ en inglés) | We can continue to pipe values along |  |  |
 | path  |ruta | Relative and full paths, the path of a file list | rutas | ruta |
 | placeholder | marcador de posición | |marcador de posición  |  |
-| plot (noun) | gráfica |make a plot of the data | gráfico, gráfica | gráfico |
+| plot (noun) | gráfico | make a plot of the data | gráfico, gráfica | gráfico |
 | plot (verb) | graficar |plot the data | graficar | graficar, representar |
 | __prebuilt objects__  | objetos predefinidos |   | objetos predefinidos |  |
 | __Q__ | | | | |
@@ -111,7 +111,7 @@
 | sort| ordenar alfabeticamente o numericamente | sort the rows of this data frame | ||
 | spline | _spline_ |  | un _spline_  |  |
 | spreadsheets | hoja de cálculo|  | planilla de cálculo | hoja de cálculo |
-| subset | subset this dataset  with logicals| (extraer/crear) subconjunto  | (crear un) subconjunto |
+| subset | (extraer/crear) subconjunto | (extraer/crear) subconjunto | (crear un) subconjunto |
 | string | cadenas | | | |
 | __T__ | | | | |
 | tabs | pestañas | RStudio has a Viewer tab | pestañas | pestañas |
