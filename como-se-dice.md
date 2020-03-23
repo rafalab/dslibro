@@ -72,7 +72,7 @@
 | missing data | datos faltantes| | datos perdidos |
 | missing value | valor faltante | | valor faltante |  |  
 | modelling|  modelando ||modelado  |  |
-| motivating| motivante |motivating examples, motivating case studies |ilustrativo, estimulante, motivante| ilustrativo | 
+| motivating| motivantes |motivating examples, motivating case studies |ilustrativo, estimulante, motivante| ilustrativo | 
 | machine learning | _machine learning_ | | machine learning o la traducción literal aprendizaje de máquina | [aprendizaje automático](http://portal.uned.es/portal/page?_pageid=93,61703783&_dad=portal&_schema=PORTAL&idAsignatura=71014023) |
 | __N__ | | | | |
 | named list | lista con nombres |  | lista nombrada  |  |
