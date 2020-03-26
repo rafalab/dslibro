@@ -38,6 +38,7 @@
 | default values | valores predeterminado | | valores predeterminado, valor inicial | valores por defecto, valores predeterminados |
 | __E__ | | | | |
 | editing panel | panel de edición | the editing panel |  | panel de edición |
+| element-wise | elemento por elemento |  |  |  |
 | Exploratory Data Analysis (EDA) | Análisis exploratorio de datos (_EDA_ por sus siglas en inglés) | exploratory data analysis (EDA) |Análisis exploratorio de datos | Análisis exploratorio de datos |
 | execute (verb)| ejecutar |to execute the code | ejecutar | ejecutar |
 | __F__ | | | | |
