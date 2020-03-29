@@ -67,6 +67,7 @@
 | logicals |  lógicos o booleanos | to get a vector of logicals | operadores lógicos o booleanos | lógicos o booleanos |
 | loop |  | bucle |  |
 | __M__ | | | | |
+| map (verb) |definir una correspondencia | |  |  |
 | mapping | correspondencia | | mapear |  |
 | match (verb)| aparear  | | coincidencia |  |
 | match (noun)| apareado |  | coincidencia |  |
@@ -83,9 +84,9 @@
 | operator | operador |the `!=` operator| operador | operador |
 | output | _output_, resultado, salida | the output of the function is a vector |un _output_ (no se traduce),resultado, salida  | salida |
 | __P__ | | | | |
+| path  |ruta | Relative and full paths, the path of a file list | rutas | ruta |
 | pipe | _pipe_ | `%>%` |  _pipe_ | tubería |
 | pipe (verb) | canalizar (_pipe_ en inglés) | We can continue to pipe values along |  |  |
-| path  |ruta | Relative and full paths, the path of a file list | rutas | ruta |
 | placeholder | marcador de posición | |marcador de posición  |  |
 | plot (noun) | gráfico | make a plot of the data | gráfico, gráfica | gráfico |
 | plot (verb) | graficar |plot the data | graficar | graficar, representar |
