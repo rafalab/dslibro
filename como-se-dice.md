@@ -67,7 +67,7 @@
 | logicals |  lógicos o booleanos | to get a vector of logicals | operadores lógicos o booleanos | lógicos o booleanos |
 | loop |  | bucle |  |
 | __M__ | | | | |
-| map (verb) |definir una correspondencia | |  |  |
+| map (verb) | definir una correspondencia | |  |  |
 | mapping | correspondencia | | mapear |  |
 | match (verb)| aparear  | | coincidencia |  |
 | match (noun)| apareado |  | coincidencia |  |
