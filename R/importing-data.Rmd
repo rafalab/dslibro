@@ -6,7 +6,7 @@ img_path <- "R/img"
 
 Hemos estado usando sets de datos ya almacenados como objetos R. Los científicos de datos rara vez tendrán tanta suerte y frecuentemente tendrán que importar datos a R desde un archivo, una base de datos u otras fuentes. Actualmente, una de las formas más comunes de almacenar y compartir datos para el análisis es a través de hojas de cálculo electrónicas. Una hoja de cálculo almacena datos en filas y columnas. Básicamente es una versión de archivo de un _data frame_. Al guardar dicha tabla en un archivo de computadora, uno necesita una manera de definir cuándo termina una nueva fila o columna y cuando comienza la otra. Esto a su vez define las celdas en las que se almacenan los valores individuales.
 
-Al crear hojas de cálculo con archivos de texto, como esas creadas con un editor de texto sencillo, se define una nueva fila con la tecla _return_ y se separan las columnas con un carácter especial predefinido. Los caracteres más comunes son coma ( `,`), punto y coma ( `;`), espacio ( ) y [fix] la tecla _tab_ (un número predeterminado de espacios o `\t`). Aquí tenemos un ejemplo de cómo se ve un archivo separado por comas si lo abrimos con un editor de texto básico:
+Al crear hojas de cálculo con archivos de texto, como esas creadas con un editor de texto sencillo, se define una nueva fila con un _return_ y se separan las columnas con un carácter especial predefinido. Los caracteres más comunes son coma ( `,`), punto y coma ( `;`), espacio ( ) y el _tab_ (un número predeterminado de espacios o `\t`). Aquí tenemos un ejemplo de cómo se ve un archivo separado por comas si lo abrimos con un editor de texto básico:
 
 
 ```{r, echo=FALSE}
@@ -15,7 +15,7 @@ knitr::include_graphics(file.path(img_path,"csv-file.png"))
 
 La primera fila contiene nombres de columna en lugar de datos. Nos referimos a esto como un _encabezado_ (_header_ en inglés), y cuando leemos (_read-in_ en inglés) datos de una hoja de cálculo es importante saber si el archivo tiene un encabezado o no. La mayoría de las funciones de lectura suponen que hay un encabezado. Para saber si el archivo tiene un encabezado, miren el archivo antes de intentar leerlo. Esto se puede hacer con un editor de texto o con RStudio. En RStudio, podemos hacerlo abriendo el archivo en el editor o navegando a la ubicación del archivo, haciendo doble clic en el archivo y presionando _View File_.
 
-Sin embargo, no todos los archivos de hojas de cálculo están en formato de texto. [fix] Las hojas de cálculo de Google (_Google Sheets_ en inglés), por ejemplo, se acceden con un navegador. Otro ejemplo es el formato propietario utilizado por Microsoft Excel, que no se pueden ver con un editor de texto. A pesar de esto y  debido a la popularidad del software Microsoft Excel, este formato se utiliza ampliamente.
+Sin embargo, no todos los archivos de hojas de cálculo están en formato de texto. Las hojas de cálculo de Google (_Google Sheets_ en inglés), por ejemplo, se acceden con un navegador. Otro ejemplo es el formato propietario utilizado por Microsoft Excel, que no se puede ver con un editor de texto. A pesar de esto y  debido a la popularidad del software Microsoft Excel, este formato se utiliza ampliamente.
 
 Comenzamos este capítulo describiendo las diferencias entre archivos de texto (ASCII), Unicode y binarios y cómo estas afectan la forma en que los importamos. Luego explicamos los conceptos de rutas de archivos y directorios de trabajo, que son esenciales para comprender cómo importar datos de manera efectiva. Entonces presentamos los paquetes __readr__ y  __readxl__ y las funciones disponibles para importar hojas de cálculo en R. Finalmente, ofrecemos algunas recomendaciones sobre cómo almacenar y organizar datos en archivos. Los desafíos más complejos, sin embargo, como la extracción de datos de páginas web o de documentos PDF, se discutirán en la parte de "_Wrangling__ de datos" del libro.
 
@@ -24,9 +24,9 @@ Comenzamos este capítulo describiendo las diferencias entre archivos de texto (
 
 El primer paso para importar datos desde una hoja de cálculo es ubicar el archivo que contiene los datos. Aunque no lo recomendamos, pueden utilizar un enfoque similar al que usan para abrir archivos en Microsoft Excel haciendo clic en el menú de "File" de RStudio, haciendo clic en "Import Dataset" y luego haciendo clic en las carpetas hasta encontrar el archivo. Queremos poder escribir código en lugar de estar apuntando y haciendo clic. Las claves y los conceptos que necesitamos para aprender a hacer esto se describen en detalle en la parte "Las herramientas de productividad" de este libro. Aquí ofrecemos una descripción general de los conceptos básicos.
 
-El principal reto de este primer paso es permitir que las funciones de R que realizan la importación sepan dónde buscar el archivo que contiene los datos.[fix] La forma más sencilla de hacer esto es tener una copia del archivo en la carpeta donde las funciones de importación buscan por defecto. Una vez que hagamos esto, solo tenemos que proveerle el nombre del archivo a la función de importación .
+El principal reto de este primer paso es permitir que las funciones de R que realizan la importación sepan dónde buscar el archivo que contiene los datos. La forma más sencilla de hacer esto es tener una copia del archivo en la carpeta donde las funciones de importación buscan por defecto. Una vez que hagamos esto, solo tenemos que proveerle el nombre del archivo a la función de importación.
 
-Se incluye una hoja de cálculo que contiene los datos de los asesinatos de EE. UU. como parte del paquete __dslabs__. [fix] Encontrar este archivo no es obvio, pero las siguientes líneas de código copian el archivo a la carpeta en la que R busca por defecto.[fix] Explicamos cómo funcionan estas líneas a continuación.
+El paquete __dslabs__ incluye una hoja de cálculo que contiene los datos de los asesinatos de EE. UU. Encontrar este archivo no es obvio, pero las siguientes líneas de código copian el archivo a la carpeta en la que R busca por defecto. A continuación explicamos cómo funcionan estas líneas.
 
 ```{r, eval=FALSE}
 filename <- "murders.csv"
@@ -35,7 +35,7 @@ fullpath <- file.path(dir, filename)
 file.copy(fullpath, "murders.csv")
 ```
 
-Este código no lee los datos en R, solo copia un archivo. Pero una vez copie el archivo, podemos importar los datos con solo una línea de código. Aquí usamos la función `read_csv` del paquete __readr__, que forma parte del [fix] _tidyverse_.
+Este código no lee los datos en R, solo copia un archivo. Pero una vez copie el archivo, podemos importar los datos con solo una línea de código. Aquí usamos la función `read_csv` del paquete __readr__, que forma parte del __tidyverse__.
 
 ```{r, eval=FALSE}
 library(tidyverse)
@@ -68,7 +68,7 @@ list.files(path = dir)
 
 Estas rutas relativas nos dan la localización de los archivos o directorios si comenzamos en el directorio con la ruta completa. Por ejemplo, la ruta completa al directorio `help` en el ejemplo anterior es: `/Library/Frameworks/R.framework/Versions/3.5/Resources/library/dslabs/help`.
 
-**Nota**: Probablemente no harán mucho uso de la función `system.file` en su trabajo diario de análisis de datos. [fix] Lo presentamos en esta sección porque facilita el intercambio de hojas de cálculo al incluirlas en el/al formar parte del paquete __dslabs__. Raramente tendrán el lujo de tener datos incluidos en paquetes que ya han instalado. Sin embargo, con frecuencia necesitarán navegar por rutas completas y relativas e importar datos con formato de hoja de cálculo.
+**Nota**: Probablemente no harán mucho uso de la función `system.file` en su trabajo diario de análisis de datos. Lo presentamos en esta sección porque facilita el intercambio de hojas de cálculo al incluirlas en el paquete __dslabs__. Raramente tendrán el lujo de tener datos incluidos en paquetes que ya han instalado. Sin embargo, con frecuencia necesitarán navegar por rutas completas y relativas e importar datos con formato de hoja de cálculo.
 
 ### El directorio de trabajo
 
@@ -121,7 +121,7 @@ file.copy(fullpath, "murders.csv")
 
 Si un archivo se copia correctamente, la función `file.copy` devuelve `TRUE`. Tengan en cuenta que le estamos dando al archivo el mismo nombre, `murders.csv`, pero podríamos haberle dado cualquier nombre. También tengan en cuenta que al no iniciar la cadena con una barra diagonal, R supone que esta es una ruta relativa y copia el archivo al directorio de trabajo.
 
-Deberían poder ver y verificar el archivo en su directorio de trabajo [fix] y verificarlo usando:
+Deberían poder ver el archivo en su directorio de trabajo usando:
 
 ```{r, eval=FALSE}
 list.files()
@@ -129,7 +129,7 @@ list.files()
 
 ## Los paquetes readr y readxl
 
-En esta sección presentamos las principales funciones de importación del [fix] _tidyverse_. Utilizaremos el archivo `murders.csv` del paquete __dslabs__ como ejemplo. Para simplificar la ilustración, copiaremos el archivo a nuestro directorio de trabajo usando el siguiente código:
+En esta sección presentamos las principales funciones de importación del _tidyverse_. Utilizaremos el archivo `murders.csv` del paquete __dslabs__ como ejemplo. Para simplificar la ilustración, copiaremos el archivo a nuestro directorio de trabajo usando el siguiente código:
 
 ```{r, eval=FALSE}
 filename <- "murders.csv"
@@ -171,7 +171,7 @@ Esto también muestra que hay un encabezado. Ahora estamos listos para leer los 
 ```{r, message}
 dat <- read_csv(filename)
 ```
-Tengan en cuenta que recibimos un mensaje informándonos qué tipos de datos se utilizaron para cada columna. También observen que `dat` es un `tibble`, no solo un _data frame_. Esto es porque `read_csv` es un [fix] leedor (_parser_ en inglés) del __tidyverse__. Podemos confirmar que los datos se han leído de la siguiente manera:
+Tengan en cuenta que recibimos un mensaje informándonos qué tipos de datos se utilizaron para cada columna. También observen que `dat` es un `tibble`, no solo un _data frame_. Esto es porque `read_csv` es un leedor (_parser_ en inglés) del _tidyverse_. Podemos confirmar que los datos se han leído de la siguiente manera:
 
 ```{r, eval=FALSE}
 View(dat)
@@ -267,7 +267,7 @@ file.remove(tmp_filename)
 
 ## Las funciones de importación de base R
 
-La base R también provee funciones de importación. Estos tienen nombres similares a esas del [fix] __tidyverse__, por ejemplo `read.table`, `read.csv` y `read.delim`. Sin embargo, hay par de diferencias importantes. Para mostrar esto, leemos los datos con una función de base R:
+La base R también provee funciones de importación. Estos tienen nombres similares a esas del _tidyverse_, por ejemplo `read.table`, `read.csv` y `read.delim`. Sin embargo, hay par de diferencias importantes. Para mostrar esto, leemos los datos con una función de base R:
 
 ```{r}
 dat2 <- read.csv(filename)
@@ -287,7 +287,7 @@ dat <- read.csv("murders.csv", stringsAsFactors = FALSE)
 class(dat$state)
 ```
 
-[fix] En nuestra experiencia, esto puede ser motivo de confusión ya que una variable que se guardó como caracteres en el archivo se convierte en factores independientemente de lo que represente la variable. De hecho, **recomendamos** siempre definir `stringsAsFactors=FALSE` al usar los leedores de base R. Pueden convertir fácilmente las columnas deseadas en factores después de importar datos.
+En nuestra experiencia, esto puede ser motivo de confusión ya que una variable que se guardó como caracteres en el archivo se convierte en factores, independientemente de lo que represente la variable. De hecho, **recomendamos** siempre definir `stringsAsFactors=FALSE` al usar los leedores de base R. Pueden convertir fácilmente las columnas deseadas en factores después de importar datos.
 
 ### `scan`
 
@@ -304,11 +304,11 @@ x[1:10]
 
 Noten que el _tidyverse_ incluye `read_lines`, una función igualmente útil.
 
-## [fix] Los archivos de texto versus los archivos binarios
+## Archivos de texto versus archivos binarios
 
 Para fines de ciencia de datos, los archivos generalmente se pueden clasificar en dos categorías: archivos de texto (también conocidos como archivos ASCII) y archivos binarios. Ya han trabajado con archivos de texto. Todos sus _scripts_ R son archivos de texto igual que los archivos de R markdown utilizados para crear este libro. Las tablas csv que han leído también son archivos de texto. Una gran ventaja de estos archivos es que podemos "mirarlos" fácilmente sin tener que comprar ningún tipo de software especial o seguir instrucciones complicadas. Se puede usar cualquier editor de texto para examinar un archivo de texto, incluyendo los editores disponibles gratuitamente como RStudio, Notepad, textEdit, vi, emacs, nano y pico. Para ver esto, intenten abrir un archivo csv con la herramienta de RStudio "Open file". Deberían poder ver el contenido directamente en su editor. Sin embargo, si intentan abrir, digamos, un archivo Excel xls, jpg o png, no podrán ver nada inmediatamente útil. Estos son archivos binarios. Los archivos de Excel son carpetas comprimidas con varios archivos de texto dentro de ellas. Pero la principal distinción aquí es que los archivos de texto se pueden examinar fácilmente.
 
-Aunque R incluye herramientas para leer archivos binarios ampliamente utilizados, como archivos xls, en general querrán encontrar sets de datos almacenados en archivos de texto. Del mismo modo, al compartir datos, querrán que estén disponibles como archivos de texto siempre que el almacenamiento no sea un problema (los archivos binarios son mucho más eficientes para ahorrar espacio en su disco). En general, [fix] plain-text formats/los formatos de texto simple facilitan el intercambio de datos, ya que no se requiere software comercial para trabajar con los datos.
+Aunque R incluye herramientas para leer archivos binarios ampliamente utilizados, como archivos xls, en general querrán encontrar sets de datos almacenados en archivos de texto. Del mismo modo, al compartir datos, querrán que estén disponibles como archivos de texto siempre que el almacenamiento no sea un problema (los archivos binarios son mucho más eficientes para ahorrar espacio en su disco). En general, los formatos de texto facilitan el intercambio de datos, ya que no se requiere software comercial para trabajar con los datos.
 
 Extraer datos de una hoja de cálculo almacenada como un archivo de texto es quizás la forma más fácil de llevar datos de un archivo a una sesión R. Desafortunadamente, las hojas de cálculo no siempre están disponibles y el hecho de que puedan ver los archivos de texto no implica necesariamente que extraer datos de ellos sea sencillo. En la parte del libro "El _wrangling_ de datos", aprendemos a extraer datos de archivos de texto más complejos, como los archivos html.
 
@@ -318,7 +318,7 @@ Una trampa en la ciencia de datos es suponer que un archivo es un archivo de tex
 
 Para comprender la diferencia entre estos, recuerden que todo en una computadora necesita convertirse eventualmente en 0s y 1s. ASCII es una _codificación_ (_encoding_ en inglés) que define una correspondencia entre caracteres y números. ASCII usa 7 _bits_ (0s y 1s) que resulta en $2^7 = 128$ elementos únicos, suficientes para codificar todos los caracteres en un teclado en inglés. Sin embargo, otros idiomas usan caracteres no incluidos en esta codificación. Por ejemplo, la é en México no está codificado por ASCII. Por esta razón, se definió una nueva codificación, que utiliza más de 7 _bits_: Unicode. Cuando se utiliza Unicode, se puede elegir entre 8, 16 y 32 bits abreviados UTF-8, UTF-16 y UTF-32 respectivamente. RStudio usa la codificación UTF-8 por defecto.
 
-Aunque no entraremos en detalles sobre cómo [fix] lidiar con/manejar/enfrentar las diferentes codificaciones aquí, es importante que sepan que existen diferentes codificaciones para que pueden diagnosticar bien un problema si lo encuentran. Una forma en que se manifiestan los problemas es cuando ven/aparecen caracteres de "aspecto extraño" que no esperaban. [fix] Esta discusión de StackOverflow es un ejemplo: [https://stackoverflow.com/questions/18789330/r-on-windows-character-encoding-hellfont>(https://stackoverflow.com/questions/18789330/r-on-windows -cadena de codificación de caracteres).
+Aunque no entraremos en detalles sobre cómo lidiar con las diferentes codificaciones aquí, es importante que sepan que existen diferentes codificaciones para que pueden diagnosticar bien un problema si lo encuentran. Una forma en que se manifiestan los problemas es cuando ven/aparecen caracteres de "aspecto extraño" que no esperaban. [fix] Esta discusión de StackOverflow es un ejemplo: https://stackoverflow.com/questions/18789330/r-on-windows-character-encoding-hell.
 
 ## Cómo organizar datos con hojas de cálculo
 
