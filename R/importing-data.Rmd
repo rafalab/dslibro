@@ -6,27 +6,27 @@ img_path <- "R/img"
 
 Hemos estado usando sets de datos ya almacenados como objetos R. Los científicos de datos rara vez tendrán tanta suerte y frecuentemente tendrán que importar datos a R desde un archivo, una base de datos u otras fuentes. Actualmente, una de las formas más comunes de almacenar y compartir datos para el análisis es a través de hojas de cálculo electrónicas. Una hoja de cálculo almacena datos en filas y columnas. Básicamente es una versión de archivo de un _data frame_. Al guardar dicha tabla en un archivo de computadora, uno necesita una manera de definir cuándo termina una nueva fila o columna y cuando comienza la otra. Esto a su vez define las celdas en las que se almacenan los valores individuales.
 
-Al crear hojas de cálculo con archivos de texto, como esas creadas con un editor de texto sencillo, se define una nueva fila con la tecla _return_ y las columnas se separan con un carácter especial predefinido. Los caracteres más comunes son coma ( `,`), punto y coma ( `;`), espacio () y pestaña (un número predeterminado de espacios o `\t`). Aquí hay un ejemplo de cómo se ve un archivo separado por comas si lo abrimos con un editor de texto básico:
+Al crear hojas de cálculo con archivos de texto, como esas creadas con un editor de texto sencillo, se define una nueva fila con la tecla _return_ y se separan las columnas con un carácter especial predefinido. Los caracteres más comunes son coma ( `,`), punto y coma ( `;`), espacio ( ) y [fix] la tecla _tab_ (un número predeterminado de espacios o `\t`). Aquí tenemos un ejemplo de cómo se ve un archivo separado por comas si lo abrimos con un editor de texto básico:
 
 
 ```{r, echo=FALSE}
 knitr::include_graphics(file.path(img_path,"csv-file.png"))
 ```
 
-La primera fila contiene nombres de columna en lugar de datos. Nos referimos a esto como un _encabezado_ (_header_ en inglés), y cuando leemos datos de una hoja de cálculo es importante saber si el archivo tiene un encabezado o no. La mayoría de las funciones de lectura suponen que hay un encabezado. Para saber si el archivo tiene un encabezado, es útil mirar el archivo antes de intentar leerlo. Esto se puede hacer con un editor de texto o con RStudio. En RStudio, podemos hacerlo abriendo el archivo en el editor o navegando a la ubicación del archivo, haciendo doble clic en el archivo y presionando _View File_.
+La primera fila contiene nombres de columna en lugar de datos. Nos referimos a esto como un _encabezado_ (_header_ en inglés), y cuando leemos (_read-in_ en inglés) datos de una hoja de cálculo es importante saber si el archivo tiene un encabezado o no. La mayoría de las funciones de lectura suponen que hay un encabezado. Para saber si el archivo tiene un encabezado, miren el archivo antes de intentar leerlo. Esto se puede hacer con un editor de texto o con RStudio. En RStudio, podemos hacerlo abriendo el archivo en el editor o navegando a la ubicación del archivo, haciendo doble clic en el archivo y presionando _View File_.
 
-Sin embargo, no todos los archivos de hoja de cálculo están en formato de texto. Las hojas de cálculo de Google (_Google Sheets_ en inglés), que se representan en un navegador, son un ejemplo. Otro ejemplo es el formato propietario utilizado por Microsoft Excel. No se pueden ver con un editor de texto. A pesar de esto, debido al uso generalizado del software Microsoft Excel, este formato se utiliza ampliamente.
+Sin embargo, no todos los archivos de hojas de cálculo están en formato de texto. [fix] Las hojas de cálculo de Google (_Google Sheets_ en inglés), por ejemplo, se acceden con un navegador. Otro ejemplo es el formato propietario utilizado por Microsoft Excel, que no se pueden ver con un editor de texto. A pesar de esto y  debido a la popularidad del software Microsoft Excel, este formato se utiliza ampliamente.
 
-Comenzamos este capítulo describiendo la diferencia entre archivos de texto (ASCII), Unicode y binarios y cómo esto afecta la forma en que los importamos. Luego explicamos los conceptos de rutas de archivos y directorios de trabajo, que son esenciales para comprender cómo importar datos de manera efectiva. Luego presentamos el paquete __readr__ y  __readxl__ y las funciones disponibles para importar hojas de cálculo en R. Finalmente, ofrecemos algunas recomendaciones sobre cómo almacenar y organizar datos en archivos. Los desafíos más complejos, como la extracción de datos de páginas web o documentos PDF, quedan para la parte de _Wrangling__ de datos del libro.
+Comenzamos este capítulo describiendo las diferencias entre archivos de texto (ASCII), Unicode y binarios y cómo estas afectan la forma en que los importamos. Luego explicamos los conceptos de rutas de archivos y directorios de trabajo, que son esenciales para comprender cómo importar datos de manera efectiva. Entonces presentamos los paquetes __readr__ y  __readxl__ y las funciones disponibles para importar hojas de cálculo en R. Finalmente, ofrecemos algunas recomendaciones sobre cómo almacenar y organizar datos en archivos. Los desafíos más complejos, sin embargo, como la extracción de datos de páginas web o de documentos PDF, se discutirán en la parte de "_Wrangling__ de datos" del libro.
 
 
 ## Las rutas y el directorio de trabajo
 
-El primer paso al importar datos desde una hoja de cálculo es ubicar el archivo que contiene los datos. Aunque no lo recomendamos, pueden utilizar un enfoque similar al que usan para abrir archivos en Microsoft Excel haciendo clic en el menú de "File" de RStudio, haciendo clic en "Import Dataset" y luego haciendo clic en las carpetas hasta encontrar el archivo. Queremos poder escribir código en lugar de estar apuntando y haciendo clic. Las claves y los conceptos que necesitamos para aprender a hacer esto se describen en detalle en la parte de las herramientas de productividad de este libro. Aquí ofrecemos una descripción general de los conceptos básicos.
+El primer paso para importar datos desde una hoja de cálculo es ubicar el archivo que contiene los datos. Aunque no lo recomendamos, pueden utilizar un enfoque similar al que usan para abrir archivos en Microsoft Excel haciendo clic en el menú de "File" de RStudio, haciendo clic en "Import Dataset" y luego haciendo clic en las carpetas hasta encontrar el archivo. Queremos poder escribir código en lugar de estar apuntando y haciendo clic. Las claves y los conceptos que necesitamos para aprender a hacer esto se describen en detalle en la parte "Las herramientas de productividad" de este libro. Aquí ofrecemos una descripción general de los conceptos básicos.
 
-El principal reto de este primer paso es permitir que las funciones de R que realizan la importación sepan dónde buscar el archivo que contiene los datos. La forma más sencilla de hacerlo es tener una copia del archivo en la carpeta en la que se ven las funciones de importación de forma predeterminada. Una vez que hacemos esto, lo único que tenemos que proveerle a la función de importación es el nombre del archivo.
+El principal reto de este primer paso es permitir que las funciones de R que realizan la importación sepan dónde buscar el archivo que contiene los datos.[fix] La forma más sencilla de hacer esto es tener una copia del archivo en la carpeta donde las funciones de importación buscan por defecto. Una vez que hagamos esto, solo tenemos que proveerle el nombre del archivo a la función de importación .
 
-Se incluye una hoja de cálculo que contiene los datos de los asesinatos de EE. UU. como parte del paquete __dslabs__. Encontrar este archivo no es sencillo, pero las siguientes líneas de código copian el archivo a la carpeta en la que R busca por defecto. Explicamos cómo funcionan estas líneas a continuación.
+Se incluye una hoja de cálculo que contiene los datos de los asesinatos de EE. UU. como parte del paquete __dslabs__. [fix] Encontrar este archivo no es obvio, pero las siguientes líneas de código copian el archivo a la carpeta en la que R busca por defecto.[fix] Explicamos cómo funcionan estas líneas a continuación.
 
 ```{r, eval=FALSE}
 filename <- "murders.csv"
@@ -35,23 +35,23 @@ fullpath <- file.path(dir, filename)
 file.copy(fullpath, "murders.csv")
 ```
 
-Este código no lee los datos en R, solo copia un archivo. Pero una vez copie el archivo, podemos importar los datos con una sencilla línea de código. Aquí usamos la función `read_csv` del paquete __readr__, que forma parte del __tidyverse__.
+Este código no lee los datos en R, solo copia un archivo. Pero una vez copie el archivo, podemos importar los datos con solo una línea de código. Aquí usamos la función `read_csv` del paquete __readr__, que forma parte del [fix] _tidyverse_.
 
 ```{r, eval=FALSE}
 library(tidyverse)
 dat <- read_csv(filename)
 ```
 
-Los datos se importan y almacenan en `dat`. El resto de esta sección define algunos conceptos importantes y pfrece una visión general de cómo escribimos código que le dice a R cómo encontrar los archivos que queremos importar. Capítulo \@ref(unix) provee más detalles sobre este tema.
+Los datos se importan y almacenan en `dat`. El resto de esta sección define algunos conceptos importantes y ofrece una visión general de cómo escribimos código para que R pueda encontrar los archivos que queremos importar. Capítulo \@ref(unix) ofrece más detalles sobre este tema.
 
 ### El sistema de archivos
 
-Pueden pensar en el sistema de archivos (_filesystem_ en inglés) de su computadora como una serie de carpetas anidadas, cada una con otras carpetas y archivos. Los científicos de datos se refieren a las carpetas como _directorios_. Nos referimos a la carpeta que contiene todas las demás carpetas como el _directorio raíz_ (_root directory_ en inglés). Nos referimos al directorio en el que estamos ubicados actualmente como el _directorio de trabajo_ (_working directory_ en inglés). Por lo tanto, el directorio de trabajo cambia a medida que se muevan por las carpetas: considérenlo como su ubicación actual.
+Pueden pensar en el sistema de archivos (_filesystem_ en inglés) de su computadora como una serie de carpetas anidadas, cada una con otras carpetas y archivos. Los científicos de datos se refieren a las carpetas como _directorios_ y a la carpeta que contiene todas las demás carpetas como el _directorio raíz_ (_root directory_ en inglés). El directorio en el que estamos ubicados actualmente se llama el _directorio de trabajo_ (_working directory_ en inglés). Por lo tanto, el directorio de trabajo cambia a medida que se muevan por las carpetas: considérenlo como su ubicación actual.
 
 
 ### Las rutas relativas y completas
 
-La _ruta_ (_path_ en inglés) de un archivo es una lista de nombres de directorios que se pueden considerar como instrucciones sobre en qué carpetas hacer clic y en qué orden encontrar el archivo. Si estas instrucciones son para encontrar el archivo desde el directorio raíz, nos referiremos a él como la ruta completa (_full path_ en inglés). Si las instrucciones son para encontrar el archivo desde el directorio de trabajo, nos referimos a él como una ruta relativa (_relative path_). Sección \@ref(filesystem) ofrece más detalles sobre este tema.
+La _ruta_ (_path_ en inglés) de un archivo es una lista de nombres de directorios que se pueden considerar instrucciones sobre en qué carpetas hacer clic y en qué orden encontrar el archivo. Si estas instrucciones son para encontrar el archivo desde el directorio raíz, nos referiremos a ellas como la ruta completa (_full path_ en inglés). Si las instrucciones son para encontrar el archivo desde el directorio de trabajo, nos referimos a ellas como una ruta relativa (_relative path_ en inglés). Sección \@ref(filesystem) ofrece más detalles sobre este tema.
 
 Para ver un ejemplo de una ruta completa en sus sistemas, escriban lo siguiente:
 
@@ -59,20 +59,20 @@ Para ver un ejemplo de una ruta completa en sus sistemas, escriban lo siguiente:
 system.file(package = "dslabs")
 ```
 
-Las cadenas separadas por barras son los nombres de los directorios. La primera barra diagonal representa el directorio raíz y sabemos que esta es una ruta completa porque comienza con una barra diagonal. Si el primer nombre del directorio aparece sin una barra diagonal al frente, entonces R supone que la ruta es relativa. Podemos usar la función `list.files` para ver ejemplos de rutas relativas.
+Las cadenas separadas por barras son los nombres de los directorios. La primera barra diagonal representa el directorio raíz y sabemos que esta es una ruta completa porque comienza con una barra diagonal. Si el primer nombre del directorio aparece sin una barra diagonal en el comienzo, entonces R supone que la ruta es relativa. Podemos usar la función `list.files` para ver ejemplos de rutas relativas:
 
 ```{r}
 dir <- system.file(package = "dslabs")
 list.files(path = dir)
 ```
 
-Estas rutas relativas nos dan la ubicación de los archivos o directorios si comenzamos en el directorio con la ruta completa. Por ejemplo, la ruta completa al directorio `help` en el ejemplo anterior es `/Library/Frameworks/R.framework/Versions/3.5/Resources/library/dslabs/help`.
+Estas rutas relativas nos dan la localización de los archivos o directorios si comenzamos en el directorio con la ruta completa. Por ejemplo, la ruta completa al directorio `help` en el ejemplo anterior es: `/Library/Frameworks/R.framework/Versions/3.5/Resources/library/dslabs/help`.
 
-**Nota**: Probablemente no harán mucho uso de la función `system.file` en su trabajo de análisis de datos diario. Lo presentamos en esta sección porque facilita el intercambio de hojas de cálculo al incluirlas en el paquete __dslabs__. Raramente tendrá el lujo de incluir datos en paquetes que ya han instalado. Sin embargo, con frecuencia necesitarán navegar por rutas completas y relativas e importar datos con formato de hoja de cálculo.
+**Nota**: Probablemente no harán mucho uso de la función `system.file` en su trabajo diario de análisis de datos. [fix] Lo presentamos en esta sección porque facilita el intercambio de hojas de cálculo al incluirlas en el/al formar parte del paquete __dslabs__. Raramente tendrán el lujo de tener datos incluidos en paquetes que ya han instalado. Sin embargo, con frecuencia necesitarán navegar por rutas completas y relativas e importar datos con formato de hoja de cálculo.
 
 ### El directorio de trabajo
 
-Recomendamos encarecidamente escribir solo rutas relativas en su código. La razón es que las rutas completas son exclusivas de sus computadoras y quieren que su código sea portátil. Pueden obtener la ruta completa de su directorio de trabajo sin escribirla explícitamente utilizando la función `getwd`.
+Recomendamos escribir solo rutas relativas en su código ya que las rutas completas son exclusivas de sus computadoras y quieren que su código sea portátil. Pueden obtener la ruta completa de su directorio de trabajo sin escribirla explícitamente utilizando la función `getwd`:
 
 ```{r, eval=FALSE}
 wd <- getwd()
@@ -80,9 +80,9 @@ wd <- getwd()
 
 Si necesitan cambiar su directorio de trabajo, pueden usar la función `setwd` o pueden cambiarlo a través de RStudio haciendo clic en "Session".
 
-### Generando los nombres de ruta
+### Cómo generar los nombres de ruta
 
-Otro ejemplo de como obtener una ruta completa sin escribirla explícitamente se vio arriba cuando creamos el objeto `fullpath` de esta manera:
+Otro ejemplo de como obtener una ruta completa sin escribirla explícitamente se ofreció arriba cuando creamos el objeto `fullpath` de esta manera:
 
 ```{r}
 filename <- "murders.csv"
@@ -110,9 +110,9 @@ fullpath <- file.path(dir, filename)
 ```
 
 
-### Copiando los archivos usando rutas
+### Cómo copiar los archivos usando rutas
 
-La última línea de código que usamos para copiar el archivo en nuestro directorio de inicio usó la función `file.copy`. Esta función toma dos argumentos: el nombre del archivo para copiar y el nombre que se usará en el nuevo directorio.
+La última línea de código que usamos para copiar el archivo en nuestro directorio de inicio usó la función `file.copy`. Esta toma dos argumentos: el nombre del archivo para copiar y el nombre que se usará en el nuevo directorio.
 
 
 ```{r}
@@ -121,7 +121,7 @@ file.copy(fullpath, "murders.csv")
 
 Si un archivo se copia correctamente, la función `file.copy` devuelve `TRUE`. Tengan en cuenta que le estamos dando al archivo el mismo nombre, `murders.csv`, pero podríamos haberle dado cualquier nombre. También tengan en cuenta que al no iniciar la cadena con una barra diagonal, R supone que esta es una ruta relativa y copia el archivo al directorio de trabajo.
 
-Deberían poder ver el archivo en su directorio de trabajo y verificarlo usando:
+Deberían poder ver y verificar el archivo en su directorio de trabajo [fix] y verificarlo usando:
 
 ```{r, eval=FALSE}
 list.files()
@@ -129,7 +129,7 @@ list.files()
 
 ## Los paquetes readr y readxl
 
-En esta sección presentamos las principales funciones de importación del __tidyverse__. Utilizaremos el archivo `murders.csv` del paquete __dslabs__ como ejemplo. Para simplificar la ilustración, copiaremos el archivo a nuestro directorio de trabajo usando el siguiente código:
+En esta sección presentamos las principales funciones de importación del [fix] _tidyverse_. Utilizaremos el archivo `murders.csv` del paquete __dslabs__ como ejemplo. Para simplificar la ilustración, copiaremos el archivo a nuestro directorio de trabajo usando el siguiente código:
 
 ```{r, eval=FALSE}
 filename <- "murders.csv"
@@ -171,8 +171,7 @@ Esto también muestra que hay un encabezado. Ahora estamos listos para leer los 
 ```{r, message}
 dat <- read_csv(filename)
 ```
-Tengan en cuenta que recibimos un mensaje que nos informa qué tipos de datos se utilizaron para cada columna.
-También observen que `dat` es un `tibble`, no solo un _data frame_. Esto es porque `read_csv` es un leedor del __tidyverse__. Podemos confirmar que los datos se han leído:
+Tengan en cuenta que recibimos un mensaje informándonos qué tipos de datos se utilizaron para cada columna. También observen que `dat` es un `tibble`, no solo un _data frame_. Esto es porque `read_csv` es un [fix] leedor/parser del __tidyverse__. Podemos confirmar que los datos se han leído de la siguiente manera:
 
 ```{r, eval=FALSE}
 View(dat)
@@ -191,7 +190,7 @@ Pueden cargar el paquete __readxl__ usando:
 library(readxl)
 ```
 
-El paquete ofrece funciones para leer (_read-in_ en inglés) formatos de Microsoft Excel:
+El paquete ofrece funciones para leer formatos de Microsoft Excel:
 
 | Función | Formato | Sufijo típico |
 |-----------|--------------------------------------------------|----------------|
@@ -199,7 +198,7 @@ El paquete ofrece funciones para leer (_read-in_ en inglés) formatos de Microso
 | read_xls | formato original | xls |
 | read_xlsx | nuevo formato | xlsx |
 
-Los formatos de Microsoft Excel le permiten tener más de una hoja de cálculo en un archivo. Estos se conocen como _hojas_ (_sheets_ en inglés). Las funciones enumeradas anteriormente leen la primera hoja por defecto, pero también podemos leer las otras. La función `excel_sheets` nos da los nombres de todas las hojas en un archivo de Excel. Estos nombres se pueden pasar al argumento `sheet` en las tres funciones anteriores para leer hojas distintas a la primera.
+Los formatos de Microsoft Excel le permiten tener más de una hoja de cálculo en un archivo. Estos se conocen como _hojas_ (_sheets_ en inglés). Las funciones enumeradas anteriormente leen la primera hoja por defecto, pero también se pueden leer las otras. La función `excel_sheets` nos da los nombres de todas las hojas en un archivo de Excel. Estos nombres se pueden pasar al argumento `sheet` en las tres funciones anteriores para leer hojas distintas a la primera.
 
 ## Ejercicios
 
@@ -213,7 +212,7 @@ files
 ```
 
 
-2\. Tenga en cuenta que el último, el archivo `olive`, nos da una advertencia. Esto se debe a que a la primera línea del archivo le falta el encabezado de la primera columna.
+2\. Observe que el último, el archivo `olive`, nos da una advertencia. Esto se debe a que a la primera línea del archivo le falta el encabezado de la primera columna.
 
 Lea el archivo de ayuda para `read_csv` para descubrir cómo leer el archivo sin leer este encabezado. Si omite el encabezado, no debería recibir esta advertencia. Guarde el resultado en un objeto llamado `dat`.
 
@@ -229,7 +228,7 @@ para ver que los nombres no son informativos.
 Utilice la función `readLines` para leer solo la primera línea (luego aprenderemos cómo extraer valores del _output_).
 
 
-## Descargando archivos
+## Cómo descargar archivos
 
 Otro lugar común donde residen los datos es en el internet. Cuando estos datos están en archivos, podemos descargarlos y luego importarlos o incluso leerlos directamente de la web. Por ejemplo, notamos que como nuestro paquete __dslabs__ está en GitHub, el archivo que descargamos con el paquete tiene una URL:
 
