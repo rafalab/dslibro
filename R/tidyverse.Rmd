@@ -8,7 +8,7 @@ Podemos cargar todos los paquetes _tidyverse_ a la vez al instalar y cargar el p
 library(tidyverse)
 ```
 
-Aprenderemos cómo implementar el enfoque _tidyverse_ a lo largo del libro, pero antes de profundizar en los detalles, en este capítulo presentamos algunos de los aspectos más utilizadas del _tidyverse_, comenzando con el paquete __dplyr__ para manipular los _data frames_ y el paquete __purrr__ para trabajar con las funciones. Tengan en cuenta que el _tidyverse_ también incluye un paquete para graficar, __ggplot2__, que presentaremos más adelante en el Capítulo \@ref(ggplot2) en la parte de la visualización de datos del libro; el paquete __readr__ discutido en el Capítulo \@ref(importing-data); y muchos otros. En este capítulo, primero presentamos el concepto de data _tidy_ y luego demostramos cómo usamos el _tidyverse_ para trabajar con _data frames_ en este formato.
+Aprenderemos cómo implementar el enfoque _tidyverse_ a lo largo del libro, pero antes de profundizar en los detalles, en este capítulo presentamos algunos de los aspectos más utilizadas del _tidyverse_, comenzando con el paquete __dplyr__ para manipular los _data frames_ y el paquete __purrr__ para trabajar con las funciones. Tengan en cuenta que el _tidyverse_ también incluye un paquete para graficar, __ggplot2__, que presentaremos más adelante en el Capítulo \@ref(ggplot2) en la parte "Visualización de datos" del libro; el paquete __readr__ discutido en el Capítulo \@ref(importing-data); y muchos otros. En este capítulo, primero presentamos el concepto de data _tidy_ y luego demostramos cómo usamos el _tidyverse_ para trabajar con _data frames_ en este formato.
 
 ## Data _tidy_ {#tidy-data}
 
@@ -33,7 +33,7 @@ select(country, year, fertility)
 head(tidy_data, 6)
 ```
 
-Este set de datos _tidy_ ofrece tasas de fertilidad para dos países a lo largo de los años. Este es un set de datos _tidy_ porque cada fila presenta una observación con las tres variables: país, año y tasa de fecundidad. Sin embargo, este set de datos originalmente vino en otro formato y le cambiamos la forma para distribuir a través del paquete __dslabs__. Originalmente, los datos estaban en el siguiente formato:
+Este set de datos _tidy_ ofrece tasas de fertilidad para dos países a lo largo de los años. Se considera un set de datos _tidy_ porque cada fila presenta una observación con las tres variables: país, año y tasa de fecundidad. Sin embargo, este set de datos originalmente vino en otro formato y le cambiamos la forma para distribuir a través del paquete __dslabs__. Originalmente, los datos estaban en el siguiente formato:
 
 
 ```{r, echo=FALSE, message=FALSE}
@@ -43,7 +43,7 @@ wide_data <- read_csv(filename)
 select(wide_data, country, `1960`:`1962`) %>% as.data.frame
 ```
 
-Se provee la misma información, pero hay dos diferencias importantes en el formato: 1) cada fila incluye varias observaciones y 2) una de las variables, año, se almacena en el encabezado. Para que los paquetes del _tidyverse_ se utilicen de manera óptima, le tenemos que cambiar la forma a los datos para que estén en formato _tidy_, que aprenderán a hacer en la sección de _wrangling_ de datos del libro. Hasta entonces, utilizaremos ejemplos de sets de datos que ya están en formato _tidy_.
+Se provee la misma información, pero hay dos diferencias importantes en el formato: 1) cada fila incluye varias observaciones y 2) una de las variables, año, se almacena en el encabezado. Para que los paquetes del _tidyverse_ se utilicen de manera óptima, le tenemos que cambiar la forma a los datos para que estén en formato _tidy_, que aprenderán a hacer en la sección "_Wrangling_ de datos" del libro. Hasta entonces, utilizaremos ejemplos de sets de datos que ya están en formato _tidy_.
 
 Aunque no es inmediatamente obvio, a medida que avancen en el libro comenzarán a apreciar las ventajas de trabajar en un marco en el que las funciones usan formatos _tidy_ tanto para _inputs_ como para _outputs_. Verán cómo esto permite que los analistas de datos se enfoquen en los aspectos más importantes del análisis en lugar del formato de los datos.
 
@@ -84,7 +84,7 @@ e. `Orange`
 f. `UCBAdmissions`
 
 
-## La manipulación de los _data frames_
+## Cómo manipular los _data frames_
 
 El paquete __dplyr__ del _tidyverse_ ofrece funciones que realizan algunas de las operaciones más comunes cuando se trabaja con los _data frames_ y usa nombres para estas funciones que son relativamente fáciles de recordar. Por ejemplo, para cambiar la tabla de datos agregando una nueva columna, utilizamos `mutate`. Para filtrar la tabla de datos a un subconjunto de filas, utilizamos `filter`. Finalmente, para subdividir los datos seleccionando columnas específicas, usamos `select`.
 
@@ -100,7 +100,7 @@ murders <- mutate(murders, rate = total/ population * 100000)
 
 Recuerden que aquí usamos `total` y `population` dentro de la función, que son objetos **no** definidos en nuestro espacio de trabajo. Pero, ¿por qué no recibimos un error?
 
-Esta es una de las principales características de __dplyr__. Las funciones en este paquete, como `mutate`, saben buscar variables en el _data frame_ proveído en el primer argumento. En la llamada a mutar (_mutate_ en inglés) que vemos arriba, `total` tendrá los valores en `murders$total`. Este enfoque hace que el código sea mucho más legible.
+Esta es una de las principales características de __dplyr__. Las funciones en este paquete, como `mutate`, saben buscar variables en el _data frame_ que el primer argumento le provee. En la llamada a mutar (_mutate_ en inglés) que vemos arriba, `total` [fix] tendrá los valores en/de? `murders$total`. Este enfoque hace que el código sea mucho más legible.
 
 Podemos ver que se agrega la nueva columna:
 
@@ -121,7 +121,7 @@ filter(murders, rate <= 0.71)
 
 ### Cómo seleccionar columnas con `select`
 
-Aunque nuestra tabla de datos solo tiene seis columnas, algunas tablas de datos incluyen cientos. Si queremos ver solo algunas, podemos usar la función `select` de __dplyr__. En el siguiente código seleccionamos tres columnas, asignamos el resultado a un nuevo objeto y luego filtramos este nuevo objeto:
+Aunque nuestra tabla de datos solo tiene seis columnas, algunas tablas de datos incluyen cientos. Si queremos ver solo algunas columnas, podemos usar la función `select` de __dplyr__. En el siguiente código seleccionamos tres, asignamos el resultado a un nuevo objeto y luego filtramos este nuevo objeto:
 
 ```{r}
 new_table <- select(murders, state, region, rate)
@@ -151,7 +151,7 @@ Podemos escribir `population` en vez de `murders$population`. La función `mutat
 
 Use la función `mutate` para agregar una columna de asesinatos llamada `rate` con la tasa de asesinatos por 100,000 como en el código de ejemplo anterior. Asegúrese de redefinir `murders` como se hizo en el código del ejemplo anterior (murders <- [su código]) para que podamos seguir usando esta variable.
 
-2\. Si `rank(x)` le da el rango de las entradas de `x` de menor a mayor, `rank(-x)` le da los rangos de mayor a menor. Use la función `mutate` para agregar una columna `rank` que contiene el rango, de la tasa de asesinatos de mayor a menor. Asegúrese de redefinir `murders` para poder seguir usando esta variable.
+2\. Si `rank(x)` le da el rango de las entradas de `x` de menor a mayor, `rank(-x)` le da los rangos de mayor a menor. Use la función `mutate` para agregar una columna `rank` que contiene el rango de la tasa de asesinatos de mayor a menor. Asegúrese de redefinir `murders` para poder seguir usando esta variable.
 
 
 3\. Con __dplyr__, podemos usar `select` para mostrar solo ciertas columnas. Por ejemplo, con este código solo mostraríamos los estados y los tamaños de población:
@@ -198,7 +198,7 @@ Cree un nuevo _data frame_ llamado `murders_nw` con solo los estados del noreste
 filter(murders, population < 5000000 & region == "Northeast")
 ```
 
-Asegúrese que `murders` ha sido definido con `rate` y `rank` y todavía tiene todos los estados. Crea una tabla llamada `my_states` que contiene filas para los estados que satisfacen ambas condiciones: está en el noreste u oeste y la tasa de homicidios es inferior a 1. Use `select` para mostrar solo el nombre del estado, la tasa y el rango.
+Asegúrese que `murders` ha sido definido con `rate` y `rank` y todavía tiene todos los estados. Cree una tabla llamada `my_states` que contiene filas para los estados que satisfacen ambas condiciones: está en el noreste u oeste y la tasa de homicidios es inferior a 1. Use `select` para mostrar solo el nombre del estado, la tasa y el rango.
 
 ## El _pipe_: `%>%`
 
@@ -271,7 +271,7 @@ rank = rank(-rate)) %>%
 select(state, rate, rank)
 ```
 
-Observe que `select` ya no tiene un _data frame_ como primer argumento. Se supone que el primer argumento sea el resultado de la operación realizada justo antes de `%>%`.
+Note que `select` ya no tiene un _data frame_ como primer argumento. Se supone que el primer argumento sea el resultado de la operación realizada justo antes de `%>%`.
 
 Repita el ejercicio anterior, pero ahora, en lugar de crear un nuevo objeto, muestre el resultado y solo incluya las columnas de estado, velocidad y rango. Use un _pipe_ `%>%` para hacer esto en una sola línea.
 
@@ -320,7 +320,7 @@ s$average
 s$standard_deviation
 ```
 
-Igual que con la mayoría de las otras funciones de __dplyr__, `summarize` conoce los nombres de las variables y podemos usarlas directamente. Entonces, dentro de la llamada a la función `summarize` escribimos `mean(height)`, la función accede a la columna con el nombre "height", o altura, y luego calcula el promedio del vector numérico resultante. Podemos calcular cualquier otro resumen que opera en vectores y devuelve un solo valor. Por ejemplo, podemos agregar las alturas mediana, mínima y máxima de esta manera:
+Igual que con la mayoría de las otras funciones de __dplyr__, `summarize` conoce los nombres de las variables y podemos usarlas directamente. Entonces, cuando escribimos `mean(height)` dentro de la llamada a la función `summarize`, la función accede a la columna con el nombre "height", o altura, y luego calcula el promedio del vector numérico resultante. Podemos calcular cualquier otro resumen que opera en vectores y devuelve un solo valor. Por ejemplo, podemos agregar las alturas mediana, mínima y máxima de esta manera:
 
 ```{r}
 heights %>%
