@@ -433,7 +433,7 @@ arrange(population) %>%
 head()
 ```
 
-[fix] Con `arrange` podemos decidir según qué columna ordenar. Para ver los estados por población, de menor a mayor, organizamos por el `rate` :
+Con `arrange` podemos decidir cuál columna usar para ordenar. Para ver los estados por población, de menor a mayor, organizamos por el `rate` :
 
 ```{r}
 murders %>%
@@ -467,7 +467,7 @@ En el código anterior, usamos la función `head` para evitar que la página se 
 murders %>% top_n(5, rate)
 ```
 
-[fix] Tengan en cuenta que las filas no están ordenadas por `rate`, solo filtradas. Si queremos ordenar, necesitamos usar `arrange`. Recuerden que si el tercer argumento se deja en blanco, `top_n` filtra por la última columna.
+Tengan en cuenta que las filas no están ordenadas por `rate`, solo filtradas. Si queremos ordenar, necesitamos usar `arrange`. Recuerden que si el tercer argumento se deja en blanco, `top_n` filtra por la última columna.
 
 
 ## Ejercicios
@@ -532,12 +532,12 @@ Observen que no hay columnas con esta información. Pero si miran el _output_ an
 murders %>% group_by(region) %>% class()
 ```
 
-El `tbl` es un tipo especial de _data frame_. Las funciones `group_by` y `summarize` siempre devuelven este tipo de _data frame_. La función `group_by` devuelve un tipo especial de `tbl`, el `grouped_df`. Discutiremos esto más adelante. Por coherencia, los verbos de manipulación __dplyr__ ( `select`, `filter`, `mutate` y `arrange`) preservan la clase del _input_: si reciben un _data frame_ regular, devuelven un _data frame_ regular, mientras que si reciben un _tibble_, devuelven un tibble. [fix] Pero los _tibbles_ son el formato preferido en el/del  _tidyverse_ y, como resultado, las funciones _tidyverse_ que producen un _data frame_ desde cero devuelven un _tibble_. Por ejemplo, en el capítulo \@ref(importing-data) veremos que las funciones del _tidyverse_ que se usan para importar datos crean _tibbles_.
+El `tbl` es un tipo especial de _data frame_. Las funciones `group_by` y `summarize` siempre devuelven este tipo de _data frame_. La función `group_by` devuelve un tipo especial de `tbl`, el `grouped_df`. Discutiremos esto más adelante. Por coherencia, los verbos de manipulación __dplyr__ ( `select`, `filter`, `mutate` y `arrange`) preservan la clase del _input_: si reciben un _data frame_ regular, devuelven un _data frame_ regular, mientras que si reciben un _tibble_, devuelven un tibble. Pero los _tibbles_ son el formato preferido por el _tidyverse_ y, como resultado, las funciones _tidyverse_ que producen un _data frame_ desde cero devuelven un _tibble_. Por ejemplo, en el capítulo \@ref(importing-data) veremos que las funciones del _tidyverse_ que se usan para importar datos crean _tibbles_.
 
 Los _tibbles_ son muy similares a los _data frames_. De hecho, pueden pensar en ellos como una versión moderna de _data frames_. Sin embargo, hay tres diferencias importantes que describiremos a continuación.
 
 
-###[fix] Los _tibbles_ se ven mejor
+### Los _tibbles_ se ven mejor
 
 El método de impresión para _tibbles_ es más legible que el de un _data frame_. Para ver esto, comparen el _output_ de escribir `murders` y el _output_ de asesinatos si los convertimos en un _tibble_. Podemos hacer esto usando `as_tibble(murders)`. Si usan RStudio, el _output_ para un _tibble_ se ajusta al tamaño de sus ventanas. Para ver esto, cambien el ancho de su consola R y observen cómo se muestran más/menos columnas.
 
@@ -626,7 +626,7 @@ as_tibble(grades) %>% class()
 
 ## El operador punto
 
-Una de las ventajas de utilizar el _pipe_ `%>%` es que no tenemos que seguir nombrando nuevos objetos mientras manipulamos el _data frame_. [fix] Como recordatorio rápido, si queremos calcular la tasa de asesinatos promedio para los estados del sur, en lugar de escribir:
+Una de las ventajas de utilizar el _pipe_ `%>%` es que no tenemos que seguir nombrando nuevos objetos mientras manipulamos el _data frame_. Recuerden que si queremos calcular la tasa de asesinatos promedio para los estados del sur, en lugar de escribir:
 
 ```{r}
 tab_1 <- filter(murders, region == "South")
@@ -635,7 +635,7 @@ rates <- tab_2$rate
 median(rates)
 ```
 
-[fix]podemos evitar definir nuevos objetos intermedios escribiendo:
+podemos evitar definir nuevos objetos intermedios escribiendo:
 
 ```{r}
 filter(murders, region == "South") %>%
@@ -659,7 +659,7 @@ En la siguiente sección, veremos otras instancias en las que usar el `.` es út
 
 ## `do` {#do}
 
-[fix] Las funciones del _tidyverse_ saben interpretar _tibbles_ agrupados. Además, para facilitar la secuencia de comandos a través del _pipe_ `%>%`, las funciones del _tidyverse_ constantemente devuelven _data frames_, ya que esto asegura que el _output_ de una función sea aceptada como el _input_ de otra. Pero la mayoría de las funciones de R no reconocen los _tibbles_ agrupados ni devuelven _data frames_. La función `quantile` es un ejemplo que describimos en la Sección \@ref(summarize). La función `do` sirve como puente entre las funciones de R, como `quantile` y el _tidyverse_. La función `do`entiende _tibbles_ agrupados y siempre devuelve un _data frame_.
+Las funciones del _tidyverse_ saben interpretar _tibbles_ agrupados. Además, para facilitar la secuencia de comandos a través del _pipe_ `%>%`, las funciones del _tidyverse_ constantemente devuelven _data frames_, ya que esto asegura que el _output_ de una función sea aceptada como el _input_ de otra. Pero la mayoría de las funciones de R no reconocen los _tibbles_ agrupados ni devuelven _data frames_. La función `quantile` es un ejemplo que describimos en la Sección \@ref(summarize). La función `do` sirve como puente entre las funciones de R, como `quantile` y el _tidyverse_. La función `do`entiende _tibbles_ agrupados y siempre devuelve un _data frame_.
 
 En la sección \@ref(summarize), notamos que si intentamos usar `quantile` para obtener el mínimo, la mediana y el máximo en una llamada, recibiremos un error: `Error: expecting result of length one, got : 2`.
 
@@ -672,7 +672,7 @@ summarize(range = quantile(height, c(0, 0.5, 1)))
 
 Podemos usar la función `do` para arreglar esto.
 
-[fix] Primero tenemos que escribir una función que se ajuste al enfoque del _tidyverse_: es decir, recibe un _data frame_ y devuelve un _data frame_.
+Primero tenemos que escribir una función que se ajuste al enfoque del _tidyverse_: es decir, recibe un _data frame_ y devuelve un _data frame_.
 
 ```{r}
 my_summary <- function(dat){
@@ -778,7 +778,7 @@ x <- c(-2, -1, 0, 1, 2)
 case_when(x < 0 ~ "Negative", x > 0 ~ "Positive", TRUE ~ "Zero")
 ```
 
-Un uso común de esta función es definir unas variables categóricas basadas en variables existentes. Por ejemplo, supongamos que queremos comparar las tasas de homicidios en cuatro grupos de estados: _New England_, _West Coast_, _South_ y _other_.[fix] Para cada estado, primero preguntamos si está en _New England_. Si la respuesta es no, entonces preguntamos si está en el _West Coast_, y si no, preguntamos si está en el _South_ y, si no, entonces asignamos ninguna de las anteriores (_other_). Aquí vemos como usamos `case_when` para hacer esto:
+Un uso común de esta función es definir unas variables categóricas basadas en variables existentes. Por ejemplo, supongamos que queremos comparar las tasas de homicidios en cuatro grupos de estados: _New England_, _West Coast_, _South_ y _other_. Para cada estado, primero preguntamos si está en _New England_. Si la respuesta es no, entonces preguntamos si está en el _West Coast_, y si no, preguntamos si está en el _South_ y, si no, entonces asignamos ninguna de las anteriores (_other_). Aquí vemos como usamos `case_when` para hacer esto:
 
 ```{r}
 murders %>%
