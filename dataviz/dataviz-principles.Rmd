@@ -1,0 +1,977 @@
+# Principios de visualización de datos
+
+```{r, echo=FALSE}
+img_path <- "dataviz/img"
+```
+
+Ya hemos proporcionado algunas reglas a seguir mientras creamos parcelas para nuestros ejemplos. Aquí, nuestro objetivo es proporcionar algunos principios generales que podemos usar como guía para una visualización de datos efectiva. Gran parte de esta sección se basa en una charla de Karl Broman^[http://kbroman.org/] titulada "Creación de figuras y tablas efectivas"^[https://www.biostat.wisc.edu/~kbroman/presentations/ graphs2017.pdf] e incluye algunas de las figuras que se hicieron con el código que Karl pone a disposición en su repositorio GitHub^[https://github.com/kbroman/Talk_Graphs], así como las notas de clase de la Introducción a los datos de Peter Aldhous Curso de visualización^[http://paldhous.github.io/ucb/2016/dataviz/index.html]. Siguiendo el enfoque de Karl, mostramos algunos ejemplos de estilos de trama que debemos evitar, explicamos cómo mejorarlos y los usamos como motivación para una lista de principios. Comparamos y contrastamos las tramas que siguen estos principios con las que no.
+
+Los principios se basan principalmente en investigaciones relacionadas con la forma en que los humanos detectan patrones y hacen comparaciones visuales. Los enfoques preferidos son aquellos que mejor se adaptan a la forma en que nuestros cerebros procesan la información visual. Al decidir sobre un enfoque de visualización, también es importante tener en cuenta nuestro objetivo. Podemos estar comparando un número visible de cantidades, describiendo distribuciones para categorías o valores numéricos, comparando los datos de dos grupos o describiendo la relación entre dos variables. Como nota final, queremos enfatizar que para un científico de datos es importante adaptar y optimizar los gráficos para la audiencia. Por ejemplo, una trama exploratoria hecha para nosotros será diferente a una tabla destinada a comunicar un hallazgo a una audiencia general.
+
+Utilizaremos estas bibliotecas:
+
+
+```{r, warning=FALSE, message=FALSE}
+library(tidyverse)
+library(dslabs)
+library(gridExtra)
+```
+
+
+## Codificación de datos utilizando señales visuales
+
+Comenzamos describiendo algunos principios para codificar datos. Hay varios enfoques a nuestra disposición que incluyen posición, longitudes alineadas, ángulos, área, brillo y tono de color.
+
+
+```{r, echo=FALSE}
+browsers <- data.frame(Browser = rep(c("Opera","Safari","Firefox","IE","Chrome"),2),
+Year = rep(c(2000, 2015), each = 5),
+Percentage = c(3,21,23,28,26, 2,22,21,27,29)) %>%
+mutate(Browser = reorder(Browser, Percentage))
+```
+
+
+Para ilustrar cómo se comparan algunas de estas estrategias, supongamos que queremos informar los resultados de dos encuestas hipotéticas con respecto a la preferencia del navegador tomada en 2000 y luego en 2015. Para cada año, simplemente estamos comparando cuatro cantidades, los cuatro porcentajes. Una representación gráfica de porcentajes ampliamente utilizada, popularizada por Microsoft Excel, es el gráfico circular:
+
+
+```{r piechart, echo=FALSE}
+library(ggthemes)
+p1 <- browsers %>% ggplot(aes(x = "", y = Percentage, fill = Browser)) +
+geom_bar(width = 1, stat = "identity", col = "black") + coord_polar(theta = "y") +
+theme_excel() + xlab("") + ylab("") +
+theme(axis.text=element_blank(),
+axis.ticks = element_blank(),
+panel.grid = element_blank()) +
+facet_grid(.~Year)
+p1
+```
+
+
+Aquí estamos representando cantidades con áreas y ángulos, ya que tanto el ángulo como el área de cada sector de tarta son proporcionales a la cantidad que representa el sector. Esto resulta ser una opción subóptima ya que, como lo demuestran los estudios de percepción, los humanos no son buenos para cuantificar ángulos con precisión y son aún peores cuando el área es la única señal visual disponible. El gráfico de anillos es un ejemplo de una gráfica que usa solo área:
+
+```{r donutchart, echo=FALSE}
+browsers %>% ggplot(aes(x = 2, y = Percentage, fill = Browser)) +
+geom_bar(width = 1, stat = "identity", col = "black") +
+scale_x_continuous(limits=c(0.5,2.5)) + coord_polar(theta = "y") +
+theme_excel() + xlab("") + ylab("") +
+theme(axis.text=element_blank(),
+axis.ticks = element_blank(),
+panel.grid = element_blank()) +
+facet_grid(.~Year)
+
+```
+
+Para ver cuán difícil es cuantificar los ángulos y el área, tenga en cuenta que las clasificaciones y todos los porcentajes en las parcelas anteriores cambiaron de 2000 a 2015. ¿Puede determinar los porcentajes reales y clasificar la popularidad de los navegadores? ¿Puedes ver cómo los porcentajes cambiaron de 2000 a 2015? No es fácil distinguirlo de la trama. De hecho, el `pie` El archivo de ayuda de la función R indica que:
+
+> Los gráficos circulares son una muy mala forma de mostrar información. El ojo es bueno para juzgar medidas lineales y malo para juzgar áreas relativas. Un gráfico de barras o gráfico de puntos es una forma preferible de mostrar este tipo de datos.
+
+
+En este caso, simplemente mostrar los números no solo es más claro, sino que también ahorraría costos de impresión si imprime una copia en papel:
+
+```{r, echo=FALSE}
+if(knitr::is_html_output()){
+browsers %>% spread(Year, Percentage) %>% knitr::kable("html") %>%
+kableExtra::kable_styling(bootstrap_options = "striped", full_width = FALSE)
+} else{
+browsers %>% spread(Year, Percentage) %>%
+knitr::kable("latex", booktabs = TRUE) %>%
+kableExtra::kable_styling(font_size = 8)
+}
+```
+
+La forma preferida de graficar estas cantidades es usar la longitud y la posición como señales visuales, ya que los humanos son mucho mejores para juzgar medidas lineales. El diagrama de barras usa este enfoque al usar barras de longitud proporcionales a las cantidades de interés. Al agregar líneas horizontales a valores estratégicamente elegidos, en este caso en cada múltiplo de 10, aliviamos la carga visual de cuantificar a través de la posición de la parte superior de las barras. Compara y contrasta la información que podemos extraer de las dos figuras.
+
+```{r two-barplots, echo=FALSE, out.width="100%", fig.width = 6, fig.height = 5}
+p2 <-browsers %>%
+ggplot(aes(Browser, Percentage)) +
+geom_bar(stat = "identity", width=0.5) +
+ylab("Percent using the Browser") +
+facet_grid(.~Year)
+grid.arrange(p1, p2, nrow = 2)
+```
+
+Observe lo fácil que es ver las diferencias en el diagrama de barras. De hecho, ahora podemos determinar los porcentajes reales siguiendo una línea horizontal hasta el eje x.
+
+Si, por alguna razón, necesita hacer un gráfico circular, etiquete cada porción de pastel con su porcentaje respectivo para que los espectadores no tengan que inferirlos desde los ángulos o el área:
+
+```{r excel-barplot, warning = FALSE, message=FALSE, echo=FALSE}
+library(scales)
+browsers <- filter(browsers, Year == 2015)
+at <- with(browsers, 100 - cumsum(c(0,Percentage[-length(Percentage)])) - 0.5*Percentage)
+label <- percent(browsers$Percentage/100)
+browsers %>% ggplot(aes(x = "", y = Percentage, fill = Browser)) +
+geom_bar(width = 1, stat = "identity", col = "black") + coord_polar(theta = "y") +
+theme_excel() + xlab("") + ylab("") + ggtitle("2015") +
+theme(axis.text=element_blank(),
+axis.ticks = element_blank(),
+panel.grid = element_blank()) +
+annotate(geom = "text",
+x = 1.62,
+y = at,
+label = label, size=4)
+```
+
+En general, cuando se muestran cantidades, se prefieren la posición y la longitud sobre los ángulos y/ o el área. El brillo y el color son aún más difíciles de cuantificar que los ángulos. Pero, como veremos más adelante, a veces son útiles cuando se deben mostrar más de dos dimensiones a la vez.
+
+## Sepa cuándo incluir 0
+
+Cuando se usan diagramas de barras, es erróneo no comenzar las barras en 0. Esto se debe a que, al usar un diagrama de barras, estamos implicando que la longitud es proporcional a las cantidades que se muestran. Al evitar 0, se pueden hacer diferencias relativamente pequeñas para parecer mucho más grandes de lo que realmente son. Este enfoque a menudo es utilizado por políticos u organizaciones de medios que intentan exagerar la diferencia. A continuación se muestra un ejemplo ilustrativo utilizado por Peter Aldhous en esta conferencia: [http://paldhous.github.io/ucb/2016/dataviz/week2.htmlfont>(http://paldhous.github.io/ucb/2016/dataviz/week2.html).
+
+```{r echo=FALSE}
+## http://paldhous.github.io/ucb/2016/dataviz/img/class2_8.jpg
+knitr::include_graphics(file.path(img_path, "class2_8.jpg"))
+```
+
+(Fuente: Fox News, vía Media Matters^[http://mediamatters.org/blog/2013/04/05/fox-news-newest-dishonest-chart-immigration-enf/193507].)
+
+De la trama anterior, parece que las aprensiones casi se han triplicado cuando, de hecho, solo han aumentado en aproximadamente un 16%. Comenzar el gráfico en 0 ilustra esto claramente:
+
+```{r barplot-from-zero-1, echo=FALSE}
+data.frame(Year = as.character(c(2011, 2012, 2013)),Southwest_Border_Apprehensions = c(165244,170223,192298)) %>%
+ggplot(aes(Year, Southwest_Border_Apprehensions )) +
+geom_bar(stat = "identity", fill = "yellow", col = "black", width = 0.65)
+```
+
+Aquí hay otro ejemplo, descrito en detalle en una publicación de blog de Flowing Data:
+
+```{r, echo=FALSE}
+## http://i2.wp.com/flowingdata.com/wp-content/uploads/2012/08/Bush-cuts.png
+knitr::include_graphics(file.path(img_path, "Bush-cuts.png"))
+```
+(Fuente: Fox News, a través de Flowing Data^[http://flowingdata.com/2012/08/06/fox-news-continues-charting-excellence/].)
+
+Este gráfico hace que un aumento del 13% parezca un cambio de cinco veces. Aquí está la trama apropiada:
+
+```{r barplot-from-zero-2, echo=FALSE}
+data.frame(date = c("Now", "Jan 1, 2013"), tax_rate = c(35, 39.6)) %>%
+mutate(date = reorder(date, tax_rate)) %>%
+ggplot(aes(date, tax_rate)) +
+ylab("") + xlab("") +
+geom_bar(stat = "identity", fill = "yellow", col = "black", width = 0.5) +
+ggtitle("Top Tax Rate If Bush Tax Cut Expires")
+```
+
+Finalmente, aquí hay un ejemplo extremo que hace que una diferencia muy pequeña de menos del 2% parezca un cambio de 10 a 100 veces:
+
+```{r, echo=FALSE}
+## http://i2.wp.com/flowingdata.com/wp-content/uploads/2012/08/Bush-cuts.png
+knitr::include_graphics(file.path(img_path, "venezuela-election.png"))
+```
+
+(Fuente:
+Venezolana de Televisión vía Pakistán Today^[https://www.pakistantoday.com.pk/2018/05/18/whats-at-stake-in-venezuelan-presidential-vote] y Diego Mariano.)
+
+Aquí está la trama apropiada:
+
+```{r barplot-from-zero-3, echo=FALSE}
+data.frame(Candidate = factor(c("Maduro", "Capriles"), levels = c("Maduro", "Capriles")),
+Percent = c(50.66, 49.07)) %>%
+ggplot(aes(Candidate, Percent, fill = Candidate)) +
+geom_bar(stat = "identity", width = 0.65, show.legend = FALSE)
+```
+
+Cuando se usa la posición en lugar de la longitud, no es necesario incluir 0. Este es particularmente el caso cuando queremos comparar las diferencias entre los grupos en relación con la variabilidad dentro del grupo. Aquí hay un ejemplo ilustrativo que muestra la esperanza de vida promedio del país estratificada en todos los continentes en 2012:
+
+```{r points-plot-not-from-zero, echo=FALSE, out.width="100%", fig.width = 6, fig.height = 3}
+p1 <- gapminder %>% filter(year == 2012) %>%
+ggplot(aes(continent, life_expectancy)) +
+geom_point()
+p2 <- p1 +
+scale_y_continuous(limits = c(0, 84))
+grid.arrange(p2, p1, ncol = 2)
+```
+
+Tenga en cuenta que en el gráfico de la izquierda, que incluye 0, el espacio entre 0 y 43 no agrega información y hace que sea más difícil comparar la variabilidad entre y dentro del grupo.
+
+
+## No distorsionar cantidades
+
+Durante el discurso del Estado de la Unión de 2011 del presidente Barack Obama, se utilizó el siguiente cuadro para comparar el PIB de EE. UU. Con el PIB de cuatro naciones competidoras:
+
+```{r, echo=FALSE}
+## idea from http://paldhous.github.io/ucb/2016/dataviz/img/class2_30.jpg
+## screen shot my own from state of the union
+knitr::include_graphics(file.path(img_path, "state-of-the-union.png"))
+```
+(Fuente: Dirección del Estado de la Unión 2011^[https://www.youtube.com/watch?v=kl2g40GoRxg])
+
+A juzgar por el área de los círculos, Estados Unidos parece tener una economía cinco veces más grande que la de China y más de 30 veces más grande que la de Francia. Sin embargo, si miramos los números reales, vemos que este no es el caso. Las proporciones reales son 2.6 y 5.8 veces mayores que las de China y Francia, respectivamente. La razón de esta distorsión es que el radio, en lugar del área, se hizo proporcional a la cantidad, lo que implica que la proporción entre las áreas es cuadrada: 2.6 se convierte en 6.5 y 5.8 se convierte en 34.1. Aquí hay una comparación de los círculos que obtenemos si hacemos que el valor sea proporcional al radio y al área:
+
+```{r area-not-radius, echo = FALSE}
+gdp <- c(14.6, 5.7, 5.3, 3.3, 2.5)
+gdp_data <- data.frame(Country = rep(c("United States", "China", "Japan", "Germany", "France"),2),
+y = factor(rep(c("Radius","Area"),each=5), levels = c("Radius", "Area")),
+GDP= c(gdp^2/min(gdp^2), gdp/min(gdp))) %>%
+mutate(Country = reorder(Country, GDP))
+gdp_data %>%
+ggplot(aes(Country, y, size = GDP)) +
+geom_point(show.legend = FALSE, color = "blue") +
+scale_size(range = c(2,25)) +
+coord_flip() + ylab("") + xlab("")
+```
+
+No es sorprendente que __ggplot2__ use de forma predeterminada el área en lugar de
+radio. Por supuesto, en este caso, realmente no deberíamos usar el área, ya que podemos usar la posición y la longitud:
+
+```{r barplot-better-than-area, out.width="50%", echo=FALSE}
+gdp_data %>%
+filter(y == "Area") %>%
+ggplot(aes(Country, GDP)) +
+geom_bar(stat = "identity", width = 0.5) +
+ylab("GDP in trillions of US dollars")
+```
+
+## Ordenar categorías por un valor significativo
+
+Cuando uno de los ejes se usa para mostrar categorías, como se hace en los gráficos de barras, el comportamiento predeterminado de __ggplot2__ es ordenar las categorías alfabéticamente cuando se definen por cadenas de caracteres. Si están definidos por factores, están ordenados por los niveles de factores. Raramente queremos usar el orden alfabético. En cambio, debemos ordenar por una cantidad significativa. En todos los casos anteriores, los gráficos de barras se ordenaron según los valores que se muestran. La excepción fue el gráfico que muestra gráficos de barras que comparan los navegadores. En este caso, mantuvimos el orden igual en todos los gráficos de barras para facilitar la comparación. Específicamente, en lugar de ordenar los navegadores por separado en los dos años, ordenamos ambos años por el valor promedio de 2000 y 2015.
+
+
+Anteriormente aprendimos a usar el `reorder` función, que nos ayuda a lograr este objetivo.
+Para apreciar cómo el orden correcto puede ayudar a transmitir un mensaje, supongamos que queremos crear un complot para comparar la tasa de homicidios en todos los estados. Estamos particularmente interesados en los estados más peligrosos y seguros. Tenga en cuenta la diferencia cuando ordenamos alfabéticamente (el valor predeterminado) versus cuando ordenamos por la tarifa real:
+
+```{r do-not-order-alphabetically, fig.height = 5, echo=FALSE}
+data(murders)
+p1 <- murders %>% mutate(murder_rate = total/ population * 100000) %>%
+ggplot(aes(state, murder_rate)) +
+geom_bar(stat="identity") +
+coord_flip() +
+theme(axis.text.y = element_text(size = 8)) +
+xlab("")
+
+p2 <- murders %>% mutate(murder_rate = total/ population * 100000) %>%
+mutate(state = reorder(state, murder_rate)) %>%
+ggplot(aes(state, murder_rate)) +
+geom_bar(stat="identity") +
+coord_flip() +
+theme(axis.text.y = element_text(size = 8)) +
+xlab("")
+
+grid.arrange(p1, p2, ncol = 2)
+```
+
+Podemos hacer la segunda trama así:
+
+```{r, eval=FALSE}
+data(murders)
+murders %>% mutate(murder_rate = total/ population * 100000) %>%
+mutate(state = reorder(state, murder_rate)) %>%
+ggplot(aes(state, murder_rate)) +
+geom_bar(stat="identity") +
+coord_flip() +
+theme(axis.text.y = element_text(size = 6)) +
+xlab("")
+```
+
+Los `reorder` la función también nos permite reordenar grupos. Anteriormente vimos un ejemplo relacionado con la distribución de ingresos entre regiones. Aquí están las dos versiones trazadas una contra la otra:
+
+```{r reorder-boxplot-example, out.width="100%", echo=FALSE}
+past_year <- 1970
+p1 <- gapminder %>%
+mutate(dollars_per_day = gdp/population/365) %>%
+filter(year == past_year & !is.na(gdp)) %>%
+ggplot(aes(region, dollars_per_day)) +
+geom_boxplot() +
+geom_point() +
+theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
+xlab("")
+
+p2 <- gapminder %>%
+mutate(dollars_per_day = gdp/population/365) %>%
+filter(year == past_year & !is.na(gdp)) %>%
+mutate(region = reorder(region, dollars_per_day, FUN = median)) %>%
+ggplot(aes(region, dollars_per_day)) +
+geom_boxplot() +
+geom_point() +
+theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
+xlab("")
+
+grid.arrange(p1, p2, nrow=1)
+```
+
+El primero ordena las regiones alfabéticamente, mientras que el segundo las ordena por la mediana del grupo.
+
+## Mostrar los datos
+
+Nos hemos centrado en mostrar cantidades únicas en todas las categorías. Ahora cambiamos nuestra atención a la visualización de datos, con un enfoque en la comparación de grupos.
+
+Para motivar nuestro primer principio, "mostrar los datos", volvemos a nuestro ejemplo artificial de describir alturas a ET, un extraterrestre. Esta vez supongamos que ET está interesado en la diferencia de alturas entre hombres y mujeres. Una gráfica comúnmente utilizada para comparaciones entre grupos, popularizada por software como Microsoft Excel, es la gráfica de dinamita, que muestra los errores promedio y estándar (los errores estándar se definen en un capítulo posterior, pero no los confunda con la desviación estándar de los datos). La trama se ve así:
+
+```{r show-data-1, echo=FALSE, fig.height=6}
+data("heights")
+p1 <- heights %>%
+group_by(sex) %>%
+summarize(average = mean(height), se=sd(height)/sqrt(n())) %>%
+ggplot(aes(sex, average)) +
+theme_excel() +
+geom_errorbar(aes(ymin = average - 2*se, ymax = average+2*se), width = 0.25) +
+geom_bar(stat = "identity", width=0.5, fill = "blue", color = "black") +
+ylab("Height in inches")
+p1
+```
+
+El promedio de cada grupo está representado por la parte superior de cada barra y las antenas se extienden desde el promedio al promedio más dos errores estándar. Si todo lo que ET recibe es esta trama, tendrá poca información sobre qué esperar si se encuentra con un grupo de hombres y mujeres humanos. Las barras van a 0: ¿esto significa que hay pequeños humanos que miden menos de un pie? ¿Todos los machos son más altos que las hembras más altas? ¿Hay una gama de alturas? ET no puede responder estas preguntas ya que casi no hemos proporcionado información sobre la distribución de altura.
+
+Esto nos lleva a nuestro primer principio: mostrar los datos. Este simple código __ggplot2__ ya genera una gráfica más informativa que la gráfica de barras simplemente mostrando todos los puntos de datos:
+
+```{r show-data-2}
+heights %>%
+ggplot(aes(sex, height)) +
+geom_point()
+```
+
+Por ejemplo, este gráfico nos da una idea del rango de los datos. Sin embargo, esta trama también tiene limitaciones, ya que realmente no podemos ver todas las `r sum(heights$sex=="Female")` and `r sum(heights$sex == "Male") `puntos trazados para mujeres y hombres, respectivamente, y muchos puntos están trazados uno encima del otro. Como hemos descrito anteriormente, visualizar la distribución es mucho más informativo. Pero antes de hacer esto, señalamos dos formas en que podemos mejorar una gráfica que muestre todos los puntos.
+
+El primero es agregar _jitter_, que agrega un pequeño desplazamiento aleatorio a cada punto. En este caso, agregar jitter horizontal no altera la interpretación, ya que las alturas de los puntos no cambian, pero minimizamos el número de puntos que se superponen y, por lo tanto, tenemos una mejor idea visual de cómo se distribuyen los datos. . Una segunda mejora proviene del uso de _alpha blending_: hacer que los puntos sean algo transparentes. Cuantos más puntos se superpongan, más oscura será la trama, lo que también nos ayuda a tener una idea de cómo se distribuyen los puntos. Aquí está la misma trama con jitter y mezcla alfa:
+
+```{r show-points-with-jitter}
+heights %>%
+ggplot(aes(sex, height)) +
+geom_jitter(width = 0.1, alpha = 0.2)
+```
+
+Ahora comenzamos a sentir que, en promedio, los hombres son más altos que las mujeres. También observamos bandas horizontales oscuras de puntos, lo que demuestra que muchos valores de informe se redondean al entero más cercano.
+
+## Facilita las comparaciones
+
+### Usar ejes comunes
+
+Como hay tantos puntos, es más efectivo mostrar distribuciones que puntos individuales. Por lo tanto, mostramos histogramas para cada grupo:
+
+```{r common-axes-histograms-wrong, echo=FALSE}
+heights %>%
+ggplot(aes(height, ..density..)) +
+geom_histogram(binwidth = 1, color="black") +
+facet_grid(.~sex, scales = "free_x")
+```
+
+Sin embargo, a partir de esta gráfica, no es inmediatamente obvio que los machos son, en promedio, más altos que las hembras. Tenemos que mirar cuidadosamente para notar que el eje x tiene un rango más alto de valores en el histograma masculino. Un principio importante aquí es **mantener los ejes iguales** cuando se comparan datos en dos parcelas. A continuación, vemos cómo la comparación se vuelve más fácil:
+
+```{r common-axes-histograms-right, echo=FALSE}
+heights %>%
+ggplot(aes(height, ..density..)) +
+geom_histogram(binwidth = 1, color="black") +
+facet_grid(.~sex)
+```
+
+### Alinee las parcelas verticalmente para ver cambios horizontales y horizontalmente para ver cambios verticales
+
+En estos histogramas, la señal visual relacionada con las disminuciones o aumentos de altura son los cambios hacia la izquierda o hacia la derecha, respectivamente: cambios horizontales. Alinear las parcelas verticalmente nos ayuda a ver este cambio cuando los ejes están fijos:
+
+```{r common-axes-histograms-right-2, echo = FALSE}
+p2 <- heights %>%
+ggplot(aes(height, ..density..)) +
+geom_histogram(binwidth = 1, color="black") +
+facet_grid(sex~.)
+p2
+```
+
+```{r, eval = FALSE}
+heights %>%
+ggplot(aes(height, ..density..)) +
+geom_histogram(binwidth = 1, color="black") +
+facet_grid(sex~.)
+```
+
+Esta trama hace que sea mucho más fácil notar que los hombres son, en promedio, más altos.
+
+Si queremos obtener un resumen más compacto proporcionado por boxplots, los alineamos horizontalmente ya que, por defecto, boxplots se mueve hacia arriba y hacia abajo con los cambios de altura. Siguiendo nuestro principio de "mostrar el dato", superponemos todos los puntos de datos:
+
+```{r boxplot-with-points-with-jitter, echo=FALSE}
+p3 <- heights %>%
+ggplot(aes(sex, height)) +
+geom_boxplot(coef=3) +
+geom_jitter(width = 0.1, alpha = 0.2) +
+ylab("Height in inches")
+p3
+```
+
+```{r, eval=FALSE}
+heights %>%
+ggplot(aes(sex, height)) +
+geom_boxplot(coef=3) +
+geom_jitter(width = 0.1, alpha = 0.2) +
+ylab("Height in inches")
+```
+
+Ahora contraste y compare estos tres gráficos, basados exactamente en los mismos datos:
+
+```{r show-the-data-comparison, out.width="100%", echo=FALSE}
+grid.arrange(p1, p2, p3, ncol = 3)
+```
+
+Observe cuánto más aprendemos de las dos parcelas a la derecha. Los gráficos de barras son útiles para mostrar un número, pero no son muy útiles cuando queremos describir distribuciones.
+
+### Considere transformaciones
+
+Hemos motivado el uso de la transformación logarítmica en los casos en que los cambios son multiplicativos. El tamaño de la población fue un ejemplo en el que encontramos una transformación logarítmica para producir una transformación más informativa.
+
+La combinación de una gráfica de barras elegida incorrectamente y una falla en el uso de una transformación de registro cuando se merece una puede ser particularmente distorsionante. Como ejemplo, considere esta gráfica de barras que muestra los tamaños de población promedio para cada continente en 2015:
+
+```{r no-transformations-wrong-use-of-barplot, echo=FALSE}
+data(gapminder)
+p1 <- gapminder %>%
+filter(year == 2015) %>%
+group_by(continent) %>%
+summarize(population = mean(population)) %>%
+mutate(continent = reorder(continent, population)) %>%
+ggplot(aes(continent, population/10^6)) +
+geom_bar(stat = "identity", width=0.5, fill="blue") +
+theme_excel() +
+ylab("Population in Millions") +
+xlab("Continent")
+p1
+```
+
+A partir de esta trama, uno concluiría que los países de Asia son mucho más poblados que en otros continentes. Siguiendo el principio de "mostrar los datos", notamos rápidamente que esto se debe a dos países muy grandes, que suponemos son India y China:
+
+```{r no-transformation, echo=FALSE}
+p2 <- gapminder %>% filter(year == 2015) %>%
+mutate(continent = reorder(continent, population, median)) %>%
+ggplot(aes(continent, population/10^6)) +
+ylab("Population in Millions") +
+xlab("Continent")
+p2 + geom_jitter(width = .1, alpha = .5)
+```
+
+El uso de una transformación de registro aquí proporciona una trama mucho más informativa. Comparamos el diagrama de barras original con un diagrama de caja usando la transformación de escala logarítmica para el eje y:
+
+
+```{r correct-transformation, out.width="100%", echo=FALSE, fig.height=3.5}
+p2 <- p2 + geom_boxplot(coef=3) +
+geom_jitter(width = .1, alpha = .5) +
+scale_y_log10(breaks = c(1,10,100,1000)) +
+theme(axis.text.x = element_text(size = 7))
+grid.arrange(p1, p2, ncol = 2)
+```
+
+Con la nueva trama, nos damos cuenta de que los países de África en realidad tienen una población mediana mayor que la de Asia.
+
+Otras transformaciones que debe considerar son la transformación logística ( `logit`), útil para ver mejor los cambios en las probabilidades y la transformación de la raíz cuadrada ( `sqrt`), útil para datos de recuento.
+
+### Las señales visuales a comparar deben ser adyacentes
+
+Para cada continente, comparemos los ingresos en 1970 versus 2010. Al comparar los datos de ingresos entre regiones entre 1970 y 2010, hicimos una cifra similar a la siguiente, pero esta vez investigamos continentes en lugar de regiones.
+
+```{r boxplots-not-adjacent, echo=FALSE}
+gapminder %>%
+filter(year %in% c(1970, 2010) & !is.na(gdp)) %>%
+mutate(dollars_per_day = gdp/population/365) %>%
+mutate(labels = paste(year, continent)) %>%
+ggplot(aes(labels, dollars_per_day)) +
+geom_boxplot() +
+theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
+scale_y_continuous(trans = "log2") +
+ylab("Income in dollars per day")
+```
+
+
+El valor predeterminado en __ggplot2__ es ordenar las etiquetas alfabéticamente, por lo que las etiquetas con 1970 van antes que las etiquetas con 2010, lo que dificulta las comparaciones porque la distribución de un continente en 1970 está visualmente lejos de su distribución en 2010. Es mucho más fácil hacer la comparación entre 1970 y 2010 para cada continente cuando los diagramas de caja para ese continente están uno al lado del otro:
+
+```{r boxplot-adjacent-comps, echo=FALSE}
+gapminder %>%
+filter(year %in% c(1970, 2010) & !is.na(gdp)) %>%
+mutate(dollars_per_day = gdp/population/365) %>%
+mutate(labels = paste(continent, year)) %>%
+ggplot(aes(labels, dollars_per_day)) +
+geom_boxplot() +
+theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
+scale_y_continuous(trans = "log2") +
+ylab("Income in dollars per day")
+```
+
+### Usar color
+
+La comparación se hace aún más fácil si usamos el color para denotar las dos cosas que queremos comparar:
+
+
+```{r boxplot-adjacent-comps-with-color, echo=FALSE}
+gapminder %>%
+filter(year %in% c(1970, 2010) & !is.na(gdp)) %>%
+mutate(dollars_per_day = gdp/population/365, year = factor(year)) %>%
+ggplot(aes(continent, dollars_per_day, fill = year)) +
+geom_boxplot() +
+theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
+scale_y_continuous(trans = "log2") +
+ylab("Income in dollars per day")
+```
+
+
+## Piensa en el daltónico
+
+Alrededor del 10% de la población es daltónica. Desafortunadamente, los colores predeterminados utilizados en __ggplot2__ no son óptimos para este grupo. Sin embargo, __ggplot2__ hace que sea fácil cambiar la paleta de colores utilizada en las parcelas. Aquí se describe un ejemplo de cómo podemos usar una paleta amigable para daltónicos: [http://www.cookbook-r.com/Graphs/Colors_(ggplot2)/#a-colorblind-friendly-palettefont>(http:// www.cookbook-r.com/Graphs/Colors_(ggplot2)/#a-colorblind-friendly-palette):
+
+```{r, eval=FALSE}
+color_blind_friendly_cols <-
+c("#999999", "#E69F00", "#56B4E9", "#009E73",
+"#F0E442", "#0072B2", "#D55E00", "#CC79A7")
+```
+
+Aqui estan los colores
+```{r color-blind-friendly-colors, echo=FALSE, fig.height=0.5}
+color_blind_friendly_cols <-
+c("#999999", "#E69F00", "#56B4E9", "#009E73",
+"#F0E442", "#0072B2", "#D55E00", "#CC79A7")
+
+p1 <- data.frame(x=1:8, y=rep(1,8), col = as.character(1:8)) %>%
+ggplot(aes(x, y, color = col)) +
+geom_point(size=8, show.legend = FALSE) +
+theme(axis.title.x=element_blank(),
+axis.text.x=element_blank(),
+axis.ticks.x=element_blank(),
+axis.title.y=element_blank(),
+axis.text.y=element_blank(),
+axis.ticks.y=element_blank(),
+panel.grid.major = element_blank(),
+panel.grid.minor = element_blank())
+
+p1 + scale_color_manual(values=color_blind_friendly_cols)
+```
+
+Hay varios recursos que pueden ayudarlo a seleccionar colores, por ejemplo este: [http://bconnelly.net/2013/10/creating-colorblind-friendly-figures/font>(http://bconnelly.net/2013/10/ creating-colorblind-friendly-figures/).
+
+## Gráficos para dos variables
+
+En general, debe usar diagramas de dispersión para visualizar la relación entre dos variables.
+En cada caso en el que hemos examinado la relación entre dos variables, incluidos los asesinatos totales frente al tamaño de la población, la esperanza de vida frente a las tasas de fertilidad y la mortalidad infantil frente a los ingresos, hemos utilizado diagramas de dispersión. Esta es la trama que generalmente recomendamos. Sin embargo, hay algunas excepciones y aquí describimos dos gráficos alternativos: el _slope chart_y el_Bland-Altman plot_.
+
+### Gráficos de pendiente
+
+Una excepción en la que otro tipo de gráfico puede ser más informativo es cuando se comparan variables del mismo tipo, pero en diferentes momentos y para un número relativamente pequeño de comparaciones. Por ejemplo, comparando la esperanza de vida entre 2010 y 2015. En este caso, podríamos recomendar un _gráfico de pendiente_.
+
+No hay geometría para los gráficos de pendiente en __ggplot2__, pero podemos construir uno usando `geom_line`. Necesitamos hacer algunos ajustes para agregar etiquetas. A continuación se muestra un ejemplo que compara 2010 a 2015 para los grandes países occidentales:
+
+```{r slope-plot}
+west <- c("Western Europe","Northern Europe","Southern Europe",
+"Northern America","Australia and New Zealand")
+
+dat <- gapminder %>%
+filter(year%in% c(2010, 2015) & region %in% west &
+!is.na(life_expectancy) & population > 10^7)
+
+dat %>%
+mutate(location = ifelse(year == 2010, 1, 2),
+location = ifelse(year == 2015 &
+country %in% c("United Kingdom", "Portugal"),
+location+0.22, location),
+hjust = ifelse(year == 2010, 1, 0)) %>%
+mutate(year = as.factor(year)) %>%
+ggplot(aes(year, life_expectancy, group = country)) +
+geom_line(aes(color = country), show.legend = FALSE) +
+geom_text(aes(x = location, label = country, hjust = hjust),
+show.legend = FALSE) +
+xlab("") + ylab("Life Expectancy")
+```
+
+Una ventaja del gráfico de pendiente es que nos permite tener una idea rápida de los cambios basados en la pendiente de las líneas. Aunque estamos usando el ángulo como señal visual, también tenemos una posición para determinar los valores exactos. Comparar las mejoras es un poco más difícil con un diagrama de dispersión:
+
+
+```{r scatter-plot-instead-of-slope, echo=FALSE}
+library(ggrepel)
+west <- c("Western Europe","Northern Europe","Southern Europe",
+"Northern America","Australia and New Zealand")
+
+dat <- gapminder %>%
+filter(year%in% c(2010, 2015) & region %in% west &
+!is.na(life_expectancy) & population > 10^7)
+
+dat %>%
+mutate(year = paste0("life_expectancy_", year)) %>%
+select(country, year, life_expectancy) %>%
+spread(year, life_expectancy) %>%
+ggplot(aes(x=life_expectancy_2010,y=life_expectancy_2015, label = country)) +
+geom_point() + geom_text_repel() +
+scale_x_continuous(limits=c(78.5, 83)) +
+scale_y_continuous(limits=c(78.5, 83)) +
+geom_abline(lty = 2) +
+xlab("2010") +
+ylab("2015")
+```
+
+En el diagrama de dispersión, hemos seguido el principio _usar ejes comunes_ ya que estamos comparando estos antes y después. Sin embargo, si tenemos muchos puntos, los gráficos de pendientes dejan de ser útiles ya que se hace difícil ver todas las líneas.
+
+### Trama de Bland-Altman
+
+Como estamos interesados principalmente en la diferencia, tiene sentido dedicarle uno de nuestros ejes. La gráfica de Bland-Altman, también conocida como la gráfica de diferencia de medias de Tukey y la gráfica de MA, muestra la diferencia frente al promedio:
+
+```{r, bland-altman}
+library(ggrepel)
+dat %>%
+mutate(year = paste0("life_expectancy_", year)) %>%
+select(country, year, life_expectancy) %>%
+spread(year, life_expectancy) %>%
+mutate(average = (life_expectancy_2015 + life_expectancy_2010)/2,
+difference = life_expectancy_2015 - life_expectancy_2010) %>%
+ggplot(aes(average, difference, label = country)) +
+geom_point() +
+geom_text_repel() +
+geom_abline(lty = 2) +
+xlab("Average of 2010 and 2015") +
+ylab("Difference between 2015 and 2010")
+```
+
+Aquí, simplemente mirando el eje y, vemos rápidamente qué países han mostrado la mayor mejora. También obtenemos una idea del valor general del eje x.
+
+## Codificación de una tercera variable
+
+Un diagrama de dispersión anterior mostró la relación entre la supervivencia infantil y el ingreso promedio. A continuación se muestra una versión de este gráfico que codifica tres variables: pertenencia a la OPEP, región y población.
+
+```{r encoding-third-variable, echo=FALSE}
+present_year <- 2010
+
+dat <- gapminder %>%
+mutate(region = case_when(
+region %in% west ~ "The West",
+region %in% "Northern Africa" ~ "Northern Africa",
+region %in% c("Eastern Asia", "South-Eastern Asia") ~ "East Asia",
+region == "Southern Asia"~ "Southern Asia",
+region %in% c("Central America", "South America", "Caribbean") ~ "Latin America",
+continent == "Africa" & region != "Northern Africa" ~ "Sub-Saharan Africa",
+region %in% c("Melanesia", "Micronesia", "Polynesia") ~ "Pacific Islands"),
+dollars_per_day = gdp/ population/ 365) %>%
+filter(year %in% present_year & !is.na(gdp) & !is.na(infant_mortality) & !is.na(region) ) %>%
+mutate(OPEC = ifelse(country%in%opec, "Yes", "No"))
+
+dat %>%
+ggplot(aes(dollars_per_day, 1 - infant_mortality/1000,
+col = region, size = population/10^6,
+pch = OPEC)) +
+scale_x_continuous(trans = "log2", limits=c(0.25, 150)) +
+scale_y_continuous(trans = "logit",limit=c(0.875, .9981),
+breaks=c(.85,.90,.95,.99,.995,.998)) +
+geom_point(alpha = 0.5) +
+ylab("Infant survival proportion")
+```
+
+Codificamos variables categóricas con color y forma. Estas formas se pueden controlar con `shape` argumento. A continuación se muestran las formas disponibles para su uso en R. Para los últimos cinco, el color va dentro.
+
+```{r available-shapes, echo=FALSE, fig.height=2.25}
+dat=data.frame(x=c(0:25))
+ggplot() +
+theme_minimal() +
+theme(axis.title.x=element_blank(),
+axis.text.x=element_blank(),
+axis.ticks.x=element_blank(),
+axis.title.y=element_blank(),
+axis.text.y=element_blank(),
+axis.ticks.y=element_blank(),
+panel.grid.major = element_blank(),
+panel.grid.minor = element_blank()) +
+scale_shape_identity() + scale_y_reverse() +
+geom_point(dat, mapping=aes(x%%9, x%/%9, shape=x), size=4, fill="blue") +
+geom_text(dat, mapping=aes(x%%9, x%/%9+0.25, label=x), size=4)
+```
+
+Para variables continuas, podemos usar color, intensidad o tamaño. Ahora mostramos un ejemplo de cómo hacemos esto con un estudio de caso.
+
+Al seleccionar colores para cuantificar una variable numérica, elegimos entre dos opciones: secuenciales y divergentes. Los colores secuenciales son adecuados para datos que van de mayor a menor. Los valores altos se distinguen claramente de los valores bajos. Estos son algunos ejemplos ofrecidos por el paquete. `RColorBrewer`:
+
+```{r eval=FALSE}
+library(RColorBrewer)
+display.brewer.all(type="seq")
+```
+
+```{r r-color-brewer-seq, fig.height=3.5, echo=FALSE}
+library(RColorBrewer)
+rafalib::mypar()
+display.brewer.all(type="seq")
+```
+
+Los colores divergentes se utilizan para representar valores que divergen de un centro. Ponemos igual énfasis en ambos extremos del rango de datos: más alto que el centro y más bajo que el centro. Un ejemplo de cuándo usaríamos un patrón divergente sería si mostramos la altura en desviaciones estándar lejos del promedio. Aquí hay algunos ejemplos de patrones divergentes:
+
+```{r eval=FALSE}
+library(RColorBrewer)
+display.brewer.all(type="div")
+```
+
+
+```{r r-color-brewer-div, fig.height=2.5, echo=FALSE}
+library(RColorBrewer)
+rafalib::mypar()
+display.brewer.all(type="div")
+```
+
+
+## Evite las tramas pseudo-tridimensionales
+
+La siguiente figura, tomada de la literatura científica^[https://projecteuclid.org/download/pdf_1/euclid.ss/1177010488],
+muestra tres variables: dosis, tipo de fármaco y supervivencia. Aunque su página de pantalla/ libro es plana y bidimensional, el gráfico intenta imitar tres dimensiones y asigna una dimensión a cada variable.
+
+```{r, echo=FALSE}
+## https://raw.githubusercontent.com/kbroman/Talk_Graphs/master/Figs/fig8b.png
+knitr::include_graphics(file.path(img_path,"fig8b.png"))
+```
+(Imagen cortesía de Karl Broman)
+
+Los humanos no son buenos para ver en tres dimensiones (lo que explica por qué es difícil estacionar en paralelo) y nuestra limitación es aún peor con respecto a las pseudo-tres dimensiones. Para ver esto, intente determinar los valores de la variable de supervivencia en la gráfica anterior. ¿Puedes decir cuándo la cinta púrpura se cruza con la roja? Este es un ejemplo en el que podemos usar fácilmente el color para representar la variable categórica en lugar de usar un pseudo-3D:
+
+```{r colors-for-different-lines, echo=FALSE}
+##First read data
+url <- "https://github.com/kbroman/Talk_Graphs/raw/master/R/fig8dat.csv"
+dat <- read.csv(url)
+
+##Now make alternative plot
+dat %>% gather(drug, survival, -log.dose) %>%
+mutate(drug = gsub("Drug.","",drug)) %>%
+ggplot(aes(log.dose, survival, color = drug)) +
+geom_line()
+```
+
+Observe cuánto más fácil es determinar los valores de supervivencia.
+
+Pseudo-3D a veces se usa de forma totalmente gratuita: las parcelas se hacen para que se vean en 3D incluso cuando la tercera dimensión no representa una cantidad. Esto solo agrega confusión y hace que sea más difícil transmitir su mensaje. Aquí hay dos ejemplos:
+
+```{r, echo=FALSE, out.width="45%"}
+##https://raw.githubusercontent.com/kbroman/Talk_Graphs/master/Figs/fig1e.png
+##https://raw.githubusercontent.com/kbroman/Talk_Graphs/master/Figs/fig2d.png
+knitr::include_graphics(file.path(img_path,c("fig1e.png", "fig2d.png")))
+```
+(Imágenes cortesía de Karl Broman)
+
+
+## Evite demasiados dígitos significativos
+
+Por defecto, el software estadístico como R devuelve muchos dígitos significativos. El comportamiento predeterminado en R es mostrar 7 dígitos significativos. Esa cantidad de dígitos a menudo no agrega información y el desorden visual agregado puede dificultar que el espectador entienda el mensaje. Como ejemplo, aquí están las tasas de enfermedades por cada 10,000, calculadas a partir de los totales y la población en R, para California en las cinco décadas:
+
+```{r, echo=FALSE}
+data(us_contagious_diseases)
+tmp <- options()$digits
+options(digits=7)
+dat <- us_contagious_diseases %>%
+filter(year %in% seq(1940, 1980, 10) & state == "California" &
+disease %in% c("Measles", "Pertussis", "Polio")) %>%
+mutate(rate = count/ population * 10000) %>%
+mutate(state = reorder(state, rate)) %>%
+select(state, year, disease, rate) %>%
+spread(disease, rate)
+if(knitr::is_html_output()){
+knitr::kable(dat, "html") %>%
+kableExtra::kable_styling(bootstrap_options = "striped", full_width = FALSE)
+} else{
+knitr::kable(dat, "latex", booktabs = TRUE) %>%
+kableExtra::kable_styling(font_size = 8)
+}
+options(digits=tmp)
+```
+
+Estamos reportando precisión de hasta 0.00001 casos por 10,000, un valor muy pequeño en el contexto de los cambios que ocurren a través de las fechas. En este caso, dos cifras significativas son más que suficientes y claramente indican que las tasas están disminuyendo:
+
+```{r, echo = FALSE}
+dat <- dat %>%
+mutate_at(c("Measles", "Pertussis", "Polio"), ~round(., digits=1))
+if(knitr::is_html_output()){
+knitr::kable(dat, "html") %>%
+kableExtra::kable_styling(bootstrap_options = "striped", full_width = FALSE)
+} else{
+knitr::kable(dat, "latex", booktabs = TRUE) %>%
+kableExtra::kable_styling(font_size=8)
+}
+```
+
+Las formas útiles para cambiar el número de dígitos significativos o redondear números son `signif` y `round`. Puede definir el número de dígitos significativos a nivel mundial configurando opciones como esta: `options(digits = 3)`.
+
+
+Otro principio relacionado con la visualización de tablas es colocar los valores que se comparan en columnas en lugar de filas. Tenga en cuenta que nuestra tabla anterior es más fácil de leer que esta:
+
+```{r, echo=FALSE}
+dat <- us_contagious_diseases %>%
+filter(year %in% seq(1940, 1980, 10) & state == "California" &
+disease %in% c("Measles", "Pertussis", "Polio")) %>%
+mutate(rate = count/ population * 10000) %>%
+mutate(state = reorder(state, rate)) %>%
+select(state, year, disease, rate) %>%
+spread(year, rate) %>%
+mutate_if(is.numeric, round, digits=1)
+if(knitr::is_html_output()){
+knitr::kable(dat, "html") %>%
+kableExtra::kable_styling(bootstrap_options = "striped", full_width = FALSE)
+} else{
+knitr::kable(dat, "latex", booktabs = TRUE) %>%
+kableExtra::kable_styling(font_size = 8)
+}
+```
+
+## Conoce a tu audiencia
+
+Los gráficos se pueden usar para 1) nuestro propio análisis exploratorio de datos, 2) para transmitir un mensaje a los expertos, o 3) para ayudar a contar una historia a una audiencia general. Asegúrese de que la audiencia prevista comprenda cada elemento de la trama.
+
+Como un ejemplo simple, considere que para su propia exploración puede ser más útil registrar datos de transformación y luego trazarlos. Sin embargo, para una audiencia general que no está familiarizada con la conversión de los valores registrados a las medidas originales, será mucho más fácil digerir el uso de una escala logarítmica para el eje en lugar de los valores transformados logarítmicamente.
+
+
+## Ejercicios
+
+
+Para estos ejercicios, utilizaremos los datos de las vacunas en el paquete __dslabs__:
+
+```{r}
+library(dslabs)
+data(us_contagious_diseases)
+```
+
+1\. Los gráficos circulares son apropiados:
+
+a. Cuando queremos mostrar porcentajes.
+si. Cuando __ggplot2__ no está disponible.
+c. Cuando estoy en una panadería.
+re. Nunca. Los gráficos de barras y las tablas siempre son mejores.
+
+2\. ¿Cuál es el problema con la siguiente trama:
+
+```{r baplot-not-from-zero-exercises, echo=FALSE, message=FALSE}
+library(tidyverse)
+ds_theme_set()
+data.frame(candidate=c("Clinton","Trump"), electoral_votes = c(232, 306)) %>%
+ggplot(aes(candidate, electoral_votes)) +
+geom_bar(stat = "identity", width=0.5, color =1, fill = c("Blue","Red")) +
+coord_cartesian(ylim=c(200,310)) +
+ylab("Electoral Votes") +
+xlab("") +
+ggtitle("Results of Presidential Election 2016")
+```
+
+a. Los valores están mal. La votación final fue de 306 a 232.
+si. El eje no comienza en 0. A juzgar por la longitud, parece que Trump recibió 3 veces más votos cuando, de hecho, fue aproximadamente un 30% más.
+c. Los colores deben ser iguales.
+re. Los porcentajes deben mostrarse como un gráfico circular.
+
+
+3\. Echa un vistazo a las siguientes dos parcelas. Muestran la misma información: tasas de sarampión de 1928 en los 50 estados.
+
+```{r measels-exercise, fig.height = 5, echo=FALSE}
+library(gridExtra)
+p1 <- us_contagious_diseases %>%
+filter(year == 1928 & disease=="Measles" & count>0 & !is.na(population)) %>%
+mutate(rate = count/ population * 10000 * 52/ weeks_reporting) %>%
+ggplot(aes(state, rate)) +
+geom_bar(stat="identity") +
+coord_flip() +
+xlab("")
+
+p2 <- us_contagious_diseases %>%
+filter(year == 1928 & disease=="Measles" & count>0 & !is.na(population)) %>%
+mutate(rate = count/ population * 10000*52/ weeks_reporting) %>%
+mutate(state = reorder(state, rate)) %>%
+ggplot(aes(state, rate)) +
+geom_bar(stat="identity") +
+coord_flip() +
+xlab("")
+grid.arrange(p1, p2, ncol = 2)
+```
+¿Qué gráfico es más fácil de leer si está interesado en determinar cuáles son los mejores y peores estados en términos de tasas y por qué?
+
+a. Proporcionan la misma información, por lo que ambos son igual de buenos.
+si. La gráfica de la derecha es mejor porque ordena los estados alfabéticamente.
+c. La gráfica a la derecha es mejor porque el orden alfabético no tiene nada que ver con la enfermedad y al ordenar de acuerdo con la tasa real, vemos rápidamente los estados con la mayoría y las tasas mínimas.
+re. Ambas parcelas deben ser un gráfico circular.
+
+
+4\. Para hacer el diagrama a la izquierda, tenemos que reordenar los niveles de las variables de los estados.
+
+```{r}
+dat <- us_contagious_diseases %>%
+filter(year == 1967 & disease=="Measles" & !is.na(population)) %>%
+mutate(rate = count/ population * 10000 * 52/ weeks_reporting)
+```
+
+
+
+Tenga en cuenta lo que sucede cuando hacemos un diagrama de barras:
+
+```{r barplot-plot-exercise-example, fig.height = 5}
+dat %>% ggplot(aes(state, rate)) +
+geom_bar(stat="identity") +
+coord_flip()
+```
+
+Defina estos objetos:
+
+```{r, eval=FALSE}
+state <- dat$state
+rate <- dat$count/dat$population*10000*52/dat$weeks_reporting
+```
+
+Redefinir el `state` objeto para que los niveles se reordenen. Imprime el nuevo objeto `state` y sus niveles para que pueda ver que los niveles no reordenan el vector.
+
+
+5\. Ahora con una línea de código, defina el `dat` tabla como se hizo anteriormente, pero cambie el uso de mutate para crear una variable de velocidad y reordene la variable de estado para que los niveles sean reordenados por esta variable. Luego haga un diagrama de barras usando el código anterior, pero para este nuevo `dat`.
+
+
+6\. Digamos que estamos interesados en comparar las tasas de homicidios con armas de fuego en todas las regiones de los EE. UU. Vemos esta trama:
+
+
+```{r us-murders-barplot}
+library(dslabs)
+data("murders")
+murders %>% mutate(rate = total/population*100000) %>%
+group_by(region) %>%
+summarize(avg = mean(rate)) %>%
+mutate(region = factor(region)) %>%
+ggplot(aes(region, avg)) +
+geom_bar(stat="identity") +
+ylab("Murder Rate Average")
+```
+
+
+y decide mudarse a un estado en la región occidental. ¿Cuál es el principal problema con esta interpretación?
+
+a. Las categorías están ordenadas alfabéticamente.
+si. El gráfico no muestra errores estándar.
+c. No muestra todos los datos. No vemos la variabilidad dentro de una región y es posible que los estados más seguros no estén en Occidente.
+re. El noreste tiene el promedio más bajo.
+
+
+7\. Haga un diagrama de caja de las tasas de asesinatos definidos como
+
+```{r, eval = FALSE}
+data("murders")
+murders %>% mutate(rate = total/population*100000)
+```
+
+por región, mostrando todos los puntos y ordenando las regiones por su tasa media.
+
+
+8\. Las gráficas a continuación muestran tres variables continuas.
+
+```{r pseudo-3d-exercise, fig.width=7, fig.height = 3.708, echo=FALSE}
+library(scatterplot3d)
+library(RColorBrewer)
+set.seed(1)
+n <- 25
+group <- rep(1,n)
+group[1:(round(n/2))] <- 2
+x <- rnorm(n, group, .33)
+y <- rnorm(n, group, .33)
+z <- rnorm(n)
+rafalib::mypar()
+scatterplot3d(x,y,z, color = group, pch=16, ylab="")
+text(8.25, -1.5, label = "y")
+abline(v=4, col=3)
+```
+
+La línea $x=2$ parece separar los puntos. Pero en realidad no es el caso, lo que podemos ver al trazar los datos en un par de puntos bidimensionales.
+
+```{r pseud-3d-exercise-2, echo=FALSE, fig.height = 3}
+rafalib::mypar(1,2)
+plot(x,y, col=group, pch =16)
+abline(v=2, col=3)
+plot(x,z,col=group, pch=16)
+abline(v=2, col=3)
+```
+
+¿Por qué está pasando esto?
+
+a. Los humanos no son buenos para leer tramas pseudo-3D.
+si. Debe haber un error en el código.
+c. Los colores nos confunden.
+re. Los diagramas de dispersión no deben usarse para comparar dos variables cuando tenemos acceso a 3.
+
+
+9\. Reproduzca el diagrama de imagen que hicimos anteriormente pero para la viruela. Para esta gráfica, no incluya años en los que no se informaron casos en 10 o más semanas.
+
+
+10\. Ahora reproduzca el diagrama de series de tiempo que hicimos anteriormente, pero esta vez siguiendo las instrucciones de la pregunta anterior.
+
+
+11\. Para el estado de California, haga gráficos de series de tiempo que muestren las tasas de todas las enfermedades. Incluya solo años con informes de 10 o más semanas. Use un color diferente para cada enfermedad.
+
+
+12\. Ahora haga lo mismo con las tarifas para los EE. UU. Sugerencia: calcule la tasa de EE. UU. Mediante el resumen, el total dividido por la población total.

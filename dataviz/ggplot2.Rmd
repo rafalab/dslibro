@@ -1,0 +1,591 @@
+# ggplot2 {#ggplot2}
+
+```{r, echo=FALSE}
+img_path <- "R/img"
+```
+
+La visualización de datos exploratorios es quizás la mayor fortaleza de R. Uno puede pasar rápidamente de la idea a los datos para trazar con un equilibrio único de flexibilidad y facilidad. Por ejemplo, Excel puede ser más fácil que R para algunas parcelas, pero no es tan flexible. D3.js puede ser más flexible y poderoso que R, pero lleva mucho más tiempo generar una trama.
+
+A lo largo del libro, crearemos diagramas usando el paquete __ggplot2__^[https://ggplot2.tidyverse.org/].
+
+```{r, message=FALSE, warning=FALSE}
+library(dplyr)
+library(ggplot2)
+```
+
+Existen muchos otros enfoques para crear trazados en R. De hecho, las capacidades de trazado que vienen con una instalación básica de R ya son bastante poderosas. También hay otros paquetes para crear gráficos como __grid__y__lattice__. Elegimos usar __ggplot2__ en este libro porque divide las tramas en componentes de una manera que permite a los principiantes crear tramas relativamente complejas y estéticamente agradables utilizando una sintaxis intuitiva y relativamente fácil de recordar.
+
+Una razón por la que __ggplot2__ es generalmente más intuitiva para los principiantes es porque usa una gramática de gráficos^[http://www.springer.com/us/book/9780387245447], el _gg_en__ggplot2__. Esto es análogo a la forma en que aprender gramática puede ayudar a un principiante a construir cientos de oraciones diferentes al aprender solo un puñado de verbos, sustantivos y adjetivos sin tener que memorizar cada oración específica. Del mismo modo, al aprender un puñado de bloques de construcción __ggplot2__ y su gramática, podrá crear cientos de tramas diferentes.
+
+Otra razón por la que __ggplot2__ es fácil para los principiantes es que su comportamiento predeterminado se elige cuidadosamente para satisfacer la gran mayoría de los casos y es visualmente agradable. Como resultado, es posible crear gráficos informativos y elegantes con un código relativamente simple y legible.
+
+Una limitación es que __ggplot2__ está diseñado para trabajar exclusivamente con tablas de datos en formato ordenado (donde las filas son observaciones y las columnas son variables). Sin embargo, un porcentaje sustancial de conjuntos de datos con los que los principiantes trabajan están en este formato o pueden convertirse a este. Una ventaja de este enfoque es que, suponiendo que nuestros datos estén ordenados, __ggplot2__ simplifica el código de trazado y el aprendizaje de la gramática para una variedad de trazados.
+
+Para usar __ggplot2__ deberás aprender varias funciones y argumentos. Estos son difíciles de memorizar, por lo que le recomendamos que tenga a mano la hoja de trucos ggplot2. Puede obtener una copia aquí: [https://www.rstudio.com/wp-content/uploads/2015/03/ggplot2-cheatsheet.pdffont>(https://www.rstudio.com/wp-content/uploads/2015/03/ggplot2-cheatsheet.pdf) o simplemente realice una búsqueda en Internet de "ggplot2 cheat sheet".
+
+## Los componentes de un gráfico
+
+Construiremos un gráfico que resume el conjunto de datos de asesinatos de los Estados Unidos que se ve así:
+
+```{r ggplot-example-plot, echo=FALSE}
+library(dslabs)
+data(murders)
+library(ggthemes)
+library(ggrepel)
+
+r <- murders %>%
+summarize(pop=sum(population), tot=sum(total)) %>%
+mutate(rate = tot/pop*10^6) %>% pull(rate)
+
+murders %>% ggplot(aes(x = population/10^6, y = total, label = abb)) +
+geom_abline(intercept = log10(r), lty=2, col="darkgrey") +
+geom_point(aes(color=region), size = 3) +
+geom_text_repel() +
+scale_x_log10() +
+scale_y_log10() +
+xlab("Populations in millions (log scale)") +
+ylab("Total number of murders (log scale)") +
+ggtitle("US Gun Murders in 2010") +
+scale_color_discrete(name="Region") +
+theme_economist()
+```
+
+Podemos ver claramente cuánto varían los estados según el tamaño de la población y el número total de asesinatos. No es sorprendente que también veamos una relación clara entre los totales de asesinatos y el tamaño de la población. Un estado que cae en la línea gris discontinua tiene la misma tasa de asesinatos que el promedio de los EE. UU. Las cuatro regiones geográficas se denotan con color, que representa cómo la mayoría de los estados del sur tienen tasas de asesinatos por encima del promedio.
+
+Esta visualización de datos nos muestra prácticamente toda la información en la tabla de datos. El código necesario para hacer esta trama es relativamente simple. Aprenderemos a crear la trama parte por parte.
+
+El primer paso para aprender __ggplot2__ es poder separar un gráfico en componentes. Analicemos la gráfica anterior e introduzcamos algo de la terminología __ggplot2__. Los tres componentes principales a tener en cuenta son:
+
+* __Data__: se está resumiendo la tabla de datos de asesinatos de Estados Unidos. Nos referimos a esto como el componente __data__.
+* __Geometría__: El diagrama de arriba es un diagrama de dispersión. Esto se conoce como el
+__geometría__ componente. Otras posibles geometrías son diagrama de barras, histograma, densidades suaves, diagrama qq y diagrama de caja. Aprenderemos más sobre esto en la parte de visualización de datos del libro.
+* __Mapeo estético__: El gráfico usa varias señales visuales para representar la información proporcionada por el conjunto de datos. Las dos señales más importantes en este gráfico son las posiciones de los puntos en el eje xy el eje y, que representan el tamaño de la población y el número total de asesinatos, respectivamente. Cada punto representa una observación diferente, y asignamos datos sobre estas observaciones a señales visuales como las escalas x e y. El color es otra señal visual que asignamos a la región. Nos referimos a esto como el componente __mapeo estético__. La forma en que definimos el mapeo depende de qué __geometría__ estamos usando.
+
+También notamos que:
+
+* Los puntos están etiquetados con las abreviaturas de estado.
+* El rango del eje x y el eje y parece estar definido por el rango de los datos. Ambos están en escalas logarítmicas.
+* Hay etiquetas, un título, una leyenda, y utilizamos el estilo de la revista The Economist.
+
+Ahora construiremos la trama pieza por pieza.
+
+Comenzamos cargando el conjunto de datos:
+
+```{r}
+library(dslabs)
+data(murders)
+```
+
+## `ggplot` objetos
+
+
+```{r, echo=FALSE}
+theme_set(theme_grey()) ## to immitate what happens with seeting theme
+```
+
+El primer paso para crear un gráfico __ggplot2__ es definir un `ggplot` objeto. Hacemos esto con la función `ggplot`, que inicializa el gráfico. Si leemos el archivo de ayuda para esta función, vemos que el primer argumento se usa para especificar qué datos están asociados con este objeto:
+
+
+```{r ggplot-example-1, eval=FALSE}
+ggplot(data = murders)
+```
+
+También podemos canalizar los datos como primer argumento. Entonces, esta línea de código es equivalente a la anterior:
+
+```{r ggplot-example-2}
+murders %>% ggplot()
+```
+
+Representa un diagrama, en este caso una pizarra en blanco ya que no se ha definido geometría. La única opción de estilo que vemos es un fondo gris.
+
+Lo que sucedió anteriormente es que el objeto fue creado y, debido a que no fue asignado, fue evaluado automáticamente. Pero podemos asignar nuestra trama a un objeto, por ejemplo así:
+
+```{r}
+p <- ggplot(data = murders)
+class(p)
+```
+
+Para representar el diagrama asociado con este objeto, simplemente imprimimos el objeto `p`. Las siguientes dos líneas de código producen cada una la misma gráfica que vemos arriba:
+
+```{r, eval=FALSE}
+print(p)
+p
+```
+
+## Geometrías
+
+En `ggplot2` creamos gráficos agregando _layers_. Las capas pueden definir geometrías, calcular estadísticas de resumen, definir qué escalas usar, o incluso cambiar estilos.
+Para agregar capas, usamos el símbolo `+`. En general, una línea de código se verá así:
+
+>> DATOS%>% `ggplot()` + CAPA 1 + CAPA 2 + ... + CAPA N
+
+Por lo general, la primera capa agregada define la geometría. Queremos hacer un diagrama de dispersión. ¿Qué geometría utilizamos?
+
+Echando un vistazo rápido a la hoja de trucos, vemos que la función utilizada para crear gráficos con esta geometría es `geom_point`.
+
+```{r, echo=FALSE, out.width="45%"}
+##https://ugoproto.github.io/ugo_r_doc/img/visualization_cs/ggplot2-cheatsheeta.png
+##https://ugoproto.github.io/ugo_r_doc/img/visualization_cs/ggplot2-cheatsheetb.png
+knitr::include_graphics(c(file.path(img_path,"ggplot2-cheatsheeta.png"),
+file.path(img_path,"ggplot2-cheatsheetb.png")))
+```
+
+(Imagen cortesía de RStudio^[https://github.com/rstudio/cheatsheets]. Licencia CC-BY-4.0^[https://github.com/rstudio/cheatsheets/blob/master/LICENSE].)
+
+<!--(Source: [RStudio](https://github.com/rstudio/cheatsheets/raw/master/data-visualization-2.1.pdf))-->
+
+
+Los nombres de las funciones de geometría siguen el patrón: `geom_X` donde X es el nombre de la geometría. Algunos ejemplos incluyen `geom_point`, `geom_bar` y `geom_histogram`.
+
+Por `geom_point` para funcionar correctamente, necesitamos proporcionar datos y un mapeo. Ya hemos conectado el objeto `p` con el `murders` tabla de datos, y si agregamos la capa `geom_point` por defecto usa estos datos. Para saber qué asignaciones se esperan, leemos la sección __Estética__ del archivo de ayuda `geom_point` archivo de ayuda:
+
+```
+> Aesthetics
+>
+> geom_point understands the following aesthetics (required aesthetics are in bold):
+>
+> x
+>
+> y
+>
+> alpha
+>
+> colour
+```
+
+y, como se esperaba, vemos que se requieren al menos dos argumentos `x` y `y`.
+
+## Mapeos estéticos
+
+__Las asignaciones estéticas__ describen cómo las propiedades de los datos se conectan con las características del gráfico, como la distancia a lo largo de un eje, tamaño o color. los `aes` la función conecta los datos con lo que vemos en el gráfico mediante la definición de asignaciones estéticas y será una de las funciones que utilice con más frecuencia al trazar. El resultado de la `aes` la función se utiliza a menudo como argumento de una función de geometría. Este ejemplo produce un diagrama de dispersión de asesinatos totales versus población en millones:
+
+```{r, eval = FALSE}
+murders %>% ggplot() +
+geom_point(aes(x = population/10^6, y = total))
+```
+
+Podemos dejar caer el `x = ` y `y =` si quisiéramos ya que estos son el primer y el segundo argumento esperado, como se ve en la página de ayuda.
+
+En lugar de definir nuestra trama desde cero, también podemos agregar una capa al `p` objeto que se definió anteriormente como `p <- ggplot(data = murders)`:
+
+```{r ggplot-example-3}
+p + geom_point(aes(population/10^6, total))
+```
+
+
+La escala y las etiquetas se definen por defecto al agregar esta capa. Al igual que las funciones __dplyr__, `aes` también usa los nombres de variables del componente objeto: podemos usar `population` y `total` sin tener que llamarlos como &#39;asesinatos $population` and `murders$ total NA aes NA población NA total NA aes` recibes un error.
+
+
+## Capas
+
+Una segunda capa en el diagrama que deseamos hacer implica agregar una etiqueta a cada punto para identificar el estado. los `geom_label` y `geom_text` las funciones nos permiten agregar texto a la trama con y sin un rectángulo detrás del texto, respectivamente.
+
+Debido a que cada punto (cada estado en este caso) tiene una etiqueta, necesitamos un mapeo estético para hacer la conexión entre los puntos y las etiquetas. Al leer el archivo de ayuda, aprendemos que proporcionamos el mapeo entre el punto y la etiqueta a través de `label` argumento de `aes`. Entonces el código se ve así:
+
+
+```{r ggplot-example-4}
+p + geom_point(aes(population/10^6, total)) +
+geom_text(aes(population/10^6, total, label = abb))
+```
+
+Hemos agregado con éxito una segunda capa a la trama.
+
+Como ejemplo del comportamiento único de `aes` mencionado anteriormente, tenga en cuenta que esta llamada:
+
+```{r, eval=FALSE}
+p_test <- p + geom_text(aes(population/10^6, total, label = abb))
+```
+
+está bien, mientras que esta llamada:
+
+```{r, eval=FALSE}
+p_test <- p + geom_text(aes(population/10^6, total), label = abb)
+```
+
+te dará un error desde `abb` no se encuentra porque está fuera del `aes` función. La capa `geom_text` no sabe dónde encontrar `abb` ya que es un nombre de columna y no una variable global.
+
+### Jugueteando con argumentos
+
+Cada función de geometría tiene muchos argumentos distintos de `aes` y `data`. Tienden a ser específicos de la función. Por ejemplo, en la gráfica que deseamos hacer, los puntos son más grandes que el tamaño predeterminado. En el archivo de ayuda vemos que `size` es una estética y podemos cambiarla así:
+
+```{r ggplot-example-5}
+p + geom_point(aes(population/10^6, total), size = 3) +
+geom_text(aes(population/10^6, total, label = abb))
+```
+
+`size` no es un mapeo: mientras que los mapeos usan datos de observaciones específicas y necesitan estar dentro `aes()`, las operaciones que queremos afectar a todos los puntos de la misma manera no necesitan ser incluidas dentro `aes`.
+
+Ahora, debido a que los puntos son más grandes, es difícil ver las etiquetas. Si leemos el archivo de ayuda para `geom_text`, vemos el `nudge_x` argumento, que mueve el texto ligeramente hacia la derecha o hacia la izquierda:
+
+```{r ggplot-example-6}
+p + geom_point(aes(population/10^6, total), size = 3) +
+geom_text(aes(population/10^6, total, label = abb), nudge_x = 1.5)
+```
+
+Esto es preferible ya que facilita la lectura del texto. En la sección \@ref(add-on-packages) aprendemos una mejor manera de asegurarnos de que podemos ver los puntos y las etiquetas.
+
+## Mapeos estéticos globales versus locales
+
+En la línea de código anterior, definimos el mapeo `aes(population/10^6, total)` dos veces, una vez en cada geometría. Podemos evitar esto usando un mapeo estético global. Podemos hacer esto cuando definimos la pizarra en blanco `ggplot` objeto. Recuerda que la función `ggplot` contiene un argumento que nos permite definir asignaciones estéticas:
+
+```{r}
+args(ggplot)
+```
+
+Si definimos un mapeo en `ggplot`, todas las geometrías que se agregan como capas se asignarán de manera predeterminada a esta asignación. Redefinimos `p`:
+
+```{r}
+p <- murders %>% ggplot(aes(population/10^6, total, label = abb))
+```
+
+y luego podemos simplemente escribir el siguiente código para producir el diagrama anterior:
+
+```{r ggplot-example-7, eval=FALSE}
+p + geom_point(size = 3) +
+geom_text(nudge_x = 1.5)
+```
+
+Mantenemos el `size` y `nudge_x` argumentos en `geom_point` y `geom_text`, respectivamente, porque solo queremos aumentar el tamaño de los puntos y solo empujar las etiquetas. Si ponemos esos argumentos en `aes` entonces se aplicarían a ambas parcelas. También tenga en cuenta que el `geom_point` la función no necesita un `label` argumento y por lo tanto ignora esa estética.
+
+Si es necesario, podemos anular la asignación global definiendo una nueva asignación dentro de cada capa. Estas definiciones locales reemplazan a las globales. Aquí hay un ejemplo:
+
+```{r ggplot-example-8}
+p + geom_point(size = 3) +
+geom_text(aes(x = 10, y = 800, label = "Hello there!"))
+```
+
+Claramente, la segunda llamada a `geom_text` no se usa `population` y `total`.
+
+
+## Escamas
+
+Primero, nuestras escalas deseadas están en escala logarítmica. Este no es el valor predeterminado, por lo que este cambio debe agregarse a través de una capa _escalas_. Un vistazo rápido a la hoja de trucos revela la `scale_x_continuous` la función nos permite controlar el comportamiento de las escalas. Los usamos así:
+
+
+```{r ggplot-example-9}
+p + geom_point(size = 3) +
+geom_text(nudge_x = 0.05) +
+scale_x_continuous(trans = "log10") +
+scale_y_continuous(trans = "log10")
+```
+
+Debido a que ahora estamos en la escala logarítmica, el _nudge_ debe hacerse más pequeño.
+
+Esta transformación particular es tan común que __ggplot2__ proporciona las funciones especializadas. `scale_x_log10` y `scale_y_log10`, que podemos usar para reescribir el código de esta manera:
+
+```{r, eval=FALSE}
+p + geom_point(size = 3) +
+geom_text(nudge_x = 0.05) +
+scale_x_log10() +
+scale_y_log10()
+```
+
+
+## Etiquetas y títulos
+
+Del mismo modo, la hoja de trucos revela rápidamente que para cambiar las etiquetas y agregar un título, utilizamos las siguientes funciones:
+
+```{r ggplot-example-10}
+p + geom_point(size = 3) +
+geom_text(nudge_x = 0.05) +
+scale_x_log10() +
+scale_y_log10() +
+xlab("Populations in millions (log scale)") +
+ylab("Total number of murders (log scale)") +
+ggtitle("US Gun Murders in 2010")
+```
+
+¡Estamos casi alli! Todo lo que nos queda por hacer es agregar color, una leyenda y cambios opcionales al estilo.
+
+## Categorías como colores
+
+Podemos cambiar el color de los puntos usando el `col` argumento en el `geom_point` función. Para facilitar la demostración de nuevas características, redefiniremos `p` para ser todo excepto la capa de puntos:
+
+```{r}
+p <- murders %>% ggplot(aes(population/10^6, total, label = abb)) +
+geom_text(nudge_x = 0.05) +
+scale_x_log10() +
+scale_y_log10() +
+xlab("Populations in millions (log scale)") +
+ylab("Total number of murders (log scale)") +
+ggtitle("US Gun Murders in 2010")
+```
+
+y luego pruebe lo que sucede agregando diferentes llamadas a `geom_point`. Podemos hacer que todos los puntos sean azules agregando el `color` argumento:
+
+```{r ggplot-example-11}
+p + geom_point(size = 3, color ="blue")
+```
+
+Esto, por supuesto, no es lo que queremos. Queremos asignar color según la región geográfica. Un buen comportamiento predeterminado de __ggplot2__ es que si asignamos una variable categórica al color, automáticamente asigna un color diferente a cada categoría y también agrega una leyenda.
+
+Dado que la elección del color está determinada por una característica de cada observación, este es un mapeo estético. Para asignar cada punto a un color, necesitamos usar `aes`. Usamos el siguiente código:
+
+```{r ggplot-example-12}
+p + geom_point(aes(col=region), size = 3)
+```
+
+Los `x` y `y` las asignaciones se heredan de las ya definidas en `p`, por lo que no los redefinimos. También nos movemos `aes` al primer argumento, ya que es donde se esperan asignaciones en esta llamada de función.
+
+Aquí vemos otro comportamiento útil por defecto: __ggplot2__ agrega automáticamente una leyenda que asigna el color a la región. Para evitar agregar esta leyenda, establecemos el `geom_point` argumento `show.legend = FALSE`.
+
+## Anotación, formas y ajustes
+
+A menudo queremos agregar formas o anotaciones a las figuras que no se derivan directamente del mapeo estético; Los ejemplos incluyen etiquetas, cuadros, áreas sombreadas y líneas.
+
+Aquí queremos agregar una línea que represente la tasa promedio de asesinatos en todo el país. Una vez que determinamos la tasa por millón a ser $r$, esta línea está definida por la fórmula: $y = r x$, con $y$ y $x$ nuestros ejes: asesinatos totales y población en millones, respectivamente. En la escala de registro, esta línea se convierte en: $\log(y) = \log(r) + \log(x)$. Entonces, en nuestra gráfica, es una línea con pendiente 1 e intercepción $\log(r)$. Para calcular este valor, utilizamos nuestras habilidades __dplyr__:
+
+```{r}
+r <- murders %>%
+summarize(rate = sum(total)/ sum(population) * 10^6) %>%
+pull(rate)
+```
+
+Para agregar una línea usamos el `geom_abline` función. __ggplot2__ utiliza `ab` en el nombre para recordarnos que estamos suministrando la intercepción ( `a`) y pendiente ( `b`) La línea predeterminada tiene pendiente 1 e intersección 0, por lo que solo tenemos que definir la intersección:
+
+```{r ggplot-example-13}
+p + geom_point(aes(col=region), size = 3) +
+geom_abline(intercept = log10(r))
+```
+
+Aquí `geom_abline` no utiliza ninguna información del objeto de datos.
+
+Podemos cambiar el tipo de línea y el color de las líneas usando argumentos. Además, lo dibujamos primero para que no exceda nuestros puntos.
+
+```{r}
+p <- p + geom_abline(intercept = log10(r), lty = 2, color = "darkgrey") +
+geom_point(aes(col=region), size = 3)
+```
+Tenga en cuenta que hemos redefinido `p` y usé este nuevo `p` a continuación y en la siguiente sección.
+
+Los gráficos predeterminados creados por __ggplot2__ ya son muy útiles. Sin embargo, con frecuencia necesitamos hacer pequeños ajustes al comportamiento predeterminado. Aunque no siempre es obvio cómo hacer esto incluso con la hoja de trucos, __ggplot2__ es muy flexible.
+
+Por ejemplo, podemos hacer cambios a la leyenda a través de `scale_color_discrete` función. En nuestra trama, la palabra _región_ está en mayúscula y podemos cambiarla así:
+
+```{r}
+p <- p + scale_color_discrete(name = "Region")
+```
+
+## Paquetes complementarios {#add-on-packages}
+
+El poder de __ggplot2__ se incrementa aún más debido a la disponibilidad de paquetes adicionales.
+Los cambios restantes necesarios para dar los toques finales a nuestra trama requieren los paquetes __ggthemes__y__ggrepel__.
+
+El estilo de un gráfico __ggplot2__ se puede cambiar usando el `theme` funciones Se incluyen varios temas como parte del paquete __ggplot2__. De hecho, para la mayoría de las tramas de este libro, utilizamos una función en el paquete __dslabs__ que establece automáticamente un tema predeterminado:
+
+```{r, eval}
+ds_theme_set()
+```
+
+El paquete __ggthemes__ agrega muchos otros temas. Entre esos están los `theme_economist` tema que utilizamos. Después de instalar el paquete, puede cambiar el estilo agregando una capa como esta:
+
+```{r, eval = FALSE}
+library(ggthemes)
+p + theme_economist()
+```
+
+Puede ver cómo se ven algunos de los otros temas simplemente cambiando la función. Por ejemplo, puedes probar el `theme_fivethirtyeight()` tema en su lugar.
+
+La diferencia final tiene que ver con la posición de las etiquetas. En nuestra trama, algunas de las etiquetas se superponen. El paquete de complementos __ggrepel__ incluye una geometría que agrega etiquetas a la vez que garantiza que no se superpongan entre sí. Simplemente cambiamos `geom_text` con `geom_text_repel`.
+
+## Poniendolo todo junto
+
+Ahora que hemos terminado las pruebas, podemos escribir un código que produzca nuestro diagrama deseado desde cero.
+
+
+```{r final-ggplot-example}
+library(ggthemes)
+library(ggrepel)
+
+r <- murders %>%
+summarize(rate = sum(total)/ sum(population) * 10^6) %>%
+pull(rate)
+
+murders %>% ggplot(aes(population/10^6, total, label = abb)) +
+geom_abline(intercept = log10(r), lty = 2, color = "darkgrey") +
+geom_point(aes(col=region), size = 3) +
+geom_text_repel() +
+scale_x_log10() +
+scale_y_log10() +
+xlab("Populations in millions (log scale)") +
+ylab("Total number of murders (log scale)") +
+ggtitle("US Gun Murders in 2010") +
+scale_color_discrete(name = "Region") +
+theme_economist()
+```
+
+```{r, echo=FALSE}
+ds_theme_set()
+```
+
+
+## Trazados rápidos con `qplot` {#qplot}
+
+Hemos aprendido el poderoso enfoque para generar visualización con ggplot. Sin embargo, hay casos en los que todo lo que queremos es hacer un diagrama rápido de, por ejemplo, un histograma de los valores en un vector, un diagrama de dispersión de los valores en dos vectores o un diagrama de caja usando vectores categóricos y numéricos. Demostramos cómo generar estas parcelas con `hist`, `plot` y `boxplot`. Sin embargo, si queremos mantener la coherencia con el estilo ggplot, podemos usar la función `qplot`.
+
+Si tenemos valores en dos vectores, digamos:
+
+```{r}
+data(murders)
+x <- log10(murders$population)
+y <- murders$total
+```
+
+y queremos hacer un diagrama de dispersión con ggplot, tendríamos que escribir algo como:
+
+```{r, eval=FALSE}
+data.frame(x = x, y = y) %>%
+ggplot(aes(x, y)) +
+geom_point()
+```
+
+Esto parece demasiado código para una trama tan simple.
+Los `qplot` la función sacrifica la flexibilidad proporcionada por el `ggplot` enfoque, pero nos permite generar una trama rápidamente.
+
+```{r qplot-example-0, eval = FALSE}
+qplot(x, y)
+```
+
+Aprenderemos más sobre `qplot` en la sección \@ref(other-geometries)
+
+## Cuadrículas de parcelas
+
+A menudo hay razones para graficar parcelas una al lado de la otra. El paquete __gridExtra__ nos permite hacer eso:
+
+```{r gridExtra-example, warning=FALSE, message=FALSE, fig.height=2.5, fig.width=5}
+library(gridExtra)
+p1 <- qplot(x)
+p2 <- qplot(x,y)
+grid.arrange(p1, p2, ncol = 2)
+```
+
+
+## Ejercicios
+
+Comience cargando la biblioteca __dplyr__y__ggplot2__, así como la biblioteca `murders` y `heights` datos.
+
+```{r}
+library(dplyr)
+library(ggplot2)
+library(dslabs)
+data(heights)
+data(murders)
+```
+
+1\. Con __ggplot2__ las parcelas se pueden guardar como objetos. Por ejemplo, podemos asociar un conjunto de datos con un objeto de trazado como este
+
+```{r, eval = FALSE}
+p <- ggplot(data = murders)
+```
+
+Porque `data` es el primer argumento que no necesitamos explicarlo
+
+```{r, eval = FALSE}
+p <- ggplot(murders)
+```
+
+y también podemos usar la tubería:
+
+```{r, eval = FALSE}
+p <- murders %>% ggplot()
+```
+
+¿Qué es la clase del objeto? `p`?
+
+
+2\. Recuerde que para imprimir un objeto puede usar el comando `print` o simplemente escriba el objeto.
+Imprime el objeto `p` definido en el ejercicio uno y describe lo que ves.
+
+a. No pasa nada.
+si. Una trama de pizarra en blanco.
+c. Un diagrama de dispersión.
+re. Un histograma
+
+
+3\. Usando la tubería `%>%`, crea un objeto `p` pero esta vez asociado con el `heights` conjunto de datos en lugar de `murders` conjunto de datos
+
+
+
+4\. ¿Cuál es la clase del objeto? `p` acabas de crear?
+
+
+5\. Ahora vamos a agregar una capa y las asignaciones estéticas correspondientes. Para los datos de asesinatos, graficamos asesinatos totales versus tamaños de población. Explorar el `murders` marco de datos para recordar cuáles son los nombres de estas dos variables y seleccionar la respuesta correcta. __Sugerencia__: Mira `?murders`.
+
+a. `state` y `abb`.
+si. `total_murders` y `population_size`.
+c. `total` y `population`.
+re. `murders` y `size`.
+
+6\. Para crear el diagrama de dispersión, agregamos una capa con `geom_point`. Las asignaciones estéticas requieren que definamos las variables del eje x y del eje y, respectivamente. Entonces el código se ve así:
+
+```{r, eval=FALSE}
+murders %>% ggplot(aes(x = , y = )) +
+geom_point()
+```
+
+excepto que tenemos que definir las dos variables `x` y `y`. Rellene esto con los nombres correctos de las variables.
+
+
+7\. Tenga en cuenta que si no usamos nombres de argumentos, podemos obtener la misma gráfica asegurándonos de ingresar los nombres de las variables en el orden correcto de esta manera:
+
+```{r, eval=FALSE}
+murders %>% ggplot(aes(population, total)) +
+geom_point()
+```
+
+Vuelva a hacer la gráfica pero ahora con total en el eje xy población en el eje y.
+
+
+8\. Si en lugar de puntos queremos agregar texto, podemos usar el `geom_text()` o `geom_label()` geometrías El siguiente código
+
+```{r, eval=FALSE}
+murders %>% ggplot(aes(population, total)) + geom_label()
+```
+
+nos dará el mensaje de error: `Error: geom_label requires the following missing aesthetics: label`
+
+¿Por qué es esto?
+
+a. Necesitamos mapear un personaje a cada punto a través del argumento de etiqueta en aes.
+si. Necesitamos dejar `geom_label` saber qué personaje usar en la trama.
+c. los `geom_label` la geometría no requiere valores del eje x y del eje y.
+re. `geom_label` no es un comando ggplot2.
+
+
+9\. Vuelva a escribir el código anterior a la abreviatura como la etiqueta a través de `aes`
+
+
+10\. Cambia el color de las etiquetas a azul. ¿Como haremos esto?
+
+a. Agregar una columna llamada `blue` a `murders`.
+si. Debido a que cada etiqueta necesita un color diferente, mapeamos los colores a través de `aes`.
+c. Utilizar el `color` argumento en `ggplot`.
+re. Como queremos que todos los colores sean azules, no necesitamos asignar colores, solo use el argumento de color en `geom_label`.
+
+
+11\. Reescribe el código de arriba para que las etiquetas sean azules.
+
+
+12\. Ahora supongamos que queremos usar el color para representar las diferentes regiones. En este caso, cuál de los siguientes es el más apropiado:
+
+a. Agregar una columna llamada `color` a `murders` con el color que queremos usar.
+si. Debido a que cada etiqueta necesita un color diferente, mapeamos los colores a través del argumento de color de `aes` .
+c. Utilizar el `color` argumento en `ggplot`.
+re. Como queremos que todos los colores sean azules, no necesitamos asignar colores, solo use el argumento de color en `geom_label`.
+
+
+13\. Vuelva a escribir el código anterior para que el color de las etiquetas esté determinado por la región del estado.
+
+14\. Ahora vamos a cambiar el eje x a una escala logarítmica para tener en cuenta el hecho de que la distribución de la población está sesgada. Comencemos definiendo un objeto `p` sosteniendo la trama que hemos hecho hasta ahora
+
+```{r, eval=FALSE}
+p <- murders %>%
+ggplot(aes(population, total, label = abb, color = region)) +
+geom_label()
+```
+
+Para cambiar el eje y a una escala logarítmica, aprendimos sobre el `scale_x_log10()` función. Agregue esta capa al objeto `p` para cambiar la escala y renderizar la trama.
+
+15\. Repita el ejercicio anterior pero ahora cambie ambos ejes para que estén en la escala logarítmica.
+
+Dieciséis\. Ahora edite el código anterior para agregar el título "Datos de asesinatos de armas" al argumento. Sugerencia: use el `ggtitle` función.
