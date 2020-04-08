@@ -36,6 +36,7 @@
 | dataset| set de datos | | | | 
 | debug | depurar |makes it more difficult to debug the code | depurar | depurar |
 | default values | valores predeterminado | | valores predeterminado, valor inicial | valores por defecto, valores predeterminados |
+| density curve| la curva de densidad| | | | 
 | __E__ | | | | |
 | editing panel | panel de edición | the editing panel |  | panel de edición |
 | element-wise | elemento por elemento |  |  |  |
@@ -67,8 +68,10 @@
 | logicals |  lógicos o booleanos | to get a vector of logicals | operadores lógicos o booleanos | lógicos o booleanos |
 | loop |  | bucle |  |
 | __M__ | | | | |
-| map (verb) | definir una correspondencia | |  |  |
+| map (noun) | mapeo | |  |  |
+| map (verb) | definir una correspondencia o mapear | |  |  |
 | mapping | correspondencia | | mapear |  |
+| (aesthetic) mappings | mapeos estéticos | |  |  |
 | match (verb)| aparear  | | coincidencia |  |
 | match (noun)| apareado |  | coincidencia |  |
 | missing data | datos faltantes| | datos perdidos |
@@ -108,6 +111,7 @@
 | __S__ | | | | |
 | scatterplot | diagrama de dispersión | | diagrama de dispersión, diagrama de puntos | diagrama de dispersión |
 | script | _script_ | write an R script | script | script, archivo de procesamiento por lotes (en MSDOS, Unix/Linux, etc.) |
+| smooth | suave | smooth densities | densidades suaves  |  |
 | sofware | _software_ | | software | software |
 | software engineer | ingeniero de _software_ |  | ingeniero de software | ingeniero de software, ingeniero informático |
 | sort| ordenar alfabeticamente o numericamente | sort the rows of this data frame | ||
