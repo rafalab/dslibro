@@ -203,60 +203,60 @@ p_test <- p + geom_text(aes(population/10^6, total), label = abb)
 
 les dará un error ya que `abb` no se encuentra porque está fuera de la función `aes`. La capa `geom_text` no sabe dónde encontrar `abb` ya que es un nombre de columna y no una variable global.
 
-### Como [fix] jugar con los argumentos
+### Cómo probar varios argumentos
 
-Cada función de geometría tiene muchos argumentos distintos de `aes` y `data`. Tienden a ser específicos de la función. Por ejemplo, en el gráfico que deseamos hacer, los puntos son más grandes que el tamaño predeterminado. En el archivo de ayuda vemos que `size` es una estética y podemos cambiarla así:
+Cada función de geometría tiene muchos argumentos además de `aes` y `data`. Estos tienden a ser específicos de la función. Por ejemplo, en el gráfico que queremos hacer, los puntos son más grandes que el tamaño predeterminado. En el archivo de ayuda vemos que `size` es una estética y podemos cambiarla así:
 
 ```{r ggplot-example-5}
 p + geom_point(aes(population/10^6, total), size = 3) +
 geom_text(aes(population/10^6, total, label = abb))
 ```
 
-`size` no es un mapeo: mientras que los mapeos usan datos de observaciones específicas y necesitan estar dentro `aes()`, las operaciones que queremos afectar a todos los puntos de la misma manera no necesitan ser incluidas dentro `aes`.
+`size` **no** es un mapeo: mientras que los mapeos usan datos de observaciones específicas y necesitan estar dentro `aes()`, las operaciones que queremos que afecten a todos los puntos de la misma manera no necesitan ser incluidas dentro `aes`.
 
-Ahora, debido a que los puntos son más grandes, es difícil ver las etiquetas. Si leemos el archivo de ayuda para `geom_text`, vemos el `nudge_x` argumento, que mueve el texto ligeramente hacia la derecha o hacia la izquierda:
+Ahora, debido a que los puntos son más grandes, es difícil ver las etiquetas. Si leemos el archivo de ayuda para `geom_text`, vemos que el argumento `nudge_x` mueve el texto ligeramente hacia la derecha o hacia la izquierda:
 
 ```{r ggplot-example-6}
 p + geom_point(aes(population/10^6, total), size = 3) +
 geom_text(aes(population/10^6, total, label = abb), nudge_x = 1.5)
 ```
 
-Esto es preferible ya que facilita la lectura del texto. En la sección \@ref(add-on-packages) aprendemos una mejor manera de asegurarnos de que podemos ver los puntos y las etiquetas.
+Esto es preferible puesto que facilita la lectura del texto. En la sección \@ref(add-on-packages) aprenderemos una mejor manera de asegurarnos de que podemos ver los puntos y las etiquetas.
 
 ## Mapeos estéticos globales versus locales
 
-En la línea de código anterior, definimos el mapeo `aes(population/10^6, total)` dos veces, una vez en cada geometría. Podemos evitar esto usando un mapeo estético global. Podemos hacer esto cuando definimos la pizarra en blanco `ggplot` objeto. Recuerda que la función `ggplot` contiene un argumento que nos permite definir asignaciones estéticas:
+En la línea de código anterior, definimos el mapeo `aes(population/10^6, total)` dos veces, una vez en cada geometría. Podemos evitar esto usando un mapeo estético _global_ cuando definimos [fix] el objeto `ggplot` de la pizarra en blanco . Recuerden que la función `ggplot` contiene un argumento que nos permite definir asignaciones estéticas:
 
 ```{r}
 args(ggplot)
 ```
 
-Si definimos un mapeo en `ggplot`, todas las geometrías que se agregan como capas se asignarán de manera predeterminada a esta asignación. Redefinimos `p`:
+Si definimos un mapeo en `ggplot`, todas las geometrías que se agregan como capas se[fix] asignarán por defecto a este mapping. Redefinimos `p`:
 
 ```{r}
 p <- murders %>% ggplot(aes(population/10^6, total, label = abb))
 ```
 
-y luego podemos simplemente escribir el siguiente código para producir el diagrama anterior:
+y entonces podemos simplemente escribir el siguiente código para producir el gráfico anterior:
 
 ```{r ggplot-example-7, eval=FALSE}
 p + geom_point(size = 3) +
 geom_text(nudge_x = 1.5)
 ```
 
-Mantenemos el `size` y `nudge_x` argumentos en `geom_point` y `geom_text`, respectivamente, porque solo queremos aumentar el tamaño de los puntos y solo empujar las etiquetas. Si ponemos esos argumentos en `aes` entonces se aplicarían a ambas parcelas. También tenga en cuenta que el `geom_point` la función no necesita un `label` argumento y por lo tanto ignora esa estética.
+Mantenemos los argumentos `size` y `nudge_x` en `geom_point` y `geom_text`, respectivamente, porque solo queremos aumentar el tamaño de los puntos y  empujar las etiquetas. Si ponemos esos argumentos en `aes`, entonces se aplicarán a ambos gráficos. También tengan en cuenta que la función `geom_point` no necesita un argumento `label` y por lo tanto ignora esa estética.
 
-Si es necesario, podemos anular la asignación global definiendo una nueva asignación dentro de cada capa. Estas definiciones locales reemplazan a las globales. Aquí hay un ejemplo:
+Si es necesario, podemos anular la asignación global definiendo un nuevo mapping dentro de cada capa. Estas definiciones _locales_ reemplazan a las _globales_. Aquí hay un ejemplo:
 
 ```{r ggplot-example-8}
 p + geom_point(size = 3) +
 geom_text(aes(x = 10, y = 800, label = "Hello there!"))
 ```
 
-Claramente, la segunda llamada a `geom_text` no se usa `population` y `total`.
+Claramente, la segunda llamada a `geom_text` no usa `population` y `total`.
 
 
-## Escamas
+## Escalas
 
 Primero, nuestras escalas deseadas están en escala logarítmica. Este no es el valor predeterminado, por lo que este cambio debe agregarse a través de una capa _escalas_. Un vistazo rápido a la hoja de trucos revela la `scale_x_continuous` la función nos permite controlar el comportamiento de las escalas. Los usamos así:
 
@@ -389,7 +389,7 @@ La diferencia final tiene que ver con la posición de las etiquetas. En nuestra 
 
 ## Poniendolo todo junto
 
-Ahora que hemos terminado las pruebas, podemos escribir un código que produzca nuestro diagrama deseado desde cero.
+Ahora que hemos terminado las pruebas, podemos escribir un código que produzca nuestro gráfico deseado desde cero.
 
 
 ```{r final-ggplot-example}
@@ -420,7 +420,7 @@ ds_theme_set()
 
 ## Trazados rápidos con `qplot` {#qplot}
 
-Hemos aprendido el poderoso enfoque para generar visualización con ggplot. Sin embargo, hay casos en los que todo lo que queremos es hacer un diagrama rápido de, por ejemplo, un histograma de los valores en un vector, un diagrama de dispersión de los valores en dos vectores o un diagrama de caja usando vectores categóricos y numéricos. Demostramos cómo generar estas parcelas con `hist`, `plot` y `boxplot`. Sin embargo, si queremos mantener la coherencia con el estilo ggplot, podemos usar la función `qplot`.
+Hemos aprendido el poderoso enfoque para generar visualización con ggplot. Sin embargo, hay casos en los que todo lo que queremos es hacer un gráfico rápido de, por ejemplo, un histograma de los valores en un vector, un diagrama de dispersión de los valores en dos vectores o un diagrama de caja usando vectores categóricos y numéricos. Demostramos cómo generar estas parcelas con `hist`, `plot` y `boxplot`. Sin embargo, si queremos mantener la coherencia con el estilo ggplot, podemos usar la función `qplot`.
 
 Si tenemos valores en dos vectores, digamos:
 
