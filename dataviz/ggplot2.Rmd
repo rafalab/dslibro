@@ -4,7 +4,7 @@
 img_path <- "R/img"
 ```
 
-La visualización de datos exploratorios es quizás [fix] la mayor fortaleza de R. Uno puede pasar rápidamente de la idea a los datos para trazar con un equilibrio único de flexibilidad y facilidad. Por ejemplo, Excel puede ser más fácil que R para algunos gráficos, pero no es tan flexible. D3.js puede ser más flexible y poderoso que R, pero lleva mucho más tiempo generar una gráfico.
+La visualización de datos exploratorios es quizás la mayor ventaja de R. Uno puede pasar rápidamente de la idea a los datos para trazar con un equilibrio único de flexibilidad y facilidad. Por ejemplo, Excel puede ser más fácil que R para algunos gráficos, pero no es tan flexible. D3.js puede ser más flexible y poderoso que R, pero lleva mucho más tiempo generar una gráfico.
 
 A lo largo del libro, crearemos diagramas usando el paquete __ggplot2__^[https://ggplot2.tidyverse.org/].
 
@@ -225,13 +225,13 @@ Esto es preferible puesto que facilita la lectura del texto. En la sección \@re
 
 ## Mapeos estéticos globales versus locales
 
-En la línea de código anterior, definimos el mapeo `aes(population/10^6, total)` dos veces, una vez en cada geometría. Podemos evitar esto usando un mapeo estético _global_ cuando definimos [fix] el objeto `ggplot` de la pizarra en blanco . Recuerden que la función `ggplot` contiene un argumento que nos permite definir asignaciones estéticas:
+En la línea de código anterior, definimos el mapeo `aes(population/10^6, total)` dos veces, una vez en cada geometría. Podemos evitar esto usando un mapeo estético _global_ cuando definimos la pizarra en blanco dada por el objeto `ggplot`. Recuerden que la función `ggplot` contiene un argumento que nos permite definir asignaciones estéticas:
 
 ```{r}
 args(ggplot)
 ```
 
-Si definimos un mapeo en `ggplot`, todas las geometrías que se agregan como capas se[fix] asignarán por defecto a este mapping. Redefinimos `p`:
+Si definimos un mapeo en `ggplot`, todas las geometrías que se agregan como capas se asignarán por defecto a este mapeo. Redefinimos `p`:
 
 ```{r}
 p <- murders %>% ggplot(aes(population/10^6, total, label = abb))
@@ -268,7 +268,7 @@ scale_x_continuous(trans = "log10") +
 scale_y_continuous(trans = "log10")
 ```
 
-Debido a que ahora estamos en la escala logarítmica, el[fix] _nudge_ debe hacerse más pequeño.
+Debido a que ahora estamos en la escala logarítmica, el ajuste a la posición (_nudge_ en inglés), debe hacerse más pequeño.
 
 Esta transformación particular es tan común que __ggplot2__ ofrece dos funciones especializadas `scale_x_log10` y `scale_y_log10`, que podemos usar para reescribir el código de esta manera:
 
@@ -298,7 +298,7 @@ ggtitle("US Gun Murders in 2010")
 
 ## Categorías como colores
 
-Podemos cambiar el color de los puntos usando el argumento `col` en la función `geom_point`. Para facilitar la demostración de nuevas[fix] características/opciones?/features, redefiniremos `p` para ser todo excepto la capa de puntos:
+Podemos cambiar el color de los puntos usando el argumento `col` en la función `geom_point`. Para facilitar la demostración de nuevas características, redefiniremos `p` para ser todo excepto la capa de puntos:
 
 ```{r}
 p <- murders %>% ggplot(aes(population/10^6, total, label = abb)) +
@@ -310,7 +310,7 @@ ylab("Total number of murders (log scale)") +
 ggtitle("US Gun Murders in 2010")
 ```
 
-y luego probaremos lo que sucede agregando diferentes llamadas a `geom_point`. Por ejemplo, podemos hacer que todos los puntos sean azules agregando el agurmento `color` [fix] y eligiendo azul:
+y luego probaremos lo que sucede agregando diferentes llamadas a `geom_point`. Por ejemplo, podemos hacer que todos los puntos sean azules agregando el argumento `color`:
 
 ```{r ggplot-example-11}
 p + geom_point(size = 3, color ="blue")
@@ -324,9 +324,9 @@ Dado que la elección del color está determinada por una característica de cad
 p + geom_point(aes(col=region), size = 3)
 ```
 
-Los [fix] mapeos/las correspondencias `x` y `y` se heredan de esas ya definidas en `p`, por lo que no los redefinimos. También movemos `aes` al primer argumento, ya que es donde se esperan [fix] los mapeos en esta llamada a función.
+Los mapeos`x` y `y` se heredan de esas ya definidas en `p`, así que no los redefinimos. También movemos `aes` al primer argumento, ya que es donde se esperan los mapeos en esta llamada.
 
-Aquí vemos otro comportamiento útil por defecto: __ggplot2__ agrega automáticamente una leyenda que asigna el color a la región. Para evitar agregar esta leyenda, establecemos el [fix]argumento `geom_point` `show.legend = FALSE`.
+Aquí vemos otro comportamiento útil por defecto: __ggplot2__ agrega automáticamente una leyenda que asigna el color a la región. Para evitar agregar esta leyenda, establecemos el argumento `geom_point` como `show.legend = FALSE`.
 
 ## Anotación, formas y ajustes
 
@@ -340,7 +340,7 @@ summarize(rate = sum(total)/ sum(population) * 10^6) %>%
 pull(rate)
 ```
 
-Para agregar una línea usamos el `geom_abline` función. __ggplot2__ utiliza `ab` en el nombre para recordarnos que estamos suministrando la intercepción ( `a`) y pendiente ( `b`) La línea predeterminada tiene[fix] slope/ pendiente 1 e intersección 0, por lo que solo tenemos que definir [fix] la intersección/the intercept:
+Para agregar una línea usamos la función `geom_abline`. __ggplot2__ utiliza `ab` en el nombre para recordarnos que estamos suministrando el intercepto (`a`) y pendiente (`b`). La línea predeterminada tiene pendiente 1 e intercepto 0, por lo que solo tenemos que definir el intercepto:
 
 ```{r ggplot-example-13}
 p + geom_point(aes(col=region), size = 3) +
@@ -359,13 +359,13 @@ Tengan en cuenta que hemos redefinido `p` y usado este nuevo `p` a continuación
 
 Los gráficos por defecto creados por __ggplot2__ ya son muy útiles. Sin embargo, con frecuencia necesitamos hacer pequeños ajustes al comportamiento predeterminado. Aunque no siempre es obvio cómo hacer esto aun con la hoja de referencia, __ggplot2__ es muy flexible.
 
-Por ejemplo, podemos hacer cambios a la leyenda a través de la función `scale_color_discrete`. En nuestro gráfico, la palabra _region_ [fix] (in english) debe estar en mayúscula y podemos cambiarla así:
+Por ejemplo, podemos hacer cambios a la leyenda a través de la función `scale_color_discrete`. En nuestro gráfico original, la palabra _region_ está en mayúscula y podemos cambiarla así:
 
 ```{r}
 p <- p + scale_color_discrete(name = "Region")
 ```
 
-##[fix] Paquetes complementarios {#add-on-packages}
+## Paquetes complementarios {#add-on-packages}
 
 El poder de __ggplot2__ se incrementa aún más debido a la disponibilidad de paquetes adicionales. Los cambios restantes necesarios para darle los toques finales a nuestro gráfico requieren los paquetes __ggthemes__ y __ggrepel__.
 
@@ -384,9 +384,9 @@ p + theme_economist()
 
 Pueden ver cómo se ven algunos de los otros temas simplemente cambiando la función. Por ejemplo, pueden probar el tema `theme_fivethirtyeight()` en vez del anterior.
 
-La diferencia final tiene que ver con la posición de las etiquetas. En nuestro gráfico, algunas de las etiquetas se superponen. El paquete de complementos __ggrepel__ incluye una geometría que agrega etiquetas a la vez que garantiza que no se superpongan entre sí. Simplemente cambiamos[fix] (in english) `geom_text` a `geom_text_repel`.
+La diferencia final tiene que ver con la posición de las etiquetas. En nuestro gráfico, algunas de las etiquetas se superponen. El paquete de complementos __ggrepel__ incluye una geometría que agrega etiquetas a la vez que garantiza que no se superpongan entre sí. Simplemente cambiamos `geom_text` a `geom_text_repel`.
 
-## [fix] Putting it all together/Cómo ponerlo todo junto/Juntando todas las piezas/Como combinar todo
+## Cómo combinarlo todo
 
 Ahora que hemos terminado las pruebas, podemos escribir un código que produzca nuestro gráfico deseado partiendo de cero.
 
@@ -419,7 +419,7 @@ ds_theme_set()
 
 ## Gráficos rápidos con `qplot` {#qplot}
 
-[fix] Hemos aprendido el poderoso acercamiento para generar visualización con ggplot. Sin embargo, hay casos en que sólo necesitamos un gráfico rápido de, por ejemplo, un histograma de los valores en un vector, un diagrama de dispersión de los valores en dos vectores o un diagrama de caja usando vectores categóricos y numéricos. Demostramos cómo generar estos gráficos con `hist`, `plot` y `boxplot`. Sin embargo, si queremos ser consistentes con el estilo ggplot, podemos usar la función `qplot`.
+Hemos aprendido el poderoso acercamiento para generar visualizaciones con ggplot. Sin embargo, hay casos en que sólo necesitamos un gráfico rápido de, por ejemplo, un histograma de los valores en un vector, un diagrama de dispersión de los valores en dos vectores o un diagrama de caja usando vectores categóricos y numéricos. Demostramos cómo generar estos gráficos con `hist`, `plot` y `boxplot`. Sin embargo, si queremos ser consistentes con el estilo ggplot, podemos usar la función `qplot`.
 
 Si tenemos valores en dos vectores, digamos:
 
@@ -437,7 +437,7 @@ ggplot(aes(x, y)) +
 geom_point()
 ```
 
-Esto parece demasiado código para una gráfico tan sencillo. La función `qplot` sacrifica la flexibilidad proporcionada por el[fix] acercamiento/enfoque de `ggplot`, pero nos permite generar un gráfico rápidamente.
+Esto parece demasiado código para una gráfico tan sencillo. La función `qplot` sacrifica la flexibilidad proporcionada por el enfoque de `ggplot`, pero nos permite generar un gráfico rápidamente.
 
 ```{r qplot-example-0, eval = FALSE}
 qplot(x, y)
@@ -505,7 +505,7 @@ d. Un histograma.
 4\. ¿Cuál es la clase del objeto `p` que acaba de crear?
 
 
-5\. Ahora vamos a agregar una capa y las mapeos estéticos correspondientes. Para los datos de asesinatos, graficamos asesinatos totales versus tamaños de población. [fix] Explore el _data frame_ `murders` para recordar cuáles son los nombres de estas dos variables y escoja la respuesta correcta. __Sugerencia__: Mire `?murders`.
+5\. Ahora vamos a agregar una capa y las mapeos estéticos correspondientes. Para los datos de asesinatos, graficamos asesinatos totales versus tamaños de población. Explore el set de datos `murders` para recordar cuáles son los nombres de estas dos variables y escoja la respuesta correcta. __Sugerencia__: Mire `?murders`.
 
 a. `state` y `abb`.
 b. `total_murders` y `population_size`.
@@ -519,7 +519,7 @@ murders %>% ggplot(aes(x = , y = )) +
 geom_point()
 ```
 
-excepto que tenemos que definir las dos variables `x` y `y`. [fix] Rellene esto con los nombres correctos de las variables.
+excepto que tenemos que definir las dos variables `x` y `y`. Rellene esto con los nombres correctos de las variables.
 
 
 7\. Recuerdo que si no usamos nombres de argumentos, podemos obtener el mismo gráfico asegurándonos de ingresar los nombres de las variables en el orden correcto de esta manera:
@@ -542,10 +542,10 @@ nos dará el mensaje de error: `Error: geom_label requires the following missing
 
 ¿Por qué ocurre esto?
 
-a. Necesitamos mapear un caracter a cada punto a través del argumento [fix] de etiqueta en aes/`aes`.
+a. Necesitamos mapear un caracter a cada punto a través del argumento de etiqueta en `aes`.
 b. Necesitamos dejar que `geom_label` sepa qué carácter usar en el gráfico.
 c. La geometría `geom_label` no requiere valores del eje x y del eje y.
-d. `geom_label` no es un comando de [fix] ggplot2/__ggplot2__.
+d. `geom_label` no es un comando de __ggplot2__.
 
 
 9\. Vuelva a escribir el código anterior para utilizar la abreviatura como la etiqueta a través de `aes`.
@@ -572,7 +572,7 @@ d. Como queremos que todos los colores sean azules, no necesitamos asignar color
 
 13\. Reescriba el código anterior para que el color de las etiquetas esté determinado por la región del estado.
 
-14\. [fix] Ahora vamos a cambiar el eje x a una escala logarítmica para tener en cuenta el hecho de que la distribución de la población está sesgada. Comencemos definiendo un objeto `p` sosteniendo el gráfico que hemos hecho hasta ahora:
+14\. Ahora vamos a cambiar el eje x a una escala logarítmica para tener en cuenta el hecho de que la distribución de la población es asimétrica. Comencemos definiendo un objeto `p` guardando el gráfico que hemos hecho hasta ahora:
 
 ```{r, eval=FALSE}
 p <- murders %>%
