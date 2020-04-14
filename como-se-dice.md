@@ -43,6 +43,7 @@
 | Exploratory Data Analysis (EDA) | Análisis exploratorio de datos (_EDA_ por sus siglas en inglés) | exploratory data analysis (EDA) |Análisis exploratorio de datos | Análisis exploratorio de datos |
 | execute (verb)| ejecutar |to execute the code | ejecutar | ejecutar |
 | __F__ | | | | |
+| feature (for machine learning) | atributo | | | |
 | file (verb) | archivar | to file |  |  |
 | file (noun)| archivo |save the script in a file | Archivo | archivo o fichero |
 | for-loop | bucle-for |  | |bucle-for | bucle-for |
@@ -56,10 +57,13 @@
 | index (verb) | indexar | integers are used to index vectors | indexar, indizar  | indexar | 
 | indexing | indexación |R provides a convenient way of indexing vectors |  | indexación |
 | input (noun) | | entrada | `mean` takes a vector as input | input (no se traduce; anglicismo aceptado), entrada | entrada |
-| input (adjetive) | _input_, de entrada | `x` is the input vector | input, de entrada | de entreda |
+| input (adjetive) | _input_, de entrada | `x` is the input vector | input, de entrada | de entrada |
+| input function (for machine learning) | atributo de entrada | | | |
+| input layer (for machine learning) | capa de entrada | | | |
 | intercept | intercepto | | intercepto, intersección |  |
 | __J__ | | | | |
 | __K__ | | | | |
+| K-means | K-medios | | | |
 | K-nearest neighbors | _K-nearest neighbors_ | | K-nearest neighbors, K vecinos más cercanos | K-vecinos mas cercanos |
 | key bindings | | combinaciones de teclas | combinaciones de teclas |
 | keyboard shortcut | Use the keyboard shortcut command-S | atajo del teclado | atajo de teclado |
@@ -68,6 +72,7 @@
 | logicals |  lógicos o booleanos | to get a vector of logicals | operadores lógicos o booleanos | lógicos o booleanos |
 | loop |  | bucle |  |
 | __M__ | | | | |
+| machine learning | _machine learning_ | | machine learning o la traducción literal aprendizaje de máquina | [aprendizaje automático](http://portal.uned.es/portal/page?_pageid=93,61703783&_dad=portal&_schema=PORTAL&idAsignatura=71014023) |
 | map (noun) | mapeo | |  |  |
 | map (verb) | definir una correspondencia o mapear | |  |  |
 | mapping | correspondencia | | mapear |  |
@@ -78,7 +83,6 @@
 | missing value | valor faltante | | valor faltante |  |  
 | modelling|  modelando ||modelado  |  |
 | motivating| motivantes |motivating examples, motivating case studies |ilustrativo, estimulante, motivante| ilustrativo | 
-| machine learning | _machine learning_ | | machine learning o la traducción literal aprendizaje de máquina | [aprendizaje automático](http://portal.uned.es/portal/page?_pageid=93,61703783&_dad=portal&_schema=PORTAL&idAsignatura=71014023) |
 | __N__ | | | | |
 | named list | lista con nombres |  | lista nombrada  |  |
 | nested | anidado o anidada | nested sorting, nested design | ordenar por categorías? orden anidado?, diseño anidado| diseño anidado |
@@ -86,14 +90,17 @@
 | __O__ | | | | |
 | operator | operador |the `!=` operator| operador | operador |
 | output | _output_, resultado, salida | the output of the function is a vector |un _output_ (no se traduce),resultado, salida  | salida |
+| output layer| capa de salida || |  |
 | __P__ | | | | |
 | path  |ruta | Relative and full paths, the path of a file list | rutas | ruta |
 | pipe | _pipe_ | `%>%` |  _pipe_ | tubería |
-| pipe (verb) | canalizar (_pipe_ en inglés) | We can continue to pipe values along |  |  |
+| pipe (verb) | canalizar | We can continue to pipe values along |  |  |
+| pipeline | canalización |  |  |  |
 | placeholder | marcador de posición | |marcador de posición  |  |
 | plot (noun) | gráfico | make a plot of the data | gráfico, gráfica | gráfico |
 | plot (verb) | graficar |plot the data | graficar | graficar, representar |
 | __prebuilt objects__  | objetos predefinidos |   | objetos predefinidos |  |
+| prediction bias | sesgo de predicción |  |  |  |
 | __Q__ | | | | |
 | query | consulta | | consulta |  |
 | quote (verb) | entrecomillar  | we need to quote strings |entrecomillar |  |
