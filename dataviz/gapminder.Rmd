@@ -1,6 +1,6 @@
 # Visualización de datos en la práctica {#gapminder}
 
-En este capítulo, demostraremos cómo el código relativamente sencillo __ggplot2__  puede crear gráficos perspicaces y estéticamente agradables. Como motivación, crearemos gráficos que nos ayudarán a comprender mejor las tendencias de la salud y la economía mundial. Implementaremos lo que aprendimos en los capítulos \@ref(ggplot2) y \@ref(other-geometries) y aprenderemos a aumentar el código para perfeccionar los gráficos. A medida que avancemos en nuestro estudio de caso, describiremos [fix] los principios generales relevantes de visualización de datos y aprenderemos conceptos como _fabricación_, _gráficos de series de tiempo_, _transformaciones_y_ gráficos de refrigerador_.
+En este capítulo, demostraremos cómo el código relativamente sencillo __ggplot2__  puede crear gráficos perspicaces y estéticamente agradables. Como motivación, crearemos gráficos que nos ayudarán a comprender mejor las tendencias de la salud y la economía mundial. Implementaremos lo que aprendimos en los capítulos \@ref(ggplot2) y \@ref(other-geometries) y aprenderemos a aumentar el código para perfeccionar los gráficos. A medida que avancemos en nuestro estudio de caso, describiremos [fix] los principios generales relevantes de visualización de datos y aprenderemos conceptos como _faceting_, _gráficos de series de tiempo_, _transformaciones_ y _ridge plots_.
 
 
 ## Estudio de caso: nuevas ideas sobre la pobreza
@@ -14,7 +14,7 @@ Hans Rosling^[https://en.wikipedia.org/wiki/Hans_Rosling] fue el cofundador de l
 1. ¿Es una caracterización justa del mundo de hoy decir que está dividido en naciones ricas occidentales y el mundo en desarrollo de África, Asia y América Latina?
 2. ¿Ha empeorado la desigualdad de ingresos en todos los países durante los últimos 40 años?
 
-Para responder a estas preguntas, utilizaremos el set de datos `gapminder` proveído por __dslabs__. Este set de datos se creó utilizando varias hojas de cálculo disponibles de la Fundación Gapminder. Puede acceder a la tabla de esta manera:
+Para responder a estas preguntas, utilizaremos el set de datos `gapminder` proveído por __dslabs__. Este set de datos se creó utilizando varias hojas de cálculo disponibles de la Fundación Gapminder. Pueden acceder a la tabla de esta manera:
 
 ```{r load libraries, message=FALSE, echo=TRUE}
 library(tidyverse)
@@ -23,9 +23,9 @@ data(gapminder)
 gapminder %>% as_tibble()
 ```
 
-### Prueba de Hans Rosling
+### La prueba de Hans Rosling
 
-Como se hizo en el video _New Insights on Poverty_, comenzamos probando nuestro conocimiento sobre las diferencias en la mortalidad infantil en diferentes países. Para cada uno de los seis pares de países a continuación, ¿qué país cree que tuvo las tasas de mortalidad infantil más altas en 2015? ¿Qué pares crees que son más similares?
+Igual que en el video _New Insights on Poverty_, comenzamos probando nuestros conocimientos sobre las diferencias en la mortalidad infantil en diferentes países. [fix] Para cada uno de los seis pares de países a continuación, ¿qué países creen que tuvieron las tasas de mortalidad infantil más altas en 2015? ¿Qué pares creen que son más similares?
 
 1. Sri Lanka o Turquía
 2. Polonia o Corea del Sur
@@ -33,7 +33,7 @@ Como se hizo en el video _New Insights on Poverty_, comenzamos probando nuestro 
 4. Pakistán o Vietnam
 5. Tailandia o Sudáfrica
 
-Al responder estas preguntas sin datos, los países no europeos suelen ser elegidos por tener tasas de mortalidad infantil más altas: Sri Lanka sobre Turquía, Corea del Sur sobre Polonia y Malasia sobre Rusia. También es común suponer que los países considerados como parte del mundo en desarrollo: Pakistán, Vietnam, Tailandia y Sudáfrica, tienen tasas de mortalidad igualmente altas.
+Al responder a estas preguntas sin datos, los países no europeos suelen ser elegidos como los que tienen tasas de mortalidad infantil más altas: Sri Lanka sobre Turquía, Corea del Sur sobre Polonia y Malasia sobre Rusia. También es común suponer que los países considerados como parte del mundo en desarrollo: Pakistán, Vietnam, Tailandia y Sudáfrica, tienen tasas de mortalidad igualmente altas.
 
 Para responder estas preguntas __con datos__, podemos usar __dplyr__. Por ejemplo, para la primera comparación vemos que:
 
@@ -44,7 +44,7 @@ select(country, infant_mortality)
 ```
 Turquía tiene la mayor tasa de mortalidad infantil.
 
-Podemos usar este código en todas las comparaciones y encontrar lo siguiente:
+Podemos usar este código en todas las comparaciones y descubrimos lo siguiente:
 ```{r, echo = FALSE}
 comp_table <- tibble(comparison = rep(1:5, each = 2),
 country = c("Sri Lanka", "Turkey", "Poland", "South Korea", "Malaysia", "Russia", "Pakistan","Vietnam","Thailand","South Africa"))
@@ -67,15 +67,15 @@ kableExtra::kable_styling(font_size = 8)
 }
 ```
 
-Vemos que los países europeos en esta lista tienen tasas de mortalidad infantil más altas: Polonia tiene una tasa más alta que Corea del Sur y Rusia tiene una tasa más alta que Malasia. También vemos que Pakistán tiene una tasa mucho más alta que Vietnam, y Sudáfrica tiene una tasa mucho más alta que Tailandia. Resulta que cuando Hans Rosling dio este cuestionario a grupos educados de personas, el puntaje promedio fue inferior a 2.5 de 5, peor que lo que hubieran obtenido si hubieran adivinado al azar. Esto implica que más que ignorantes, estamos mal informados. En este capítulo vemos cómo la visualización de datos nos ayuda a informarnos.
+Vemos que los países europeos en esta lista tienen tasas de mortalidad infantil más altas: Polonia tiene una tasa más alta que Corea del Sur y Rusia tiene una tasa más alta que Malasia. También vemos que Pakistán tiene una tasa mucho más alta que Vietnam, y Sudáfrica tiene una tasa mucho más alta que Tailandia. Resulta que cuando Hans Rosling le dio este cuestionario a grupos de personas educadas, el puntaje promedio fue inferior a 2.5 de 5, peor que lo que hubieran obtenido si hubieran adivinado al azar. Esto implica que más que ignorantes, estamos mal informados. En este capítulo vemos cómo la visualización de datos nos ayuda a informarnos.
 
-## Gráfico de dispersión
+## Diagrama de dispersión
 
-La razón de esto se deriva de la noción preconcebida de que el mundo está dividido en dos grupos: el mundo occidental (Europa occidental y América del Norte), caracterizado por una larga vida y familias pequeñas, frente al mundo en desarrollo (África, Asia y América Latina ) caracterizados por cortos períodos de vida y familias numerosas. ¿Pero los datos respaldan esta visión dicotómica?
+[fix que 'esto'?] La razón por esto se deriva de la noción preconcebida de que el mundo está dividido en dos grupos: el mundo occidental (Europa occidental y América del Norte), caracterizado por una larga vida y familias pequeñas, versus el mundo en desarrollo (África, Asia y América Latina ) caracterizados por cortos períodos de vida y familias numerosas. ¿Pero los datos respaldan esta visión dicotómica?
 
-Los datos necesarios para responder esta pregunta también están disponibles en nuestro `gapminder` mesa. Usando nuestras habilidades de visualización de datos recién aprendidas, podremos enfrentar este desafío.
+Los datos necesarios para responder a esta pregunta también están disponibles en nuestra tabla `gapminder`. Usando nuestras recién aprendidas habilidades de visualización de datos, podremos enfrentar este desafío.
 
-Para analizar esta visión del mundo, nuestro primer diagrama es un diagrama de dispersión de la esperanza de vida versus las tasas de fertilidad (número promedio de hijos por mujer). Comenzamos mirando los datos de hace unos 50 años, cuando quizás esta visión se consolidó por primera vez en nuestras mentes.
+Para analizar esta visión del mundo, nuestro primer gráfico es un diagrama de dispersión de la esperanza de vida versus las tasas de fertilidad (número promedio de hijos por mujer). Comenzamos mirando los datos de hace unos 50 años, cuando quizás esta visión se consolidó por primera vez en nuestras mentes.
 
 ```{r fertility-versus-life-expectancy-1962, warning=FALSE}
 filter(gapminder, year == 1962) %>%
@@ -83,12 +83,12 @@ ggplot(aes(fertility, life_expectancy)) +
 geom_point()
 ```
 
-La mayoría de los puntos se dividen en dos categorías distintas:
+La mayoría de puntos se dividen en dos categorías distintas:
 
-1. Esperanza de vida alrededor de 70 años y 3 o menos hijos por familia.
+1. [fix] Esperanza de vida alrededor de 70 años y 3 o menos hijos por familia.
 2. Esperanza de vida inferior a 65 años y más de 5 niños por familia.
 
-Para confirmar que estos países son de las regiones que esperamos, podemos usar el color para representar el continente.
+Para confirmar que estos países son de las regiones que esperamos, podemos usar un color para representar un continente.
 
 ```{r fertility-versus-life-expectancy-1962-with-color}
 filter(gapminder, year == 1962) %>%
@@ -96,13 +96,13 @@ ggplot( aes(fertility, life_expectancy, color = continent)) +
 geom_point()
 ```
 
-En 1962, la visión de "Occidente versus mundo en desarrollo" se basó en alguna realidad. ¿Sigue siendo así 50 años después?
+En 1962, la visión de "El Occidente versus el mundo en desarrollo" se basó en cierta realidad. ¿Sigue siendo así 50 años después?
 
-## Facetado
+## Separar en facetas
 
-Podríamos graficar fácilmente los datos de 2012 de la misma manera que lo hicimos para 1962. Sin embargo, para hacer comparaciones, es preferible trazar lado a lado. En __ggplot2__, podemos lograr esto _faceting_ variables: estratificamos los datos por alguna variable y hacemos la misma gráfica para cada estrato.
+Podríamos graficar fácilmente los datos de 2012 de la misma manera que lo hicimos para 1962. Sin embargo, para hacer comparaciones, es preferible graficar lado a lado. En __ggplot2__, [fix] podemos lograr esto separando en _facetas_ a las variables: estratificamos los datos por alguna variable y hacemos el mismo gráfico para cada estrato.
 
-Para lograr facetas, agregamos una capa con la función `facet_grid`, que separa automáticamente las parcelas. Esta función le permite facetar por hasta dos variables usando columnas para representar una variable y filas para representar la otra. La función espera que las variables de fila y columna estén separadas por un `~`. Aquí hay un ejemplo de un diagrama de dispersión con `facet_grid` agregado como la última capa:
+[fix] Para separar en facetas, agregamos una capa con la función `facet_grid`, que automáticamente separa los gráficos. Esta función le permite facetar por hasta dos variables usando columnas para representar una variable y filas para representar la otra. La función espera que las variables de fila y columna estén separadas por un `~`. Aquí vemos un ejemplo de un diagrama de dispersión donde agregramos `facet_grid` como la última capa:
 
 ```{r fertility-versus-life-expectancy-facet, warning=FALSE, out.width="100%"}
 filter(gapminder, year%in%c(1962, 2012)) %>%
@@ -111,7 +111,7 @@ geom_point() +
 facet_grid(continent~year)
 ```
 
-Vemos una parcela para cada par continente/ año. Sin embargo, esto es solo un ejemplo y más de lo que queremos, que es simplemente comparar 1962 y 2012. En este caso, solo hay una variable y usamos `.` para hacerle saber a Facet que no estamos usando una de las variables:
+Vemos un gráfico para cada par continente/año. Sin embargo, esto es solo un ejemplo y más de lo que queremos, que es simplemente comparar 1962 y 2012. En este caso, solo hay una variable y usamos `.` para que [fix necesita algun tipo de highlight 'facet'?] facet sepa que no estamos usando una de las variables:
 
 ```{r fertility-versus-life-expectancy-two-years, warning=FALSE, out.width="100%", fig.height=3}
 filter(gapminder, year%in%c(1962, 2012)) %>%
@@ -120,11 +120,11 @@ geom_point() +
 facet_grid(. ~ year)
 ```
 
-este gráfico muestra claramente que la mayoría de los países se han mudado del _desarrollo_del_conjunto_al_mundo_ occidental. En 2012, la visión del mundo occidental versus el mundo en desarrollo ya no tiene sentido. Esto es particularmente claro cuando se compara Europa con Asia, la última de las cuales incluye varios países que han realizado grandes mejoras.
+[fix] Este gráfico muestra claramente que la mayoría de los países se han mudado del conjunto _mundo en desarrollo_ al conjunto de _mundo occidental_. En 2012, la visión del mundo occidental versus el mundo en desarrollo ya no tiene sentido. Esto es particularmente claro cuando se compara Europa con Asia, la última de las cuales incluye varios países que han realizado grandes mejoras.
 
 ### `facet_wrap`
 
-Para explorar cómo sucedió esta transformación a través de los años, podemos hacer el gráfico durante varios años. Por ejemplo, podemos agregar 1970, 1980, 1990 y 2000. Si hacemos esto, no queremos todas las parcelas en la misma fila, el comportamiento predeterminado de `facet_grid`, ya que se volverán demasiado delgados para mostrar los datos. En cambio, querremos usar múltiples filas y columnas. La función `facet_wrap` nos permite hacer esto envolviendo automáticamente la serie de gráficos para que cada pantalla tenga dimensiones visibles:
+Para explorar cómo sucedió esta transformación a través de los años, podemos hacer el gráfico para varios años. Por ejemplo, podemos agregar 1970, 1980, 1990 y 2000. Si hacemos esto, no queremos a todos los gráficos en la misma fila, que es lo que por defecto `facet_grid` hace, puesto que aparecerán demasiado delgados para mostrar los datos. En cambio, queremos usar múltiples filas y columnas. La función `facet_wrap` nos permite hacer esto [fix] envolviendo/enrollando automáticamente la serie de gráficos para que cada imagen tenga dimensiones visibles:
 
 
 ```{r fertility-versus-life-expectancy-five-years, out.width="100%"}
@@ -141,7 +141,7 @@ Este gráfico muestra claramente cómo la mayoría de los países asiáticos han
 
 ### Escalas fijas para mejores comparaciones
 
-La elección predeterminada del rango de los ejes es importante. Cuando no se usa `facet`, este rango está determinado por los datos que se muestran en el gráfico. Cuando usas `facet`, este rango está determinado por los datos que se muestran en todos los gráficos y, por lo tanto, se mantienen fijos en todos los gráficos. Esto hace que las comparaciones entre parcelas sean mucho más fáciles. Por ejemplo, en la gráfica anterior, podemos ver que la esperanza de vida ha aumentado y la fertilidad ha disminuido en la mayoría de los países. Vemos esto porque la nube de puntos se mueve. Este no es el caso si ajustamos las escalas:
+La elección por defecto del rango de los ejes es importante. Cuando no se usa `facet`, este rango está determinado por los datos que se muestran en el gráfico. Cuando usan `facet`, este rango está determinado por los datos que se muestran en todos los gráficos y, por lo tanto, se mantienen fijos en todos los gráficos. Esto hace que las comparaciones entre gráficos sean mucho más fáciles. Por ejemplo, en el gráfico anterior, podemos ver que la esperanza de vida ha aumentado y la fertilidad ha disminuido en la mayoría de los países. Vemos esto porque la nube de puntos se mueve. Este no es el caso si ajustamos las escalas:
 
 ```{r facet-without-fixed-scales, warning=FALSE}
 filter(gapminder, year%in%c(1962, 2012)) %>%
@@ -150,13 +150,13 @@ geom_point() +
 facet_wrap(. ~ year, scales = "free")
 ```
 
-En la gráfica anterior, debemos prestar especial atención al rango para notar que la gráfica de la derecha tiene una mayor esperanza de vida.
+En el gráfico anterior, debemos prestar especial atención al rango para notar que el gráfico de la derecha tiene una mayor esperanza de vida.
 
 ## Gráficos de series de tiempo
 
-Las visualizaciones anteriores ilustran efectivamente que los datos ya no son compatibles con la visión del mundo occidental frente a la del mundo en desarrollo. Una vez que vemos estas gráficos, surgen nuevas preguntas. Por ejemplo, ¿qué países están mejorando más y cuáles menos? ¿La mejora fue constante durante los últimos 50 años o se aceleró más durante ciertos períodos? Para una mirada más cercana que puede ayudar a responder estas preguntas, presentamos _gráficos de series de tiempo_.
+Las visualizaciones anteriores ilustran efectivamente que los datos ya no son compatibles con la visión del mundo occidental frente al mundo en desarrollo. Al ver estos gráficos, surgen nuevas preguntas. Por ejemplo, ¿qué países están mejorando más y cuáles menos? ¿La mejora fue constante durante los últimos 50 años o se aceleró más durante ciertos períodos? [fix] Para una mirada más cercana/más detenida que pueda ayudar a responder estas preguntas, presentamos _gráficos de series de tiempo_ (_time series plots_ en inglés).
 
-Las gráficas de series de tiempo tienen tiempo en el eje xy un resultado o medida de interés en el eje y. Por ejemplo, aquí hay una gráfica de tendencia de las tasas de fertilidad de Estados Unidos:
+Los gráficas de series de tiempo tienen tiempo en el eje x y un resultado o medida de interés en el eje y. Por ejemplo, aquí vemos una gráfica de tendencia de las tasas de fertilidad de Estados Unidos:
 
 ```{r fertility-time-series-plot-points, warning=FALSE}
 gapminder %>%
@@ -165,9 +165,9 @@ ggplot(aes(year, fertility)) +
 geom_point()
 ```
 
-Vemos que la tendencia no es lineal en absoluto. En cambio, durante los años sesenta y setenta se produce una fuerte caída por debajo de 2. Luego, la tendencia vuelve a 2 y se estabiliza durante los años noventa.
+Observamos que la tendencia no es lineal en absoluto, sino que durante los años sesenta y setenta se produce una fuerte caída por debajo de 2. Luego, la tendencia vuelve a 2 y se estabiliza durante los años noventa.
 
-Cuando los puntos están regularmente y densamente espaciados, como están aquí, creamos curvas uniendo los puntos con líneas, para transmitir que estos datos provienen de una sola serie, aquí un país. Para hacer esto, usamos el `geom_line` funcionar en lugar de `geom_point`.
+Cuando los puntos están regular y densamente espaciados, como vemos aquí, creamos curvas uniendo los puntos con líneas, para transmitir que estos datos provienen de una sola serie, aquí un país. Para hacer esto, usamos la función `geom_line` en vez de `geom_point`.
 
 ```{r fertility-time-series-plot-curve, warning=FALSE}
 gapminder %>%
@@ -176,7 +176,7 @@ ggplot(aes(year, fertility)) +
 geom_line()
 ```
 
-Esto es particularmente útil cuando miramos dos países. Si subconjuntos los datos para incluir dos países, uno de Europa y uno de Asia, entonces adapte el código anterior:
+Esto es particularmente útil cuando comparamos dos países. Si creamos un subconjunto de los datos para incluir dos países, uno de Europa y uno de Asia, entonces adaptamos el código anterior:
 
 ```{r wrong-time-series-plot, warning=FALSE, message=FALSE}
 countries <- c("South Korea","Germany")
@@ -186,7 +186,7 @@ ggplot(aes(year,fertility)) +
 geom_line()
 ```
 
-Desafortunadamente, esta es __no__ el gráfico que queremos. En lugar de una línea para cada país, se unen los puntos para ambos países. Esto es realmente esperado ya que no hemos dicho `ggplot` nada sobre querer dos líneas separadas. Dejar `ggplot` sabemos que hay dos curvas que deben hacerse por separado, asignamos cada punto a un `group`, uno para cada país:
+Desafortunadamente, este __no__ es el gráfico que queremos. En lugar de una línea para cada país, se unen los puntos para ambos países. Sin embargo, esto es esperado ya que no le hemos dicho a `ggplot` nada sobre querer dos líneas separadas. Para que `ggplot` entienda que hay dos curvas que se deben hacer por separado, asignamos cada punto a un `group`, uno para cada país:
 
 
 ```{r time-series-two-curves, warning=FALSE, message=FALSE}
@@ -198,7 +198,7 @@ geom_line()
 ```
 
 ¿Pero qué línea va con qué país? Podemos asignar colores para hacer esta distinción.
-Un efecto secundario útil de usar el `color` el argumento para asignar diferentes colores a los diferentes países es que los datos se agrupan automáticamente:
+Un efecto secundario útil de usar el argumento `color` para asignar diferentes colores a los diferentes países es que los datos se agrupan automáticamente:
 
 ```{r fertility-time-series-plot}
 countries <- c("South Korea","Germany")
@@ -208,11 +208,11 @@ ggplot(aes(year,fertility, col = country)) +
 geom_line()
 ```
 
-La gráfica muestra claramente cómo la tasa de fertilidad de Corea del Sur cayó drásticamente durante los años sesenta y setenta, y en 1990 tenía una tasa similar a la de Alemania.
+El gráfico muestra claramente cómo la tasa de fertilidad de Corea del Sur cayó drásticamente durante los años sesenta y setenta, y en 1990 tuvo una tasa similar a la de Alemania.
 
 ### Etiquetas en lugar de leyendas
 
-Para los gráficos de tendencias, recomendamos etiquetar las líneas en lugar de usar leyendas, ya que el espectador puede ver rápidamente qué línea es qué país. Esta sugerencia en realidad se aplica a la mayoría de las parcelas: el etiquetado generalmente se prefiere a las leyendas.
+Para los gráficos de tendencias, recomendamos etiquetar las líneas en lugar de usar leyendas, ya que el espectador puede ver rápidamente qué línea es de qué país. Esta sugerencia aplica a la mayoría de los gráficos: las etiquetas generalmente se prefieren a las leyendas.
 
 Demostramos cómo podemos hacer esto usando los datos de esperanza de vida. Definimos una tabla de datos con las ubicaciones de las etiquetas y luego usamos una segunda asignación solo para estas etiquetas:
 
@@ -227,26 +227,26 @@ geom_text(data = labels, aes(x, y, label = country), size = 5) +
 theme(legend.position = "none")
 ```
 
-La gráfica muestra claramente cómo una mejora en la esperanza de vida siguió a las caídas en las tasas de fertilidad. En 1960, los alemanes vivieron 15 años más que los surcoreanos, aunque para 2010 la brecha está completamente cerrada. Ejemplifica la mejora que muchos países no occidentales han logrado en los últimos 40 años.
+El gráfico muestra claramente cómo una mejora en la esperanza de vida siguió a las caídas en las tasas de fertilidad. En 1960, los alemanes vivieron 15 años más que los surcoreanos, aunque para 2010 la brecha está completamente cerrada. Ejemplifica la mejora que muchos países no occidentales han logrado en los últimos 40 años.
 
 
 
 ## Transformaciones de datos
 
-Ahora cambiamos nuestra atención a la segunda pregunta relacionada con la idea común de que la distribución de la riqueza en todo el mundo ha empeorado durante las últimas décadas. Cuando se pregunta al público general si los países pobres se han vuelto más pobres y los países ricos se han vuelto más ricos, la mayoría responde que sí. Mediante el uso de estratificación, histogramas, densidades suaves y diagramas de caja, podremos entender si este es realmente el caso. Primero aprendemos cómo las transformaciones a veces pueden ayudar a proporcionar resúmenes y tramas más informativos.
+Ahora cambiamos nuestra atención a la segunda pregunta relacionada con la idea común de que la distribución de la riqueza en todo el mundo ha empeorado durante las últimas décadas. Cuando se le pregunta al público en general si los países pobres se han vuelto más pobres y los países ricos se han vuelto más ricos, la mayoría responde que sí. Mediante el uso de estratificación, histogramas, densidades suaves y diagramas de caja, podremos ver si este realmente es el caso. Primero, aprenderemos cómo las transformaciones a veces pueden ayudar a proporcionar resúmenes y gráficos más informativos.
 
-Los `gapminder` la tabla de datos incluye una columna con el producto interno bruto (PIB) de los países. El PIB mide el valor de mercado de los bienes y servicios producidos por un país en un año. El PIB por persona a menudo se usa como un resumen aproximado de la riqueza de un país. Aquí dividimos esta cantidad por 365 para obtener la medida más interpretable _dólares por día_. Utilizando los dólares estadounidenses actuales como una unidad, una persona que sobrevive con un ingreso de menos de $ 2 por día se define que vive en la "pobreza absoluta". Agregamos esta variable a la tabla de datos:
+[fix] La tabla de datos `gapminder` incluye una columna con el producto interno bruto, o GDP por sus siglas en inglés, de los países. El GDP mide el valor de mercado de los bienes y servicios producidos por un país en un año. El GDP por persona a menudo se usa como un resumen aproximado de la riqueza de un país. Aquí dividimos esta cantidad por 365 para obtener la medida más interpretable _dólares por día_. Utilizando los dólares estadounidenses actuales como una unidad, una persona que sobrevive con un ingreso de menos de $2 por día se define que vive en la "pobreza absoluta". Agregamos esta variable a la tabla de datos:
 
 
 ```{r}
 gapminder <- gapminder %>% mutate(dollars_per_day = gdp/population/365)
 ```
 
-Los valores del PIB se ajustan a la inflación y representan dólares estadounidenses actuales, por lo que estos valores deben ser comparables a lo largo de los años. Por supuesto, estos son promedios de país y dentro de cada país hay mucha variabilidad. Todos los gráficos y las ideas que se describen a continuación se refieren a los promedios de los países y no a las personas.
+Los valores del GDP se ajustan a la inflación y representan dólares estadounidenses actuales, por lo que estos valores deben ser comparables a lo largo de los años. Por supuesto, estos son promedios de país y dentro de cada país hay mucha variabilidad. Todos los gráficos y las ideas que se describen a continuación se refieren a los promedios de los países y no a los individuos.
 
-### Transformación de registro
+### Transformación logarítmica
 
-Aquí hay un histograma de ingresos diarios desde 1970:
+Abajo tenemos un histograma de ingresos diarios desde 1970:
 
 ```{r dollars-per-day-distribution}
 past_year <- 1970
@@ -256,13 +256,13 @@ ggplot(aes(dollars_per_day)) +
 geom_histogram(binwidth = 1, color = "black")
 ```
 
-Utilizamos el `color = "black"` argumento para dibujar un límite y distinguir claramente los contenedores.
+Utilizamos el argumento `color = "black"`para dibujar un límite y distinguir claramente los compartimientos.
 
-En este gráfico, vemos que para la mayoría de los países, los promedios están por debajo de \$10 a day. However, the majority of the x-axis is dedicated to the `r filter(gapminder, year == past_year & !is.na(gdp)) %>% summarise(x = sum(dollars_per_day>10)) %>% pull(x)` countries with averages above \$ 10. Por lo tanto, el gráfico no es muy informativa sobre países con valores inferiores a \$ 10 por día.
+En este gráfico, vemos que para la mayoría de los países, los promedios están por debajo de \$10 a day. Sin embargo, del eje x está dedicado a  `r filter(gapminder, year == past_year & !is.na(gdp)) %>% summarise(x = sum(dollars_per_day>10)) %>% pull(x)` países con promdeio de menos de \$ 10. Por lo tanto, el gráfico no es muy informativo con respecto a países con valores inferiores a \$ 10 por día.
 
-Podría ser más informativo poder ver rápidamente cuántos países tienen ingresos diarios promedio de aproximadamente $1 (extremely poor), \$ 2 (muy pobre), \$4 (poor), \$ 8 (medio), \$16 (well off), \$ 32 (rico), \$ 64 (muy rico) por día. Estos cambios son multiplicativos y las transformaciones logarítmicas convierten los cambios multiplicativos en aditivos: cuando se usa la base 2, la duplicación de un valor se convierte en un aumento de 1.
+Podría ser más informativo poder ver rápidamente cuántos países tienen ingresos diarios promedio de aproximadamente [fix] $1 (extremadamente pobre), \$ 2 (muy pobre), \$4 (pobre), \$ 8 (promedio/middle), \$16 (well off/acomodado), \$ 32 (rico), \$ 64 (muy rico) por día. Estos cambios son multiplicativos y las transformaciones logarítmicas convierten los cambios multiplicativos en aditivos: cuando se usa la base 2, la duplicación de un valor se convierte en un aumento de 1.
 
-Aquí está la distribución si aplicamos una transformación log base 2:
+Aquí tenemos la distribución si aplicamos [fix] una transformación log base 2:
 ```{r dollars-per-day-distribution-log}
 gapminder %>%
 filter(year == past_year & !is.na(gdp)) %>%
@@ -270,27 +270,26 @@ ggplot(aes(log2(dollars_per_day))) +
 geom_histogram(binwidth = 1, color = "black")
 ```
 
-En cierto modo, esto proporciona un acercamiento de los países de ingresos medios a bajos.
+[fix] Así logramos un vistazo de cerca de los países de ingresos medios a bajos.
 
 ### ¿Qué base?
 
-En el caso anterior, utilizamos la base 2 en las transformaciones de registro. Otras opciones comunes son base $\mathrm{e}$ (el registro natural) y la base 10.
+En el caso anterior, utilizamos la base 2 en las transformaciones logarítmicas. Otras opciones comunes son base $\mathrm{e}$ (el logaritmo natural) y la base 10.
 
-En general, no recomendamos utilizar el registro natural para la exploración y visualización de datos. Esto es porque mientras $2^2, 2^3, 2^4, \dots$ o $10^2, 10^3, \dots$ son fáciles de calcular en nuestras cabezas, lo mismo no es cierto para $\mathrm{e}^2, \mathrm{e}^3, \dots$, por lo que la escala no es intuitiva ni fácil de interpretar.
+En general, no recomendamos utilizar el logaritmo natural para la exploración y visualización de datos. La razón es porque mientras $2^2, 2^3, 2^4, \dots$ o $10^2, 10^3, \dots$ son fáciles de calcular en nuestras cabezas, lo mismo no es cierto para $\mathrm{e}^2, \mathrm{e}^3, \dots$, por lo que la escala no es intuitiva ni fácil de interpretar.
 
 En el ejemplo de dólares por día, utilizamos la base 2 en lugar de la base 10 porque el rango resultante es más fácil de interpretar. El rango de los valores que se trazan es `r with(filter(gapminder, year==past_year), range(dollars_per_day, na.rm=TRUE))`.
 
-En la base 10, esto se convierte en un rango que incluye muy pocos enteros: solo 0 y 1.
-Con la base dos, nuestro rango incluye -2, -1, 0, 1, 2, 3, 4 y 5. Es más fácil calcular $2^x$ y $10^x$ cuando $x$ es un entero y entre -10 y 10, por lo que preferimos tener enteros más pequeños en la escala. Otra consecuencia de un rango limitado es que elegir el ancho de la bandeja es más difícil. Con log base 2, sabemos que un binwidth de 1 se traducirá en un bin con rango $x$ a $2x$.
+En la base 10, esto se convierte en un rango que incluye muy pocos enteros: solo 0 y 1. Con la base dos, nuestro rango incluye -2, -1, 0, 1, 2, 3, 4 y 5. Es más fácil calcular $2^x$ y $10^x$ cuando $x$ es un entero y entre -10 y 10, por lo que preferimos tener enteros más pequeños en la escala. Otra consecuencia de un rango limitado es que elegir [fix] binwidth/ el ancho del compartimiento es más difícil. Con log base 2, sabemos que un  [fix] binwidth de 1 se convertirá en un compartimiento con rango $x$ a $2x$.
 
-Para un ejemplo en el que la base 10 tiene más sentido, considere el tamaño de la población. Un registro base 10 es preferible ya que el rango para estos es:
+Para un ejemplo en el que la base 10 tiene más sentido, considere los tamaños de poblaciones. Un registro base 10 es preferible ya que el rango para estos es:
 
 ```{r}
 filter(gapminder, year == past_year) %>%
 summarize(min = min(population), max = max(population))
 ```
 
-Aquí está el histograma de los valores transformados:
+Abajo tenemos el histograma de los valores transformados:
 
 ```{r population-histogram-log10}
 gapminder %>%
@@ -303,17 +302,17 @@ En lo anterior, vemos rápidamente que las poblaciones de los países oscilan en
 
 ### ¿Transformar los valores o la escala?
 
-Hay dos formas en que podemos usar las transformaciones de registros en las parcelas. Podemos registrar los valores antes de trazarlos o usar escalas de registro en los ejes. Ambos enfoques son útiles y tienen diferentes puntos fuertes. Si registramos los datos, podemos interpretar más fácilmente los valores intermedios en la escala. Por ejemplo, si vemos:
+Hay dos formas en que podemos usar las transformaciones logarítmicas en los gráficos. Podemos registrar los valores antes de graficarlos o usar [fix] escalas logarítmicas de registro/log scales en los ejes. Ambos enfoques son útiles y tienen diferentes ventajas. Si [fix]  log/ registramos los datos, podemos interpretar más fácilmente los valores intermedios en la escala. Por ejemplo, si vemos:
 
 `----1----x----2--------3----`
 
-para el registro de datos transformados, sabemos que el valor de $x$ es de aproximadamente 1.5. Si las escalas están registradas:
+para [fix] el registro de datos transformados/log transformed data, sabemos que el valor de $x$ es de aproximadamente 1.5. Si las escalas están registradas:
 
 `----1----x----10------100---`
 
-entonces, para determinar `x`, necesitamos calcular $10^{1.5}$, que no es fácil de hacer en nuestras cabezas. La ventaja de usar escalas registradas es que vemos los valores originales en los ejes. Sin embargo, la ventaja de mostrar escalas registradas es que los valores originales se muestran en el gráfico, que son más fáciles de interpretar. Por ejemplo, veríamos "32 dólares por día" en lugar de "5 log base 2 dólares por día".
+entonces, para determinar `x`, necesitamos calcular $10^{1.5}$, que no es fácil de calcular mentalmente. La ventaja de usar escalas [fix] registradas/logged scales es que vemos los valores originales en los ejes. Sin embargo, la ventaja de mostrar [fix] registradas/logged scales escalas registradas es que los valores originales se muestran en el gráfico, [fix] donde es (que es?) más fáciles de interpretar. Por ejemplo, veríamos "32 dólares por día" en lugar de "5 log base 2 dólares por día".
 
-Como aprendimos anteriormente, si queremos escalar el eje con registros, podemos usar el `scale_x_continuous` función. En lugar de registrar los valores primero, aplicamos esta capa:
+Como aprendimos anteriormente, si queremos escalar el eje con [fix] registros/logs, podemos usar la función `scale_x_continuous`. En lugar  [fix] de registrar/logging los valores primero, aplicamos esta capa:
 
 ```{r dollars-per-day-log-scale}
 gapminder %>%
@@ -323,21 +322,21 @@ geom_histogram(binwidth = 1, color = "black") +
 scale_x_continuous(trans = "log2")
 ```
 
-Tenga en cuenta que la transformación log base 10 tiene su propia función: `scale_x_log10()`, pero actualmente la base 2 no, aunque podríamos definir fácilmente la nuestra.
+Tengan en cuenta que la  [fix]transformación log base 10 tiene su propia función: `scale_x_log10()`, pero actualmente la base 2 no tiene, aunque fácilmente podríamos definir una.
 
-Hay otras transformaciones disponibles a través de `trans` argumento. Como aprendemos más adelante, la raíz cuadrada ( `sqrt`) la transformación es útil cuando se consideran los recuentos. La transformación logística ( `logit`) es útil cuando se grafican proporciones entre 0 y 1. El `reverse` la transformación es útil cuando queremos que los valores más pequeños estén a la derecha o arriba.
+[fix] Hay otras transformaciones disponibles a través del argumento `trans`. Como aprendemos más adelante, la transformación de raíz cuadrada (`sqrt`) es útil cuando se consideran los recuentos. La transformación logística (`logit`) es útil cuando se grafican proporciones entre 0 y 1. La transformación `reverse` es útil cuando queremos que los valores más pequeños estén a la derecha o arriba/encima.
 
-## Visualizando distribuciones multimodales
+## Cómo visualizar distribuciones multimodales
 
-En el histograma anterior vemos dos _bumps_: uno a aproximadamente 4 y otro a aproximadamente 32. En estadística, estos baches a veces se denominan _modes_. El modo de una distribución es el valor con la frecuencia más alta. El modo de distribución normal es el promedio. Cuando una distribución, como la anterior, no disminuye monotónicamente del modo, llamamos a las ubicaciones donde sube y baja de nuevo _modes locales_y decimos que la distribución tiene_modos múltiples_.
+En el histograma anterior vemos dos [fix] _bumps_/protuberaciones: uno a aproximadamente 4 y otro a aproximadamente 32. En estadística, estos _bumps_ a veces se denominan la _moda_ (_modes_ en inglés). La moda de una distribución es el valor con la frecuencia más alta. La moda de distribución normal es el promedio. Cuando una distribución, como la anterior, no disminuye monotónicamente de la moda, llamamos a los lugares donde sube y baja de nuevo _modas locales_ (_local modes_ en inglés) y decimos que la distribución tiene [fix] _modas múltiples_.
 
-El histograma anterior sugiere que la distribución del ingreso del país en 1970 tiene dos modos: uno a aproximadamente 2 dólares por día (1 en la escala log 2) y otro a aproximadamente 32 dólares por día (5 en la escala log 2). Esta _bimodalidad_ es consistente con un mundo dicotómico compuesto por países con ingresos promedio inferiores a $ 8 (3 en la escala log 2) por día y países por encima de eso.
+El histograma anterior sugiere que la distribución del ingreso [fix singular?] del país en 1970 tiene dos modas: uno a aproximadamente 2 dólares por día (1 en la escala log 2) y otro a aproximadamente 32 dólares por día (5 en la escala log 2). Esta _bimodalidad_ es consistente con un mundo dicotómico compuesto por países con ingresos promedio inferiores a $8 (3 en la escala log 2) por día y países por encima de eso.
 
-## Comparar múltiples distribuciones con gráficos de caja y gráficos de cresta
+## Cómo comparar múltiples distribuciones con diagramas de caja y gráficos _ridge_
 
-Un histograma nos mostró que los valores de distribución del ingreso de 1970 muestran una dicotomía. Sin embargo, el histograma no nos muestra si los dos grupos de países están en el oeste frente al mundo en desarrollo.
+De acuerdo con el histograma, los valores de distribución del ingreso de 1970 muestran una dicotomía. Sin embargo, el histograma no nos muestra si los dos grupos de países están en el _oeste_ o forman parte del mundo _en desarrollo_.
 
-Comencemos examinando rápidamente los datos por región. Reordenamos las regiones por el valor medio y usamos una escala logarítmica.
+Comencemos examinando rápidamente los datos por región. Reordenamos las regiones por la mediana y usamos una escala logarítmica.
 
 ```{r}
 gapminder %>%
@@ -348,7 +347,7 @@ geom_point() +
 scale_x_continuous(trans = "log2")
 ```
 
-Ya podemos ver que efectivamente existe una dicotomía "oeste versus el resto": vemos dos grupos claros, con el grupo rico compuesto por América del Norte, Europa del Norte y del Oeste, Nueva Zelanda y Australia. Definimos grupos basados en esta observación:
+Ya podemos ver que efectivamente existe una dicotomía "el oeste versus el resto": hay dos grupos claros, con el grupo rico compuesto por América del Norte, Europa del Norte y del Oeste, Nueva Zelanda y Australia. Definimos grupos basados en esta observación:
 
 ```{r}
 gapminder <- gapminder %>%
@@ -364,7 +363,7 @@ region != "Northern Africa" ~ "Sub-Saharan",
 TRUE ~ "Others"))
 ```
 
-Convertimos esto `group` variable en un factor para controlar el orden de los niveles:
+Convertimos esta variable `group` en un factor para controlar el orden de los niveles:
 
 ```{r}
 gapminder <- gapminder %>%
@@ -376,9 +375,9 @@ mutate(group = factor(group, levels = c("Others", "Latin America",
 
 En la siguiente sección mostramos cómo visualizar y comparar distribuciones entre grupos.
 
-### Boxplots
+### Diagrama de caja
 
-El análisis exploratorio de datos anterior reveló dos características sobre la distribución del ingreso promedio en 1970. Usando un histograma, encontramos una distribución bimodal con los modos relacionados con los países pobres y ricos. Ahora queremos comparar la distribución entre estos cinco grupos para confirmar la dicotomía "oeste versus el resto". El número de puntos en cada categoría es lo suficientemente grande como para que un diagrama de resumen pueda ser útil. Podríamos generar cinco histogramas o cinco gráficos de densidad, pero puede ser más práctico tener todos los resúmenes visuales en un gráfico. Por lo tanto, comenzamos apilando diagramas de caja uno al lado del otro. Tenga en cuenta que agregamos la capa `theme(axis.text.x = element_text(angle = 90, hjust = 1))` para convertir las etiquetas de grupo en verticales, ya que no encajan si las mostramos horizontalmente, y quitar la etiqueta del eje para hacer espacio.
+El anterior análisis exploratorio de datos reveló dos características sobre la distribución de ingreso promedio en 1970. Usando un histograma, encontramos una distribución bimodal con los modos relacionados con los países pobres y ricos. Ahora queremos comparar la distribución entre estos cinco grupos para confirmar la dicotomía "el oeste versus el resto". El número de puntos en cada categoría es lo suficientemente grande como para que un gráfico de resumen pueda ser útil. Podríamos generar cinco histogramas o cinco gráficos de densidad, pero puede ser más práctico tener todos los resúmenes visuales en un gráfico. Por lo tanto, comenzamos apilando diagramas de caja uno al lado del otro. Tengan en cuenta que agregamos la capa `theme(axis.text.x = element_text(angle = 90, hjust = 1))` para que las etiquetas de grupo sean verticales, puesto que no encajan si las mostramos horizontalmente, y para quitar la etiqueta del eje a fin de hacer espacio.
 
 
 ```{r dollars-per-day-boxplot}
@@ -399,9 +398,9 @@ p + geom_point(alpha = 0.5)
 ```
 
 
-### Parcelas de cresta
+### Gráficos _ridge_
 
-Mostrar cada punto individual no siempre revela características importantes de la distribución. Aunque no es el caso aquí, cuando el número de puntos de datos es tan grande que hay un trazado excesivo, mostrar los datos puede ser contraproducente. Los diagramas de caja ayudan con esto al proporcionar un resumen de cinco números, pero esto también tiene limitaciones. Por ejemplo, boxplots no nos permitirá descubrir distribuciones bimodales. Para ver esto, tenga en cuenta que las dos parcelas siguientes resumen el mismo set de datos:
+Mostrar cada punto individual no siempre revela características importantes de la distribución. Aunque no es el caso aquí, cuando el número de puntos de datos es tan grande que hay[fix] _un trazado excesivo_/overplotting, mostrar los datos puede ser contraproducente. Los diagramas de caja ayudan con esto al proporcionar un resumen de cinco números, pero esto también tiene limitaciones. Por ejemplo, los diagramas de caja no nos permiten descubrir distribuciones bimodales. Para ver esto, miren los dos gráficos abajo que resumen el mismo set de datos:
 
 ```{r boxplot-dont-show-bimodal, warning=FALSE, out.width="100%", message = FALSE, echo=FALSE, fig.height=3}
 set.seed(1987)
@@ -413,7 +412,7 @@ p2 <- qplot("", x, geom="boxplot")
 gridExtra::grid.arrange(p1, p2, nrow = 1)
 ```
 
-En los casos en que nos preocupa que el resumen de diagrama de caja sea demasiado simplista, podemos mostrar densidades suaves o histogramas apilados. Nos referimos a estos como _ridge plots_. Como estamos acostumbrados a visualizar densidades con valores en el eje x, las apilamos verticalmente. Además, debido a que se necesita más espacio en este enfoque, es conveniente superponerlos. El paquete __ggridges__ proporciona una función conveniente para hacer esto. Aquí están los datos de ingresos que se muestran arriba con diagramas de caja pero con un diagrama de nevera.
+En los casos en que nos preocupa que el resumen de diagrama de caja sea demasiado simplista, podemos mostrar densidades suaves o histogramas apilados. Nos referimos a estos como _gráficos ridge_. Como estamos acostumbrados a visualizar densidades con valores en el eje x, las apilamos verticalmente. Además, debido a que se necesita más espacio en este enfoque, es conveniente superponerlos. El paquete __ggridges__ proporciona una función conveniente para hacer esto. Aquí están los datos de ingresos que se muestran arriba con diagramas de caja pero con un diagrama de nevera.
 
 ```{r ridge-plot, message=FALSE}
 library(ggridges)
@@ -460,7 +459,7 @@ facet_grid(year ~ west)
 
 Antes de interpretar los hallazgos de este gráfico, notamos que hay más países representados en los histogramas de 2010 que en 1970: los recuentos totales son mayores. Una razón para esto es que varios países se fundaron después de 1970. Por ejemplo, la Unión Soviética se dividió en varios países durante la década de 1990. Otra razón es que los datos estaban disponibles para más países en 2010.
 
-Rehacemos las parcelas utilizando solo países con datos disponibles para ambos años. En la parte de discusión de datos de este libro, aprenderemos herramientas __tidyverse__ que nos permiten escribir código eficiente para esto, pero aquí podemos usar código simple usando `intersect` función:
+Rehacemos los gráficos utilizando solo países con datos disponibles para ambos años. En la parte de discusión de datos de este libro, aprenderemos herramientas __tidyverse__ que nos permiten escribir código eficiente para esto, pero aquí podemos usar código simple usando `intersect` función:
 
 ```{r}
 country_list_1 <- gapminder %>%
@@ -722,7 +721,7 @@ Esta escala es útil cuando queremos resaltar diferencias cercanas a 0 o 1. Para
 
 ### Mostrar los datos
 
-Ahora, de vuelta a nuestra trama. Con base en la gráfica anterior, ¿concluimos que un país con bajos ingresos está destinado a tener una tasa de supervivencia baja? ¿Llegamos a la conclusión de que las tasas de supervivencia en el África subsahariana son más bajas que en el sur de Asia, que a su vez son más bajas que en las islas del Pacífico, y así sucesivamente?
+Ahora, de vuelta a nuestra trama. Con base en el gráfico anterior, ¿concluimos que un país con bajos ingresos está destinado a tener una tasa de supervivencia baja? ¿Llegamos a la conclusión de que las tasas de supervivencia en el África subsahariana son más bajas que en el sur de Asia, que a su vez son más bajas que en las islas del Pacífico, y así sucesivamente?
 
 Saltar a esta conclusión basada en una gráfica que muestra promedios se denomina falacia ecológica. La relación casi perfecta entre las tasas de supervivencia y los ingresos solo se observa para los promedios a nivel regional. Una vez que mostramos todos los datos, vemos una historia algo más complicada:
 
