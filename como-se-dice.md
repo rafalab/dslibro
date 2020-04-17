@@ -52,6 +52,7 @@
 | __G__ | | | | |
 | __H__ | | | | |
 | __I__ | | | | |
+| image plot | mapa de matriz| | | | 
 | indentation | indentación | | indentar | indentación |
 | Integrated Development Environment (IDE) | _Integrated Development Environment_ (_IDE_) | ambiente integrado de desarrollo o en ocasiones no se traduce | IDE |
 | index (verb) | indexar | integers are used to index vectors | indexar, indizar  | indexar | 

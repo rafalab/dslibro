@@ -1,13 +1,13 @@
 # Visualización de datos en la práctica {#gapminder}
 
-En este capítulo, demostraremos cómo el código relativamente sencillo __ggplot2__  puede crear gráficos perspicaces y estéticamente agradables. Como motivación, crearemos gráficos que nos ayudarán a comprender mejor las tendencias de la salud y la economía mundial. Implementaremos lo que aprendimos en los capítulos \@ref(ggplot2) y \@ref(other-geometries) y aprenderemos a aumentar el código para perfeccionar los gráficos. A medida que avancemos en nuestro estudio de caso, describiremos [fix] los principios generales relevantes de visualización de datos y aprenderemos conceptos como _faceting_, _gráficos de series de tiempo_, _transformaciones_ y _ridge plots_.
+En este capítulo, demostraremos cómo el código relativamente sencillo __ggplot2__  puede crear gráficos perspicaces y estéticamente agradables. Como motivación, crearemos gráficos que nos ayudarán a comprender mejor las tendencias de la salud y la economía mundial. Implementaremos lo que aprendimos en los capítulos \@ref(ggplot2) y \@ref(other-geometries) y aprenderemos a aumentar el código para perfeccionar los gráficos. A medida que avancemos en nuestro estudio de caso, describiremos [fix] los principios generales mas relevantes  la visualización de datos y aprenderemos conceptos como _faceting_, _gráficos de series de tiempo_, _transformaciones_ y _ridge plots_.
 
 
 ## Estudio de caso: nuevas ideas sobre la pobreza
 
 Hans Rosling^[https://en.wikipedia.org/wiki/Hans_Rosling] fue el cofundador de la Fundación Gapminder^[http://www.gapminder.org/], una organización dedicada a educar al público mediante datos para disipar mitos comunes sobre el llamado mundo en desarrollo. La organización utiliza datos para mostrar cómo las tendencias reales en los campos de salud y economía contradicen las narrativas que emanan de la cobertura sensacionalista de los medios de catástrofes, tragedias y otros eventos desafortunados. Como se indica en el sitio web de la Fundación Gapminder: [fix?]
 
->>> Periodistas y cabilderos cuentan historias dramáticas. Ese es su trabajo. Cuentan historias sobre eventos extraordinarios y personas inusuales. Las pilas de historias dramáticas se acumulan en las mentes de las personas en una visión del mundo demasiado dramática y fuertes sentimientos de estrés negativo: "¡El mundo está empeorando!", "¡Somos nosotros contra ellos!", "¡Otras personas son extrañas!", " ¡La población sigue creciendo! " y "a nadie le importa!"
+>>> Los periodistas y los cabilderos cuentan historias dramáticas. Ese es su trabajo. Cuentan historias sobre eventos extraordinarios y personas inusuales. Las pilas de historias dramáticas se acumulan en las mentes de las personas en una visión del mundo demasiado dramática y fuertes sentimientos de estrés negativo: "¡El mundo está empeorando!", "¡Somos nosotros contra ellos!", "¡Otras personas son extrañas!", " ¡La población sigue creciendo! " y "a nadie le importa!"
 
 [fix] Hans Rosling reportó tendencias basadas en datos reales de una manera dramática propia, utilizando una visualización de datos efectiva. Esta sección se basa en dos charlas que ejemplifican este enfoque educativo: [Nuevas ideas sobre la pobreza]^[https://www.ted.com/talks/hans_rosling_reveals_new_insights_on_poverty?language=en] y Las mejores estadísticas que has visto^[https://www.ted.com/talks/hans_rosling_shows_the_best_stats_you_ve_ever_seen]. Específicamente, en esta sección, usamos datos para intentar responder a las siguientes dos preguntas:
 
@@ -85,7 +85,7 @@ geom_point()
 
 La mayoría de puntos se dividen en dos categorías distintas:
 
-1. [fix] Esperanza de vida alrededor de 70 años y 3 o menos hijos por familia.
+1. Esperanza de vida alrededor de 70 años y 3 o menos hijos por familia.
 2. Esperanza de vida inferior a 65 años y más de 5 niños por familia.
 
 Para confirmar que estos países son de las regiones que esperamos, podemos usar un color para representar un continente.
@@ -124,7 +124,7 @@ facet_grid(. ~ year)
 
 ### `facet_wrap`
 
-Para explorar cómo sucedió esta transformación a través de los años, podemos hacer el gráfico para varios años. Por ejemplo, podemos agregar 1970, 1980, 1990 y 2000. Si hacemos esto, no queremos a todos los gráficos en la misma fila, que es lo que por defecto `facet_grid` hace, puesto que aparecerán demasiado delgados para mostrar los datos. En cambio, queremos usar múltiples filas y columnas. La función `facet_wrap` nos permite hacer esto [fix] envolviendo/enrollando automáticamente la serie de gráficos para que cada imagen tenga dimensiones visibles:
+Para explorar cómo sucedió esta transformación a través de los años, podemos hacer el gráfico para varios años. Por ejemplo, podemos agregar 1970, 1980, 1990 y 2000. Si hacemos esto, no queremos a todos los gráficos en la misma fila, que es lo que por defecto `facet_grid` hace, puesto que aparecerán demasiado delgados para mostrar los datos. En cambio, queremos usar múltiples filas y columnas. La función `facet_wrap` nos permite hacer esto [fix] envolviendo automáticamente la serie de gráficos para que cada imagen tenga dimensiones visibles:
 
 
 ```{r fertility-versus-life-expectancy-five-years, out.width="100%"}
@@ -270,7 +270,7 @@ ggplot(aes(log2(dollars_per_day))) +
 geom_histogram(binwidth = 1, color = "black")
 ```
 
-[fix] Así logramos un vistazo de cerca de los países de ingresos medios a bajos.
+[fix] Así logramos una mirada mas detenida de los países de ingresos medios a bajos.
 
 ### ¿Qué base?
 
@@ -280,7 +280,7 @@ En general, no recomendamos utilizar el logaritmo natural para la exploración y
 
 En el ejemplo de dólares por día, utilizamos la base 2 en lugar de la base 10 porque el rango resultante es más fácil de interpretar. El rango de los valores que se trazan es `r with(filter(gapminder, year==past_year), range(dollars_per_day, na.rm=TRUE))`.
 
-En la base 10, esto se convierte en un rango que incluye muy pocos enteros: solo 0 y 1. Con la base dos, nuestro rango incluye -2, -1, 0, 1, 2, 3, 4 y 5. Es más fácil calcular $2^x$ y $10^x$ cuando $x$ es un entero y entre -10 y 10, por lo que preferimos tener enteros más pequeños en la escala. Otra consecuencia de un rango limitado es que elegir [fix] binwidth/ el ancho del compartimiento es más difícil. Con log base 2, sabemos que un  [fix] binwidth de 1 se convertirá en un compartimiento con rango $x$ a $2x$.
+En la base 10, esto se convierte en un rango que incluye muy pocos enteros: solo 0 y 1. Con la base dos, nuestro rango incluye -2, -1, 0, 1, 2, 3, 4 y 5. Es más fácil calcular $2^x$ y $10^x$ cuando $x$ es un entero y entre -10 y 10, por lo que preferimos tener enteros más pequeños en la escala. Otra consecuencia de un rango limitado es que elegir [fix] el ancho del compartimiento (_binwidth_ en inglés) es más difícil. Con log base 2, sabemos que un[fix] ancho de comportimiento de 1 se convertirá en un compartimiento con rango $x$ a $2x$.
 
 Para un ejemplo en el que la base 10 tiene más sentido, considere los tamaños de poblaciones. Un registro base 10 es preferible ya que el rango para estos es:
 
