@@ -412,7 +412,7 @@ p2 <- qplot("", x, geom="boxplot")
 gridExtra::grid.arrange(p1, p2, nrow = 1)
 ```
 
-En los casos en que nos preocupa que el resumen de diagrama de caja sea demasiado simplista, podemos mostrar densidades suaves o histogramas apilados. Nos referimos a estos como _gráficos ridge_. Como estamos acostumbrados a visualizar densidades con valores en el eje x, las apilamos verticalmente. Además, debido a que se necesita más espacio en este enfoque, es conveniente superponerlos. El paquete __ggridges__ proporciona una función conveniente para hacer esto. Aquí están los datos de ingresos que se muestran arriba con diagramas de caja pero con un diagrama de nevera.
+En los casos en que nos preocupa que el resumen de diagrama de caja sea demasiado simplista, podemos mostrar densidades suaves o histogramas apilados. Nos referimos a estos como _gráficos ridge_. Como estamos acostumbrados a visualizar densidades con valores en el eje x, las apilamos verticalmente. Además, debido a que se necesita más espacio en este enfoque, es conveniente superponerlos. El paquete __ggridges__ incluye una función conveniente para hacer esto. Abajo vemos los datos de ingresos que se muestran arriba con diagramas de caja pero ahora visualizados caso con un _gráfico ridge_.
 
 ```{r ridge-plot, message=FALSE}
 library(ggridges)
@@ -423,15 +423,15 @@ scale_x_continuous(trans = "log2")
 p + geom_density_ridges()
 ```
 
-Tenga en cuenta que tenemos que invertir el `x` y `y` usado para el diagrama de caja. Un útil `geom_density_ridges` el parámetro es `scale`, que le permite determinar la cantidad de superposición, con `scale = 1` lo que significa que no hay superposición y valores más grandes que resultan en una mayor superposición.
+Tengan en cuenta que tenemos que invertir el `x` y `y` usado para el diagrama de caja. [fix] Un parametro útil de `geom_density_ridges` es `scale`, que les permite determinar la cantidad de superposición, con `scale = 1` significando que no hay superposición y valores más grandes resultando en mayor superposición.
 
-Si el número de puntos de datos es lo suficientemente pequeño, podemos agregarlos al diagrama de cresta usando el siguiente código:
+Si el número de puntos de datos es lo suficientemente pequeño, podemos agregarlos al gráfico _ridge_ usando el siguiente código:
 
 ```{r ridge-plot-with-points, message=FALSE}
 p + geom_density_ridges(jittered_points = TRUE)
 ```
 
-De manera predeterminada, la altura de los puntos está alterada y no debe interpretarse de ninguna manera. Para mostrar puntos de datos, pero sin usar jitter, podemos usar el siguiente código para agregar lo que se conoce como una "representación sólida" de los datos.
+[fix]Por defecto, la altura de los puntos está _jittered_ y no se interpretar de ninguna manera. Para mostrar puntos de datos, pero sin usar _jitter_, podemos usar el siguiente código para agregar lo que se conoce como una _rug representation_ de los datos.
 ```{r ridge-plot-with-rug, message=FALSE}
 p + geom_density_ridges(jittered_points = TRUE,
 position = position_points_jitter(height = 0),
@@ -442,7 +442,7 @@ point_alpha = 1, alpha = 0.7)
 
 ### Ejemplo: distribuciones de ingresos de 1970 versus 2010
 
-La exploración de datos muestra claramente que en 1970 hubo una dicotomía "oeste versus el resto". ¿Pero persiste esta dicotomía? Vamos a usar `facet_grid` vea cómo han cambiado las distribuciones. Para comenzar, nos centraremos en dos grupos: el oeste y el resto. Hacemos cuatro histogramas.
+La exploración de datos muestra claramente que en 1970 hubo una dicotomía del "oeste versus el resto". ¿Pero persiste esta dicotomía? Vamos a usar `facet_grid` para ver cómo han cambiado las distribuciones. Para comenzar, nos enfocamos en dos grupos: el oeste y el resto. Hacemos cuatro histogramas.
 
 ```{r income-hist-west-v-developing-two-years}
 past_year <- 1970
@@ -457,9 +457,9 @@ scale_x_continuous(trans = "log2") +
 facet_grid(year ~ west)
 ```
 
-Antes de interpretar los hallazgos de este gráfico, notamos que hay más países representados en los histogramas de 2010 que en 1970: los recuentos totales son mayores. Una razón para esto es que varios países se fundaron después de 1970. Por ejemplo, la Unión Soviética se dividió en varios países durante la década de 1990. Otra razón es que los datos estaban disponibles para más países en 2010.
+Antes de interpretar los hallazgos de este gráfico, notamos que hay más países representados en los histogramas de 2010 que en 1970: los recuentos totales son mayores. Una razón para esto es que varios países se fundaron después de 1970. Por ejemplo, la Unión Soviética se dividió en varios países durante la década de 1990. Otra razón es que hay mas datos disponibles para más países en 2010.
 
-Rehacemos los gráficos utilizando solo países con datos disponibles para ambos años. En la parte de discusión de datos de este libro, aprenderemos herramientas __tidyverse__ que nos permiten escribir código eficiente para esto, pero aquí podemos usar código simple usando `intersect` función:
+Rehacemos los gráficos utilizando solo países con datos disponibles para ambos años. En la parte sobre _data wrangling_ de este libro, aprenderemos herramientas de __tidyverse__ que nos permitará escribir código eficiente para esto, pero aquí podemos usar un código sencilla usando la función `intersect:
 
 ```{r}
 country_list_1 <- gapminder %>%
@@ -473,10 +473,10 @@ pull(country)
 country_list <- intersect(country_list_1, country_list_2)
 ```
 
-Estas `r length(country_list)` cuenta para
+Estas `r length(country_list)` cuentan para
 `r round(gapminder %>% filter(year==present_year) %>% summarize(perc=sum(population[country%in%country_list], na.rm=TRUE)/sum(population, na.rm=TRUE)) %>% pull(perc)*100 )`% de la población mundial, por lo que este subconjunto debe ser representativo.
 
-Vamos a rehacer el gráfico, pero solo para este subconjunto simplemente agregando ` country %in% country_list` al `filter` función:
+Vamos a rehacer el gráfico, pero solo para este subconjunto simplemente agregando ` country %in% country_list` a la función `filter`:
 
 ```{r income-histogram-west-v-devel, echo=FALSE}
 gapminder %>%
@@ -488,9 +488,9 @@ scale_x_continuous(trans = "log2") +
 facet_grid(year ~ west)
 ```
 
-Ahora vemos que los países ricos se han vuelto un poco más ricos, pero en términos de porcentaje, los países pobres parecen haber mejorado más. En particular, vemos que la proporción de países en desarrollo que ganan más de $ 16 por día aumentó sustancialmente.
+Ahora vemos que los países ricos se han vuelto un poco más ricos, pero en términos de porcentaje, los países pobres parecen haber mejorado más. En particular, vemos que la proporción de países _en desarrollo_ que ganan más de $ 16 por día aumentó sustancialmente.
 
-Para ver qué regiones específicas mejoraron más, podemos rehacer los diagramas de caja que hicimos anteriormente, pero ahora agregamos el año 2010 y luego usamos faceta para comparar los dos años.
+Para ver qué regiones específicas mejoraron más, podemos rehacer los diagramas de caja que hicimos anteriormente, pero ahora agregamos el año 2010 y luego usamos _facet_ para comparar los dos años.
 
 
 ```{r income-histogram-by-region, out.width="100%"}
@@ -504,9 +504,9 @@ xlab("") +
 facet_grid(. ~ year)
 ```
 
-Aquí, hacemos una pausa para presentar otra poderosa función __ggplot2__. Como queremos comparar cada región antes y después, sería conveniente tener el `r past_year` diagrama de caja al lado del `r present_year` diagrama de caja para cada región. En general, las comparaciones son más fáciles cuando los datos se trazan uno al lado del otro.
+Aquí, pausamos para presentar otro poderoso [fix] atributo de __ggplot2__. Como queremos comparar cada región antes y después, sería conveniente tener el diagrama de caja de `r past_year` al lado del de `r present_year` para cada región. En general, las comparaciones son más fáciles cuando los datos se grafican uno al lado del otro.
 
-Entonces, en lugar de facetar, mantenemos los datos de cada año juntos y pedimos colorearlos (o rellenarlos) según el año. Tenga en cuenta que los grupos se separan automáticamente por año y cada par de diagramas de caja se dibujan uno al lado del otro. Como el año es un número, lo convertimos en un factor ya que __ggplot2__ asigna automáticamente un color a cada categoría de un factor. Tenga en cuenta que tenemos que convertir las columnas del año de numérico a factor.
+Entonces, en lugar de [fix] facetar, mantenemos los datos de cada año juntos y pedimos colorearlos (o rellenarlos) según el año. Tengan en cuenta que los grupos se separan automáticamente por año y cada par de diagramas de caja se dibujan uno al lado del otro. Como el año es un número, lo convertimos en un factor ya que __ggplot2__ asigna automáticamente un color a cada categoría de un factor. Recuerden que tenemos que convertir las columnas del año de numérico a factor.
 
 ```{r income-histogram-west-v-devel-by-year}
 gapminder %>%
@@ -519,7 +519,7 @@ scale_y_continuous(trans = "log2") +
 xlab("")
 ```
 
-Finalmente, señalamos que si lo que más nos interesa es comparar los valores de antes y después, podría tener más sentido trazar los aumentos porcentuales. Todavía no estamos listos para aprender a codificar esto, pero así es como se vería el gráfico:
+Finalmente, señalamos que si lo más que nos interesa es comparar los valores de antes y después, podría tener más sentido graficar los aumentos porcentuales. Todavía no estamos listos para aprender a codificar esto, pero así es como se vería el gráfico:
 
 ```{r income-west-v-devel-before-after-ratio, echo=FALSE, warning=FALSE}
 gapminder %>%
@@ -538,10 +538,9 @@ ylab(paste("Percent increase:", past_year, "to", present_year))
 ```
 
 
-La exploración previa de datos sugirió que la brecha de ingresos entre países ricos y pobres se ha reducido considerablemente durante los últimos 40 años.
-Usamos una serie de histogramas y diagramas de caja para ver esto. Sugerimos una forma sucinta de transmitir este mensaje con una soel gráfico.
+La exploración previa de datos sugirió que la brecha de ingresos entre países ricos y pobres se ha reducido considerablemente durante los últimos 40 años. Usamos una serie de histogramas y de diagramas de caja para ver esto. Sugerimos una forma sucinta de transmitir este mensaje con solo un gráfico.
 
-Comencemos observando que las gráficas de densidad para la distribución del ingreso en `r past_year` y `r present_year` entregar el mensaje de que la brecha se está cerrando:
+Empecemos observando que los gráficos de densidad para la distribución del ingreso en `r past_year` y `r present_year` transmiten el mensaje de que la brecha se está cerrando:
 
 ```{r income-smooth-density-by-year, out.width="100%", fig.height=3}
 gapminder %>%
@@ -552,11 +551,11 @@ scale_x_continuous(trans = "log2") +
 facet_grid(. ~ year)
 ```
 
-En el `r past_year` trama, vemos dos modos claros: países pobres y ricos. En `r present_year`, parece que algunos de los países pobres se han desplazado hacia la derecha, cerrando la brecha.
+[fix]En el gráfico de `r past_year`, vemos dos modas claras: países pobres y ricos. En `r present_year`, parece que algunos de los países pobres se han desplazado hacia la derecha, cerrando la brecha.
 
-El siguiente mensaje que debemos transmitir es que la razón de este cambio en la distribución es que varios países pobres se hicieron más ricos, en lugar de que algunos países ricos se volvieran más pobres. Para hacer esto, podemos asignar un color a los grupos que identificamos durante la exploración de datos.
+El próximo mensaje que debemos transmitir es que la razón de este cambio en distribución es que varios países pobres se hicieron más ricos, en lugar de que algunos países ricos se hicieron más pobres. Para hacer esto, podemos asignar un color a los grupos que identificamos durante la exploración de datos.
 
-Sin embargo, primero tenemos que aprender a hacer estas densidades suaves de una manera que conserve la información sobre el número de países en cada grupo. Para entender por qué necesitamos esto, tenga en cuenta la discrepancia en el tamaño de cada grupo:
+Sin embargo, primero tenemos que aprender a hacer estas densidades suaves de una manera que conserve la información sobre el número de países en cada grupo. Para entender por qué necesitamos esto, tengan en cuenta la discrepancia en el tamaño de cada grupo:
 
 ```{r, echo=FALSE}
 tmp <- gapminder %>%
@@ -574,7 +573,7 @@ kableExtra::kable_styling(font_size = 8)
 }
 ```
 
-Pero cuando superponemos dos densidades, el valor predeterminado es que el área representada por cada distribución sume 1, independientemente del tamaño de cada grupo:
+Pero cuando superponemos dos densidades, [fix] 'the default' = la acción/comportamiento por defecto/el valor predeterminado es que el área representada por cada distribución sume a 1, independientemente del tamaño de cada grupo:
 
 ```{r income-smooth-density-by-year-west-v-developing}
 gapminder %>%
@@ -586,11 +585,11 @@ geom_density(alpha = 0.2) +
 facet_grid(year ~ .)
 ```
 
-Esto hace que parezca que hay el mismo número de países en cada grupo. Para cambiar esto, necesitaremos aprender a acceder a las variables calculadas con `geom_density` función.
+Esto hace que parezca que hay el mismo número de países en cada grupo. Para cambiar esto, necesitaremos aprender a acceder a las variables calculadas con la función `geom_density`.
 
-### Acceso a variables calculadas
+### [fix] Acceso a variables calculadas
 
-Para que las áreas de estas densidades sean proporcionales al tamaño de los grupos, simplemente podemos multiplicar los valores del eje y por el tamaño del grupo. Desde el `geom_density` archivo de ayuda, vemos que las funciones calculan una variable llamada `count` eso hace exactamente esto. Queremos que esta variable esté en el eje y en lugar de la densidad.
+Para que las áreas de estas densidades sean proporcionales al tamaño de los grupos, simplemente podemos multiplicar los valores del eje y por el tamaño del grupo. En el archivo de ayuda de `geom_density`, vemos que las funciones calculan una variable denominada `count` que hace exactamente esto. Queremos que esta variable esté en el eje y en lugar de la densidad.
 
 En __ggplot2__, accedemos a estas variables rodeando el nombre con dos puntos. Por lo tanto, utilizaremos el siguiente mapeo:
 
@@ -598,7 +597,7 @@ En __ggplot2__, accedemos a estas variables rodeando el nombre con dos puntos. P
 aes(x = dollars_per_day, y = ..count..)
 ```
 
-Ahora podemos crear el diagrama deseado simplemente cambiando el mapeo en el fragmento de código anterior. También ampliaremos los límites del eje x.
+Ahora podemos crear el diagrama deseado simplemente cambiando el mapeo en el fragmento del código anterior. También ampliaremos los límites del eje x.
 
 
 ```{r income-smooth-density-counts}
@@ -612,15 +611,15 @@ p + geom_density(alpha = 0.2) +
 facet_grid(year ~ .)
 ```
 
-Si queremos que las densidades sean más suaves, usamos el `bw` argumento para que se use el mismo ancho de banda en cada densidad. Seleccionamos 0,75 después de probar varios valores.
+Si queremos que las densidades sean más suaves, usamos el argumento `bw` para que se use el mismo [fix] bandwith/binwidthancho de banda en cada densidad. Seleccionamos 0.75 después de probar varios valores.
 
 ```{r income-smooth-density-counts-by-year}
 p + geom_density(alpha = 0.2, bw = 0.75) + facet_grid(year ~ .)
 ```
 
-Esta trama ahora muestra lo que está sucediendo muy claramente. La distribución del mundo en desarrollo está cambiando. Aparece un tercer modo formado por los países que más redujeron la brecha.
+Este gráfico ahora muestra lo que está sucediendo muy claramente. La distribución del mundo en desarrollo está cambiando.[fix] Aparece una tercera moda formada por los países que más redujeron la brecha.
 
-Para visualizar si alguno de los grupos definidos anteriormente está manejando esto, podemos hacer rápidamente un diagrama de cresta:
+Para visualizar si alguno de los grupos definidos anteriormente[fix] está dirigiendo esto, rápidamente podemos hacer un _gráfico ridge_:
 
 ```{r ridge-plot-income-five-regions, warning=FALSE, message=FALSE}
 gapminder %>%
@@ -631,7 +630,7 @@ geom_density_ridges(adjust = 1.5) +
 facet_grid(. ~ year)
 ```
 
-Otra forma de lograr esto es apilando las densidades una encima de la otra:
+Otra forma de lograr esto es apilando las densidades una encima de otra:
 
 ```{r income-smooth-density-counts-by-region-and-year}
 gapminder %>%
@@ -647,12 +646,12 @@ facet_grid(year ~ .)
 
 Aquí podemos ver claramente cómo las distribuciones para Asia Oriental, América Latina y otros se desplazan notablemente hacia la derecha. Mientras que África subsahariana permanece estancada.
 
-Tenga en cuenta que ordenamos los niveles del grupo para que la densidad de Occidente se grafica primero, luego África subsahariana. Tener los dos extremos trazados primero nos permite ver mejor la bimodalidad restante.
+Noten que ordenamos los niveles del grupo para que la densidad del Occidente se grafique primero, luego África subsahariana. Tener los dos extremos graficados primero nos permite ver mejor la bimodalidad restante.
 
 
-### Densidades ponderadas
+###[fix] Densidades ponderadas/weighted densities
 
-Como punto final, notamos que estas distribuciones pesan lo mismo para todos los países. Entonces, si la mayoría de la población está mejorando, pero viviendo en un país muy grande, como China, podríamos no apreciar esto. De hecho, podemos pesar las densidades suaves usando el `weight` argumento de mapeo. el gráfico se ve así:
+Como punto final, notamos que estas distribuciones pesan lo mismo para todos los países. Entonces, si la mayoría de la población está mejorando, pero viviendo en un país muy grande, como China, podríamos no apreciar esto. De hecho, podemos [fix]pesar las densidades suaves usando el argumento de mapeo `weight`. El gráfico se ve así:
 
 ```{r income-smooth-density-counts-by-region-year-weighted, warning=FALSE, echo=FALSE}
 gapminder %>%
@@ -665,7 +664,7 @@ scale_x_continuous(trans = "log2", limit = c(0.125, 300)) +
 geom_density(alpha = 0.2, bw = 0.75, position = "stack") + facet_grid(year ~ .)
 ```
 
-Esta figura en particular muestra muy claramente cómo se está cerrando la brecha de distribución de ingresos con la mayoría de los pobres que quedan en el África subsahariana.
+[fix reword in english too?]Esta figura en particular muestra muy claramente cómo se está cerrando la brecha de distribución de ingresos con la mayoría de los pobres residiendo en el África subsahariana.
 
 
 ## La falacia ecológica y la importancia de mostrar los datos
@@ -706,24 +705,24 @@ breaks = c(.85,.90,.95,.99,.995,.998)) +
 geom_label_repel(size = 3, show.legend = FALSE)
 ```
 
-La relación entre estas dos variables es casi perfectamente lineal y el gráfico muestra una diferencia dramática. Mientras que en Occidente muere menos del 0.5% de los bebés, ¡en África subsahariana la tasa es superior al 6%!
+La relación entre estas dos variables es casi perfectamente lineal y el gráfico muestra una diferencia dramática. Mientras que en el Occidente muere menos del 0.5% de los bebés, ¡en África subsahariana la tasa es superior al 6%!
 
-Tenga en cuenta que el gráfico utiliza una nueva transformación, la transformación logística.
+Tengan en cuenta que el gráfico utiliza una nueva transformación, la transformación logística.
 
 ### Transformación logística {#logit}
 La transformación logística o logit para una proporción o tasa $p$ se define como:
 
 $$f(p) = \log \left( \frac{p}{1-p} \right)$$
 
-Cuando $p$ es una proporción o probabilidad, la cantidad que se registra, $p/(1-p)$, se llama _odds_. En este caso $p$ es la proporción de bebés que sobrevivieron. Las probabilidades nos dicen cuántos más bebés se espera que sobrevivan que que mueran. La transformación logarítmica lo hace simétrico. Si las tasas son las mismas, entonces las probabilidades de registro son 0. Los aumentos o disminuciones de pliegues se convierten en incrementos positivos y negativos, respectivamente.
+Cuando $p$ es una proporción o probabilidad, la cantidad que se registra, $p/(1-p)$, [fix traduzco? probabilidades?] se llama _odds_. En este caso $p$ es la proporción de bebés que sobrevivieron. Los _odds_ nos dicen cuántos más bebés se espera que sobrevivan a que mueran. La transformación logarítmica lo hace simétrico. Si las tasas son iguales, entonces las probabilidades de registro son 0. Los aumentos o disminuciones de [fix] folds/pliegues se convierten en incrementos positivos y negativos, respectivamente.
 
-Esta escala es útil cuando queremos resaltar diferencias cercanas a 0 o 1. Para las tasas de supervivencia, esto es importante porque una tasa de supervivencia del 90% es inaceptable, mientras que una supervivencia del 99% es relativamente buena. Preferiríamos mucho una tasa de supervivencia más cercana al 99.9%. Queremos que nuestra escala resalte estas diferencias y el logit lo hace. Tenga en cuenta que 99.9/ 0.1 es aproximadamente 10 veces más grande que 99/1, que es aproximadamente 10 veces más grande que 90/10. Al usar el registro, estos cambios de plegado se convierten en aumentos constantes.
+Esta escala es útil cuando queremos resaltar diferencias cercanas a 0 o 1. Para las tasas de supervivencia, esto es importante porque una tasa de supervivencia del 90% es inaceptable, mientras que una supervivencia del 99% es relativamente buena. Preferiríamos mucho una tasa de supervivencia más cercana al 99.9%. Queremos que nuestra escala resalte estas diferencias y el logit lo hace. Tengan en cuenta que 99.9/ 0.1 es aproximadamente 10 veces más grande que 99/1, que es aproximadamente 10 veces más grande que 90/10. Al usar el registro, estos [fix] fold changes/cambios de plegado se convierten en aumentos constantes.
 
 ### Mostrar los datos
 
-Ahora, de vuelta a nuestra trama. Con base en el gráfico anterior, ¿concluimos que un país con bajos ingresos está destinado a tener una tasa de supervivencia baja? ¿Llegamos a la conclusión de que las tasas de supervivencia en el África subsahariana son más bajas que en el sur de Asia, que a su vez son más bajas que en las islas del Pacífico, y así sucesivamente?
+Ahora, de vuelta a nuestro gráfico. Basado en el gráfico anterior, ¿concluimos que un país con bajos ingresos está destinado a tener una tasa de supervivencia baja? ¿Llegamos a la conclusión de que las tasas de supervivencia en el África subsahariana son más bajas que en el sur de Asia, que a su vez son más bajas que en las islas del Pacífico, y así sucesivamente?
 
-Saltar a esta conclusión basada en una gráfica que muestra promedios se denomina falacia ecológica. La relación casi perfecta entre las tasas de supervivencia y los ingresos solo se observa para los promedios a nivel regional. Una vez que mostramos todos los datos, vemos una historia algo más complicada:
+Saltar a esta conclusión basada en un gráfico que muestra promedios se denomina _falacia ecológica_. La relación casi perfecta entre las tasas de supervivencia y los ingresos solo se observa para los promedios a nivel regional. Una vez que mostramos todos los datos, vemos una historia más complicada:
 
 ```{r ecological-fallacy-all-data, echo=FALSE}
 library(ggrepel)
@@ -741,7 +740,7 @@ geom_point(alpha = 0.5, size = 3) +
 geom_text_repel(size = 4, show.legend = FALSE)
 ```
 
-Específicamente, vemos que hay una gran cantidad de variabilidad. Vemos que los países de las mismas regiones pueden ser bastante diferentes y que los países con los mismos ingresos pueden tener diferentes tasas de supervivencia. Por ejemplo, mientras que, en promedio, el África subsahariana tuvo los peores resultados económicos y de salud, existe una gran variabilidad dentro de ese grupo. Mauricio y Botswana están mejor que Angola y Sierra Leona, con Mauricio comparable a los países occidentales.
+Específicamente, vemos que hay una gran cantidad de variabilidad. Vemos que los países de las mismas regiones pueden ser bastante diferentes y que los países con los mismos ingresos pueden tener diferentes tasas de supervivencia. Por ejemplo, mientras que, en promedio, África subsahariana tuvo los peores resultados económicos y de salud, existe una gran variabilidad dentro de ese grupo. Mauricio y Botswana están mejores que Angola y Sierra Leona, con Mauricio comparable a los países occidentales.
 
 
 
