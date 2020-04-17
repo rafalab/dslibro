@@ -90,6 +90,7 @@
 | notebook |  | un _notebook_ |  |
 | __O__ | | | | |
 | operator | operador |the `!=` operator| operador | operador |
+| outliers | valores atípicos|  | |  |
 | output | _output_, resultado, salida | the output of the function is a vector |un _output_ (no se traduce),resultado, salida  | salida |
 | output layer| capa de salida || |  |
 | __P__ | | | | |
@@ -117,13 +118,14 @@
 | return key | tecla _return_ |  |  | tecla de retorno, <ENTER> |
 | run| correr, ejecutar |to run the code | correr, ejecutar | ejecutar |
 | __S__ | | | | |
+| scaling | ajuste |  |  |  |
 | scatterplot | diagrama de dispersión | | diagrama de dispersión, diagrama de puntos | diagrama de dispersión |
 | script | _script_ | write an R script | script | script, archivo de procesamiento por lotes (en MSDOS, Unix/Linux, etc.) |
 | smooth | suave | smooth densities | densidades suaves  |  |
 | sofware | _software_ | | software | software |
 | software engineer | ingeniero de _software_ |  | ingeniero de software | ingeniero de software, ingeniero informático |
 | sort| ordenar alfabeticamente o numericamente | sort the rows of this data frame | ||
-| spline | _spline_ |  | un _spline_  |  |
+| spline | _spline_ |  | un _spline_ |  |
 | spreadsheets | hoja de cálculo|  | planilla de cálculo | hoja de cálculo |
 | subset | (extraer/crear) subconjunto | (extraer/crear) subconjunto | (crear un) subconjunto |
 | string | cadenas | | | |
