@@ -6,11 +6,11 @@
 
 Anteriormente describimos cómo los diagramas de caja muestran _valores atípicos_, pero no ofrecimos una definición precisa. Aquí discutimos los valores atípicos, los acercamientos que pueden ayudar a detectarlos y los resúmenes que toman en cuenta su presencia.
 
-Los valores atípicos son muy comunes en la ciencia de datos. El registro de datos puede ser complejo y es común observar puntos de datos generados por error. Por ejemplo, un viejo dispositivo de monitoreo puede leer mediciones sin sentido antes de fallar por completo. El error humano también es una fuente de valores atípicos, en particular cuando la entrada de datos se realiza manualmente. Un individuo, por ejemplo, puede ingresar erróneamente su altura en centímetros en lugar de pulgadas o colocar el decimal en el lugar equivocado.
+Los valores atípicos son muy comunes en la ciencia de datos. [fix] Dataa recording/El registro de datos puede ser complejo y es común observar puntos de datos generados por error. Por ejemplo, un viejo dispositivo de monitoreo puede leer mediciones sin sentido antes de fallar por completo. El error humano también es una fuente de valores atípicos, en particular cuando la entrada de datos se realiza manualmente. Un individuo, por ejemplo, puede ingresar erróneamente su altura en centímetros en lugar de pulgadas o colocar el decimal en el lugar equivocado.
 
-¿Cómo distinguimos un valor atípico de mediciones que eran demasiado grandes o demasiado pequeñas simplemente debido a la variabilidad esperada? Esta no siempre es una pregunta fácil de responder, pero tratamos de proporcionar alguna orientación. Comencemos con un caso simple.
+¿Cómo distinguimos un valor atípico de [fix] measurements/mediciones que eran demasiado grandes o pequeños simplemente debido a la variabilidad esperada? Esta no siempre es una pregunta fácil de responder, pero intentaremos ofrecer alguna orientación. Comencemos con un caso sencillo.
 
-Supongamos que un colega se encarga de recopilar datos demográficos para un grupo de hombres. Los datos informan la altura en pies y se almacenan en el objeto:
+Supongamos que un colega se encarga de recopilar datos demográficos para un grupo de varones. Los datos informan la altura en pies y se almacenan en el objeto:
 
 ```{r, message=FALSE, warning=FALSE}
 library(tidyverse)
@@ -19,14 +19,14 @@ data(outlier_example)
 str(outlier_example)
 ```
 
-Nuestro colega utiliza el hecho de que las alturas suelen estar bien aproximadas por una distribución normal y resume los datos con una desviación promedio y estándar:
+Nuestro colega utiliza el hecho de que las alturas suelen estar bien aproximadas por una distribución normal y [fix] resume los datos con el promedio y la desviación estándar:
 
 ```{r}
 mean(outlier_example)
 sd(outlier_example)
 ```
 
-y escribe un informe sobre el hecho interesante de que este grupo de machos es mucho más alto de lo habitual. ¡La altura promedio es más de seis pies de alto! Sin embargo, al usar sus habilidades de ciencia de datos, nota algo más que es inesperado: la desviación estándar es de más de 7 pies. Al sumar y restar dos desviaciones estándar, observa que el 95% de esta población tendrá alturas entre `r mean(outlier_example) + c(-2, 2)*sd(outlier_example)` pies, que no tiene sentido. Una trama rápida revela el problema:
+Entonces, escribe un informe sobre el hecho interesante de que este grupo de varones es mucho más alto de lo normal. ¡La altura promedio es más de seis pies de alto! Sin embargo, al usar su conocimientos de ciencia de datos, nota algo más que es inesperado: la desviación estándar es de más de 7 pies. Al sumar y restar dos desviaciones estándar, observa que el 95% de esta población parece tener alturas entre `r mean(outlier_example) + c(-2, 2)*sd(outlier_example)` pies, que no tiene sentido. Un gráfico rápido revela el problema:
 
 <!--
 ```{r histogram-reveals-outliers}
@@ -43,11 +43,11 @@ rafalib::mypar()
 boxplot(outlier_example)
 ```
 
-Parece que hay al menos un valor que no tiene sentido, ya que sabemos que una altura de `r max(outlier_example)` los pies son imposibles. El diagrama de caja detecta este punto como un valor atípico.
+Parece que hay al menos un valor que no tiene sentido, ya que sabemos que una altura de `r max(outlier_example)` pies es imposible. El diagrama de caja detecta este punto como un valor atípico.
 
 ## Mediana
 
-Cuando tenemos un valor atípico como este, el promedio puede llegar a ser muy grande. Matemáticamente, podemos hacer que el promedio sea tan grande como queramos simplemente cambiando un número: con `r length(outlier_example)` puntos de datos, podemos aumentar el promedio en cualquier cantidad $\Delta$ añadiendo $\Delta \times$ NA a un solo número. La mediana, definida como el valor para el cual la mitad de los valores son más pequeños y la otra mitad es más grande, es robusta para tales valores atípicos. No importa cuán grande hagamos el punto más grande, la mediana sigue siendo la misma.
+Cuando tenemos un valor atípico como este, el promedio puede llegar a ser muy grande. Matemáticamente, podemos hacer que el promedio sea tan grande como queramos simplemente cambiando un número: con `r length(outlier_example)` puntos de datos, podemos aumentar el promedio en cualquier cantidad $\Delta$ añadiendo $\Delta \times$ NA a un solo número. La mediana, definida como el valor para el cual la mitad de los valores son más pequeños y la otra mitad son más grandes, es robusta para tales valores atípicos. No importa cuán grande hagamos el punto más grande, la mediana sigue siendo la misma.
 
 Con estos datos, la mediana es:
 
@@ -60,7 +60,7 @@ La mediana es lo que los diagramas de caja muestran como una línea horizontal.
 
 ## El rango intercuartil (IQR)
 
-El cuadro en diagrama de caja se define por el primer y tercer cuartil. Estos están destinados a proporcionar una idea de la variabilidad en los datos: el 50% de los datos está dentro de este rango. La diferencia entre el 3er y 1er cuartil (o los percentiles 75 y 25) se conoce como el rango intercuartil (IQR). Como es el caso con la mediana, esta cantidad será robusta para los valores atípicos ya que los valores grandes no la afectan. Podemos hacer algunos cálculos para ver que para los datos distribuidos normalmente, el IQR/ 1.349 se aproxima a la desviación estándar de los datos si un valor atípico no hubiera estado presente. Podemos ver que esto funciona bien en nuestro ejemplo, ya que obtenemos una estimación de desviación estándar de:
+La caja en un diagrama de caja se define por el primer y tercer cuartil. Estos están destinados a proveer una idea de la variabilidad en los datos: el 50% de los datos están dentro de este rango. La diferencia entre el 3er y 1er cuartil (o los percentiles 75 y 25) se conoce como el rango intercuartil, IQR por sus siglas en inglés. Como es el caso con la mediana, esta cantidad será robusta para los valores atípicos ya que los valores grandes no la afectan. Podemos hacer algunos cálculos para ver que para los datos distribuidos normalmente, [fix eng] el IQR/ 1.349 se aproxima a la desviación estándar de los datos si un valor atípico no hubiera estado presente. Podemos ver que esto funciona bien en nuestro ejemplo, ya que obtenemos una estimado de la desviación estándar de:
 
 ```{r}
 IQR(outlier_example)/ 1.349
@@ -71,7 +71,7 @@ lo cual es sobre `r round(IQR(outlier_example)/1.349*12)` pulgadas.
 
 ## La definición de Tukey de un valor atípico
 
-En R, los puntos que caen fuera de los bigotes de la gráfica de caja se denominan "valores atípicos". Tukey introdujo esta definición de valor atípico. El bigote superior termina en el percentil 75 más 1.5 $\times$ IQR. De manera similar, el bigote inferior termina en el percentil 25 menos 1.5 $\times$ IQR. Si definimos el primer y tercer cuartiles como $Q_1$ y $Q_3$, respectivamente, entonces un valor atípico es cualquier cosa fuera del rango:
+En R, los puntos que caen fuera de los bigotes del diagrama de caja se denominan _valores atípicos_ (_outliers_ en inglés). Tukey introdujo esta definición de valor atípico. El bigote superior termina en el percentil 75 más 1.5 $\times$ IQR. De manera similar, el bigote inferior termina en el percentil 25 menos 1.5 $\times$ IQR. Si definimos el primer y el tercer cuartil como $Q_1$ y $Q_3$, respectivamente, entonces un valor atípico es cualquier valor fuera del rango:
 
 $$[Q_1 - 1.5 \times (Q_3 - Q1), Q_3 + 1.5 \times (Q_3 - Q1)].$$
 
@@ -85,13 +85,13 @@ r <- c(q1 - 1.5*iqr, q3 + 1.5*iqr)
 r
 ```
 
-Utilizando la `pnorm` función, vemos que `r round(pnorm(r[2]) - pnorm(r[1]),3)*100` el% de los datos cae en este intervalo.
+Utilizando la función `pnorm`, vemos que `r round(pnorm(r[2]) - pnorm(r[1]),3)*100`% de los datos cae en este intervalo.
 
-Tenga en cuenta que este no es un evento tan extremo: si tenemos 1000 puntos de datos que se distribuyen normalmente, esperamos ver unos 7 fuera de este rango. Pero estos no serían valores atípicos ya que esperamos verlos bajo la variación típica.
+Tengan en cuenta que este no es un evento tan extremo: si tenemos 1000 puntos de datos que se distribuyen normalmente, esperamos ver unos 7 fuera de este rango. Pero estos no serían valores atípicos ya que esperamos verlos bajo la variación típica.
 
-Si queremos que un valor atípico sea más raro, podemos aumentar el 1.5 a un número mayor. Tukey también usó 3 y los llamó "out out_iers". Con una distribución normal,
+Si queremos que un valor atípico sea más raro, podemos aumentar el 1.5 a un número mayor. Tukey también usó 3 y los denominó _far out outliers_ [fix] o _valores atípicos extremos_. Con una distribución normal,
 `r r <- c(q1 - 3*iqr , q3 + 3*iqr); round((pnorm(r[2]) - pnorm(r[1]))*100, 4)`%
-de los datos cae en este intervalo. Esto se traduce en aproximadamente 2 en un millón de posibilidades de estar fuera del rango. En el `geom_boxplot` función, esto puede ser controlado por el `outlier.size` argumento, que por defecto es 1.5.
+de los datos caen en este intervalo. Esto se traduce en aproximadamente 2 en un millón de posibilidades de estar fuera del rango. En la función `geom_boxplot`, esto puede ser controlado por el argumento `outlier.size`, que por defecto es 1.5.
 
 La medida de 180 pulgadas está más allá del rango de los datos de altura:
 
@@ -116,27 +116,27 @@ qqline(x)
 ```
 
 
-## Mediana desviación absoluta
+## [fix] Mediana desviación absoluta
 
-Otra forma de estimar de manera sólida la desviación estándar en presencia de valores atípicos es usar la desviación absoluta media (MAD). Para calcular el MAD, primero calculamos la mediana, y luego para cada valor calculamos la distancia entre ese valor y la mediana. El MAD se define como la mediana de estas distancias. Por razones técnicas no discutidas aquí, esta cantidad debe multiplicarse por 1.4826 para asegurar que se aproxima a la desviación estándar real. los `mad` la función ya incorpora esta corrección. Para los datos de altura, obtenemos una MAD de:
+Otra forma de estimar de manera[fix] _robustly_ sólida la desviación estándar en presencia de valores atípicos es usar la desviación absoluta media o MAD (_median absolute deviataion_) por sus siglas en inglés. Para calcular el MAD, primero calculamos la mediana y luego, para cada valor, calculamos la distancia entre ese valor y la mediana. El MAD se define como la mediana de estas distancias. Por razones técnicas no que no discutimos aquí, esta cantidad debe multiplicarse por 1.4826 para asegurar que se aproxima a la desviación estándar real. La función  `mad` ya incorpora esta corrección. Para los datos de altura, obtenemos una MAD de:
 
 ```{r}
 mad(outlier_example)
 ```
 
-lo cual es sobre `r round(mad(outlier_example)*12)` pulgadas.
+lo cual es como `r round(mad(outlier_example)*12)` pulgadas.
 
 
 
 ## Ejercicios
 
-Vamos a usar el paquete __HistData__. Si no está instalado, puede instalarlo así:
+Vamos a usar el paquete __HistData__. Si no lo han instalando, pueden hacerlo así:
 
 ```{r, eval=FALSE}
 install.packages("HistData")
 ```
 
-Cargue el conjunto de datos de altura y cree un vector `x` con solo las alturas masculinas utilizadas en los datos de Galton sobre las alturas de los padres y sus hijos de su investigación histórica sobre la herencia.
+Carguen el set de datos de altura y crean un vector `x` con solo las alturas masculinas de los datos de Galton sobre las alturas de los padres y sus hijos de su investigación histórica sobre la herencia.
 
 ```{r, eval=FALSE}
 library(HistData)
@@ -146,11 +146,10 @@ x <- Galton$child
 
 1\. Calcule el promedio y la mediana de estos datos.
 
-2\. Calcule la mediana y la mediana de la desviación absoluta de estos datos.
+2\. Calcule la mediana y el MAD de estos datos.
 
 
-
-3\. Ahora suponga que Galton cometió un error al ingresar el primer valor y olvidó usar el punto decimal. Puede imitar este error escribiendo:
+3\. Ahora supongamos que Galton cometió un error al ingresar el primer valor y olvidó usar el punto decimal. Puede imitar este error al escribir:
 
 ```{r, eval=FALSE}
 x_with_error <- x
@@ -167,15 +166,15 @@ x_with_error[1] <- x_with_error[1]*10
 
 7\. ¿Cómo podría utilizar el análisis exploratorio de datos para detectar que se cometió un error?
 
-a. Dado que es solo un valor entre muchos, no podremos detectar esto.
-si. Veríamos un cambio obvio en la distribución.
-c. Un diagrama de caja, histograma o diagrama qq revelaría un valor atípico claro.
-re. Un diagrama de dispersión mostraría altos niveles de error de medición.
+a. Dado que es solo un valor entre muchos, no se puede detectar esto.
+b. Veríamos un cambio obvio en la distribución.
+c. Un diagrama de caja, histograma o diagrama q-q revelaría un valor atípico obvio.
+d. Un diagrama de dispersión mostraría altos niveles de error de medición.
 
 
-8\. ¿Cuánto puede crecer el promedio accidentalmente con errores como este? Escribe una función llamada `error_avg` eso toma un valor `k` y devuelve el promedio del vector `x` después de que la primera entrada cambió a `k`. Mostrar los resultados para `k=10000` y `k=-10000`.
+8\. ¿Cuánto puede crecer el promedio accidentalmente con errores como este? Escribe una función llamada `error_avg` que toma un valor `k` y devuelve el promedio del vector `x` después de que la primera entrada cambia a `k`. Muestre los resultados para `k=10000` y `k=-10000`.
 
-## Estudio de caso: alturas de estudiantes autoinformadas
+## Estudio de caso: [fix] alturas de estudiantes autoinformadas
 
 Las alturas que hemos estado viendo no son las alturas originales reportadas por los estudiantes. Las alturas informadas originales también se incluyen en el paquete __dslabs__ y se pueden cargar así:
 
@@ -191,21 +190,20 @@ reported_heights <- reported_heights %>%
 mutate(original_heights = height, height = as.numeric(height))
 ```
 
-Tenga en cuenta que recibimos una advertencia sobre las AN. Esto se debe a que algunas de las alturas autoinformadas no eran números.
-Podemos ver por qué obtenemos estos:
+Tengan en cuenta que recibimos una advertencia sobre las NAs. Esto se debe a que algunas de las alturas autoinformadas no eran números. Podemos ver por qué obtenemos estos:
 
 ```{r, warning=FALSE}
 reported_heights %>% filter(is.na(height)) %>% head()
 ```
 
-Algunos estudiantes informaron sus alturas usando pies y pulgadas en lugar de solo pulgadas. Otros usaban centímetros y otros solo estaban trolleando. Por ahora eliminaremos estas entradas:
+Algunos estudiantes informaron sus alturas usando pies y pulgadas en lugar de solo pulgadas. Otros usaron centímetros y otros solo estaban trolleando. Por ahora eliminaremos estas entradas:
 
 
 ```{r}
 reported_heights <- filter(reported_heights, !is.na(height))
 ```
 
-Si calculamos la desviación promedio y estándar, notamos que obtenemos resultados extraños. El promedio y la desviación estándar son diferentes de la mediana y MAD:
+Si calculamos promedio y la desviación estándar, notamos que obtenemos resultados extraños. El promedio y la desviación estándar son diferentes de la mediana y del MAD:
 
 ```{r}
 reported_heights %>%
@@ -214,7 +212,7 @@ summarize(average = mean(height), sd = sd(height),
 median = median(height), MAD = mad(height))
 ```
 
-Esto sugiere que tenemos valores atípicos, lo que se confirma creando una gráfica de caja:
+Esto sugiere que tenemos valores atípicos, lo que se confirma creando un diagrama de caja:
 
 ```{r height-outlier-ggplot, echo=FALSE}
 reported_heights %>%
@@ -222,15 +220,15 @@ ggplot(aes(sex, height)) +
 geom_boxplot()
 ```
 
-Podemos ver algunos valores bastante extremos. Para ver cuáles son estos valores, podemos ver rápidamente los valores más grandes utilizando `arrange` función:
+Podemos ver algunos valores bastante extremos. Para ver cuáles son estos valores, podemos rápidamente mirar los valores más grandes utilizando la función `arrange`:
 
 ```{r}
 reported_heights %>% arrange(desc(height)) %>% top_n(10, height)
 ```
 
-Las primeras siete entradas parecen errores extraños. Sin embargo, los siguientes parecen haber sido ingresados como centímetros en lugar de pulgadas. Dado que 184 cm es equivalente a seis pies de alto, sospechamos que 184 en realidad tenía 72 pulgadas.
+Las primeras siete entradas parecen errores extraños. Sin embargo, los siguientes parecen haber sido ingresados como centímetros en lugar de pulgadas. Dado que 184 cm es equivalente a seis pies de alto, sospechamos que 184 en realidad significa 72 pulgadas.
 
-Podemos revisar todas las respuestas sin sentido observando los datos que Tukey considera fuera de lugar:
+Podemos revisar todas las respuestas sin sentido observando los datos que Tukey[fix] considera _far out_ o fuera de lugar:
 
 ```{r}
 whisker <- 3*IQR(reported_heights$height)
@@ -242,6 +240,6 @@ select(original_heights) %>%
 head(n=10) %>% pull(original_heights)
 ```
 
-Examinando estas alturas cuidadosamente, vemos dos errores comunes: entradas en centímetros, que resultan ser demasiado grandes, y entradas del formulario `x.y` con `x` y `y` representando pies y pulgadas, respectivamente, que resultan ser demasiado pequeños. Algunos de los valores aún más pequeños, como 1.6, podrían ser entradas en metros.
+Examinando estas alturas cuidadosamente, vemos dos errores comunes: entradas en centímetros, que resultan ser demasiado grandes, y entradas del tipo `x.y` con `x` y `y` representando pies y pulgadas, respectivamente, que resultan ser demasiado pequeños. Algunos de los valores aún más pequeños, como 1.6, podrían ser entradas en metros.
 
-En la parte de Data Wrangling de este libro, aprenderemos técnicas para corregir estos valores y convertirlos en pulgadas. Aquí pudimos detectar este problema mediante una cuidadosa exploración de datos para descubrir problemas con los datos: el primer paso en la gran mayoría de los proyectos de ciencia de datos.
+En la parte de _Data Wrangling_ de este libro, aprenderemos técnicas para corregir estos valores y convertirlos en pulgadas. Aquí pudimos detectar este problema mediante una cuidadosa exploración de los datos para descubrir problemas con ellos: el primer paso en la gran mayoría de los proyectos de ciencia de datos.
