@@ -6,9 +6,9 @@
 
 Anteriormente describimos cómo los diagramas de caja muestran _valores atípicos_, pero no ofrecimos una definición precisa. Aquí discutimos los valores atípicos, los acercamientos que pueden ayudar a detectarlos y los resúmenes que toman en cuenta su presencia.
 
-Los valores atípicos son muy comunes en la ciencia de datos. [fix] Dataa recording/El registro de datos puede ser complejo y es común observar puntos de datos generados por error. Por ejemplo, un viejo dispositivo de monitoreo puede leer mediciones sin sentido antes de fallar por completo. El error humano también es una fuente de valores atípicos, en particular cuando la entrada de datos se realiza manualmente. Un individuo, por ejemplo, puede ingresar erróneamente su altura en centímetros en lugar de pulgadas o colocar el decimal en el lugar equivocado.
+Los valores atípicos son muy comunes en la ciencia de datos. La recopilación de datos puede ser complejo y es común observar puntos de datos generados por error. Por ejemplo, un viejo dispositivo de monitoreo puede leer mediciones sin sentido antes de fallar por completo. El error humano también es una fuente de valores atípicos, en particular cuando la entrada de datos se realiza manualmente. Un individuo, por ejemplo, puede ingresar erróneamente su altura en centímetros en lugar de pulgadas o colocar el decimal en el lugar equivocado.
 
-¿Cómo distinguimos un valor atípico de [fix] measurements/mediciones que eran demasiado grandes o pequeños simplemente debido a la variabilidad esperada? Esta no siempre es una pregunta fácil de responder, pero intentaremos ofrecer alguna orientación. Comencemos con un caso sencillo.
+¿Cómo distinguimos un valor atípico de mediciones que son demasiado grandes o pequeños simplemente debido a la variabilidad esperada? Esta no siempre es una pregunta fácil de responder, pero intentaremos ofrecer alguna orientación. Comencemos con un caso sencillo.
 
 Supongamos que un colega se encarga de recopilar datos demográficos para un grupo de varones. Los datos informan la altura en pies y se almacenan en el objeto:
 
@@ -19,7 +19,7 @@ data(outlier_example)
 str(outlier_example)
 ```
 
-Nuestro colega utiliza el hecho de que las alturas suelen estar bien aproximadas por una distribución normal y [fix] resume los datos con el promedio y la desviación estándar:
+Nuestro colega utiliza el hecho de que las alturas suelen estar bien aproximadas por una distribución normal y resume los datos con el promedio y la desviación estándar:
 
 ```{r}
 mean(outlier_example)
@@ -60,7 +60,7 @@ La mediana es lo que los diagramas de caja muestran como una línea horizontal.
 
 ## El rango intercuartil (IQR)
 
-La caja en un diagrama de caja se define por el primer y tercer cuartil. Estos están destinados a proveer una idea de la variabilidad en los datos: el 50% de los datos están dentro de este rango. La diferencia entre el 3er y 1er cuartil (o los percentiles 75 y 25) se conoce como el rango intercuartil, IQR por sus siglas en inglés. Como es el caso con la mediana, esta cantidad será robusta para los valores atípicos ya que los valores grandes no la afectan. Podemos hacer algunos cálculos para ver que para los datos distribuidos normalmente, [fix eng] el IQR/ 1.349 se aproxima a la desviación estándar de los datos si un valor atípico no hubiera estado presente. Podemos ver que esto funciona bien en nuestro ejemplo, ya que obtenemos una estimado de la desviación estándar de:
+La caja en un diagrama de caja se define por el primer y tercer cuartil. Estos están destinados a proveer una idea de la variabilidad en los datos: el 50% de los datos están dentro de este rango. La diferencia entre el 3er y 1er cuartil (o los percentiles 75 y 25) se conoce como el rango intercuartil, IQR por sus siglas en inglés. Como es el caso con la mediana, esta cantidad será robusta para los valores atípicos ya que los valores grandes no la afectan. Podemos hacer algunos cálculos para ver que para los datos que siguen la distribución normal, el IQR / 1.349 se aproxima a la desviación estándar de los datos si un valor atípico no hubiera estado presente. Podemos ver que esto funciona bien en nuestro ejemplo, ya que obtenemos una estimado de la desviación estándar de:
 
 ```{r}
 IQR(outlier_example)/ 1.349
@@ -89,7 +89,7 @@ Utilizando la función `pnorm`, vemos que `r round(pnorm(r[2]) - pnorm(r[1]),3)*
 
 Tengan en cuenta que este no es un evento tan extremo: si tenemos 1000 puntos de datos que se distribuyen normalmente, esperamos ver unos 7 fuera de este rango. Pero estos no serían valores atípicos ya que esperamos verlos bajo la variación típica.
 
-Si queremos que un valor atípico sea más raro, podemos aumentar el 1.5 a un número mayor. Tukey también usó 3 y los denominó _far out outliers_ [fix] o _valores atípicos extremos_. Con una distribución normal,
+Si queremos que un valor atípico sea más raro, podemos aumentar el 1.5 a un número mayor. Tukey también usó 3 y los denominó _far out outliers_ o _valores atípicos extremos_. Con una distribución normal,
 `r r <- c(q1 - 3*iqr , q3 + 3*iqr); round((pnorm(r[2]) - pnorm(r[1]))*100, 4)`%
 de los datos caen en este intervalo. Esto se traduce en aproximadamente 2 en un millón de posibilidades de estar fuera del rango. En la función `geom_boxplot`, esto puede ser controlado por el argumento `outlier.size`, que por defecto es 1.5.
 
@@ -116,9 +116,9 @@ qqline(x)
 ```
 
 
-## [fix] Mediana desviación absoluta
+## [fix] Desviación absoluta mediana
 
-Otra forma de estimar de manera[fix] _robustly_ sólida la desviación estándar en presencia de valores atípicos es usar la desviación absoluta media o MAD (_median absolute deviataion_) por sus siglas en inglés. Para calcular el MAD, primero calculamos la mediana y luego, para cada valor, calculamos la distancia entre ese valor y la mediana. El MAD se define como la mediana de estas distancias. Por razones técnicas no que no discutimos aquí, esta cantidad debe multiplicarse por 1.4826 para asegurar que se aproxima a la desviación estándar real. La función  `mad` ya incorpora esta corrección. Para los datos de altura, obtenemos una MAD de:
+Otra forma de estimar de manera robusta la desviación estándar en presencia de valores atípicos es usar la desviación absoluta mediana o MAD (_median absolute deviation_) por sus siglas en inglés. Para calcular el MAD, primero calculamos la mediana y luego, para cada valor, calculamos la distancia entre ese valor y la mediana. El MAD se define como la mediana de estas distancias. Por razones técnicas no que no discutimos aquí, esta cantidad debe multiplicarse por 1.4826 para asegurar que se aproxima a la desviación estándar real. La función  `mad` ya incorpora esta corrección. Para los datos de altura, obtenemos una MAD de:
 
 ```{r}
 mad(outlier_example)
@@ -174,7 +174,7 @@ d. Un diagrama de dispersión mostraría altos niveles de error de medición.
 
 8\. ¿Cuánto puede crecer el promedio accidentalmente con errores como este? Escribe una función llamada `error_avg` que toma un valor `k` y devuelve el promedio del vector `x` después de que la primera entrada cambia a `k`. Muestre los resultados para `k=10000` y `k=-10000`.
 
-## Estudio de caso: [fix] alturas de estudiantes autoinformadas
+## Estudio de caso: [fix] alturas de estudiantes autodeclarados
 
 Las alturas que hemos estado viendo no son las alturas originales reportadas por los estudiantes. Las alturas informadas originales también se incluyen en el paquete __dslabs__ y se pueden cargar así:
 
@@ -228,7 +228,7 @@ reported_heights %>% arrange(desc(height)) %>% top_n(10, height)
 
 Las primeras siete entradas parecen errores extraños. Sin embargo, los siguientes parecen haber sido ingresados como centímetros en lugar de pulgadas. Dado que 184 cm es equivalente a seis pies de alto, sospechamos que 184 en realidad significa 72 pulgadas.
 
-Podemos revisar todas las respuestas sin sentido observando los datos que Tukey[fix] considera _far out_ o fuera de lugar:
+Podemos revisar todas las respuestas sin sentido observando los datos que Tukey[fix] considera _far out_ o superextremos:
 
 ```{r}
 whisker <- 3*IQR(reported_heights$height)
