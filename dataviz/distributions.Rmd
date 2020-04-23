@@ -95,13 +95,13 @@ Como pueden ver en la figura anterior, un histograma es similar a un diagrama de
 
 Si le enviamos este diagrama a ET, inmediatamente aprenderá algunas [fix] "properties" propiedades/detalle/info importantes sobre nuestros datos. Primero, el rango de datos es de 50 a 84 con la mayoría (más del 95%) entre 63 y 75 pulgadas. Además, las alturas son casi simétricas alrededor de 69 pulgadas. Por último, al sumar conteos, ET podría obtener una muy buena aproximación de la proporción de los datos en cualquier intervalo. Por lo tanto, el histograma anterior no solo es fácil de interpretar, sino que también ofrece casi toda la información contenida en la lista cruda de `r sum(heights$sex=="Male")` alturas con aproximadamente [fix] 30 conteos de compartimientos.
 
-¿Qué información perdemos? Tenga en cuenta que todos los valores en cada intervalo se tratan de la misma manera cuando se calculan las alturas del contenedor. Entonces, por ejemplo, el histograma no distingue entre 64, 64.1 y 64.2 pulgadas. Dado que estas diferencias son casi imperceptibles a la vista, las implicaciones prácticas son insignificantes y pudimos resumir los datos a solo 23 números.
+¿Qué información perdemos? Tengan en cuenta que todos los valores en cada intervalo se tratan de la misma manera cuando se calculan las alturas del compartimiento. Entonces, por ejemplo, el histograma no distingue entre 64, 64.1 y 64.2 pulgadas. Dado que estas diferencias son casi imperceptibles a la vista, las implicaciones prácticas son insignificantes y [fix] pudimos resumir los datos a solo 23 números.
 
 Discutimos cómo codificar histogramas en la Sección \@ref(other-geometries).
 
 ## Densidad suave
 
-Los gráficos de densidad suave son estéticamente más atractivas que los histogramas. Así es como se ve un gráfico de densidad uniforme para nuestros datos de altura:
+Los gráficos de densidad suave son estéticamente más atractivos que los histogramas. A continuación vemos un gráfico de densidad uniforme para nuestros datos de altura:
 
 ```{r example-of-smoothed-density, echo=FALSE}
 heights %>%
@@ -111,13 +111,13 @@ geom_density(alpha = .2, fill= "#00BFC4", color = 0) +
 geom_line(stat='density')
 ```
 
-En este gráfico, ya no tenemos bordes afilados en los límites de intervalo y muchos de los picos locales se han eliminado. Además, la escala del eje y cambió de conteos a _densidad_.
+En este gráfico, ya no tenemos bordes afilados en los límites de intervalo y  se han eliminado muchos de los picos locales. Además, la escala del eje y cambió de conteos a _densidad_.
 
-Para entender las densidades suaves, tenemos que entender [fix] los _estimados_, un tema que no abordamos hasta más tarde. Sin embargo, ofrecemos una explicación heurística para ayudarles a entender los conceptos básicos y así poder utilizar esta útil herramienta de visualización de datos.
+Para entender las densidades suaves, tenemos que entender [fix] los _estimados estimaciones_, un tema que no abordamos hasta más tarde. Sin embargo, ofrecemos una explicación heurística para ayudarles a entender los conceptos básicos y así poder utilizar esta herramienta útil de visualización de datos.
 
-El nuevo concepto principal que deben entender es que suponemos que nuestra lista de valores observados es un subconjunto de una lista mucho más grande de valores no observados. En el caso de las alturas, pueden imaginar que nuestra lista de `r sum(heights$sex=="Male")` estudiantes varones proviene de una lista hipotética que contiene todas las alturas de todos los estudiantes varones en todo el mundo, medidos todos con mucha precisión. Digamos que hay 1,000,000 de estas medidas. Esta lista de valores tiene una distribución, como cualquier lista de valores, y esta distribución considerable es realmente lo que queremos transmitir a ET, ya que es mucho más general. Desafortunadamente, no podemos verla.
+El nuevo concepto principal que deben entender es que [fix] suponemos que nuestra lista de valores observados es un subconjunto de una lista mucho más grande de valores no observados. En el caso de las alturas, pueden imaginar que nuestra lista de `r sum(heights$sex=="Male")` estudiantes varones proviene de una lista hipotética que contiene todas las alturas de todos los estudiantes varones en todo el mundo, medidos todos con mucha precisión. Digamos que hay 1,000,000 de estas medidas. Esta lista de valores tiene una distribución, como cualquier lista de valores, y esta distribución considerable es realmente lo que queremos transmitir a ET, ya que es mucho más general. Desafortunadamente, no podemos ver esa lista grandísima.
 
-[fix all]Sin embargo, hacemos una suposición que quizás nos ayuda a aproximarla [aproximar que?]. Si tuviéramos 1,000,000 de valores, medidos con mucha precisión, podríamos hacer un histograma con compartimientos muy, muy pequeños. La suposición es que si mostramos esto, la altura de los compartimientos consecutivos será similar. Esto es lo que queremos decir con suave: no tenemos grandes saltos en las alturas de los compartimientos consecutivos. A continuación tenemos un histograma hipotético con compartimientos de tamaño 1:
+[fix all]Sin embargo, hacemos una suposición que quizás nos ayude a aproximarla. Si tuviéramos 1,000,000 de valores, medidos con mucha precisión, podríamos hacer un histograma con compartimientos muy, muy pequeños. La suposición es que si mostramos esto, la altura de los compartimientos consecutivos será similar. Esto es lo que queremos decir con suave: no tenemos grandes saltos en las alturas de los compartimientos consecutivos. A continuación tenemos un histograma hipotético con compartimientos de tamaño 1:
 
 
 ```{r simulated-data-histogram-1, echo=FALSE}
@@ -126,7 +126,7 @@ x <- data.frame(height = c(rnorm(1000000,69,3), rnorm(1000000,65,3)))
 x %>% ggplot(aes(height)) + geom_histogram(binwidth = 1, color = "black")
 ```
 
-Entre más pequeños hacemos los compartimientos, más suave se vuelve el histograma. Aquí están los histogramas con ancho de bin de 1, 0.5 y 0.1:
+Entre más pequeños hacemos los compartimientos, más suave se vuelve el histograma. Aquí están los histogramas con ancho de compartimiento de 1, 0.5 y 0.1:
 
 ```{r simulated-data-histogram-2, fig.width=9, fig.height=3, out.width = "100%",echo=FALSE, message=FALSE}
 p1 <- x %>% ggplot(aes(height)) + geom_histogram(binwidth = 1, color = "black") + ggtitle("binwidth=1")
@@ -146,7 +146,7 @@ geom_line(stat='density')
 
 Ahora, de vuelta a la realidad. No tenemos millones de medidas. En cambio, tenemos `r sum(heights$sex=="Male")` y no podemos hacer un histograma con compartimientos muy pequeños.
 
-Por lo tanto, hacemos un histograma, utilizando tamaños de bin apropiados para nuestros datos y frecuencias de cómputo en lugar de conteos, y dibujamos una curva suave que pasa por la parte superior de las barras del histograma. Los siguientes gráficos muestran los pasos que conducen a una densidad uniforme:
+[fix] Por lo tanto, hacemos un histograma, utilizando tamaños de compartimiento apropiados para nuestros datos y frecuencias de cómputo en lugar de conteos, y dibujamos una curva suave que pasa por la parte superior de las barras del histograma. Los siguientes gráficos muestran los pasos que conducen a una densidad uniforme:
 
 ```{r smooth-density-2, echo=FALSE, out.width = "100%"}
 hist1 <- heights %>%
@@ -170,7 +170,7 @@ scale_y_continuous(limits = layer_scales(hist2)$y$range$range)
 grid.arrange(hist1, hist3, hist4, hist5, hist2, hist6, nrow=2)
 ```
 
-Sin embargo, recuerde que _suave_ (_smooth_ en inglés) es un término relativo. De hecho, podemos controlar [fix] la _suavidad_/smoothness de la curva que define la densidad suave a través de una opción en la función que calcula la curva de densidad suave. Aquí hay dos ejemplos que usan diferentes grados de [fix] suavidad/smoothness en el mismo histograma:
+Sin embargo, recuerden que _suave_ (_smooth_ en inglés) es un término relativo. De hecho, podemos controlar [fix] la _suavidad_ de la curva que define la densidad suave a través de una opción en la función que calcula la curva de densidad suave. Aquí hay dos ejemplos que usan diferentes grados de [fix] suavidad/smoothness en el mismo histograma:
 
 
 ```{r densities-different-smoothness, echo = FALSE, out.width = "100%", fig.width = 6, fig.height = 3}
@@ -186,13 +186,13 @@ geom_line(stat='density', adjust = 2)
 
 grid.arrange(p1,p2, ncol=2)
 ```
-Necesitamos tomar esta decisión con cuidado ya que las visualizaciones resultantes pueden cambiar nuestra interpretación de los datos. Debemos seleccionar un grado de suavidad que podamos defender como representativo de los datos subyacentes. En el caso de la altura, realmente tenemos razones para creer que la proporción de personas con alturas similares debería ser la misma. Por ejemplo, la proporción que es 72 pulgadas debería ser más similar a la proporción que es 71 que a la proporción que es 78 o 65. Esto implica que la curva debe ser bastante suave; es decir, la curva debería parecerse más al ejemplo de la derecha que al de la izquierda.
+Necesitamos tomar esta decisión con cuidado ya que las visualizaciones que resultan pueden cambiar nuestra interpretación de los datos. Debemos seleccionar un grado de suavidad que podamos defender como representativo de los datos subyacentes. En el caso de la altura, realmente tenemos razones para creer que la proporción de personas con alturas similares debería ser la misma. Por ejemplo, la proporción que es 72 pulgadas debería ser más similar a la proporción que es 71 que a la proporción que es 78 o 65. Esto implica que la curva debe ser bastante suave; es decir, la curva debería parecerse más al ejemplo de la derecha que al de la izquierda.
 
 Si bien el histograma es un resumen sin supuestos, la densidad suavizada se basa en algunos supuestos.
 
 ### Cómo interpretar el eje y
 
-Tengan en cuenta que interpretar el [fix] eje y de un gráfico de densidad suave no es sencillo. Se escala para que el área bajo la curva de densidad se sume a 1. Si imagina que formamos un contenedor con una base de 1 unidad de longitud, el valor del eje y nos indica la proporción de valores en ese contenedor. Sin embargo, esto solo es cierto para compartimientos de tamaño 1. Para intervalos de otro tamaño, la mejor manera de determinar la proporción de datos en ese intervalo es calculando la proporción del área total contenida en ese intervalo. Por ejemplo, aquí vemos la proporción de valores entre 65 y 68:
+Tengan en cuenta que interpretar el eje y de un gráfico de densidad suave no es [fix] straightforward/sencillo/directo. Se escala para que el área bajo la curva de densidad se sume a 1. Si imaginan que formamos un compartimiento con una base de 1 unidad de longitud, el valor del eje y nos indica la proporción de valores en ese compartimiento. Sin embargo, esto solo es cierto para compartimientos de tamaño 1. Para intervalos de otro tamaño, la mejor manera de determinar la proporción de datos en ese intervalo es calculando la proporción del área total contenida en ese intervalo. Por ejemplo, aquí vemos la proporción de valores entre 65 y 68:
 
 ```{r area-under-curve, echo=FALSE}
 d <- with(heights, density(height[sex=="Male"]))
@@ -202,10 +202,10 @@ geom_area(aes(x=height,y=density), data = filter(tmp, between(height, 65, 68)), 
 ```
 
 [fix] La proporción de esta área es aproximadamente
-`r round (mean (dplyr :: between (heights $height[heights$ sexo == "Masculino"], 65, 68)), 2) `,
-lo que significa que aproximadamente esa proporción es entre 65 y 68 pulgadas.
+`r round (mean (dplyr :: between (heights $height[heights$ sexo == "Masculino"], 65, 68)), 2)`,
+lo que significa que aproximadamente [ fix see eng aqui falta codigo] proporción es entre 65 y 68 pulgadas.
 
-Al comprender esto, estamos listos para usar la densidad suave como resumen. Para este set de datos, nos sentiríamos bastante cómodos [fix] con el supuesto de suavidad y, por ende, compartiendo esta figura estéticamente agradable con ET, que podría usar para comprender nuestros datos de alturas masculinas:
+Al comprender esto, estamos listos para usar la densidad suave como resumen. Para este set de datos, nos sentiríamos bastante cómodos [fix] suponiendo suavidad y, por ende, compartiendo esta figura estéticamente agradable con ET, que podría usarla para comprender nuestros datos de alturas masculinas:
 
 ```{r example-of-smoothed-density-2, echo=FALSE}
 heights %>%
