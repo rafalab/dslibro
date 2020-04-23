@@ -24,7 +24,7 @@
 <meta name="author" content="Rafael A. Irizarry" />
 
 
-<meta name="date" content="2020-04-21" />
+<meta name="date" content="2020-04-22" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -390,9 +390,9 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="11.2" data-path="robust-summaries.html"><a href="robust-summaries.html#mediana"><i class="fa fa-check"></i><b>11.2</b> Mediana</a></li>
 <li class="chapter" data-level="11.3" data-path="robust-summaries.html"><a href="robust-summaries.html#el-rango-intercuartil-iqr"><i class="fa fa-check"></i><b>11.3</b> El rango intercuartil (IQR)</a></li>
 <li class="chapter" data-level="11.4" data-path="robust-summaries.html"><a href="robust-summaries.html#la-definicion-de-tukey-de-un-valor-atipico"><i class="fa fa-check"></i><b>11.4</b> La definición de Tukey de un valor atípico</a></li>
-<li class="chapter" data-level="11.5" data-path="robust-summaries.html"><a href="robust-summaries.html#fix-mediana-desviacion-absoluta"><i class="fa fa-check"></i><b>11.5</b> [fix] Mediana desviación absoluta</a></li>
+<li class="chapter" data-level="11.5" data-path="robust-summaries.html"><a href="robust-summaries.html#fix-desviacion-absoluta-mediana"><i class="fa fa-check"></i><b>11.5</b> [fix] Desviación absoluta mediana</a></li>
 <li class="chapter" data-level="11.6" data-path="robust-summaries.html"><a href="robust-summaries.html#ejercicios-21"><i class="fa fa-check"></i><b>11.6</b> Ejercicios</a></li>
-<li class="chapter" data-level="11.7" data-path="robust-summaries.html"><a href="robust-summaries.html#estudio-de-caso-fix-alturas-de-estudiantes-autoinformadas"><i class="fa fa-check"></i><b>11.7</b> Estudio de caso: [fix] alturas de estudiantes autoinformadas</a></li>
+<li class="chapter" data-level="11.7" data-path="robust-summaries.html"><a href="robust-summaries.html#estudio-de-caso-fix-alturas-de-estudiantes-autodeclarados"><i class="fa fa-check"></i><b>11.7</b> Estudio de caso: [fix] alturas de estudiantes autodeclarados</a></li>
 </ul></li>
 <li class="divider"></li>
 <li><a href="https://github.com/rstudio/bookdown" target="blank">Published with bookdown</a></li>
@@ -419,15 +419,15 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <div id="valores-atipicos" class="section level2">
 <h2><span class="header-section-number">11.1</span> Valores atípicos</h2>
 <p>Anteriormente describimos cómo los diagramas de caja muestran <em>valores atípicos</em>, pero no ofrecimos una definición precisa. Aquí discutimos los valores atípicos, los acercamientos que pueden ayudar a detectarlos y los resúmenes que toman en cuenta su presencia.</p>
-<p>Los valores atípicos son muy comunes en la ciencia de datos. [fix] Dataa recording/El registro de datos puede ser complejo y es común observar puntos de datos generados por error. Por ejemplo, un viejo dispositivo de monitoreo puede leer mediciones sin sentido antes de fallar por completo. El error humano también es una fuente de valores atípicos, en particular cuando la entrada de datos se realiza manualmente. Un individuo, por ejemplo, puede ingresar erróneamente su altura en centímetros en lugar de pulgadas o colocar el decimal en el lugar equivocado.</p>
-<p>¿Cómo distinguimos un valor atípico de [fix] measurements/mediciones que eran demasiado grandes o pequeños simplemente debido a la variabilidad esperada? Esta no siempre es una pregunta fácil de responder, pero intentaremos ofrecer alguna orientación. Comencemos con un caso sencillo.</p>
+<p>Los valores atípicos son muy comunes en la ciencia de datos. La recopilación de datos puede ser complejo y es común observar puntos de datos generados por error. Por ejemplo, un viejo dispositivo de monitoreo puede leer mediciones sin sentido antes de fallar por completo. El error humano también es una fuente de valores atípicos, en particular cuando la entrada de datos se realiza manualmente. Un individuo, por ejemplo, puede ingresar erróneamente su altura en centímetros en lugar de pulgadas o colocar el decimal en el lugar equivocado.</p>
+<p>¿Cómo distinguimos un valor atípico de mediciones que son demasiado grandes o pequeños simplemente debido a la variabilidad esperada? Esta no siempre es una pregunta fácil de responder, pero intentaremos ofrecer alguna orientación. Comencemos con un caso sencillo.</p>
 <p>Supongamos que un colega se encarga de recopilar datos demográficos para un grupo de varones. Los datos informan la altura en pies y se almacenan en el objeto:</p>
 <div class="sourceCode" id="cb411"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb411-1" data-line-number="1"><span class="kw">library</span>(tidyverse)</a>
 <a class="sourceLine" id="cb411-2" data-line-number="2"><span class="kw">library</span>(dslabs)</a>
 <a class="sourceLine" id="cb411-3" data-line-number="3"><span class="kw">data</span>(outlier_example)</a>
 <a class="sourceLine" id="cb411-4" data-line-number="4"><span class="kw">str</span>(outlier_example)</a>
 <a class="sourceLine" id="cb411-5" data-line-number="5"><span class="co">#&gt;  num [1:500] 5.59 5.8 5.54 6.15 5.83 5.54 5.87 5.93 5.89 5.67 ...</span></a></code></pre></div>
-<p>Nuestro colega utiliza el hecho de que las alturas suelen estar bien aproximadas por una distribución normal y [fix] resume los datos con el promedio y la desviación estándar:</p>
+<p>Nuestro colega utiliza el hecho de que las alturas suelen estar bien aproximadas por una distribución normal y resume los datos con el promedio y la desviación estándar:</p>
 <div class="sourceCode" id="cb412"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb412-1" data-line-number="1"><span class="kw">mean</span>(outlier_example)</a>
 <a class="sourceLine" id="cb412-2" data-line-number="2"><span class="co">#&gt; [1] 6.1</span></a>
 <a class="sourceLine" id="cb412-3" data-line-number="3"><span class="kw">sd</span>(outlier_example)</a>
@@ -456,7 +456,7 @@ qplot(outlier_example, bins = 30)
 </div>
 <div id="el-rango-intercuartil-iqr" class="section level2">
 <h2><span class="header-section-number">11.3</span> El rango intercuartil (IQR)</h2>
-<p>La caja en un diagrama de caja se define por el primer y tercer cuartil. Estos están destinados a proveer una idea de la variabilidad en los datos: el 50% de los datos están dentro de este rango. La diferencia entre el 3er y 1er cuartil (o los percentiles 75 y 25) se conoce como el rango intercuartil, IQR por sus siglas en inglés. Como es el caso con la mediana, esta cantidad será robusta para los valores atípicos ya que los valores grandes no la afectan. Podemos hacer algunos cálculos para ver que para los datos distribuidos normalmente, [fix eng] el IQR/ 1.349 se aproxima a la desviación estándar de los datos si un valor atípico no hubiera estado presente. Podemos ver que esto funciona bien en nuestro ejemplo, ya que obtenemos una estimado de la desviación estándar de:</p>
+<p>La caja en un diagrama de caja se define por el primer y tercer cuartil. Estos están destinados a proveer una idea de la variabilidad en los datos: el 50% de los datos están dentro de este rango. La diferencia entre el 3er y 1er cuartil (o los percentiles 75 y 25) se conoce como el rango intercuartil, IQR por sus siglas en inglés. Como es el caso con la mediana, esta cantidad será robusta para los valores atípicos ya que los valores grandes no la afectan. Podemos hacer algunos cálculos para ver que para los datos que siguen la distribución normal, el IQR / 1.349 se aproxima a la desviación estándar de los datos si un valor atípico no hubiera estado presente. Podemos ver que esto funciona bien en nuestro ejemplo, ya que obtenemos una estimado de la desviación estándar de:</p>
 <div class="sourceCode" id="cb415"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb415-1" data-line-number="1"><span class="kw">IQR</span>(outlier_example)<span class="op">/</span><span class="st"> </span><span class="fl">1.349</span></a>
 <a class="sourceLine" id="cb415-2" data-line-number="2"><span class="co">#&gt; [1] 0.245</span></a></code></pre></div>
 <p>lo cual es sobre 3 pulgadas.</p>
@@ -474,7 +474,7 @@ qplot(outlier_example, bins = 30)
 <a class="sourceLine" id="cb416-6" data-line-number="6"><span class="co">#&gt; [1] -2.7  2.7</span></a></code></pre></div>
 <p>Utilizando la función <code>pnorm</code>, vemos que 99.3% de los datos cae en este intervalo.</p>
 <p>Tengan en cuenta que este no es un evento tan extremo: si tenemos 1000 puntos de datos que se distribuyen normalmente, esperamos ver unos 7 fuera de este rango. Pero estos no serían valores atípicos ya que esperamos verlos bajo la variación típica.</p>
-<p>Si queremos que un valor atípico sea más raro, podemos aumentar el 1.5 a un número mayor. Tukey también usó 3 y los denominó <em>far out outliers</em> [fix] o <em>valores atípicos extremos</em>. Con una distribución normal,
+<p>Si queremos que un valor atípico sea más raro, podemos aumentar el 1.5 a un número mayor. Tukey también usó 3 y los denominó <em>far out outliers</em> o <em>valores atípicos extremos</em>. Con una distribución normal,
 100%
 de los datos caen en este intervalo. Esto se traduce en aproximadamente 2 en un millón de posibilidades de estar fuera del rango. En la función <code>geom_boxplot</code>, esto puede ser controlado por el argumento <code>outlier.size</code>, que por defecto es 1.5.</p>
 <p>La medida de 180 pulgadas está más allá del rango de los datos de altura:</p>
@@ -488,9 +488,9 @@ de los datos caen en este intervalo. Esto se traduce en aproximadamente 2 en un 
 <a class="sourceLine" id="cb418-3" data-line-number="3"><span class="kw">qqline</span>(x)</a></code></pre></div>
 <p><img src="libro_files/figure-html/outlier-qqnorm-1.png" width="70%" style="display: block; margin: auto;" /></p>
 </div>
-<div id="fix-mediana-desviacion-absoluta" class="section level2">
-<h2><span class="header-section-number">11.5</span> [fix] Mediana desviación absoluta</h2>
-<p>Otra forma de estimar de manera[fix] <em>robustly</em> sólida la desviación estándar en presencia de valores atípicos es usar la desviación absoluta media o MAD (<em>median absolute deviataion</em>) por sus siglas en inglés. Para calcular el MAD, primero calculamos la mediana y luego, para cada valor, calculamos la distancia entre ese valor y la mediana. El MAD se define como la mediana de estas distancias. Por razones técnicas no que no discutimos aquí, esta cantidad debe multiplicarse por 1.4826 para asegurar que se aproxima a la desviación estándar real. La función <code>mad</code> ya incorpora esta corrección. Para los datos de altura, obtenemos una MAD de:</p>
+<div id="fix-desviacion-absoluta-mediana" class="section level2">
+<h2><span class="header-section-number">11.5</span> [fix] Desviación absoluta mediana</h2>
+<p>Otra forma de estimar de manera robusta la desviación estándar en presencia de valores atípicos es usar la desviación absoluta mediana o MAD (<em>median absolute deviation</em>) por sus siglas en inglés. Para calcular el MAD, primero calculamos la mediana y luego, para cada valor, calculamos la distancia entre ese valor y la mediana. El MAD se define como la mediana de estas distancias. Por razones técnicas no que no discutimos aquí, esta cantidad debe multiplicarse por 1.4826 para asegurar que se aproxima a la desviación estándar real. La función <code>mad</code> ya incorpora esta corrección. Para los datos de altura, obtenemos una MAD de:</p>
 <div class="sourceCode" id="cb419"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb419-1" data-line-number="1"><span class="kw">mad</span>(outlier_example)</a>
 <a class="sourceLine" id="cb419-2" data-line-number="2"><span class="co">#&gt; [1] 0.237</span></a></code></pre></div>
 <p>lo cual es como 3 pulgadas.</p>
@@ -521,8 +521,8 @@ de los datos caen en este intervalo. Esto se traduce en aproximadamente 2 en un 
 </ol>
 <p>8. ¿Cuánto puede crecer el promedio accidentalmente con errores como este? Escribe una función llamada <code>error_avg</code> que toma un valor <code>k</code> y devuelve el promedio del vector <code>x</code> después de que la primera entrada cambia a <code>k</code>. Muestre los resultados para <code>k=10000</code> y <code>k=-10000</code>.</p>
 </div>
-<div id="estudio-de-caso-fix-alturas-de-estudiantes-autoinformadas" class="section level2">
-<h2><span class="header-section-number">11.7</span> Estudio de caso: [fix] alturas de estudiantes autoinformadas</h2>
+<div id="estudio-de-caso-fix-alturas-de-estudiantes-autodeclarados" class="section level2">
+<h2><span class="header-section-number">11.7</span> Estudio de caso: [fix] alturas de estudiantes autodeclarados</h2>
 <p>Las alturas que hemos estado viendo no son las alturas originales reportadas por los estudiantes. Las alturas informadas originales también se incluyen en el paquete <strong>dslabs</strong> y se pueden cargar así:</p>
 <div class="sourceCode" id="cb423"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb423-1" data-line-number="1"><span class="kw">library</span>(dslabs)</a>
 <a class="sourceLine" id="cb423-2" data-line-number="2"><span class="kw">data</span>(<span class="st">&quot;reported_heights&quot;</span>)</a></code></pre></div>
@@ -568,7 +568,7 @@ de los datos caen en este intervalo. Esto se traduce en aproximadamente 2 en un 
 <a class="sourceLine" id="cb428-12" data-line-number="12"><span class="co">#&gt; 10 2014-12-26 10:00:12   Male    190              190</span></a>
 <a class="sourceLine" id="cb428-13" data-line-number="13"><span class="co">#&gt; 11 2016-11-06 10:21:02 Female    190              190</span></a></code></pre></div>
 <p>Las primeras siete entradas parecen errores extraños. Sin embargo, los siguientes parecen haber sido ingresados como centímetros en lugar de pulgadas. Dado que 184 cm es equivalente a seis pies de alto, sospechamos que 184 en realidad significa 72 pulgadas.</p>
-<p>Podemos revisar todas las respuestas sin sentido observando los datos que Tukey[fix] considera <em>far out</em> o fuera de lugar:</p>
+<p>Podemos revisar todas las respuestas sin sentido observando los datos que Tukey[fix] considera <em>far out</em> o superextremos:</p>
 <div class="sourceCode" id="cb429"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb429-1" data-line-number="1">whisker &lt;-<span class="st"> </span><span class="dv">3</span><span class="op">*</span><span class="kw">IQR</span>(reported_heights<span class="op">$</span>height)</a>
 <a class="sourceLine" id="cb429-2" data-line-number="2">max_height &lt;-<span class="st"> </span><span class="kw">quantile</span>(reported_heights<span class="op">$</span>height, <span class="fl">.75</span>) <span class="op">+</span><span class="st"> </span>whisker</a>
 <a class="sourceLine" id="cb429-3" data-line-number="3">min_height &lt;-<span class="st"> </span><span class="kw">quantile</span>(reported_heights<span class="op">$</span>height, <span class="fl">.25</span>) <span class="op">-</span><span class="st"> </span>whisker</a>
