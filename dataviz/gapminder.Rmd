@@ -1,15 +1,15 @@
 # Visualización de datos en la práctica {#gapminder}
 
-En este capítulo, demostraremos cómo el código relativamente sencillo de __ggplot2__  puede crear gráficos [fix] perspicaces y estéticamente agradables. Como motivación, crearemos gráficos que nos ayudarán a comprender mejor las tendencias de la salud y economía mundial. Implementaremos lo que aprendimos en los capítulos \@ref(ggplot2) y \@ref(other-geometries) y aprenderemos a [fix] aumentar/expandir el código para perfeccionar los gráficos. A medida que avancemos en nuestro estudio de caso, describiremos [fix] los principios generales mas relevantes a la visualización de datos y aprenderemos conceptos como _faceting_ (r4ds: separar en facetas), _gráficos de series de tiempo_, _transformaciones_ y _gráficos ridge_.
+En este capítulo, demostraremos cómo el código relativamente sencillo de __ggplot2__  puede crear gráficos esclarecedores y estéticamente agradables. Como motivación, crearemos gráficos que nos ayudarán a comprender mejor las tendencias de la salud y economía mundial. Implementaremos lo que aprendimos en los capítulos \@ref(ggplot2) y \@ref(other-geometries) y aprenderemos a [fix] aumentar/expandir el código para perfeccionar los gráficos. A medida que avancemos en nuestro estudio de caso, describiremos los principios generales mas relevantes a la visualización de datos y aprenderemos conceptos como _facetas_, _gráficos de series de tiempo_, _transformaciones_ y _gráficos ridge_.
 
 
 ## Estudio de caso: nuevas ideas sobre la pobreza
 
-Hans Rosling^[https://en.wikipedia.org/wiki/Hans_Rosling] era el cofundador de la Fundación Gapminder^[http://www.gapminder.org/], una organización dedicada a educar al público mediante datos para disipar mitos comunes sobre el llamado mundo en desarrollo. La organización utiliza datos para mostrar cómo las tendencias reales en los campos de salud y economía contradicen las narrativas que emanan de la cobertura sensacionalista de los medios de catástrofes, tragedias y otros eventos desafortunados. Como se indica en el sitio web de la Fundación Gapminder: [fix?]
+Hans Rosling^[https://en.wikipedia.org/wiki/Hans_Rosling] era el cofundador de la Fundación Gapminder^[http://www.gapminder.org/], una organización dedicada a educar al público mediante datos para disipar mitos comunes sobre el llamado mundo en desarrollo. La organización utiliza datos para mostrar cómo las tendencias reales en los campos de salud y economía contradicen las narrativas que emanan de la cobertura sensacionalista de los medios de catástrofes, tragedias y otros eventos desafortunados. Como se indica en el sitio web de la Fundación Gapminder:
 
->>> Los periodistas y los cabilderos cuentan historias dramáticas. Ese es su trabajo. Cuentan historias sobre eventos extraordinarios y personas inusuales. Las historias dramáticas se acumulan en las mentes de las personas en una visión del mundo demasiado dramática y con fuertes sentimientos de estrés negativo: "¡El mundo está empeorando!", "¡Somos nosotros contra ellos!", "¡Las demás personas son extrañas!", " ¡La población sigue creciendo! " y "¡A nadie le importa!"
+>>> Los periodistas y cabilderos cuentan historias dramáticas. Ese es su trabajo. Cuentan historias sobre eventos extraordinarios y personas inusuales. Las historias dramáticas se acumulan en las mentes de las personas en una visión del mundo demasiado dramática y con fuertes sentimientos de estrés negativo: "¡El mundo está empeorando!", "¡Somos nosotros contra ellos!", "¡Las demás personas son extrañas!", " ¡La población sigue creciendo! " y "¡A nadie le importa!"
 
-[fix] Hans Rosling transmitía tendencias basadas en datos reales de una manera dramática propia, utilizando una visualización de datos efectiva. Esta sección se basa en dos charlas que ejemplifican este enfoque educativo: _New Insights on Poverty_^[https://www.ted.com/talks/hans_rosling_reveals_new_insights_on_poverty?language=en] y _The Best Stats You've Ever Seen_^[https://www.ted.com/talks/hans_rosling_shows_the_best_stats_you_ve_ever_seen]. Específicamente, en esta sección, usamos datos para intentar responder a las siguientes dos preguntas:
+Hans Rosling educaba sobre tendencias basadas en datos con su propia manera dramática, utilizando una visualización de datos eficaz. Esta sección se basa en dos charlas que ejemplifican este enfoque educativo: _New Insights on Poverty_^[https://www.ted.com/talks/hans_rosling_reveals_new_insights_on_poverty?language=en] y _The Best Stats You've Ever Seen_^[https://www.ted.com/talks/hans_rosling_shows_the_best_stats_you_ve_ever_seen]. Específicamente, en esta sección, usamos datos para intentar responder a las siguientes dos preguntas:
 
 1. ¿Es una caracterización justa del mundo de hoy decir que está dividido en naciones ricas occidentales y el mundo en desarrollo de África, Asia y América Latina?
 2. ¿Ha empeorado la desigualdad de ingresos en todos los países durante los últimos 40 años?
@@ -100,9 +100,9 @@ En 1962, la visión de "El Occidente versus el mundo en desarrollo" se basaba en
 
 ## Separar en facetas
 
-Podríamos graficar fácilmente los datos de 2012 de la misma manera que lo hicimos para 1962. Sin embargo, para hacer comparaciones, es preferible graficar lado a lado. En __ggplot2__, [fix] podemos lograr esto _separando en facetas_ (_faceting_ en inglés) a las variables: estratificamos los datos por alguna variable y hacemos el mismo gráfico para cada estrato.
+Podríamos graficar fácilmente los datos de 2012 de la misma manera que lo hicimos para 1962. Sin embargo, para hacer comparaciones, es preferible graficar lado a lado. En __ggplot2__, podemos lograr esto separando las variables en _facetas_ (_faceting_ en inglés): estratificamos los datos por alguna variable y hacemos el mismo gráfico para cada estrato.
 
-Para separar en facetas, agregamos una capa con la función `facet_grid`, que automáticamente separa los gráficos. [fix] "This function lets you facet by up to two variables using columns to represent..." Esta función les permite separar en facetas por hasta dos variables usando columnas para representar una variable y filas para representar la otra. La función espera que las variables de fila y columna estén separadas por un `~`. Aquí vemos un ejemplo de un diagrama de dispersión donde agregramos `facet_grid` como la última capa:
+Para separar en facetas, agregamos una capa con la función `facet_grid`, que automáticamente separa los gráficos. Esta función les permite separar hasta dos variables en facetas usando columnas para representar una variable y filas para representar la otra. La función espera que las variables de fila y columna estén separadas por un `~`. Aquí vemos un ejemplo de un diagrama de dispersión donde agregramos `facet_grid` como la última capa:
 
 ```{r fertility-versus-life-expectancy-facet, warning=FALSE, out.width="100%"}
 filter(gapminder, year%in%c(1962, 2012)) %>%
@@ -111,7 +111,7 @@ geom_point() +
 facet_grid(continent~year)
 ```
 
-Vemos un gráfico para cada [fix] par de continente/año. Sin embargo, esto es solo un ejemplo y más de lo que queremos, que es simplemente comparar 1962 y 2012. [fix unclear] En este caso, solo hay una variable y usamos `.` para que `facet_grid` sepa que no estamos usando una de las variables:
+Vemos un gráfico para cada combinación de continente/año. Sin embargo, esto es solo un ejemplo y más de lo que queremos, que es simplemente comparar 1962 y 2012. En este caso, solo hay una variable y usamos `.` para que `facet_grid` sepa que no estamos usando una de las variables:
 
 ```{r fertility-versus-life-expectancy-two-years, warning=FALSE, out.width="100%", fig.height=3}
 filter(gapminder, year%in%c(1962, 2012)) %>%
@@ -120,7 +120,7 @@ geom_point() +
 facet_grid(. ~ year)
 ```
 
-Este gráfico muestra claramente que la mayoría de los países se han mudado del conjunto _mundo en desarrollo_ al conjunto _mundo occidental_. En 2012, la visión del mundo occidental versus el mundo en desarrollo ya no tiene sentido. [fix] Esto es particularmente claro cuando se compara Europa con Asia, el segundo del cual ahora tiene varios países que han realizado grandes mejoras.
+Este gráfico muestra claramente que la mayoría de los países se han mudado del conjunto _mundo en desarrollo_ al conjunto _mundo occidental_. En 2012, la visión del mundo occidental versus el mundo en desarrollo ya no tiene sentido. Esto es particularmente claro cuando se compara Europa con Asia, este último ahora con varios países que han realizado grandes mejoras.
 
 ### `facet_wrap`
 
@@ -270,7 +270,7 @@ ggplot(aes(log2(dollars_per_day))) +
 geom_histogram(binwidth = 1, color = "black")
 ```
 
-[fix compare eng] Así logramos ver de cerca de los países de ingresos medios a ingresos bajos. "In a way this provides a close-up of the mid to lower income countries."
+Así logramos ver de cerca a los países de ingresos medios a ingresos bajos.
 
 ### ¿Qué base?
 
@@ -324,13 +324,13 @@ scale_x_continuous(trans = "log2")
 
 Tengan en cuenta que la transformación logarítmica base 10 tiene su propia función: `scale_x_log10()`, pero actualmente la base 2 no tiene, aunque fácilmente podríamos definir una.
 
-[fix] Hay otras transformaciones disponibles a través del argumento `trans`. Como aprenderemos más adelante, la transformación de raíz cuadrada (`sqrt`) es útil cuando se consideran los recuentos. La transformación logística (`logit`) es útil cuando se grafican proporciones entre 0 y 1. La transformación `reverse` es útil cuando queremos que los valores más pequeños estén a la derecha o arriba.
+Hay otras transformaciones disponibles a través del argumento `trans`. Como aprenderemos más adelante, la transformación de raíz cuadrada (`sqrt`) es útil cuando se consideran conteos. La transformación logística (`logit`) es útil cuando se grafican proporciones entre 0 y 1. La transformación `reverse` es útil cuando queremos que los valores más pequeños estén a la derecha o arriba.
 
 ## Cómo visualizar distribuciones multimodales
 
-En el histograma anterior vemos dos [fix] _bumps_/protuberaciones: uno a aproximadamente 4 y otro a aproximadamente 32. En estadística, estos _bumps_ a veces se denominan la _moda_ (_modes_ en inglés). La moda de una distribución es el valor con la frecuencia más alta. La moda de distribución normal es el promedio. Cuando una distribución, como la anterior, no disminuye monotónicamente de la moda, llamamos a los lugares donde sube y baja de nuevo _modas locales_ (_local modes_ en inglés) y decimos que la distribución tiene [fix] _modas múltiples_.
+En el histograma anterior vemos dos [fix] _bumps_/protuberaciones: uno a aproximadamente 4 y otro a aproximadamente 32. En estadística, estos _bumps_ a veces se denominan _modas_. La moda de una distribución es el valor con la frecuencia más alta. La moda de distribución normal es el promedio. Cuando una distribución, como la anterior, no disminuye monotónicamente de la moda, llamamos a los lugares donde sube y baja de nuevo _modas locales_ (_local modes_ en inglés) y decimos que la distribución tiene _modas múltiples_.
 
-El histograma anterior sugiere que la distribución del ingreso [fix singular?] del país en 1970 tiene dos modas: uno a aproximadamente 2 dólares por día (1 en la escala log 2) y otro a aproximadamente 32 dólares por día (5 en la escala log 2). Esta _bimodalidad_ es consistente con un mundo dicotómico compuesto por países con ingresos promedio inferiores a $8 (3 en la escala log 2) por día y países por encima de eso.
+El histograma anterior sugiere que la distribución de ingreso de los países en 1970 tiene dos modas: uno aproximadamente 2 dólares por día (1 en la escala log 2) y el otro aproximadamente 32 dólares por día (5 en la escala log 2). Esta _bimodalidad_ es consistente con un mundo dicotómico compuesto por países con ingresos promedio inferiores a $8 (3 en la escala log 2) por día y países por encima de eso.
 
 ## Cómo comparar múltiples distribuciones con diagramas de caja y gráficos _ridge_
 
@@ -377,7 +377,7 @@ En la siguiente sección mostramos cómo visualizar y comparar distribuciones en
 
 ### Diagrama de caja
 
-El análisis exploratorio de datos anterior reveló dos características sobre la distribución de ingreso promedio en 1970. Usando un histograma, encontramos una distribución bimodal con los modos relacionados con los países pobres y ricos. Ahora queremos comparar la distribución entre estos cinco grupos para confirmar la dicotomía "el oeste versus el resto". El número de puntos en cada categoría es lo suficientemente grande como para que un gráfico de resumen pueda ser útil. Podríamos generar cinco histogramas o cinco gráficos de densidad, pero puede ser más práctico tener todos los resúmenes visuales en un gráfico. Por lo tanto, comenzamos apilando diagramas de caja uno al lado del otro. Tengan en cuenta que agregamos[fix] la capa `theme(axis.text.x = element_text(angle = 90, hjust = 1))` para que las etiquetas de grupo sean verticales, puesto que no encajan si las mostramos horizontalmente, y para quitar la etiqueta del eje a fin de hacer espacio.
+El análisis exploratorio de datos anterior reveló dos características sobre la distribución de ingreso promedio en 1970. Usando un histograma, encontramos una distribución bimodal con los modos relacionados con los países pobres y ricos. Ahora queremos comparar la distribución entre estos cinco grupos para confirmar la dicotomía "el oeste versus el resto". El número de puntos en cada categoría es lo suficientemente grande como para que un gráfico de resumen pueda ser útil. Podríamos generar cinco histogramas o cinco gráficos de densidad, pero puede ser más práctico tener todos los resúmenes visuales en un gráfico. Por lo tanto, comenzamos apilando diagramas de caja uno al lado del otro. Tengan en cuenta que agregamos la capa `theme(axis.text.x = element_text(angle = 90, hjust = 1))` para que las etiquetas de grupo sean verticales, puesto que no encajan si las mostramos horizontalmente, y para quitar la etiqueta del eje a fin de hacer espacio.
 
 
 ```{r dollars-per-day-boxplot}
@@ -400,7 +400,7 @@ p + geom_point(alpha = 0.5)
 
 ### Gráficos _ridge_
 
-Mostrar cada punto individual no siempre revela características importantes de la distribución. Aunque no es el caso aquí, cuando el número de puntos de datos es tan grande que hay[fix] _un trazado excesivo_/overplotting, mostrar los datos puede ser contraproducente. Los diagramas de caja ayudan con esto al proporcionar un resumen de cinco números, pero esto también tiene limitaciones. Por ejemplo, los diagramas de caja [fix] no nos permiten descubrir/no revelan/no muestran distribuciones bimodales. Para ver esto, miren los dos gráficos abajo que resumen el mismo set de datos:
+Mostrar cada punto individual no siempre revela características importantes de la distribución. Aunque no es el caso aquí, cuando el número de puntos de datos es demasiado grande acabamos sobregraficando y mostrar los datos puede ser contraproducente. Los diagramas de caja ayudan con esto al proporcionar un resumen de cinco números, pero esto también tiene limitaciones. Por ejemplo, los diagramas de caja no revelan distribuciones bimodales. Para ver esto, miren los dos gráficos abajo que resumen el mismo set de datos:
 
 ```{r boxplot-dont-show-bimodal, warning=FALSE, out.width="100%", message = FALSE, echo=FALSE, fig.height=3}
 set.seed(1987)
@@ -412,7 +412,7 @@ p2 <- qplot("", x, geom="boxplot")
 gridExtra::grid.arrange(p1, p2, nrow = 1)
 ```
 
-[fix eng?] En los casos en que nos preocupa que el resumen de diagrama de caja sea demasiado simplista, podemos mostrar densidades suaves o histogramas apilados/stacked utilizando _gráficos ridge_. Como estamos acostumbrados a visualizar densidades con valores en el eje x, las apilamos/stacked verticalmente. Además, debido a que se necesita más espacio en este enfoque, es conveniente superponerlos. El paquete __ggridges__ incluye una función conveniente para hacer esto. Abajo vemos los datos de ingresos, que mostramos arriba con diagramas de caja, pero ahora visualizados caso con un _gráfico ridge_.
+En los casos en que nos preocupa que el resumen de diagrama de caja sea demasiado simplista, podemos mostrar densidades suaves o histogramas apilados utilizando _gráficos ridge_. Como estamos acostumbrados a visualizar densidades con valores en el eje-x, las apilamos verticalmente. Además, debido a que se necesita más espacio en este enfoque, es conveniente superponerlos. El paquete __ggridges__ incluye una función conveniente para hacer esto. Abajo vemos los datos de ingresos, que mostramos arriba con diagramas de caja, pero ahora visualizados caso con un _gráfico ridge_.
 
 ```{r ridge-plot, message=FALSE}
 library(ggridges)
@@ -423,7 +423,7 @@ scale_x_continuous(trans = "log2")
 p + geom_density_ridges()
 ```
 
-Tengan en cuenta que tenemos que invertir el `x` y `y` que se usaron para el diagrama de caja. [fix eng too] Un parametro útil de `geom_density_ridges` es `scale`, que les permite determinar la cantidad de superposición; por ejemplo, `scale = 1` significa que no hay superposición y valores más grandes resultando en mayor superposición.
+Tengan en cuenta que tenemos que invertir el `x` y `y` que se usaron para el diagrama de caja. [fix eng too] Un parametro útil de `geom_density_ridges` es `scale`, que les permite determinar cuánto superponer; por ejemplo, `scale = 1` significa que no hay superposición y valores mayores que 1 resultando en mayor superposición.
 
 Si el número de puntos de datos es lo suficientemente pequeño, podemos agregarlos al gráfico _ridge_ usando el siguiente código:
 
@@ -431,7 +431,7 @@ Si el número de puntos de datos es lo suficientemente pequeño, podemos agregar
 p + geom_density_ridges(jittered_points = TRUE)
 ```
 
-[fix]Por defecto, la altura de los puntos está _jittered_ y no se debe interpretar de ninguna manera. Para mostrar puntos de datos, pero sin usar _jitter_, podemos usar el siguiente código para agregar lo que se conoce como una representación _rug_ de los datos.
+Por defecto, la altura de los puntos está _jittered_ y no se debe interpretar de ninguna manera. Para mostrar puntos de datos, pero sin usar _jitter_, podemos usar el siguiente código para agregar lo que se conoce como una [fix] representación _rug_ de los datos.
 ```{r ridge-plot-with-rug, message=FALSE}
 p + geom_density_ridges(jittered_points = TRUE,
 position = position_points_jitter(height = 0),
@@ -457,7 +457,7 @@ scale_x_continuous(trans = "log2") +
 facet_grid(year ~ west)
 ```
 
-Antes de interpretar los hallazgos de este gráfico, notamos que hay más países representados en los histogramas de 2010 que en 1970: los recuentos totales son mayores. Una razón para esto es que varios países se fundaron después de 1970. Por ejemplo, la Unión Soviética se dividió en varios países durante la década de 1990. Otra razón es que hay mas datos disponibles para más países en 2010.
+Antes de interpretar los hallazgos de este gráfico, notamos que hay más países representados en los histogramas de 2010 que en 1970: los conteos totales son mayores. Una razón para esto es que varios países se fundaron después de 1970. Por ejemplo, la Unión Soviética se dividió en varios países durante la década de 1990. Otra razón es que hay mas datos disponibles para más países en 2010.
 
 Rehacemos los gráficos utilizando solo países con datos disponibles para ambos años. En la parte sobre _data wrangling_ de este libro, aprenderemos u a usar herramientas de __tidyverse__ que nos permitará escribir código eficiente para esto, pero aquí podemos usar un código sencillo usando la función `intersect`:
 
@@ -473,7 +473,7 @@ pull(country)
 country_list <- intersect(country_list_1, country_list_2)
 ```
 
-Estas `r length(country_list)`  [fix] constituyen/cuentan por
+Estas `r length(country_list)` constituyen
 `r round(gapminder %>% filter(year==present_year) %>% summarize(perc=sum(population[country%in%country_list], na.rm=TRUE)/sum(population, na.rm=TRUE)) %>% pull(perc)*100 )`% de la población mundial, por lo que este subconjunto debe ser representativo.
 
 Vamos a rehacer el gráfico, pero solo para este subconjunto simplemente agregando `country %in% country_list` a la función `filter`:
@@ -504,9 +504,9 @@ xlab("") +
 facet_grid(. ~ year)
 ```
 
-Aquí pausamos para presentar otro importante [fix] atributo/característica de __ggplot2__. Como queremos comparar cada región antes y después, sería conveniente tener el diagrama de caja de `r past_year` al lado del de `r present_year` para cada región. En general, las comparaciones son más fáciles cuando los datos se grafican uno al lado del otro.
+Aquí pausamos para presentar otra importante característica de __ggplot2__. Como queremos comparar cada región antes y después, sería conveniente tener el diagrama de caja de `r past_year` al lado del de `r present_year` para cada región. En general, las comparaciones son más fáciles cuando los datos se grafican uno al lado del otro.
 
-Entonces, en lugar de [fix] separar en facetas, mantenemos los datos de cada año juntos y pedimos colorearlos (o rellenarlos) según el año. Tengan en cuenta que los grupos se separan automáticamente por año y cada par de diagramas de caja se dibujan uno al lado del otro. Como el año es un número, lo convertimos en un factor ya que __ggplot2__ asigna automáticamente un color a cada categoría de un factor. Recuerden que tenemos que convertir las columnas del año de numérico a factor.
+Entonces, en lugar de separar en facetas, mantenemos los datos de cada año juntos y pedimos colorearlos (o rellenarlos) según el año. Tengan en cuenta que los grupos se separan automáticamente por año y cada par de diagramas de caja se dibujan uno al lado del otro. Como el año es un número, lo convertimos en un factor ya que __ggplot2__ asigna automáticamente un color a cada categoría de un factor. Recuerden que tenemos que convertir las columnas del año de numérico a factor.
 
 ```{r income-histogram-west-v-devel-by-year}
 gapminder %>%
@@ -538,7 +538,7 @@ ylab(paste("Percent increase:", past_year, "to", present_year))
 ```
 
 
-[fix] La exploración de datos previa sugirió que la brecha de ingresos entre países ricos y pobres se ha reducido considerablemente durante los últimos 40 años. Usamos una serie de histogramas y diagramas de caja para ver esto. Sugerimos una forma sucinta de transmitir este mensaje con solo un gráfico.
+La exploración de datos previa sugiere que la brecha de ingresos entre países ricos y pobres se ha reducido considerablemente durante los últimos 40 años. Usamos una serie de histogramas y diagramas de caja para ver esto. Sugerimos una forma sucinta de transmitir este mensaje con solo un gráfico.
 
 Empecemos observando que los gráficos de densidad para la distribución del ingreso en `r past_year` y `r present_year` transmiten el mensaje de que la brecha se está cerrando:
 
@@ -551,9 +551,9 @@ scale_x_continuous(trans = "log2") +
 facet_grid(. ~ year)
 ```
 
-[fix]En el gráfico de `r past_year`, vemos dos modas claras: países pobres y ricos. En `r present_year`, parece que algunos de los países pobres se han desplazado hacia la derecha, cerrando la brecha.
+En el gráfico de `r past_year`, vemos dos modas (_modes_ en inglés) claras: países pobres y ricos. En `r present_year`, parece que algunos de los países pobres se han desplazado hacia la derecha, cerrando la brecha.
 
-El próximo mensaje que debemos transmitir es que[fix] la razón por/de este cambio en distribución es que varios países pobres se hicieron más ricos, en lugar de que algunos países ricos se hicieron más pobres. Para hacer esto, podemos asignar un color a los grupos que identificamos durante la exploración de datos.
+El próximo mensaje que debemos transmitir es que la razón de este cambio en distribución es que varios países pobres se hicieron más ricos, en lugar de que algunos países ricos se hicieron más pobres. Para hacer esto, podemos asignar un color a los grupos que identificamos durante la exploración de datos.
 
 Sin embargo, primero tenemos que aprender a hacer estas densidades suaves de una manera que conserve la información sobre el número de países en cada grupo. Para entender por qué necesitamos esto, recuerden la discrepancia en el tamaño de cada grupo:
 
@@ -573,7 +573,7 @@ kableExtra::kable_styling(font_size = 8)
 }
 ```
 
-Pero cuando superponemos dos densidades, [fix] 'the default' = la acción/comportamiento por defecto/el valor predeterminado es que el área representada por cada distribución sume a 1, independientemente del tamaño de cada grupo:
+Pero cuando superponemos dos densidades, el comportamiento por defecto es que el área representada por cada distribución sume a 1, independientemente del tamaño de cada grupo:
 
 ```{r income-smooth-density-by-year-west-v-developing}
 gapminder %>%
@@ -585,11 +585,11 @@ geom_density(alpha = 0.2) +
 facet_grid(year ~ .)
 ```
 
-[fix]Esto/El gráfico de arriba hace que parezca que hay el mismo número de países en cada grupo. Para cambiar esto, necesitaremos aprender a acceder a las variables calculadas con la función `geom_density`.
+El gráfico de arriba hace que parezca que hay el mismo número de países en cada grupo. Para cambiar esto, necesitaremos aprender a acceder a las variables calculadas con la función `geom_density`.
 
-### [fix] Cómo obtener acceso variables calculadas/ Accessing computed variables
+### Cómo obtener acceso a variables calculadas
 
-Para que las áreas de estas densidades sean proporcionales al tamaño de los grupos, simplemente podemos multiplicar los valores del [fix] eje y/eje-y por el tamaño del grupo. En el archivo de ayuda de `geom_density`, vemos que las funciones calculan una variable denominada `count` que hace exactamente esto. [fix eng?] Queremos que esta variable, y no la densidad, esté en el eje y.
+Para que las áreas de estas densidades sean proporcionales al tamaño de los grupos, simplemente podemos multiplicar los valores del eje-y por el tamaño del grupo. En el archivo de ayuda de `geom_density`, vemos que las funciones calculan una variable denominada `count` que hace exactamente esto. Queremos que esta variable, y no la densidad, esté en el eje-y.
 
 En __ggplot2__, obtenemos acceso a estas variables rodeando el nombre con dos puntos. Por lo tanto, utilizaremos el siguiente mapeo:
 
@@ -611,15 +611,15 @@ p + geom_density(alpha = 0.2) +
 facet_grid(year ~ .)
 ```
 
-Si queremos que las densidades sean más suaves, usamos el argumento `bw` para que se use [fix] el mismo _bandwith_/parámetro de suavizado en cada densidad. Seleccionamos 0.75 después de probar varios valores.
+Si queremos que las densidades sean más suaves, usamos el argumento `bw` para que se use el mismo parámetro de suavizado en cada densidad. Seleccionamos 0.75 después de probar varios valores.
 
 ```{r income-smooth-density-counts-by-year}
 p + geom_density(alpha = 0.2, bw = 0.75) + facet_grid(year ~ .)
 ```
 
-Este gráfico ahora muestra lo que está sucediendo muy claramente. La distribución del mundo en desarrollo está cambiando.[fix] Aparece una tercera moda formada por los países que más redujeron la brecha.
+Este gráfico ahora muestra lo que está sucediendo muy claramente. La distribución del mundo en desarrollo está cambiando. Aparece una tercera moda formada por los países que más redujeron la brecha.
 
-Para visualizar si alguno de los grupos definidos anteriormente[fix] está dirigiendo estos cambios, rápidamente podemos hacer un gráfico _ridge_:
+Para visualizar si alguno de los grupos definidos anteriormente son la causa principal de estos cambios, rápidamente podemos hacer un gráfico _ridge_:
 
 ```{r ridge-plot-income-five-regions, warning=FALSE, message=FALSE}
 gapminder %>%
@@ -649,9 +649,9 @@ Aquí podemos ver claramente cómo las distribuciones para Asia Oriental, Améri
 Noten que ordenamos los niveles del grupo para que la densidad del Occidente se grafique primero, luego África subsahariana. Tener los dos extremos graficados primero nos permite ver mejor la bimodalidad restante.
 
 
-### [fix] Densidades ponderadas/weighted densities (see screenshot)
+### Densidades ponderadas
 
-Como punto final, notamos que [fix] estas distribuciones pesan estadísticamente cada país igual. Entonces, si la mayoría de la población está mejorando, pero viviendo en un país muy grande, como China, podríamos no apreciar esto. De hecho, podemos [fix] pesar las densidades suaves usando el argumento de mapeo `weight`. El gráfico entonces se ve así:
+Como punto final, notamos que estas distribuciones ponderan cada país igual. Entonces, si la mayoría de la población está mejorando, pero viviendo en un país muy grande, como China, podríamos no apreciar esto. De hecho, podemos ponderar las densidades suaves usando el argumento de mapeo `weight`. El gráfico entonces se ve así:
 
 ```{r income-smooth-density-counts-by-region-year-weighted, warning=FALSE, echo=FALSE}
 gapminder %>%
@@ -664,7 +664,7 @@ scale_x_continuous(trans = "log2", limit = c(0.125, 300)) +
 geom_density(alpha = 0.2, bw = 0.75, position = "stack") + facet_grid(year ~ .)
 ```
 
-[fix reword in english too?]Esta figura en particular muestra muy claramente cómo se está cerrando la brecha de distribución de ingresos con la mayoría de los pobres residiendo en el África subsahariana.
+Esta figura en particular muestra muy claramente cómo se está cerrando la brecha de distribución de ingresos y que la mayoría paises que siguen en la pobreza están en África subsahariana.
 
 
 ## La falacia ecológica y la importancia de mostrar los datos
