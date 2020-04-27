@@ -40,6 +40,7 @@
 | debug | depurar |makes it more difficult to debug the code | depurar | depurar |
 | default values | valores predeterminado | | valores predeterminado, valor inicial | valores por defecto, valores predeterminados |
 | density curve| la curva de densidad| | | | 
+| density plot | gráfico de densidad |  |  |
 | __E__ | | | | |
 | editing panel | panel de edición | the editing panel |  | panel de edición |
 | element-wise | elemento por elemento |  |  |  |
@@ -49,6 +50,7 @@
 | feature (for machine learning) | atributo | | | |
 | file (verb) | archivar | to file |  |  |
 | file (noun)| archivo |save the script in a file | Archivo | archivo o fichero |
+| folds |  |  |  |
 | for-loop | bucle-for |  | |bucle-for | bucle-for |
 | functions | funciones | We will use the functions `mean` and `sd` | funciones | funciones o rutina |
 | function call | llamada a función | there is no difference between this function call and the previous one | llamada a función | llamadas a funciones, invocar función|
@@ -92,6 +94,7 @@
 | nested | anidado o anidada | nested sorting, nested design | ordenar por categorías? orden anidado?, diseño anidado| diseño anidado |
 | notebook |  | un _notebook_ |  |
 | __O__ | | | | |
+| odds |  |  |  |
 | operator | operador |the `!=` operator| operador | operador |
 | outliers | valores atípicos|  | |  |
 | output | _output_, resultado, salida | the output of the function is a vector |un _output_ (no se traduce),resultado, salida  | salida |
@@ -107,6 +110,7 @@
 | __prebuilt objects__  | objetos predefinidos |   | objetos predefinidos |  |
 | prediction bias | sesgo de predicción |  |  |  |
 | __Q__ | | | | |
+| Q-Q plot | gráfico q-q  | |  |
 | query | consulta | | consulta |  |
 | quote (verb) | entrecomillar  | we need to quote strings |entrecomillar |  |
 | __R__ | | | | |
@@ -121,6 +125,7 @@
 | return key | tecla _return_ |  |  | tecla de retorno, <ENTER> |
 | run| correr, ejecutar |to run the code | correr, ejecutar | ejecutar |
 | __S__ | | | | |
+| sample quantiles | cuantiles muestrales  |  |  |
 | scaling | ajuste |  |  |  |
 | scatterplot | diagrama de dispersión | | diagrama de dispersión, diagrama de puntos | diagrama de dispersión |
 | script | _script_ | write an R script | script | script, archivo de procesamiento por lotes (en MSDOS, Unix/Linux, etc.) |
@@ -132,12 +137,14 @@
 | spline | _spline_ |  | un _spline_ |  |
 | spreadsheets | hoja de cálculo|  | planilla de cálculo | hoja de cálculo |
 | subset | (extraer/crear) subconjunto | (extraer/crear) subconjunto | (crear un) subconjunto |
+| stacked  | apilado |  |  |
 | string | cadenas | | | |
 | __T__ | | | | |
 | tabs | pestañas | RStudio has a Viewer tab | pestañas | pestañas |
 | test set | set de validación |  | set/datos de validación |  |
 | tidy data | datos _tidy_ | |  | datos ordenados | datos limpios/ordenados |
 | tidy format | formato _tidy_ | this data is in tidy format | | | 
+| time series plot | gráfico de series de tiempo  | |  |
 | training set |  set de entrenamiento |  set/datos de entrenamiento  |  |
 | __U__ | | | | |
 | __V__ | | | | |
