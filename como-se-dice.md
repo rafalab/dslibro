@@ -18,6 +18,7 @@
 | __B__ | | | | |
 | backup | respaldar |backup your work | respaldar | respaldo o copia de seguridad |
 | bandwidth (window size) | ventana o parámetro de suavizado  |  |  |
+| bar plots| diagrama de barras  | |  |
 | bin | compartimiento |  |  |
 | bindwidth | tamaño de compartimiento |  |  |
 | boxplot | diagrama de caja | display the data in a boxplot|diagrama de caja y bigote | gráfico de | 
