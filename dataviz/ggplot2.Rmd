@@ -58,12 +58,12 @@ El primer paso para aprender __ggplot2__ es poder separar un gráfico en compone
 
 * __Data__: Se está resumiendo el set de datos de asesinatos con armas de Estados Unidos. Nos referimos a esto como el componente __data__.
 * __Geometría__: El gráfico de arriba es un diagrama de dispersión. Esto se denomina el componente de __geometría__. Otras posibles geometrías son diagrama de barras, histograma, densidades suaves (_smooth densities_ en inglés), gráfico Q-Q y diagrama de caja. 
-* __Mapeo estético__: El gráfico usa varias señales visuales para representar la información proveída por el set de datos. Las dos señales más importantes en este gráfico son las posiciones de los puntos en el eje x y el eje y, que representan el tamaño de la población y el número total de asesinatos, respectivamente. Cada punto representa una observación diferente, y _mapeamos_ los datos de estas observaciones y las señales visuales a las escalas x e y. El color es otra señal visual que asignamos a la región. Nos referimos a esto como el componente de __mapeo estético__. La forma en que definimos el mapeo depende de qué __geometría__ estamos usando.
+* __Mapeo estético__: El gráfico usa varias señales visuales para representar la información proveída por el set de datos. Las dos señales más importantes en este gráfico son las posiciones de los puntos en el eje-x y el eje-y, que representan el tamaño de la población y el número total de asesinatos, respectivamente. Cada punto representa una observación diferente, y _mapeamos_ los datos de estas observaciones y las señales visuales a las escalas x e y. El color es otra señal visual que asignamos a la región. Nos referimos a esto como el componente de __mapeo estético__. La forma en que definimos el mapeo depende de qué __geometría__ estamos usando.
 
 También observamos que:
 
 * Los puntos están etiquetados con las abreviaturas de los estados.
-* El rango del eje x y el eje y parece estar definido por el rango de los datos. Ambos están en escalas logarítmicas.
+* El rango del eje-x y el eje-y parece estar definido por el rango de los datos. Ambos están en escalas logarítmicas.
 * Hay etiquetas, un título, una leyenda y utilizamos el estilo de la revista The Economist.
 
 Ahora construiremos el gráfico pedazo por pedazo. Comenzemos cargando el set de datos:
@@ -80,7 +80,7 @@ data(murders)
 theme_set(theme_grey()) ## to immitate what happens with seeting theme
 ```
 
-El primer paso para crear un gráfico __ggplot2__ es definir un objeto `ggplot`. Hacemos esto con la función `ggplot`, que inicializa el gráfico. Si leemos el archivo de ayuda para esta función, vemos que el primer argumento se usa para especificar qué datos están asociados con este objeto:
+El primer paso para crear un gráfico __ggplot2__ es definir un objeto `ggplot`. Hacemos esto con la función `ggplot`, que inicializa el gráfico. Si leemos la página de ayuda para esta función, vemos que el primer argumento se usa para especificar qué datos están asociados con este objeto:
 
 
 ```{r ggplot-example-1, eval=FALSE}
@@ -133,7 +133,7 @@ file.path(img_path,"ggplot2-cheatsheetb.png")))
 
 Los nombres de las funciones de geometría siguen el patrón: `geom_X` donde X es el nombre de la geometría. Algunos ejemplos incluyen `geom_point`, `geom_bar` y `geom_histogram`.
 
-Para que `geom_point` funcione bien, necesitamos proveer datos y una correspondencia. Ya hemos conectado el objeto `p` con la tabla de datos `murders`, y si agregamos la capa `geom_point`, esta por defecto usa estos datos. Para saber qué correspondencias se esperan, lean la sección __Aesthetics__ del archivo de ayuda `geom_point`:
+Para que `geom_point` funcione bien, necesitamos proveer datos y una correspondencia. Ya hemos conectado el objeto `p` con la tabla de datos `murders`, y si agregamos la capa `geom_point`, esta por defecto usa estos datos. Para saber qué correspondencias se esperan, lean la sección __Aesthetics__ de la página de ayuda de `geom_point`:
 
 ```
 > Aesthetics
@@ -176,7 +176,7 @@ La escala y las etiquetas se definen por defecto al agregar esta capa. Al igual 
 
 Una segunda capa en el gráfico que queremos hacer implica agregar una etiqueta a cada punto para identificar el estado. Las funciones `geom_label` y `geom_text` nos permiten agregar texto al gráfico con y sin un rectángulo detrás del texto, respectivamente.
 
-Debido a que cada punto (cada estado en este caso) tiene una etiqueta, necesitamos un mapeo estético para hacer la conexión entre los puntos y las etiquetas. Al leer el archivo de ayuda, aprendemos que proporcionamos el mapeo entre el punto y la etiqueta a través del argumento `label` de `aes`. Entonces el código se ve así:
+Debido a que cada punto (cada estado en este caso) tiene una etiqueta, necesitamos un mapeo estético para hacer la conexión entre los puntos y las etiquetas. Al leer la página de ayuda, aprendemos que proporcionamos el mapeo entre el punto y la etiqueta a través del argumento `label` de `aes`. Entonces el código se ve así:
 
 
 ```{r ggplot-example-4}
@@ -202,7 +202,7 @@ les dará un error ya que `abb` no se encuentra porque está fuera de la funció
 
 ### Cómo probar varios argumentos
 
-Cada función de geometría tiene muchos argumentos además de `aes` y `data`. Estos tienden a ser específicos a la función. Por ejemplo, en el gráfico que queremos hacer, los puntos son más grandes que el tamaño predeterminado. En el archivo de ayuda vemos que `size` es una estética y podemos cambiarla así:
+Cada función de geometría tiene muchos argumentos además de `aes` y `data`. Estos tienden a ser específicos a la función. Por ejemplo, en el gráfico que queremos hacer, los puntos son más grandes que el tamaño predeterminado. En la página de ayuda vemos que `size` es una estética y podemos cambiarla así:
 
 ```{r ggplot-example-5}
 p + geom_point(aes(population/10^6, total), size = 3) +
@@ -211,7 +211,7 @@ geom_text(aes(population/10^6, total, label = abb))
 
 `size` **no** es un mapeo: mientras los mapeos usan datos de observaciones específicas y necesitan estar dentro de `aes()`, las operaciones que queremos que afecten a todos los puntos de la misma manera no necesitan ser incluidas dentro `aes`.
 
-Ahora, debido a que los puntos son más grandes, es difícil ver las etiquetas. Si leemos el archivo de ayuda para `geom_text`, vemos que el argumento `nudge_x` mueve el texto ligeramente hacia la derecha o hacia la izquierda:
+Ahora, debido a que los puntos son más grandes, es difícil ver las etiquetas. Si leemos la página de ayuda para `geom_text`, vemos que el argumento `nudge_x` mueve el texto ligeramente hacia la derecha o hacia la izquierda:
 
 ```{r ggplot-example-6}
 p + geom_point(aes(population/10^6, total), size = 3) +
@@ -509,7 +509,7 @@ b. `total_murders` y `population_size`
 c. `total` y `population`
 d. `murders` y `size`
 
-6\. Para crear el diagrama de dispersión, agregamos una capa con `geom_point`. Los mapeos estéticos requieren que definamos las variables del eje x y del eje y, respectivamente. Entonces el código se ve así:
+6\. Para crear el diagrama de dispersión, agregamos una capa con `geom_point`. Los mapeos estéticos requieren que definamos las variables del eje-x y del eje-y, respectivamente. Entonces el código se ve así:
 
 ```{r, eval=FALSE}
 murders %>% ggplot(aes(x = , y = )) +
@@ -526,7 +526,7 @@ murders %>% ggplot(aes(population, total)) +
 geom_point()
 ```
 
-Vuelva a hacer el gráfico pero ahora con total en el eje x y población en el eje y.
+Vuelva a hacer el gráfico pero ahora con total en el eje-x y población en el eje-y.
 
 
 8\. Si en lugar de puntos queremos agregar texto, podemos usar las geometrías `geom_text()` o `geom_label()`. El siguiente código:
@@ -541,7 +541,7 @@ nos dará el mensaje de error: `Error: geom_label requires the following missing
 
 a. Necesitamos mapear un carácter a cada punto a través del argumento de etiqueta en `aes`.
 b. Necesitamos dejar que `geom_label` sepa qué carácter usar en el gráfico.
-c. La geometría `geom_label` no requiere valores del eje x y del eje y.
+c. La geometría `geom_label` no requiere valores del eje-x y del eje-y.
 d. `geom_label` no es un comando de __ggplot2__.
 
 
@@ -569,7 +569,7 @@ d. Como queremos que todos los colores sean azules, no necesitamos asignar color
 
 13\. Reescriba el código anterior para que el color de las etiquetas esté determinado por la región del estado.
 
-14\. Ahora vamos a cambiar el eje x a una escala logarítmica para tener en cuenta el hecho de que la distribución de la población es asimétrica. Comencemos definiendo un objeto `p` guardando el gráfico que hemos hecho hasta ahora:
+14\. Ahora vamos a cambiar el eje-x a una escala logarítmica para tener en cuenta el hecho de que la distribución de la población es asimétrica. Comencemos definiendo un objeto `p` guardando el gráfico que hemos hecho hasta ahora:
 
 ```{r, eval=FALSE}
 p <- murders %>%
@@ -577,7 +577,7 @@ ggplot(aes(population, total, label = abb, color = region)) +
 geom_label()
 ```
 
-Para cambiar el eje y a una escala logarítmica, aprendimos sobre la función `scale_x_log10()`. Agregue esta capa al objeto `p` para cambiar la escala y crear el gráfico.
+Para cambiar el eje-y a una escala logarítmica, aprendimos sobre la función `scale_x_log10()`. Agregue esta capa al objeto `p` para cambiar la escala y crear el gráfico.
 
 15\. Repita el ejercicio anterior pero ahora cambie ambos ejes para que estén en la escala logarítmica.
 
