@@ -17,6 +17,9 @@
 | assignment operator | operador de asignación |`<-` is the  assignment operator |operador de asignación  | |
 | __B__ | | | | |
 | backup | respaldar |backup your work | respaldar | respaldo o copia de seguridad |
+| bandwidth (window size) | ventana o parámetro de suavizado  |  |  |
+| bin | compartimiento |  |  |
+| bindwidth | tamaño de compartimiento |  |  |
 | boxplot | diagrama de caja | display the data in a boxplot|diagrama de caja y bigote | gráfico de | 
 | __C__ | | | | |
 | call |  | llamada |  |
@@ -122,6 +125,7 @@
 | scatterplot | diagrama de dispersión | | diagrama de dispersión, diagrama de puntos | diagrama de dispersión |
 | script | _script_ | write an R script | script | script, archivo de procesamiento por lotes (en MSDOS, Unix/Linux, etc.) |
 | smooth | suave | smooth densities | densidades suaves  |  |
+| span | span  |  |  |
 | sofware | _software_ | | software | software |
 | software engineer | ingeniero de _software_ |  | ingeniero de software | ingeniero de software, ingeniero informático |
 | sort| ordenar alfabeticamente o numericamente | sort the rows of this data frame | ||
@@ -140,6 +144,7 @@
 | __W__ | | | | |
 | web-based | disponible en la web | | en linea/disponible en la web,  | en la web |
 | web scraping | extracción de la web | | descarga/extracción de información en linea | extracción de la web, rastreo web |
+| weighted | ponderado |  |  |
 | working directory | directorio de trabajo |  | directorio de trabajo |  |
 | workspace | espacio de trabajo | save it in the workspace | espacio de trabajo | espacio de trabajo | 
 | __X__ | | | | |
