@@ -116,7 +116,7 @@ qqline(x)
 ```
 
 
-## [fix] Desviación absoluta mediana
+## Desviación absoluta mediana
 
 Otra forma de estimar de manera robusta la desviación estándar en presencia de valores atípicos es usar la desviación absoluta mediana o MAD por sus siglas en inglés. Para calcular el MAD, primero calculamos la mediana y luego, para cada valor, calculamos la distancia entre ese valor y la mediana. El MAD se define como la mediana de estas distancias. Por razones técnicas no que no discutimos aquí, esta cantidad debe multiplicarse por 1.4826 para asegurar que se aproxima a la desviación estándar real. La función  `mad` ya incorpora esta corrección. Para los datos de altura, obtenemos una MAD de:
 
@@ -124,19 +124,19 @@ Otra forma de estimar de manera robusta la desviación estándar en presencia de
 mad(outlier_example)
 ```
 
-lo cual es como `r round(mad(outlier_example)*12)` pulgadas.
+lo cual es cerca de `r round(mad(outlier_example)*12)` pulgadas.
 
 
 
 ## Ejercicios
 
-Vamos a usar el paquete __HistData__. Si no lo han instalando, pueden hacerlo así:
+Vamos a usar el paquete __HistData__. Si no lo ha instalando, pueden hacerlo así:
 
 ```{r, eval=FALSE}
 install.packages("HistData")
 ```
 
-Carguen el set de datos de altura y crean un vector `x` con solo las alturas masculinas de los datos de Galton sobre las alturas de los padres y sus hijos de su investigación histórica sobre la herencia.
+Cargue el set de datos de altura y cree un vector `x` que contiene solo las alturas masculinas de los datos de Galton de los padres y sus hijos de su investigación histórica sobre la herencia.
 
 ```{r, eval=FALSE}
 library(HistData)
@@ -168,15 +168,15 @@ x_with_error[1] <- x_with_error[1]*10
 
 a. Dado que es solo un valor entre muchos, no se puede detectar esto.
 b. Veríamos un cambio obvio en la distribución.
-c. Un diagrama de caja, histograma o diagrama q-q revelaría un valor atípico obvio.
+c. Un diagrama de caja, histograma o gráfico q-q revelaría un valor atípico obvio.
 d. Un diagrama de dispersión mostraría altos niveles de error de medición.
 
 
 8\. ¿Cuánto puede crecer el promedio accidentalmente con errores como este? Escribe una función llamada `error_avg` que toma un valor `k` y devuelve el promedio del vector `x` después de que la primera entrada cambia a `k`. Muestre los resultados para `k=10000` y `k=-10000`.
 
-## Estudio de caso: [fix] alturas de estudiantes autodeclarados
+## Estudio de caso: alturas autoreportadas de estudiantes 
 
-Las alturas que hemos estado viendo no son las alturas originales reportadas por los estudiantes. Las alturas informadas originales también se incluyen en el paquete __dslabs__ y se pueden cargar así:
+Las alturas que hemos estado estudiando no son las alturas originales reportadas por los estudiantes. Las alturas originales también se incluyen en el paquete __dslabs__ y se pueden cargar así:
 
 ```{r}
 library(dslabs)
@@ -190,20 +190,20 @@ reported_heights <- reported_heights %>%
 mutate(original_heights = height, height = as.numeric(height))
 ```
 
-Tengan en cuenta que recibimos una advertencia sobre las NAs. Esto se debe a que algunas de las alturas autoinformadas no eran números. Podemos ver por qué obtenemos estos:
+Tengan en cuenta que recibimos una advertencia sobre los NAs. Esto se debe a que algunas de las [fix] alturas autoreportadas no eran números. Podemos ver por qué obtenemos estos NAs:
 
 ```{r, warning=FALSE}
 reported_heights %>% filter(is.na(height)) %>% head()
 ```
 
-Algunos estudiantes informaron sus alturas usando pies y pulgadas en lugar de solo pulgadas. Otros usaron centímetros y otros solo estaban trolleando. Por ahora eliminaremos estas entradas:
+Algunos estudiantes indicaron sus alturas usando pies y pulgadas en lugar de solo pulgadas. Otros usaron centímetros y otros solo estaban trolleando. Por ahora eliminaremos estas entradas:
 
 
 ```{r}
 reported_heights <- filter(reported_heights, !is.na(height))
 ```
 
-Si calculamos promedio y la desviación estándar, notamos que obtenemos resultados extraños. El promedio y la desviación estándar son diferentes de la mediana y del MAD:
+Si calculamos el promedio y la desviación estándar, observamos que obtenemos resultados extraños. El promedio y la desviación estándar son diferentes de la mediana y del MAD:
 
 ```{r}
 reported_heights %>%
