@@ -4,11 +4,11 @@
 
 ## Valores atípicos
 
-Anteriormente describimos cómo los diagramas de caja muestran _valores atípicos_, pero no ofrecimos una definición precisa. Aquí discutimos los valores atípicos, los acercamientos que pueden ayudar a detectarlos y los resúmenes que toman en cuenta su presencia.
+Anteriormente describimos cómo los diagramas de caja muestran _valores atípicos_, pero no ofrecimos una definición precisa. Aquí discutimos los valores atípicos, los acercamientos que pueden ayudar para detectarlos y los resúmenes que toman en cuenta su presencia.
 
-Los valores atípicos son muy comunes en la ciencia de datos. La recopilación de datos puede ser complejo y es común observar puntos de datos generados por error. Por ejemplo, un viejo dispositivo de monitoreo puede leer mediciones sin sentido antes de fallar por completo. El error humano también es una fuente de valores atípicos, en particular cuando la entrada de datos se realiza manualmente. Un individuo, por ejemplo, puede ingresar erróneamente su altura en centímetros en lugar de pulgadas o colocar el decimal en el lugar equivocado.
+Los valores atípicos son muy comunes en la ciencia de datos. La recopilación de datos puede ser compleja y es común observar puntos de datos generados por error. Por ejemplo, un viejo dispositivo de monitoreo puede leer mediciones sin sentido antes de fallar por completo. El error humano también es una fuente de valores atípicos, en particular cuando la entrada de datos se realiza manualmente. Un individuo, por ejemplo, puede ingresar erróneamente su altura en centímetros en lugar de pulgadas o colocar el decimal en el lugar equivocado.
 
-¿Cómo distinguimos un valor atípico de mediciones que son demasiado grandes o pequeños simplemente debido a la variabilidad esperada? Esta no siempre es una pregunta fácil de responder, pero intentaremos ofrecer alguna orientación. Comencemos con un caso sencillo.
+¿Cómo distinguimos un valor atípico de mediciones que son demasiado grandes o pequeñas simplemente debido a la variabilidad esperada? Esta no siempre es una pregunta fácil de contestar, pero intentaremos ofrecer alguna orientación. Comencemos con un caso sencillo.
 
 Supongamos que un colega se encarga de recopilar datos demográficos para un grupo de varones. Los datos informan la altura en pies y se almacenan en el objeto:
 
@@ -26,7 +26,7 @@ mean(outlier_example)
 sd(outlier_example)
 ```
 
-Entonces, escribe un informe sobre el hecho interesante de que este grupo de varones es mucho más alto de lo normal. ¡La altura promedio es más de seis pies de alto! Sin embargo, al usar su conocimientos de ciencia de datos, nota algo más que es inesperado: la desviación estándar es de más de 7 pies. Al sumar y restar dos desviaciones estándar, observa que el 95% de esta población parece tener alturas entre `r mean(outlier_example) + c(-2, 2)*sd(outlier_example)` pies, que no tiene sentido. Un gráfico rápido revela el problema:
+y escribe un informe sobre el hecho interesante de que este grupo de varones es mucho más alto de lo normal. ¡La altura promedio es más de seis pies de alto! Sin embargo, al usar su conocimientos de ciencia de datos, Uds. notan algo más que es inesperado: la desviación estándar es de más de 7 pies. Al sumar y restar dos desviaciones estándar, observan que el 95% de esta población parece tener alturas entre `r mean(outlier_example) + c(-2, 2)*sd(outlier_example)` pies, que no tiene sentido. Un gráfico rápido muestra el problema:
 
 <!--
 ```{r histogram-reveals-outliers}
@@ -47,7 +47,7 @@ Parece que hay al menos un valor que no tiene sentido, ya que sabemos que una al
 
 ## Mediana
 
-Cuando tenemos un valor atípico como este, el promedio puede llegar a ser muy grande. Matemáticamente, podemos hacer que el promedio sea tan grande como queramos simplemente cambiando un número: con `r length(outlier_example)` puntos de datos, podemos aumentar el promedio en cualquier cantidad $\Delta$ añadiendo $\Delta \times$ NA a un solo número. La mediana, definida como el valor para el cual la mitad de los valores son más pequeños y la otra mitad son más grandes, es robusta para tales valores atípicos. No importa cuán grande hagamos el punto más grande, la mediana sigue siendo la misma.
+Cuando tenemos un valor atípico como este, el promedio puede llegar a ser muy grande. Matemáticamente, podemos hacer que el promedio sea tan grande como queramos simplemente cambiando un número: con `r length(outlier_example)` puntos de datos, podemos aumentar el promedio en cualquier [fix code] cantidad $\Delta$ añadiendo $\Delta \times$ NA a un solo número. La mediana, definida como el valor para el cual la mitad de los valores son más pequeños y la otra mitad son más grandes, es robusta para tales valores atípicos. No importa cuán grande hagamos el punto más grande, la mediana sigue siendo la misma.
 
 Con estos datos, la mediana es:
 
@@ -60,13 +60,13 @@ La mediana es lo que los diagramas de caja muestran como una línea horizontal.
 
 ## El rango intercuartil (IQR)
 
-La caja en un diagrama de caja se define por el primer y tercer cuartil. Estos están destinados a proveer una idea de la variabilidad en los datos: el 50% de los datos están dentro de este rango. La diferencia entre el 3er y 1er cuartil (o los percentiles 75 y 25) se conoce como el rango intercuartil, IQR por sus siglas en inglés. Como es el caso con la mediana, esta cantidad será robusta para los valores atípicos ya que los valores grandes no la afectan. Podemos hacer algunos cálculos para ver que para los datos que siguen la distribución normal, el IQR / 1.349 se aproxima a la desviación estándar de los datos si un valor atípico no hubiera estado presente. Podemos ver que esto funciona bien en nuestro ejemplo, ya que obtenemos una estimado de la desviación estándar de:
+La caja en un diagrama de cajas se define por el primer y tercer cuartil. Estos están destinados a proveer una idea de la variabilidad en los datos: el 50% de los datos están dentro de este rango. La diferencia entre el 3er y 1er cuartil (o los percentiles 75 y 25) se conoce como el rango intercuartil, IQR por sus siglas en inglés. Como es el caso con la mediana, esta cantidad será robusta para los valores atípicos ya que los valores grandes no la afectan. Podemos hacer algunos cálculos para ver que para los datos que siguen la distribución normal, el IQR / 1.349 se aproxima a la desviación estándar de los datos si un valor atípico no hubiera estado presente. Podemos ver que esto funciona bien en nuestro ejemplo, ya que obtenemos una estimado de la desviación estándar de:
 
 ```{r}
 IQR(outlier_example)/ 1.349
 ```
 
-lo cual es sobre `r round(IQR(outlier_example)/1.349*12)` pulgadas.
+lo cual es cerca de `r round(IQR(outlier_example)/1.349*12)` pulgadas.
 
 
 ## La definición de Tukey de un valor atípico
@@ -118,7 +118,7 @@ qqline(x)
 
 ## [fix] Desviación absoluta mediana
 
-Otra forma de estimar de manera robusta la desviación estándar en presencia de valores atípicos es usar la desviación absoluta mediana o MAD (_median absolute deviation_) por sus siglas en inglés. Para calcular el MAD, primero calculamos la mediana y luego, para cada valor, calculamos la distancia entre ese valor y la mediana. El MAD se define como la mediana de estas distancias. Por razones técnicas no que no discutimos aquí, esta cantidad debe multiplicarse por 1.4826 para asegurar que se aproxima a la desviación estándar real. La función  `mad` ya incorpora esta corrección. Para los datos de altura, obtenemos una MAD de:
+Otra forma de estimar de manera robusta la desviación estándar en presencia de valores atípicos es usar la desviación absoluta mediana o MAD por sus siglas en inglés. Para calcular el MAD, primero calculamos la mediana y luego, para cada valor, calculamos la distancia entre ese valor y la mediana. El MAD se define como la mediana de estas distancias. Por razones técnicas no que no discutimos aquí, esta cantidad debe multiplicarse por 1.4826 para asegurar que se aproxima a la desviación estándar real. La función  `mad` ya incorpora esta corrección. Para los datos de altura, obtenemos una MAD de:
 
 ```{r}
 mad(outlier_example)
