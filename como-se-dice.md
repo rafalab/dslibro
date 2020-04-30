@@ -26,6 +26,7 @@
 | call |  | llamada |  |
 | case study | caso de estudio| one case study which is helpful | | caso de estudio |
 | character strings | cadenas de caracteres | vector of character strings | secuencia de caracteres | cadenas de caracteres | 
+| cheat sheet | hoja de referencia |  |  |
 | click (verb) | clic, hacer clic  |  | clic |  |
 | coerce (verb)| forzar una conversión |R coerced the data into characters  | forzar | convertir |
 | commands | comandos | type in the command | comando (singular) o comandos (plural) | comandos |
