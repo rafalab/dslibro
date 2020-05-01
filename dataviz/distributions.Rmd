@@ -72,7 +72,7 @@ stat_ecdf() +
 ylab("F(a)") + xlab("a")
 ```
 
-Similar a lo que hace la tabla de frecuencias para datos categóricos, el CDF define la distribución de datos numéricos. En el gráfico, podemos ver que `r round(ecdf(heights$height[heights$sex == "Male"]) (66) * 100) `% de los valores están por debajo de 65, ya que $F(66)=$ `r ecdf(heights$height[heights$sex == "Male"])(66) `, o que `r round(ecdf (heights$height[heights$sex == "Male"])(72) * 100) `% de los valores están por debajo de 72, ya que $F(72)=$ `r ecdf(heights$height[heights$sex == "Male"]) (72) `,
+Similar a lo que hace la tabla de frecuencias para datos categóricos, el CDF define la distribución de datos numéricos. En el gráfico, podemos ver que `r round(ecdf(heights$height[heights$sex == "Male"]) (66) * 100) `% de los valores son menos de 65, ya que $F(66)=$ `r ecdf(heights$height[heights$sex == "Male"])(66) `, o que `r round(ecdf (heights$height[heights$sex == "Male"])(72) * 100) `% de los valores son menos de 72, ya que $F(72)=$ `r ecdf(heights$height[heights$sex == "Male"]) (72) `,
 y así. De hecho, podemos informar la proporción de valores entre dos alturas, digamos $a$ y $b$, al computar $F(b) - F(a)$. Esto significa que si enviamos este diagrama a ET, tendrá toda la información necesaria para reconstruir la lista completa. Parafraseando la expresión "una imagen vale más que mil palabras", en este caso una imagen es tan informativa como `r sum(heights$sex=="Male")` números.
 
 Una nota final: debido a que los CDF pueden definirse matemáticamente, la palabra _empírica_ se agrega para distinguir cuando se usan los datos. Por lo tanto, utilizamos el término CDF empírico o eCDF por sus siglas en inglés.
@@ -275,7 +275,7 @@ c. 80%
 d. 72 pulgadas
 
 
-4\. A la pulgada más cercana, ¿qué altura `m` tiene la propiedad de que la mitad de los estudiantes varones son más altos que `m` y la mitdad son más cortos?
+4\. A la pulgada más cercana, ¿qué altura `m` tiene la propiedad de que la mitad de los estudiantes varones son más altos que `m` y la mitad son más bajos?
 
 a. 61 pulgadas
 b. 64 pulgadas
@@ -303,7 +303,7 @@ d. 50
 
 
 a. Alrededor de la mitad de los estados tienen tasas de homicidios superiores a 7 por 100,000 y la otra mitad por debajo.
-b. La mayoría de los estados tienen tasas de homicidio por debajo de 2 por 100,000.
+b. La mayoría de los estados tienen tasas de homicidio de menos de 2 por 100,000.
 c. Todos los estados tienen tasas de asesinatos superiores a 2 por 100,000.
 d. Con la excepción de 4 estados, las tasas de asesinatos son inferiores a 5 por cada 100,000.
 
@@ -429,9 +429,9 @@ La distribución normal parece ser una buena aproximación aquí. Ahora veremos 
 
 ## Unidades estándar
 
-Para los datos que se distribuyen aproximadamente normalmente, es conveniente pensar en términos de _unidades estándar_. La unidad estándar de un valor nos dice cuántas desviaciones estándar se alejan del promedio. Específicamente, para un valor `x` de un vector `X`, definimos el valor de `x` en unidades estándar como `z = (x - m)/s` con `m` y `s` el promedio y la desviación estándar de `X`, respectivamente. ¿Por qué es esto conveniente?
+Para los datos que se distribuyen aproximadamente normalmente, es conveniente pensar en términos de _unidades estándar_. La unidad estándar de un valor nos dice cuántas desviaciones estándar se alejan del promedio. Específicamente, para un valor `x` de un vector `X`, definimos el valor de `x` en unidades estándar como `z = (x - m)/s` con `m` y `s` el promedio y la desviación estándar de `X`, respectivamente. ¿Por qué es conveniente hacer esto?
 
-Primero repasen la fórmula para la distribución normal y observen que lo que se está exponiendo es $-z^2/2$ con $z$ equivalente a $x$ en unidades estándar. El hecho de que el máximo de $e^{-z^2/2}$ es cuando $z=0$ explica por qué la distribución ocurre en el promedio. También explica la simetría ya que $- z^2/2$ es simétrico alrededor de 0. Además, noten que si convertimos los datos distribuidos normalmente a unidades estándar, podemos saber rápidamente si, por ejemplo, una persona es aproximadamente promedio ( $z=0$), entre los más altos ( $z \approx 2$), entre los más pequeños ( $z \approx -2$), o una ocurrencia extremadamente rara ( $z > 3$ o $z < -3$). Recuerden que no importa cuáles sean las unidades originales, estas reglas aplican a cualquier dato que sea aproximadamente normal.
+Primero repasen la fórmula para la distribución normal y observen que lo que se está exponiendo es $-z^2/2$ con $z$ equivalente a $x$ en unidades estándar. El hecho de que el máximo de $e^{-z^2/2}$ es cuando $z=0$ explica por qué la distribución ocurre en el promedio. También explica la simetría ya que $- z^2/2$ es simétrico alrededor de 0. Además, noten que si convertimos los datos distribuidos normalmente a unidades estándar, podemos saber rápidamente si, por ejemplo, una persona es aproximadamente promedio ( $z=0$), entre los más altos ( $z \approx 2$), entre los más pequeños ( $z \approx -2$), o una ocurrencia extremadamente rara ( $z > 3$ o $z < -3$). Recuerden que no importa cuáles sean las unidades originales, estas reglas aplican a cualquier dato que es aproximadamente normal.
 
 En R, podemos obtener unidades estándar usando la función `scale`:
 ```{r}
@@ -451,7 +451,7 @@ mean(abs(z) < 2)
 
 Una forma sistemática de evaluar cuán bien se ajusta la distribución normal a los datos es verificar si las proporciones observadas y predecidas coinciden. En general, este es el acercamiento del gráfico q-q.
 
-Primero, definimos los cuantiles teóricos para la distribución normal. En los libros de estadísticas usamos el símbolo $\Phi(x)$ para definir la función que nos da la probabilidad de que una distribución normal estándar sea menor que $x$. Así por ejemplo, $\Phi(-1.96) = 0.025$ y $\Phi(1.96) = 0.975$. En R, podemos evaluar $\Phi$ utilizando la función `pnorm`:
+Primero, definimos los cuantiles teóricos para la distribución normal. En los libros de estadísticas usamos el símbolo $\Phi(x)$ para definir la función que nos da la probabilidad de que una distribución normal estándar sea menos que $x$. Así por ejemplo, $\Phi(-1.96) = 0.025$ y $\Phi(1.96) = 0.975$. En R, podemos evaluar $\Phi$ utilizando la función `pnorm`:
 
 ```{r}
 pnorm(-1.96)
@@ -470,20 +470,20 @@ Tengan en cuenta que estos cálculos son para la distribución normal estándar 
 qnorm(0.975, mean = 5, sd = 2)
 ```
 
-Para la distribución normal, todos los cálculos relacionados con los cuantiles se realizan sin datos, de ahí el nombre de _cuantiles teóricos_. Pero los cuantiles se pueden definir para cualquier distribución, incluso una empírica. Entonces, si tenemos datos en un vector $x$, podemos definir el cuantil asociado con cualquier proporción $p$ como el $q$ para el cual la proporción de valores por debajo $q$ es $p$. Usando el código R, podemos definir `q` como el valor para el cual `mean(x <= q) = p`. Observen que no todos $p$ tienen un $q$ para la cual la proporción es exactamente $p$. Hay varias maneras de definir el mejor $q$ como se discute en la página de ayuda para la función `quantile`.
+Para la distribución normal, todos los cálculos relacionados con los cuantiles se realizan sin datos, de ahí el nombre de _cuantiles teóricos_. Pero los cuantiles se pueden definir para cualquier distribución, incluso una empírica. Entonces, si tenemos datos en un vector $x$, podemos definir el cuantil asociado con cualquier proporción $p$ como el $q$ para el cual la proporción de valores [fix] por debajo/menos de $q$ es $p$. Usando el código R, podemos definir `q` como el valor para el cual `mean(x <= q) = p`. [fix] Observen que no todo $p$ tiene un $q$ para el cual la proporción es exactamente $p$. Hay varias maneras de definir el mejor $q$ como se discute en la página de ayuda para la función `quantile`.
 
 Como ejemplo rápido, para los datos de alturas masculinas, tenemos que:
 ```{r}
 mean(x <= 69.5)
 ```
-Entonces, alrededor del 50% son más cortos o iguales a 69 pulgadas. Esto implica que si $p=0.50$, entonces $q=69.5$.
+Entonces, alrededor del 50% son más bajos o iguales a 69 pulgadas. Esto implica que si $p=0.50$, entonces $q=69.5$.
 
 La idea de un gráfico Q-Q es que si sus datos están bien aproximados por la distribución normal, los cuantiles de sus datos deberían ser similares a los cuantiles de una distribución normal. Para construir un gráfico Q-Q, hacemos lo siguiente:
 
-1. Definir un vector de $m$ dimensiones $p_1, p_2, \dots, p_m$.
-2. Definir un vector de cuantiles $q_1, \dots, q_m$ para sus datos para las proporciones $p_1, \dots, p_m$. Nos referimos a estos como los _cuantiles muestrales_ (_sample quantiles_ en inglés).
-3. Definir un vector de cuantiles teóricos para las proporciones. $p_1, \dots, p_m$ para una distribución normal con el mismo promedio y desviación estándar que los datos.
-4. Graficar los cuantiles muestrales versus los cuantiles teóricos.
+1. Definimos un vector de $m$ dimensiones $p_1, p_2, \dots, p_m$.
+2. [fix] Definimos un vector de cuantiles $q_1, \dots, q_m$ para sus datos para las proporciones $p_1, \dots, p_m$. Nos referimos a estos como los _cuantiles muestrales_ (_sample quantiles_ en inglés).
+3. Definimos un vector de cuantiles teóricos para las proporciones. $p_1, \dots, p_m$ para una distribución normal con el mismo promedio y desviación estándar que los datos.
+4. Graficamos los cuantiles muestrales versus los cuantiles teóricos.
 
 
 Construyamos un diagrama Q-Q usando el código R. Comiencen definiendo el vector de proporciones.
@@ -507,7 +507,7 @@ Para ver si coinciden o no, los graficamos uno contra el otro y dibujamos la lí
 qplot(theoretical_quantiles, sample_quantiles) + geom_abline()
 ```
 
-Noten que este código se vuelve mucho más limpio si usamos unidades estándar:
+Noten que este código [fix] se hace mucho más limpio/es mucho más sencillo si usamos unidades estándar:
 ```{r qqplot-standardized, eval=FALSE}
 sample_quantiles <- quantile(z, p)
 theoretical_quantiles <- qnorm(p)
@@ -529,7 +529,7 @@ Mientras que para la ilustración anterior usamos 20 cuantiles, el valor por def
 
 Antes de continuar, definamos algunos términos que se usan comúnmente en el análisis exploratorio de datos.
 
-_Percentiles_ son casos especiales de _cuantiles_ que se usan comúnmente. Los percentiles son los cuantiles que obtienen al configurar el $p$ a $0.01, 0.02, ..., 0.99$. Denominamos, por ejemplo, el caso de $p=0.25$ el cuartilo inferior, ya que nos da un número para el cual el 25% de los datos está por debajo. El percentil más famoso es el 50, también conocido como la _mediana_.
+_Percentiles_ son casos especiales de _cuantiles_ que se usan comúnmente. Los percentiles son los cuantiles que se obtienen al configurar el $p$ a $0.01, 0.02, ..., 0.99$. Denominamos, por ejemplo, el caso de $p=0.25$ el cuartilo inferior, ya que nos da un número para el cual el 25% de los datos están por debajo. El percentil más famoso es el 50, también conocido como la _mediana_.
 
 Para la distribución normal, la _mediana_ y el promedio son los mismos, pero generalmente este no es el caso.
 
@@ -538,7 +538,7 @@ Otro caso especial que recibe un nombre son los _cuartiles_, que se obtienen al 
 
 ## Diagramas de caja
 
-Para presentar los diagramas de caja volveremos a los datos de asesinatos de EE. UU..
+Para presentar los diagramas de caja (_boxplots_ en inglés) volveremos a los datos de asesinatos de EE. UU..
 Supongamos que queremos resumir la distribución de la tasa de asesinatos. Usando la técnica de visualización de datos que hemos aprendido, podemos ver que la aproximación normal no aplica aquí:
 
 ```{r hist-qqplot-non-normal-data, out.width = "100%", fig.width = 6, fig.height = 3, echo=FALSE}
@@ -556,7 +556,7 @@ En este caso, el histograma anterior o un gráfico de densidad suave serviría c
 
 Ahora supongamos que los que están acostumbrados a recibir solo dos números como resúmenes nos piden un resumen numérico más compacto.
 
-Aquí Tukey ofrece algunos consejos. Provean un resumen de cinco números compuestos por el rango junto con los cuartiles (los percentiles 25, 50 y 75). Además,Tukey sugiere ignorar los _valores atípicos_ cuando calculen el rango y, en su lugar, los grafiquen como puntos independientes. Ofreceremos una explicación detallada de los valores atípicos más adelante. Finalmente, sugirió que graficáramos estos números como una "caja" con "bigotes" así:
+Aquí Tukey ofreció algunos consejos. Primero, recomendó proveer un resumen de cinco números compuestos por el rango junto con los cuartiles (los percentiles 25, 50 y 75). Además,Tukey sugirió ignorar los _valores atípicos_ cuando calculen el rango y, en su lugar, que los grafiquen como puntos independientes. Ofreceremos una explicación detallada de los valores atípicos más adelante. Finalmente, recomendó que graficáramos estos números como una "caja" con "bigotes" así:
 
 
 ```{r first-boxplot, echo=FALSE}
@@ -564,11 +564,11 @@ murders %>% ggplot(aes("",rate)) + geom_boxplot() +
 coord_cartesian(xlim = c(0, 2)) + xlab("")
 ```
 
-con el cuadro definido por el percentil 25% y 75% y los bigotes mostrando el rango. La distancia entre estos dos se llama el rango _intercuartil_. Los dos puntos son valores atípicos según la definición de Tukey. La mediana se muestra con una línea horizontal. Hoy en día, denominamos estos _diagramas de caja_ (_boxplots_ en inglés).
+con el cuadro definido por los percentiles 25% y 75% y los bigotes mostrando el rango. La distancia entre estos dos se llama el rango _intercuartil_. Los dos puntos son valores atípicos según la definición de Tukey. La mediana se muestra con una línea horizontal. 
 
-A partir de este simple gráfico, sabemos que la mediana es de aproximadamente 2.5, que la distribución no es simétrica y que el rango es de 0 a 5 para la gran mayoría de los estados con dos excepciones.
+A partir de este simple gráfico, hoy conocido como un _diagrama de caja_, sabemos que la mediana es de aproximadamente 2.5, que la distribución no es simétrica y que el rango es de 0 a 5 para la gran mayoría de los estados con dos excepciones.
 
-Discutimos cómo hacer diagramas de caja en la Sección \@ref(other-geometries).
+Discutimos cómo crear diagramas de caja en la Sección \@ref(other-geometries).
 
 ## Estratificación {#stratification}
 
