@@ -1,6 +1,6 @@
 # Visualización de datos en la práctica {#gapminder}
 
-En este capítulo, demostraremos cómo el código relativamente sencillo de __ggplot2__  puede crear gráficos esclarecedores y estéticamente agradables. Como motivación, crearemos gráficos que nos ayudarán a comprender mejor las tendencias de la salud y economía mundial. Implementaremos lo que aprendimos en los capítulos \@ref(ggplot2) y \@ref(other-geometries) y aprenderemos a [fix] aumentar/expandir el código para perfeccionar los gráficos. A medida que avancemos en nuestro estudio de caso, describiremos los principios generales mas relevantes a la visualización de datos y aprenderemos conceptos como _facetas_, _gráficos de series de tiempo_, _transformaciones_ y _gráficos ridge_.
+En este capítulo, demostraremos cómo el código relativamente sencillo de __ggplot2__  puede crear gráficos esclarecedores y estéticamente agradables. Como motivación, crearemos gráficos que nos ayudarán a comprender mejor las tendencias de la salud y economía mundial. Implementaremos lo que aprendimos en los capítulos \@ref(ggplot2) y \@ref(other-geometries) y aprenderemos a expandir el código para perfeccionar los gráficos. A medida que avancemos en nuestro estudio de caso, describiremos los principios generales mas relevantes a la visualización de datos y aprenderemos conceptos como _facetas_, _gráficos de series de tiempo_, _transformaciones_ y _gráficos ridge_.
 
 
 ## Estudio de caso: nuevas ideas sobre la pobreza
@@ -328,7 +328,7 @@ Hay otras transformaciones disponibles a través del argumento `trans`. Como apr
 
 ## Cómo visualizar distribuciones multimodales
 
-En el histograma anterior vemos dos [fix] _bumps_/protuberaciones: uno a aproximadamente 4 y otro a aproximadamente 32. En estadística, estos _bumps_ a veces se denominan _modas_. La moda de una distribución es el valor con la frecuencia más alta. La moda de distribución normal es el promedio. Cuando una distribución, como la anterior, no disminuye monotónicamente de la moda, llamamos a los lugares donde sube y baja de nuevo _modas locales_ (_local modes_ en inglés) y decimos que la distribución tiene _modas múltiples_.
+En el histograma anterior vemos dos protuberancias: uno a aproximadamente 4 y otro a aproximadamente 32. En estadística, estos _bumps_ a veces se denominan _modas_. La moda de una distribución es el valor con la frecuencia más alta. La moda de distribución normal es el promedio. Cuando una distribución, como la anterior, no disminuye monotónicamente de la moda, llamamos a los lugares donde sube y baja de nuevo _modas locales_ (_local modes_ en inglés) y decimos que la distribución tiene _modas múltiples_.
 
 El histograma anterior sugiere que la distribución de ingreso de los países en 1970 tiene dos modas: uno aproximadamente 2 dólares por día (1 en la escala log 2) y el otro aproximadamente 32 dólares por día (5 en la escala log 2). Esta _bimodalidad_ es consistente con un mundo dicotómico compuesto por países con ingresos promedio inferiores a $8 (3 en la escala log 2) por día y países por encima de eso.
 
@@ -423,7 +423,7 @@ scale_x_continuous(trans = "log2")
 p + geom_density_ridges()
 ```
 
-Tengan en cuenta que tenemos que invertir el `x` y `y` que se usaron para el diagrama de caja. [fix eng too] Un parametro útil de `geom_density_ridges` es `scale`, que les permite determinar cuánto superponer; por ejemplo, `scale = 1` significa que no hay superposición y valores mayores que 1 resultando en mayor superposición.
+Tengan en cuenta que tenemos que invertir el `x` y `y` que se usaron para el diagrama de caja. [fix eng too] Un parametro útil de `geom_density_ridges` es `scale`, que les permite determinar cuánto superponer; por ejemplo, `scale = 1` significa que no hay superposición. Valores mayores que 1 resultan en mayor superposición.
 
 Si el número de puntos de datos es lo suficientemente pequeño, podemos agregarlos al gráfico _ridge_ usando el siguiente código:
 
@@ -431,7 +431,7 @@ Si el número de puntos de datos es lo suficientemente pequeño, podemos agregar
 p + geom_density_ridges(jittered_points = TRUE)
 ```
 
-Por defecto, la altura de los puntos está _jittered_ y no se debe interpretar de ninguna manera. Para mostrar puntos de datos, pero sin usar _jitter_, podemos usar el siguiente código para agregar lo que se conoce como una [fix] representación _rug_ de los datos.
+Por defecto, la altura de los puntos está _jittered_ y no se debe interpretar de ninguna manera. Para mostrar puntos de datos, pero sin usar _jitter_, podemos usar el siguiente código para agregar lo que se conoce como una representación _rug_ de los datos.
 ```{r ridge-plot-with-rug, message=FALSE}
 p + geom_density_ridges(jittered_points = TRUE,
 position = position_points_jitter(height = 0),
@@ -714,9 +714,9 @@ La transformación logística o logit para una proporción o tasa $p$ se define 
 
 $$f(p) = \log \left( \frac{p}{1-p} \right)$$
 
-Cuando $p$ es una proporción o probabilidad, la cantidad que transformamos con el logaritmo, $p/(1-p)$, se llama [fix] _odds_. En este caso $p$ es la proporción de bebés que sobrevivieron. Los _odds_ nos dicen cuántos más bebés se espera que sobrevivan a que mueran. La transformación logarítmica lo hace simétrico. Si las tasas son iguales, entonces el _log odds_ es 0. Los aumentos o disminuciones de [fix] _folds_/pliegues se convierten en incrementos positivos y negativos, respectivamente.
+Cuando $p$ es una proporción o probabilidad, la cantidad que transformamos con el logaritmo, $p/(1-p)$, se llama _odds_. En este caso $p$ es la proporción de bebés que sobrevivieron. Los _odds_ nos dicen cuántos más bebés se espera que sobrevivan a que mueran. La transformación logarítmica lo hace simétrico. Si las tasas son iguales, entonces el _log odds_ es 0. Los aumentos multiplicativos se convierten en incrementos positivos o negativos, respectivamente.
 
-Esta escala es útil cuando queremos resaltar diferencias cercanas a 0 o 1. Para las tasas de supervivencia, esto es importante porque una tasa de supervivencia del 90% es inaceptable, mientras que una supervivencia del 99% es relativamente buena. Preferiríamos mucho una tasa de supervivencia más cercana al 99.9%. Queremos que nuestra escala resalte estas diferencias y el logit lo hace. Tengan en cuenta que 99.9/ 0.1 es aproximadamente 10 veces más grande que 99/1, que es aproximadamente 10 veces más grande que 90/10. Al usar el logaritmo, estos [fix] fold changes/cambios de plegado se convierten en aumentos constantes.
+Esta escala es útil cuando queremos resaltar diferencias cercanas a 0 o 1. Para las tasas de supervivencia, esto es importante porque una tasa de supervivencia del 90% es inaceptable, mientras que una supervivencia del 99% es relativamente buena. Preferiríamos mucho una tasa de supervivencia más cercana al 99.9%. Queremos que nuestra escala resalte estas diferencias y el logit lo hace. Tengan en cuenta que 99.9/ 0.1 es aproximadamente 10 veces más grande que 99/1, que es aproximadamente 10 veces más grande que 90/10. Al usar el logaritmo, estos incrementos multiplicativos se convierten en aumentos constantes.
 
 ### Mostrar los datos
 
