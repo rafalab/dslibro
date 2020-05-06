@@ -154,6 +154,7 @@
 | web-based | disponible en la web | | en linea/disponible en la web,  | en la web |
 | web scraping | extracción de la web | | descarga/extracción de información en linea | extracción de la web, rastreo web |
 | weighted | ponderado |  |  |
+| weighted densities | densidades ponderadas |  |  |
 | working directory | directorio de trabajo |  | directorio de trabajo |  |
 | workspace | espacio de trabajo | save it in the workspace | espacio de trabajo | espacio de trabajo | 
 | __X__ | | | | |
