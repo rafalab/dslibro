@@ -6,7 +6,7 @@ img_path <- "dataviz/img"
 
 Ya hemos presentado algunas reglas a seguir mientras creamos gráficos para nuestros ejemplos. Aquí, nuestro objetivo es ofrecer algunos principios generales que podemos usar como guía para una visualización de datos efectiva. Gran parte de esta sección se basa en una charla de Karl Broman^[http://kbroman.org/] titulada "Creating Effective Figures and Tables"^[https://www.biostat.wisc.edu/~kbroman/presentations/ graphs2017.pdf] e incluye algunas de las figuras que se hicieron con el código que Karl pone a disposición en su repositorio de GitHub^[https://github.com/kbroman/Talk_Graphs], así como las notas de la clase "Introduction to Data Visualization" de Peter Aldhous^[http://paldhous.github.io/ucb/2016/dataviz/index.html]. Siguiendo el enfoque de Karl, mostramos algunos ejemplos de estilos de gráficos que debemos evitar, explicamos cómo mejorarlos y entonces los usamos como motivación para una lista de principios. Además, comparamos y contrastamos los gráficos que siguen estos principios con otros que los ignoran.
 
-Los principios se basan principalmente en investigaciones relacionadas a la manera en que los humanos detectan patrones y hacen comparaciones visuales. Los enfoques preferidos son aquellos que mejor se adaptan a la forma en que nuestros cerebros procesan la información visual. Al escoger un enfoque de visualización, también es importante tener en cuenta nuestro objetivo. Podemos estar comparando un número visible de cantidades, describiendo distribuciones para categorías o valores numéricos, comparando los datos de dos grupos o describiendo la relación entre dos variables [fix] (add: y esto afecta la presentación que escojeremos). Como nota final, queremos enfatizar que para un científico de datos es importante adaptar y optimizar los gráficos para la audiencia. Por ejemplo, un gráfico exploratoria hecha para nosotros será diferente a una tabla destinada a comunicar un hallazgo a una audiencia general.
+Los principios se basan principalmente en investigaciones relacionadas a la manera en que los humanos detectan patrones y hacen comparaciones visuales. Los enfoques preferidos son aquellos que mejor se adaptan a la forma en que nuestros cerebros procesan la información visual. Al escoger las herramientas de visualización, es importante tener en cuenta nuestro objetivo. Podemos estar comparando una cantidad de números suficientemente pequeña que se pueden distinguir, describiendo distribuciones de datos categóricos o valores numéricos, comparando los datos de dos grupos o describiendo la relación entre dos variables y esto afecta la presentación que escojeremos. Como nota final, queremos enfatizar que para un científico de datos es importante adaptar y optimizar los gráficos para la audiencia. Por ejemplo, un gráfico exploratoria hecha para nosotros será diferente a una tabla destinada a comunicar un hallazgo a una audiencia general.
 
 Utilizaremos estos paquetes:
 
@@ -20,7 +20,7 @@ library(gridExtra)
 
 ## Cómo codificar datos utilizando señales visuales
 
-Comenzamos describiendo algunos principios para codificar datos. Hay varios acercamientos a nuestra disposición que incluyen posición, [fix] longitudes alineadas "aligned lengths", ángulos, área, brillo y tono de color.
+Comenzamos describiendo algunos principios para codificar datos. Hay varios acercamientos a nuestra disposición que incluyen posición, largo, ángulos, área, brillo y tono de color.
 
 
 ```{r, echo=FALSE}
@@ -115,7 +115,7 @@ En general, cuando se muestran cantidades, se prefieren la posición y la longit
 
 ## Sepa cuándo incluir 0
 
-Cuando se usan diagramas de barras, es erróneo no comenzar las barras en 0. Esto se debe a que, al usar un diagrama de barras, estamos implicando que la longitud es proporcional a las cantidades que se muestran. Al evitar 0, se pueden hacer diferencias relativamente pequeñas verse mucho más grandes de lo que realmente son. Este acercamiento a menudo es utilizado por políticos u [fix] organizaciones de medios de comunicación que intentan exagerar la diferencia. [fix] A continuación se muestra un ejemplo ilustrativo utilizado por Peter Aldhous en esta conferencia: http://paldhous.github.io/ucb/2016/dataviz/week2.htmlfont^[http://paldhous.github.io/ucb/2016/dataviz/week2.html].
+Cuando se usan diagramas de barras, es erróneo no comenzar las barras en 0. Esto se debe a que, al usar un diagrama de barras, estamos implicando que la longitud es proporcional a las cantidades que se muestran. Al evitar 0, se pueden hacer diferencias relativamente pequeñas verse mucho más grandes de lo que realmente son. Este acercamiento a menudo es utilizado por políticos o medios de comunicación que intentan exagerar la diferencia. A continuación se muestra un ejemplo ilustrativo utilizado por Peter Aldhous en esta conferencia: http://paldhous.github.io/ucb/2016/dataviz/week2.htmlfont^[http://paldhous.github.io/ucb/2016/dataviz/week2.html].
 
 ```{r echo=FALSE}
 ## http://paldhous.github.io/ucb/2016/dataviz/img/class2_8.jpg
@@ -140,7 +140,7 @@ knitr::include_graphics(file.path(img_path, "Bush-cuts.png"))
 ```
 (Fuente: Fox News, a través de Flowing Data^[http://flowingdata.com/2012/08/06/fox-news-continues-charting-excellence/].)
 
-Este gráfico hace que un aumento del 13% parezca [fix] un cambio de cinco veces/"five fold change". Aquí tenemos el gráfico apropiado:
+Este gráfico hace que un aumento del 13% parezca cinco veces más grande. Aquí tenemos el gráfico apropiado:
 
 ```{r barplot-from-zero-2, echo=FALSE}
 data.frame(date = c("Now", "Jan 1, 2013"), tax_rate = c(35, 39.6)) %>%
@@ -151,7 +151,7 @@ geom_bar(stat = "identity", fill = "yellow", col = "black", width = 0.5) +
 ggtitle("Top Tax Rate If Bush Tax Cut Expires")
 ```
 
-Finalmente, aquí tenemos un ejemplo extremo que hace que una diferencia muy pequeña, de menos de 2%, [fix] parezca un cambio de 10 a 100 veces:
+Finalmente, aquí tenemos un ejemplo extremo que hace que una diferencia muy pequeña, de menos de 2%, parezca 10 a 100 veces más grande:
 
 ```{r, echo=FALSE}
 ## http://i2.wp.com/flowingdata.com/wp-content/uploads/2012/08/Bush-cuts.png
@@ -170,7 +170,7 @@ ggplot(aes(Candidate, Percent, fill = Candidate)) +
 geom_bar(stat = "identity", width = 0.65, show.legend = FALSE)
 ```
 
-Cuando se usa posición en lugar de longitud, no es necesario incluir 0. Este es  el caso en particular cuando queremos comparar las diferencias entre los grupos en relación con la variabilidad dentro de un grupo. [fix] Aquí tenemos un ejemplo ilustrativo que muestra la esperanza de vida promedio de país estratificada en todos los continentes en 2012:
+Cuando se usa posición en lugar de longitud, no es necesario incluir 0. Este es  el caso en particular cuando queremos comparar las diferencias entre los grupos en relación con la variabilidad dentro de un grupo. Aquí tenemos un ejemplo ilustrativo que muestra la esperanza de vida promedio de cada país estratificada por continente en 2012:
 
 ```{r points-plot-not-from-zero, echo=FALSE, out.width="100%", fig.width = 6, fig.height = 3}
 p1 <- gapminder %>% filter(year == 2012) %>%
@@ -477,9 +477,9 @@ scale_y_continuous(trans = "log2") +
 ylab("Income in dollars per day")
 ```
 
-### Usar color
+### Use color
 
-La comparación se hace aún más fácil si usamos el color para denotar las dos cosas que queremos comparar:
+La comparación se hace aún más fácil si usamos color para denotar las dos cosas que queremos comparar:
 
 
 ```{r boxplot-adjacent-comps-with-color, echo=FALSE}
@@ -496,7 +496,7 @@ ylab("Income in dollars per day")
 
 ## Piense en los daltónicos
 
-Alrededor de 10% de la población es daltónica. Desafortunadamente, los colores por defecto utilizados en __ggplot2__ no son óptimos para este grupo. Sin embargo, __ggplot2__ lo hace fácil cambiar la paleta de colores utilizada en los gráficos. Aquí se describe un ejemplo de cómo podemos usar una paleta que considera los daltónicos: [http://www.cookbook-r.com/Graphs/Colors_(ggplot2)/#a-colorblind-friendly-palettefont](http:// www.cookbook-r.com/Graphs/Colors_(ggplot2)/#a-colorblind-friendly-palette):
+Alrededor de 10% de la población es daltónica. Desafortunadamente, los colores por defecto utilizados en __ggplot2__ no son óptimos para este grupo. Sin embargo, __ggplot2__ hace fácil cambiar la paleta de colores utilizada en los gráficos. Aquí se describe un ejemplo de cómo podemos usar una paleta que considera los daltónicos: [http://www.cookbook-r.com/Graphs/Colors_(ggplot2)/#a-colorblind-friendly-palettefont](http:// www.cookbook-r.com/Graphs/Colors_(ggplot2)/#a-colorblind-friendly-palette):
 
 ```{r, eval=FALSE}
 color_blind_friendly_cols <-
@@ -525,7 +525,7 @@ panel.grid.minor = element_blank())
 p1 + scale_color_manual(values=color_blind_friendly_cols)
 ```
 
-Hay varios recursos que pueden ayudarlos a seleccionar colores, por ejemplo este: [http://bconnelly.net/2013/10/creating-colorblind-friendly-figures/font](http://bconnelly.net/2013/10/ creating-colorblind-friendly-figures/).
+Ademásm, hay varios recursos que pueden ayudarlos a seleccionar colores, por ejemplo este: [http://bconnelly.net/2013/10/creating-colorblind-friendly-figures/font](http://bconnelly.net/2013/10/ creating-colorblind-friendly-figures/).
 
 ## Gráficos para dos variables
 
@@ -588,7 +588,7 @@ En el diagrama de dispersión, hemos seguido el principio _usar ejes comunes_ ya
 
 ### Gráfico Bland-Altman
 
-Como estamos interesados principalmente en la diferencia, tiene sentido dedicarle uno de nuestros ejes. [fix] El gráfico Bland-Altman, también conocido como el gráfico de diferencia de medias de Tukey y el gráfico MA, muestra la diferencia versus el promedio:
+Como estamos interesados principalmente en la diferencia, tiene sentido dedicarle uno de nuestros ejes. El gráfico Bland-Altman, también conocido como el gráfico de diferencia de medias de Tukey y el _MA plot_, muestra la diferencia versus el promedio:
 
 ```{r, bland-altman}
 library(ggrepel)
@@ -639,7 +639,7 @@ geom_point(alpha = 0.5) +
 ylab("Infant survival proportion")
 ```
 
-Codificamos variables categóricas con color y forma. Estas formas se pueden controlar con el argumento `shape`. A continuación se muestran las formas disponibles para su uso en R. Para los últimos cinco, el [fix] color va dentro de la forma?.
+Codificamos variables categóricas con color y forma. Estas formas se pueden controlar con el argumento `shape`. A continuación se muestran las formas disponibles para su uso en R. Para los últimos cinco, el color rellena la forma.
 
 ```{r available-shapes, echo=FALSE, fig.height=2.25}
 dat=data.frame(x=c(0:25))
@@ -658,7 +658,7 @@ geom_point(dat, mapping=aes(x%%9, x%/%9, shape=x), size=4, fill="blue") +
 geom_text(dat, mapping=aes(x%%9, x%/%9+0.25, label=x), size=4)
 ```
 
-Para variables continuas, podemos usar color, intensidad o tamaño. Ahora mostramos un ejemplo de cómo hacemos esto con un estudio de caso.
+Para variables continuas, podemos usar color, intensidad o tamaño. A continuación pfrecemos un ejemplo de cómo hacer esto con un estudio de caso.
 
 Al seleccionar colores para cuantificar una variable numérica, elegimos entre dos opciones: secuenciales y divergentes. Los colores secuenciales son adecuados para datos que van de mayor a menor. Los valores altos se distinguen claramente de los valores bajos. Aquí tenemos algunos ejemplos ofrecidos por el paquete `RColorBrewer`:
 
@@ -673,7 +673,7 @@ rafalib::mypar()
 display.brewer.all(type="seq")
 ```
 
-Los colores divergentes se utilizan para representar valores que divergen de un centro. Ponemos igual énfasis en ambos extremos del rango de datos: más alto que el centro y más bajo que el centro. Un ejemplo de cuándo usaríamos un patrón divergente sería [fix] si mostramos la altura en desviaciones estándar lejos del promedio. Aquí hay algunos ejemplos de patrones divergentes:
+Los colores divergentes se utilizan para representar valores que divergen de un centro. Ponemos igual énfasis en ambos extremos del rango de datos: más alto que el centro y más bajo que el centro. Un ejemplo de cuándo usaríamos un patrón divergente sería cuando mostramos la altura en cuántas desviaciones estándar están del promedio. Aquí hay algunos ejemplos de patrones divergentes:
 
 ```{r eval=FALSE}
 library(RColorBrewer)
@@ -699,7 +699,7 @@ knitr::include_graphics(file.path(img_path,"fig8b.png"))
 ```
 (Imagen cortesía de Karl Broman)
 
-Los humanos no son buenos para ver en tres dimensiones (que explica por qué es difícil estacionar en paralelo) y nuestra limitación es aún peor con respecto a las pseudo-tres dimensiones. Para ver esto, intenten determinar los valores de la variable de supervivencia en la gráfica anterior. ¿Pueden decir cuándo la cinta púrpura se cruza con la roja? Este es un ejemplo en el que podemos usar fácilmente color para representar la variable categórica en lugar de usar un pseudo-3D:
+Los humanos no son buenos para ver en tres dimensiones (que explica por qué es difícil estacionar en paralelo) y nuestra limitación es aún peor con respecto a las pseudo-tres dimensiones. Para ver esto, intenten determinar los valores de la variable de supervivencia en el gráfico anterior. ¿Pueden decir cuándo la cinta púrpura se cruza con la roja? Este es un ejemplo en el que podemos fácilmente usar  color para representar la variable categórica en lugar de un pseudo-3D:
 
 ```{r colors-for-different-lines, echo=FALSE}
 ##First read data
@@ -727,7 +727,7 @@ knitr::include_graphics(file.path(img_path,c("fig1e.png", "fig2d.png")))
 
 ## Evite demasiados dígitos significativos
 
-Por defecto, el software estadístico como R devuelve muchos dígitos significativos. El comportamiento por defecto en R es mostrar 7 dígitos significativos. Esa cantidad de dígitos a menudo no añade información y el desorden visual agregado puede dificultar que se entienda el mensaje. [fix] Como ejemplo, aquí están las tasas de enfermedades por cada 10,000, calculadas de los totales y la población en R, para California en cinco décadas:
+Por defecto, el software estadístico como R devuelve muchos dígitos significativos. El comportamiento por defecto en R es mostrar 7 dígitos significativos. Esa cantidad de dígitos a menudo no añade información y el desorden visual agregado puede dificultar que se entienda el mensaje. Como ejemplo, aquí están las tasas de enfermedades por cada 10,000, calculadas de los totales y la población en R, para California en cinco décadas:
 
 ```{r, echo=FALSE}
 data(us_contagious_diseases)
@@ -787,11 +787,11 @@ kableExtra::kable_styling(font_size = 8)
 }
 ```
 
-## Conozcan a su audiencia
+## Conozca a su audiencia
 
-Los gráficos se pueden usar para 1) nuestros propios análisis exploratorios de datos, 2) para transmitir un mensaje a los expertos, o 3) para ayudar a contar una historia a una audiencia general. Asegúrense de que el público destinario comprenda cada elemento del gráfico.
+Los gráficos se pueden usar para 1) nuestros propios análisis exploratorios de datos, 2) para transmitir un mensaje a los expertos o 3) para ayudar a contar una historia a una audiencia general. Asegúrense de que el público destinario comprenda cada elemento del gráfico.
 
-Como un ejemplo sencillo, considere que para su propia exploración puede ser más útil to [fix] "log-transform" data y luego graficarla. Sin embargo, para una audiencia general que no está familiarizada con la conversión de valores logarítmicos a las medidas originales, será mucho más fácil entender el uso de una escala logarítmica para el eje en lugar de los valores transformados logarítmicamente.
+Como un ejemplo sencillo, considere que para su propia exploración puede ser más útil transformar logarítmicamente los datos y luego graficarla. Sin embargo, para una audiencia general que no está familiarizada con la conversión de valores logarítmicos a las medidas originales, será mucho más fácil entender el uso de una escala logarítmica para el eje en lugar de los valores transformados logarítmicamente.
 
 
 ## Ejercicios
@@ -853,11 +853,11 @@ coord_flip() +
 xlab("")
 grid.arrange(p1, p2, ncol = 2)
 ```
-¿Qué gráfico es más fácil de leer si está interesado en determinar cuáles son los mejores y peores estados en términos de tasas, y por qué?
+¿Qué gráfico es más fácil de leer si quieren determinar cuáles son los mejores y peores estados en términos de tasas, y por qué?
 
 a. Dan la misma información, por lo que ambos son igual de buenos.
 b. El gráfico de la derecha es mejor porque ordena los estados alfabéticamente.
-c. El gráfico a la derecha es mejor porque el orden alfabético no tiene nada que ver con la enfermedad y al ordenar según la tasa real, vemos [fix] rápidamente los estados con las tasas más altas y más bajas.
+c. El gráfico de la derecha es mejor porque el orden alfabético no tiene nada que ver con la enfermedad y al ordenar según la tasa real, rápidamente vemos los estados con las tasas más altas y más bajas.
 d. Ambos gráficos deben ser un gráfico circular.
 
 
@@ -888,10 +888,10 @@ rate <- dat$count/dat$population*10000*52/dat$weeks_reporting
 Redefina el objeto `state` para que los niveles se reordenen. Imprima el nuevo objeto `state` y sus niveles para que pueda ver que los niveles no reordenan el vector.
 
 
-5\. Ahora con una línea de código, defina [fix tabla?] la tabla `dat` como se hizo anteriormente, pero cambie el uso de [fix `mutate`?] mutate para crear una variable de velocidad y reordene la variable de estado para que los niveles sean reordenados por esta variable. Luego haga un diagrama de barras usando el código anterior, pero para este nuevo `dat`.
+5\. Ahora edite el código de arriba para redefinir `dat` para que los niveles de la variable de estado sean reordenados por la variable de tasa. Luego haga un diagrama de barras usando el código anterior, pero para este nuevo `dat`.
 
 
-6\. Digamos que estamos interesados en comparar las tasas de homicidios con armas de fuego en todas las regiones de los EE. UU. Vemos este gráfico:
+6\. Digamos que está interesado en comparar las tasas de homicidios con armas de fuego en todas las regiones de los EE. UU. Ve este gráfico:
 
 
 ```{r us-murders-barplot}
@@ -907,11 +907,11 @@ ylab("Murder Rate Average")
 ```
 
 
-y decide mudarse a un estado en la región occidental. ¿Cuál es el principal problema con esta interpretación?
+y decide mudarse a un estado en la región occidental. ¿Cuál es el problema principal con esta interpretación?
 
 a. Las categorías están ordenadas alfabéticamente.
 b. El gráfico no muestra errores estándar.
-c. No muestra todos los datos. No vemos la variabilidad dentro de una región y es posible que los estados más seguros no estén en el occidente.
+c. El grárfico no muestra todos los datos. No vemos la variabilidad dentro de una región y es posible que los estados más seguros no estén en el occidente.
 d. El noreste tiene el promedio más bajo.
 
 
@@ -943,7 +943,7 @@ text(8.25, -1.5, label = "y")
 abline(v=4, col=3)
 ```
 
-La línea $x=2$ parece separar los puntos. Pero en realidad no es el caso, lo que podemos ver al graficar los datos en un par de puntos bidimensionales.
+La línea $x=2$ parece separar los puntos. Pero en realidad no es el caso, como vemos cuando graficamos los datos en un par de puntos bidimensionales.
 
 ```{r pseud-3d-exercise-2, echo=FALSE, fig.height = 3}
 rafalib::mypar(1,2)
@@ -958,7 +958,7 @@ abline(v=2, col=3)
 a. Los humanos no son buenos para leer gráficos pseudo-3D.
 b. Debe haber un error en el código.
 c. Los colores nos confunden.
-d. Los diagramas de dispersión no deben usarse para comparar dos variables cuando tenemos acceso a 3.
+d. Los diagramas de dispersión no se deben usar para comparar dos variables cuando tenemos acceso a tres variables.
 
 
 9\. Reproduzca el gráfico de imagen que hicimos anteriormente pero para la viruela. Para este gráfico, no incluya años en los que no se indicaron casos en 10 o más semanas.
@@ -967,7 +967,7 @@ d. Los diagramas de dispersión no deben usarse para comparar dos variables cuan
 10\. Ahora reproduzca el gráfico de series de tiempo que hicimos anteriormente, pero esta vez siguiendo las instrucciones de la pregunta anterior.
 
 
-11\. Para el estado de California, haga gráficos de series de tiempo que muestren las tasas de todas las enfermedades. [fix] Incluya solo años con informes de 10 o más semanas/donde reportan casos durante... Use un color diferente para cada enfermedad.
+11\. Para el estado de California, haga gráficos de series de tiempo que muestren las tasas de todas las enfermedades. Incluya solo años en los cuales se proveen datos en 10 o más semanas. Use un color diferente para cada enfermedad.
 
 
-12\. Ahora haga lo mismo con las tarifas para los EE. UU.. Sugerencia: [fix eng] calcule la tasa de EE. UU. mediante el resumen, el total dividido por la población total.
+12\. Ahora haga lo mismo con las tarifas para los EE. UU.. Sugerencia: calcule la tasa de EE. UU. usando `summarize`, el total de casos dividido por la población total.
