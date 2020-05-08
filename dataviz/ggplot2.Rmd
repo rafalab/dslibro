@@ -21,7 +21,7 @@ Otra razón por la cual __ggplot2__ es fácil para los principiantes es que su c
 
 Una limitación de __ggplot2__ es que está diseñado para trabajar exclusivamente con tablas de datos en formato _tidy_ (donde las filas son observaciones y las columnas son variables). Sin embargo, un porcentaje sustancial de sets de datos con los que los principiantes trabajan están en este formato o pueden convertirse a tal. Una ventaja de este enfoque es que, con tal que nuestros datos estén _tidy_, __ggplot2__ simplifica el código de graficar y el aprendizaje de gramática para una variedad de gráficos.
 
-Para usar __ggplot2__, tendrán que aprender varias funciones y argumentos. Estos son difíciles de memorizar, por lo que les recomendamos que tengan a mano la hoja de referencia de ggplot2. Pueden obtener una copia aquí: [https://www.rstudio.com/wp-content/uploads/2015/03/ggplot2-cheatsheet.pdf](https://www.rstudio.com/wp-content/uploads/2015/03/ggplot2-cheatsheet.pdf) o simplemente realizar una búsqueda en internet de "ggplot2 cheat sheet". [fix]
+Para usar __ggplot2__, tendrán que aprender varias funciones y argumentos. Estos son difíciles de memorizar, por lo que les recomendamos que tengan a mano la hoja de referencia de ggplot2. Pueden obtener una copia aquí: [https://www.rstudio.com/wp-content/uploads/2015/03/ggplot2-cheatsheet.pdf](https://www.rstudio.com/wp-content/uploads/2015/03/ggplot2-cheatsheet.pdf) o simplemente realizar una búsqueda en internet de "ggplot2 cheat sheet".
 
 ## Los componentes de un gráfico
 
@@ -57,7 +57,7 @@ Esta visualización de datos nos muestra prácticamente toda la información de 
 El primer paso para aprender __ggplot2__ es poder separar un gráfico en componentes. Empezaremos analizando el gráfico anterior e introduciendo algo de la terminología de __ggplot2__. Los tres componentes principales para considerar son:
 
 * __Data__: Se está resumiendo el set de datos de asesinatos con armas de Estados Unidos. Nos referimos a esto como el componente __data__.
-* __Geometría__: El gráfico de arriba es un diagrama de dispersión. Esto se denomina el componente de __geometría__. Otras posibles geometrías son diagrama de barras, histograma, densidades suaves (_smooth densities_ en inglés), gráfico Q-Q y diagrama de cajas. 
+* __Geometría__: El gráfico anterior es un diagrama de dispersión. Esto se denomina el componente de __geometría__. Otras posibles geometrías son diagrama de barras, histograma, densidades suaves (_smooth densities_ en inglés), gráfico Q-Q y diagrama de cajas. 
 * __Mapeo estético__: El gráfico usa varias señales visuales para representar la información proveída por el set de datos. Las dos señales más importantes en este gráfico son las posiciones de los puntos en el eje-x y el eje-y, que representan el tamaño de la población y el número total de asesinatos, respectivamente. Cada punto representa una observación diferente, y _mapeamos_ los datos de estas observaciones y las señales visuales a las escalas x e y. El color es otra señal visual que asignamos a la región. Nos referimos a esto como el componente de __mapeo estético__. La forma en que definimos el mapeo depende de qué __geometría__ estamos usando.
 
 También observamos que:
@@ -198,11 +198,10 @@ está bien, mientras que esta llamada:
 p_test <- p + geom_text(aes(population/10^6, total), label = abb)
 ```
 
-les dará un error ya que `abb` no se encuentra porque está fuera de la función `aes`. La capa `geom_text` no sabe dónde encontrar `abb` ya que es un nombre de columna y no una variable global.
+les dará un error ya que `abb` no se encuentra porque está fuera de la función `aes`. La capa `geom_text` no sabe dónde encontrar `abb` porque es un nombre de columna y no una variable global.
 
 ### Cómo probar varios argumentos
 
-Cada función de geometría tiene muchos argumentos además de `aes` y `data`. Estos tienden a ser específicos a la función. Por ejemplo, en el gráfico que queremos hacer, los puntos son más grandes que el tamaño predeterminado. En la página de ayuda vemos que `size` es una estética y podemos cambiarla así:
 
 ```{r ggplot-example-5}
 p + geom_point(aes(population/10^6, total), size = 3) +
@@ -255,7 +254,7 @@ Claramente, la segunda llamada a `geom_text` no usa `population` y `total`.
 
 ## Escalas
 
-Primero, las escalas que queremos están en escala logarítmica. Este no es el valor predeterminado, por lo que este cambio debe agregarse a través de una capa _escalas_ (_scales_ en inglés). Una mirada rápida a la hoja de referencia revela que la función `scale_x_continuous` nos permite controlar el comportamiento de las escalas. La usamos así:
+Primero, las escalas que queremos están en escala logarítmica. Este no es el valor predeterminado, por lo que este cambio debe agregarse a través de una capa de _escalas_. Una mirada rápida a la hoja de referencia revela que la función `scale_x_continuous` nos permite controlar el comportamiento de las escalas. La usamos así:
 
 
 ```{r ggplot-example-9}
@@ -265,7 +264,7 @@ scale_x_continuous(trans = "log10") +
 scale_y_continuous(trans = "log10")
 ```
 
-Debido a que ahora estamos en la escala logarítmica, el ajuste a la posición, debe hacerse más pequeño.
+Debido a que ahora estamos en la escala logarítmica, el ajuste a la posición debe hacerse más pequeño.
 
 Esta transformación particular es tan común que __ggplot2__ ofrece dos funciones especializadas `scale_x_log10` y `scale_y_log10`, que podemos usar para reescribir el código de esta manera:
 
@@ -315,7 +314,7 @@ p + geom_point(size = 3, color ="blue")
 
 Sin embargo, no queremos esto. Queremos asignar color según la región geográfica. Un buen comportamiento por defecto de __ggplot2__ es que si asignamos una variable categórica al color, automáticamente asigna un color diferente a cada categoría, además de una leyenda.
 
-Dado que la elección del color está determinada por una característica de cada observación, este es un mapeo estético. Para asignar cada punto a un color, necesitamos usar `aes`. Usamos el siguiente código:
+Dado que la elección del color está determinada por una característica de cada observación, este es un mapeo estético. Para asignar un color a cada punto, necesitamos usar `aes`. Usamos el siguiente código:
 
 ```{r ggplot-example-12}
 p + geom_point(aes(col=region), size = 3)
@@ -329,7 +328,7 @@ Aquí vemos otro comportamiento útil por defecto: __ggplot2__ automáticamente 
 
 A menudo queremos agregar formas o anotaciones a las figuras que no se derivan directamente del mapeo estético; algunos ejemplos incluyen etiquetas, cuadros, áreas sombreadas y líneas.
 
-Aquí queremos agregar una línea que represente la tasa promedio de asesinatos en todo el país. Una vez que determinamos la tasa por millón a ser $r$, esta línea se define por la fórmula: $y = r x$, con $y$ y $x$ nuestros ejes: asesinatos totales y población en millones, respectivamente. En la escala logarítmica, esta línea se convierte en: $\log(y) = \log(r) + \log(x)$. Entonces, en nuestro gráfico, es una línea con pendiente 1 e intercepto $\log(r)$. Para calcular este valor, utilizamos nuestros conocimientos de __dplyr__:
+Aquí queremos agregar una línea que represente la tasa promedio de asesinatos en todo el país. Una vez que determinemos la tasa por millón a ser $r$, esta línea se define por la fórmula: $y = r x$, con $y$ y $x$ nuestros ejes: asesinatos totales y población en millones, respectivamente. En la escala logarítmica, esta línea se convierte en: $\log(y) = \log(r) + \log(x)$. Entonces, en nuestro gráfico, es una línea con pendiente 1 e intercepto $\log(r)$. Para calcular este valor, utilizamos nuestros conocimientos de __dplyr__:
 
 ```{r}
 r <- murders %>%
@@ -354,7 +353,7 @@ geom_point(aes(col=region), size = 3)
 ```
 Tengan en cuenta que hemos redefinido `p` y usaremos este nuevo `p` a continuación y en la siguiente sección.
 
-Los gráficos por defecto creados por __ggplot2__ ya son muy útiles. Sin embargo, con frecuencia necesitamos hacer pequeños ajustes al comportamiento predeterminado. Aunque no siempre es obvio cómo hacer esto aun con la hoja de referencia, __ggplot2__ es muy flexible.
+Los gráficos por defecto creados por __ggplot2__ ya son muy útiles. Sin embargo, con frecuencia necesitamos hacer pequeños ajustes al comportamiento predeterminado. Aunque no siempre es obvio cómo hacer esto, aun con la hoja de referencia, __ggplot2__ es muy flexible.
 
 Por ejemplo, podemos hacer cambios a la leyenda a través de la función `scale_color_discrete`. En nuestro gráfico original, la palabra _region_ está en mayúscula y podemos cambiarla así:
 
