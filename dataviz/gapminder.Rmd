@@ -71,9 +71,9 @@ Observamos que los países europeos en esta lista tienen las tasas de mortalidad
 
 ## Diagrama de dispersión
 
-La razón por los puntajes bajos se deriva de la noción preconcebida de que el mundo está dividido en dos grupos: el mundo occidental (Europa occidental y América del Norte), caracterizado por una larga vida y familias pequeñas, versus el mundo en desarrollo (África, Asia y América Latina ) caracterizados por cortos períodos de vida y familias numerosas. ¿Pero los datos respaldan esta visión dicotómica?
+La razón por las bajas puntuaciones se deriva de la noción preconcebida de que el mundo está dividido en dos grupos: el mundo occidental (Europa occidental y América del Norte), caracterizado por una larga vida y familias pequeñas, versus el mundo en desarrollo (África, Asia y América Latina), caracterizados por cortos períodos de vida y familias numerosas. ¿Pero los datos respaldan esta visión dicotómica?
 
-Los datos necesarios para responder a esta pregunta también están disponibles en nuestra tabla `gapminder`. Usando nuestras recién aprendidas habilidades de visualización de datos, podremos enfrentar este desafío.
+Los datos necesarios para responder a esta pregunta también están disponibles en nuestra tabla `gapminder`. Usando nuestras recién aprendidas habilidades de visualización de datos, podemos enfrentar este desafío.
 
 Para analizar esta visión del mundo, nuestro primer gráfico es un diagrama de dispersión de la esperanza de vida versus las tasas de fertilidad (número promedio de hijos por mujer). Comenzamos mirando los datos de hace unos 50 años, cuando quizás esta visión se consolidó por primera vez en nuestras mentes.
 
@@ -111,7 +111,7 @@ geom_point() +
 facet_grid(continent~year)
 ```
 
-Vemos un gráfico para cada combinación de continente/año. Sin embargo, esto es solo un ejemplo y más de lo que queremos, que es simplemente comparar dos años: 1962 y 2012. En este caso, solo hay una variable y usamos `.` para que `facet_grid` sepa que no estamos usando una de las variables:
+Arriba vemos un gráfico para cada combinación de continente/año. Sin embargo, esto es solo un ejemplo y más de lo que queremos, que es simplemente comparar dos años: 1962 y 2012. En este caso, solo hay una variable y usamos `.` para que `facet_grid` sepa que no estamos usando una de las variables:
 
 ```{r fertility-versus-life-expectancy-two-years, warning=FALSE, out.width="100%", fig.height=3}
 filter(gapminder, year%in%c(1962, 2012)) %>%
@@ -167,7 +167,7 @@ geom_point()
 
 Observamos que la tendencia no es lineal en absoluto, sino que durante los años sesenta y setenta se produce una fuerte caída por debajo de 2. Luego, la tendencia vuelve a 2 y se estabiliza durante los años noventa.
 
-Cuando los puntos están regular y densamente espaciados, como vemos aquí, creamos una curva que une los puntos con líneas, para transmitir que estos datos provienen de una sola serie, aquí un país. Para hacer esto, usamos la función `geom_line` en vez de `geom_point`.
+Cuando los puntos están regular y densamente espaciados, como vemos arriba, creamos una curva que une los puntos con líneas, para transmitir que estos datos provienen de una sola serie, aquí un país. Para hacer esto, usamos la función `geom_line` en vez de `geom_point`.
 
 ```{r fertility-time-series-plot-curve, warning=FALSE}
 gapminder %>%
@@ -186,7 +186,7 @@ ggplot(aes(year,fertility)) +
 geom_line()
 ```
 
-Claramente, este __no__ es el gráfico que queremos. En lugar de una línea para cada país, se unen los puntos para ambos países porque no le hemos dicho a `ggplot` nada sobre querer dos líneas independientes. Para que `ggplot` entienda que hay dos curvas que se deben hacer por separado, asignamos cada punto a un `group`, uno para cada país:
+Claramente, este __no__ es el gráfico que queremos. En lugar de una línea para cada país, se unen los puntos para ambos países porque no le hemos dicho a `ggplot` que queremos dos líneas independientes. Para que `ggplot` entienda que hay dos curvas que se deben hacer por separado, asignamos cada punto a un `group`, uno para cada país:
 
 
 ```{r time-series-two-curves, warning=FALSE, message=FALSE}
@@ -212,9 +212,9 @@ El gráfico muestra claramente cómo la tasa de fertilidad de Corea del Sur cay�
 
 ### Etiquetas en lugar de leyendas
 
-Para los gráficos de tendencias, recomendamos etiquetar las líneas en lugar de usar leyendas, ya que el espectador puede ver rápidamente qué línea es de qué país. Esta sugerencia aplica a la mayoría de los gráficos: las etiquetas generalmente se prefieren a las leyendas.
+Para los gráficos de tendencias, recomendamos etiquetar las líneas en lugar de usar leyendas, ya que el espectador puede ver rápidamente qué línea representa qué país. Esta sugerencia aplica a la mayoría de los gráficos: las etiquetas generalmente se prefieren a las leyendas.
 
-Demostramos cómo podemos hacer esto usando los datos de esperanza de vida. Definimos una tabla de datos con las ubicaciones de las etiquetas y luego usamos una segunda asignación solo para estas etiquetas:
+Demostramos cómo hacer esto usando los datos de esperanza de vida. Definimos una tabla de datos con las ubicaciones de las etiquetas y luego usamos una segunda asignación solo para estas etiquetas:
 
 ```{r labels-better-than-legends}
 labels <- data.frame(country = countries, x = c(1975,1965), y = c(60,72))
@@ -235,7 +235,7 @@ El gráfico muestra claramente cómo una mejora en la esperanza de vida siguió 
 
 Ahora cambiamos nuestra atención a la segunda pregunta relacionada con la idea común de que la distribución de la riqueza en todo el mundo ha empeorado durante las últimas décadas. Cuando se le pregunta al público en general si los países pobres se han vuelto más pobres y los países ricos se han vuelto más ricos, la mayoría responde que sí. Mediante el uso de estratificación, histogramas, densidades suaves y diagramas de caja, podremos ver si este realmente es el caso. Primero, aprenderemos cómo las transformaciones a veces pueden ayudar a proporcionar resúmenes y gráficos más informativos.
 
-La tabla de datos `gapminder` incluye una columna con el producto interno bruto, o GDP por sus siglas en inglés, de los países. El GDP mide el valor de mercado de los bienes y servicios producidos por un país en un año. El GDP por persona a menudo se usa como un resumen aproximado de la riqueza de un país. Aquí dividimos esta cantidad por 365 para obtener la medida más interpretable de _dólares por día_. Utilizando los dólares estadounidenses actuales como una unidad, una persona que sobrevive con un ingreso de menos de $2 por día se define como viviendo en la "pobreza absoluta". Agregamos esta variable a la tabla de datos:
+La tabla de datos `gapminder` incluye una columna con el producto interno bruto de los países, o GDP por sus siglas en inglés. El GDP mide el valor de mercado de los bienes y servicios producidos por un país en un año. El GDP por persona a menudo se usa como un resumen aproximado de la riqueza de un país. Aquí dividimos esta cantidad por 365 para obtener la medida más interpretable de _dólares por día_. Utilizando los dólares estadounidenses actuales como una unidad, una persona que sobrevive con un ingreso de menos de $2 por día se define como viviendo en la "pobreza absoluta". Agregamos esta variable a la tabla de datos:
 
 
 ```{r}
@@ -298,11 +298,11 @@ ggplot(aes(log10(population))) +
 geom_histogram(binwidth = 0.5, color = "black")
 ```
 
-En el gráfico arriba, vemos rápidamente que las poblaciones de los países oscilan entre diez mil y diez mil millones.
+En el gráfico anterior, rápidamente vemos que las poblaciones de los países oscilan entre diez mil y diez mil millones.
 
 ### ¿Transformar los valores o la escala?
 
-Hay dos formas en que podemos usar las transformaciones logarítmicas en los gráficos. Podemos tomar el logaritmos de los valores antes de graficarlos o usar escalas logarítmicas en los ejes. Ambos enfoques son útiles y tienen diferentes ventajas. Si tomamos el logaritmo de los datos, podemos interpretar más fácilmente los valores intermedios en la escala. Por ejemplo, si vemos:
+Hay dos formas en que podemos usar las transformaciones logarítmicas en los gráficos. Podemos tomar el logaritmo de los valores antes de graficarlos o usar escalas logarítmicas en los ejes. Ambos enfoques son útiles y tienen diferentes ventajas. Si tomamos el logaritmo de los datos, podemos interpretar más fácilmente los valores intermedios en la escala. Por ejemplo, si vemos:
 
 `----1----x----2--------3----`
 
@@ -328,9 +328,9 @@ Hay otras transformaciones disponibles a través del argumento `trans`. Como apr
 
 ## Cómo visualizar distribuciones multimodales
 
-En el histograma anterior vemos dos protuberancias: una a aproximadamente 4 y otra a aproximadamente 32. En estadística, estos protuberancias a veces se denominan _modas_ (_modes_ en inglés). La moda de una distribución es el valor con la frecuencia más alta. La moda de distribución normal es el promedio. Cuando una distribución, como la anterior, no disminuye monotónicamente de la moda, llamamos a los lugares donde sube y baja de nuevo _modas locales_ y decimos que la distribución tiene _modas múltiples_.
+En el histograma anterior vemos dos protuberancias: una aproximadamente en 4 y otra aproximadamente en 32. En estadística, estas protuberancias a veces se denominan _modas_ (_modes_ en inglés). La moda de una distribución es el valor con la frecuencia más alta. La moda de distribución normal es el promedio. Cuando una distribución, como la anterior, no disminuye monotónicamente de la moda, llamamos a los lugares donde sube y baja de nuevo _modas locales_ y decimos que la distribución tiene _modas múltiples_.
 
-El histograma anterior sugiere que la distribución de ingreso de los países en 1970 tiene dos modas: una aproximadamente 2 dólares por día (1 en la escala log 2) y la otra aproximadamente 32 dólares por día (5 en la escala log 2). Esta _bimodalidad_ es consistente con un mundo dicotómico compuesto por países con ingresos promedio inferiores a $8 (3 en la escala log 2) por día y países por encima de eso.
+El histograma anterior sugiere que la distribución de ingreso de los países en 1970 tiene dos modas: una de aproximadamente 2 dólares por día (1 en la escala log 2) y la otra de aproximadamente 32 dólares por día (5 en la escala log 2). Esta _bimodalidad_ es consistente con un mundo dicotómico compuesto por países con ingresos promedio inferiores a $8 (3 en la escala log 2) por día y países por encima de eso.
 
 ## Cómo comparar múltiples distribuciones con diagramas de caja y gráficos _ridge_
 
@@ -377,7 +377,7 @@ En la siguiente sección mostramos cómo visualizar y comparar distribuciones en
 
 ### Diagrama de caja
 
-El anterior análisis exploratorio de datos reveló dos características sobre la distribución de ingreso promedio en 1970. Usando un histograma, encontramos una distribución bimodal con los modos relacionados con los países pobres y ricos. Ahora queremos comparar la distribución entre estos cinco grupos para confirmar la dicotomía "el oeste versus el resto". El número de puntos en cada categoría es lo suficientemente grande como para que un gráfico de resumen pueda ser útil. Podríamos generar cinco histogramas o cinco gráficos de densidad, pero puede ser más práctico tener todos los resúmenes visuales en un gráfico. Por lo tanto, comenzamos apilando diagramas de caja uno al lado del otro. Tengan en cuenta que agregamos la capa `theme(axis.text.x = element_text(angle = 90, hjust = 1))` para que las etiquetas de grupo sean verticales, porque no encajan si las mostramos horizontalmente, y para quitar la etiqueta del eje a fin de hacer espacio.
+El anterior análisis exploratorio de datos reveló dos características sobre la distribución de ingreso promedio en 1970. Usando un histograma, encontramos una distribución bimodal con los modos relacionados con los países pobres y ricos. Ahora queremos comparar la distribución entre estos cinco grupos para confirmar la dicotomía "el oeste versus el resto". El número de puntos en cada categoría es lo suficientemente grande como para que un gráfico de resumen pueda ser útil. Podríamos generar cinco histogramas o cinco gráficos de densidad, pero puede ser más práctico tener todos los resúmenes visuales en un gráfico. Por lo tanto, comenzamos apilando diagramas de caja uno al lado del otro. Tengan en cuenta que agregamos la capa `theme(axis.text.x = element_text(angle = 90, hjust = 1))` para que las etiquetas de grupo sean verticales, ya que no encajan si las mostramos horizontalmente, y para quitar la etiqueta del eje a fin de hacer espacio.
 
 
 ```{r dollars-per-day-boxplot}
@@ -391,7 +391,7 @@ theme(axis.text.x = element_text(angle = 90, hjust = 1))
 p
 ```
 
-Los diagramas de caja tienen la limitación de que al resumir los datos en cinco números, se puede perder características importantes de los datos. Una forma de evitar esto es mostrando los datos.
+Los diagramas de caja tienen la limitación de que al resumir los datos en cinco números, se pueden perder características importantes de los datos. Una forma de evitar esto es mostrando los datos.
 
 ```{r dollars-per-day-boxplot-with-data}
 p + geom_point(alpha = 0.5)
@@ -412,7 +412,7 @@ p2 <- qplot("", x, geom="boxplot")
 gridExtra::grid.arrange(p1, p2, nrow = 1)
 ```
 
-En los casos en que nos preocupa que el resumen de diagrama de caja sea demasiado simplista, podemos mostrar densidades suaves o histogramas apilados utilizando _gráficos ridge_. Como estamos acostumbrados a visualizar densidades con valores en el eje-x, las apilamos verticalmente. Además, debido a que se necesita más espacio en este enfoque, es conveniente superponerlos. El paquete __ggridges__ incluye una función conveniente para hacer esto. Abajo vemos los datos de ingresos, que mostramos arriba con diagramas de caja, pero ahora visualizados con un _gráfico ridge_.
+En los casos en que nos preocupa que el resumen del diagrama de caja sea demasiado simplista, podemos mostrar densidades suaves o histogramas apilados utilizando _gráficos ridge_. Como estamos acostumbrados a visualizar densidades con valores en el eje-x, las apilamos verticalmente. Además, debido a que necesitamos más espacio en este enfoque, es conveniente superponerlos. El paquete __ggridges__ incluye una función conveniente para hacer esto. Abajo vemos los datos de ingresos, que mostramos arriba con diagramas de caja, pero ahora visualizados con un _gráfico ridge_.
 
 ```{r ridge-plot, message=FALSE}
 library(ggridges)
@@ -473,7 +473,7 @@ pull(country)
 country_list <- intersect(country_list_1, country_list_2)
 ```
 
-Estas `r length(country_list)` constituyen
+Estos `r length(country_list)` constituyen
 `r round(gapminder %>% filter(year==present_year) %>% summarize(perc=sum(population[country%in%country_list], na.rm=TRUE)/sum(population, na.rm=TRUE)) %>% pull(perc)*100 )`% de la población mundial, por lo que este subconjunto debe ser representativo.
 
 Vamos a rehacer el gráfico, pero solo para este subconjunto simplemente agregando `country %in% country_list` a la función `filter`:
@@ -716,7 +716,7 @@ $$f(p) = \log \left( \frac{p}{1-p} \right)$$
 
 Cuando $p$ es una proporción o probabilidad, la cantidad que transformamos con el logaritmo, $p/(1-p)$, se llama _odds_. En este caso $p$ es la proporción de bebés que sobrevivieron. Los _odds_ nos dicen cuántos más bebés se espera que sobrevivan a que mueran. La transformación logarítmica lo hace simétrico. Si las tasas son iguales, entonces el _log odds_ es 0. Los aumentos multiplicativos se convierten en incrementos positivos o negativos, respectivamente.
 
-Esta escala es útil cuando queremos resaltar diferencias cercanas a 0 o 1. Para las tasas de supervivencia, esto es importante porque una tasa de supervivencia del 90% es inaceptable, mientras que una supervivencia del 99% es relativamente buena. Preferiríamos mucho una tasa de supervivencia más cercana al 99.9%. Queremos que nuestra escala resalte estas diferencias y el logit lo hace. Tengan en cuenta que 99.9/ 0.1 es aproximadamente 10 veces más grande que 99/1, que es aproximadamente 10 veces más grande que 90/10. Al usar el logaritmo, estos incrementos multiplicativos se convierten en aumentos constantes.
+Esta escala es útil cuando queremos resaltar diferencias cercanas a 0 o 1. Para las tasas de supervivencia, esto es importante porque una tasa de supervivencia del 90% es inaceptable, mientras que una supervivencia del 99% es relativamente buena. Preferiríamos mucho una tasa de supervivencia más cercana al 99.9%. Queremos que nuestra escala resalte estas diferencias y el logit lo hace. Recuerden que 99.9/0.1 es aproximadamente 10 veces más grande que 99/1, que es aproximadamente 10 veces más grande que 90/10. Al usar el logaritmo, estos incrementos multiplicativos se convierten en aumentos constantes.
 
 ### Mostrar los datos
 
@@ -740,7 +740,7 @@ geom_point(alpha = 0.5, size = 3) +
 geom_text_repel(size = 4, show.legend = FALSE)
 ```
 
-Específicamente, vemos que hay una gran cantidad de variabilidad. Vemos que los países de las mismas regiones pueden ser bastante diferentes y que los países con los mismos ingresos pueden tener diferentes tasas de supervivencia. Por ejemplo, mientras que, en promedio, África subsahariana tuvo los peores resultados económicos y de salud, existe una gran variabilidad dentro de ese grupo. Mauricio y Botswana están mejores que Angola y Sierra Leona, con Mauricio comparable a los países occidentales.
+Específicamente, vemos que hay una gran cantidad de variabilidad. Vemos que los países de las mismas regiones pueden ser bastante diferentes y que los países con los mismos ingresos pueden tener diferentes tasas de supervivencia. Por ejemplo, mientras que, en promedio, África subsahariana tuvo los peores resultados económicos y de salud, existe una gran variabilidad dentro de ese grupo. Mauricio y Botswana están mejores que Angola y Sierra Leona, con Mauricio comparable a países occidentales.
 
 
 
