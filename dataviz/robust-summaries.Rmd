@@ -26,7 +26,7 @@ mean(outlier_example)
 sd(outlier_example)
 ```
 
-y escribe un informe sobre el hecho interesante de que este grupo de varones es mucho más alto de lo normal. ¡La altura promedio es más de seis pies de alto! Sin embargo, al usar sus conocimientos de ciencia de datos, notan algo más que es inesperado: la desviación estándar es de más de 7 pies. Al sumar y restar dos desviaciones estándar, observan que el 95% de esta población parece tener alturas entre `r mean(outlier_example) + c(-2, 2)*sd(outlier_example)` pies, que no tiene sentido. Un gráfico rápido muestra el problema:
+y escribe un informe sobre el hecho interesante de que este grupo de varones es mucho más alto de lo normal. ¡La altura promedio es más de seis pies! Sin embargo, al usar sus conocimientos de ciencia de datos, notan algo más que es inesperado: la desviación estándar es de más de 7 pies. Al sumar y restar dos desviaciones estándar, observan que el 95% de esta población parece tener alturas entre `r mean(outlier_example) + c(-2, 2)*sd(outlier_example)` pies, que no tiene sentido. Un gráfico rápido muestra el problema:
 
 <!--
 ```{r histogram-reveals-outliers}
@@ -54,7 +54,7 @@ Con estos datos, la mediana es:
 ```{r}
 median(outlier_example)
 ```
-lo cual es sobre `r floor(median(outlier_example))` pies y `r round(12*(median(outlier_example) - floor(median(outlier_example))))` pulgadas.
+lo cual es aproximadamente `r floor(median(outlier_example))` pies y `r round(12*(median(outlier_example) - floor(median(outlier_example))))` pulgadas.
 
 La mediana es lo que los diagramas de caja muestran como una línea horizontal.
 
@@ -71,7 +71,7 @@ lo cual es cerca de `r round(IQR(outlier_example)/1.349*12)` pulgadas.
 
 ## La definición de Tukey de un valor atípico
 
-En R, los puntos que caen fuera de los bigotes del diagrama de caja se denominan _valores atípicos_. Tukey introdujo esta definición de valor atípico. El bigote superior termina en el percentil 75 más 1.5 $\times$ IQR, mientras que el bigote inferior termina en el percentil 25 menos 1.5 $\times$ IQR. Si definimos el primer y el tercer cuartil como $Q_1$ y $Q_3$, respectivamente, entonces un valor atípico es cualquier valor fuera del rango:
+[fix] En R, los puntos que caen fuera de los bigotes del diagrama de caja y se denominan _valores atípicos_, definición que Tukey introdujo. El bigote superior termina en el percentil 75 más 1.5 $\times$ IQR, mientras que el bigote inferior termina en el percentil 25 menos 1.5 $\times$ IQR. Si definimos el primer y el tercer cuartil como $Q_1$ y $Q_3$, respectivamente, entonces un valor atípico es cualquier valor fuera del rango:
 
 $$[Q_1 - 1.5 \times (Q_3 - Q1), Q_3 + 1.5 \times (Q_3 - Q1)].$$
 
@@ -100,7 +100,7 @@ max_height <- quantile(outlier_example, 0.75) + 3*IQR(outlier_example)
 max_height
 ```
 
-Si sacamos este valor, podemos ver que los datos se distribuyen normalmente como se esperaba:
+Si sacamos este valor, podemos ver que los datos se distribuyen normalmente como se espera:
 
 ```{r eval=FALSE}
 x <- outlier_example[outlier_example < max_height]
@@ -168,11 +168,11 @@ x_with_error[1] <- x_with_error[1]*10
 
 a. Dado que es solo un valor entre muchos, no se puede detectar esto.
 b. Veríamos un cambio obvio en la distribución.
-c. Un diagrama de caja, histograma o gráfico Q-Q revelaría un valor atípico obvio.
+c. Un diagrama de caja, histograma o gráfico Q-Q revelarían un valor atípico obvio.
 d. Un diagrama de dispersión mostraría altos niveles de error de medición.
 
 
-8\. ¿Cuánto puede crecer accidentalmente el promedio con errores como este? Escribe una función llamada `error_avg` que toma un valor `k` y devuelve el promedio del vector `x` después de que la primera entrada cambia a `k`. Muestre los resultados para `k=10000` y `k=-10000`.
+8\. ¿Cuánto puede crecer accidentalmente el promedio con errores como este? Escribe una función llamada `error_avg` que toma un valor `k` y devuelve el promedio del vector `x` después de que la primera entrada cambie a `k`. Muestre los resultados para `k=10000` y `k=-10000`.
 
 ## Estudio de caso: alturas autoreportadas de estudiantes 
 
@@ -226,7 +226,7 @@ Vemos algunos valores bastante extremos. Para ver cuáles son estos valores, pod
 reported_heights %>% arrange(desc(height)) %>% top_n(10, height)
 ```
 
-Las primeras siete entradas parecen errores extraños. Sin embargo, las siguientes entradas parecen haber sido ingresadas en centímetros en lugar de pulgadas. Dado que 184 cm es equivalente a seis pies de alto, sospechamos que 184 en realidad significa 72 pulgadas.
+Las primeras siete entradas parecen errores extraños. Sin embargo, las siguientes entradas parecen haber sido ingresadas en centímetros en lugar de pulgadas. Dado que 184 cm es equivalente a seis pies de altura, sospechamos que 184 en realidad significa 72 pulgadas.
 
 Podemos revisar todas las respuestas sin sentido observando los datos que Tukey considera _far out_ o _extremos_:
 
@@ -240,6 +240,6 @@ select(original_heights) %>%
 head(n=10) %>% pull(original_heights)
 ```
 
-Examinando estas alturas cuidadosamente, vemos dos errores comunes: entradas en centímetros, que resultan ser demasiado grandes, y entradas del tipo `x.y` con `x` y `y` representando pies y pulgadas respectivamente, que resultan ser demasiado pequeños. Algunos de los valores aún más pequeños, como 1.6, podrían ser entradas en metros.
+Examinando estas alturas cuidadosamente, vemos dos errores comunes: entradas en centímetros, que resultan ser demasiado grandes, y entradas del tipo `x.y` con `x` y `y` representando pies y pulgadas respectivamente, que resultan ser demasiado pequeñas. Algunos de los valores aún más pequeños, como 1.6, podrían ser entradas en metros.
 
 En la parte de _data wrangling_ de este libro, aprenderemos técnicas para corregir estos valores y convertirlos en pulgadas. Aquí pudimos detectar este problema mediante una cuidadosa exploración de los datos para descubrir problemas con ellos: el primer paso en la gran mayoría de los proyectos de ciencia de datos.
