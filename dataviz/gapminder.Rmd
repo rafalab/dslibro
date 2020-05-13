@@ -1,6 +1,6 @@
 # Visualización de datos en la práctica {#gapminder}
 
-En este capítulo, demostraremos cómo el código relativamente sencillo de __ggplot2__  puede crear gráficos esclarecedores y estéticamente agradables. Como motivación, crearemos gráficos que nos ayudarán a comprender mejor las tendencias de la salud y la economía mundial. Implementaremos lo que aprendimos en los capítulos \@ref(ggplot2) y \@ref(other-geometries) y aprenderemos a expandir el código para perfeccionar los gráficos. A medida que avancemos en nuestro estudio de caso, describiremos los principios generales mas relevantes a la visualización de datos y aprenderemos conceptos como _facetas_, _gráficos de series de tiempo_, _transformaciones_ y _gráficos ridge_.
+En este capítulo, demostraremos cómo el código relativamente sencillo de __ggplot2__  puede crear gráficos esclarecedores y estéticamente agradables. Como motivación, crearemos gráficos que nos ayudarán a comprender mejor las tendencias de la salud y la economía mundial. Implementaremos lo que aprendimos en los capítulos \@ref(ggplot2) y \@ref(other-geometries) y aprenderemos a expandir el código para perfeccionar los gráficos. A medida que avancemos en nuestro estudio de caso, describiremos los principios generales más relevantes a la visualización de datos y aprenderemos conceptos como _facetas_, _gráficos de series de tiempo_, _transformaciones_ y _gráficos ridge_.
 
 
 ## Estudio de caso: nuevas ideas sobre la pobreza
@@ -9,7 +9,7 @@ Hans Rosling^[https://en.wikipedia.org/wiki/Hans_Rosling] era el cofundador de l
 
 >>> Los periodistas y cabilderos cuentan historias dramáticas. Ese es su trabajo. Cuentan historias sobre eventos extraordinarios y personas inusuales. Las historias dramáticas se acumulan en las mentes de las personas en una visión del mundo demasiado dramática y con fuertes sentimientos de estrés negativo: "¡El mundo está empeorando!", "¡Somos nosotros contra ellos!", "¡Las demás personas son extrañas!", " ¡La población sigue creciendo! " y "¡A nadie le importa!"
 
-Hans Rosling se dedicó, en su propia manera dramática, a educar al público sobre tendencias basadas en datos utilizando visualizaciones de datos eficaces. Esta sección se basa en dos charlas que ejemplifican esta perspectiva educativa: _New Insights on Poverty_^[https://www.ted.com/talks/hans_rosling_reveals_new_insights_on_poverty?language=en] y _The Best Stats You've Ever Seen_^[https://www.ted.com/talks/hans_rosling_shows_the_best_stats_you_ve_ever_seen]. Específicamente, en esta sección, usamos datos para intentar responder a las siguientes dos preguntas:
+Hans Rosling se dedicó, en su propia manera dramática, a educar al público sobre tendencias basadas en datos utilizando visualizaciones de datos eficaces. Esta sección se basa en dos charlas que ejemplifican esta perspectiva educativa: _New Insights on Poverty_^[https://www.ted.com/talks/hans_rosling_reveals_new_insights_on_poverty?language=en] y _The Best Stats You've Ever Seen_^[https://www.ted.com/talks/hans_rosling_shows_the_best_stats_you_ve_ever_seen]. Específicamente, en esta sección usamos datos para intentar responder a las siguientes dos preguntas:
 
 1. ¿Es una caracterización justa del mundo actual decir que está dividido en naciones ricas occidentales y el mundo en desarrollo compuesto por África, Asia y América Latina?
 2. ¿Ha empeorado la desigualdad de ingresos en todos los países durante los últimos 40 años?
@@ -67,7 +67,6 @@ kableExtra::kable_styling(font_size = 8)
 }
 ```
 
-Observamos que los países europeos en esta lista tienen las tasas de mortalidad infantil más altas: Polonia tiene una tasa más alta que Corea del Sur y Rusia tiene una tasa más alta que Malasia. También vemos que Pakistán tiene una tasa mucho más alta que Vietnam, y que Sudáfrica tiene una tasa mucho más alta que Tailandia. Resulta que cuando Hans Rosling le dio este cuestionario a grupos de personas educadas, el puntaje promedio fue inferior a 2.5 de 5, peor que lo que hubieran obtenido si hubieran adivinado al azar. Tal resultado implica que más que ignorantes, estamos mal informados. En este capítulo veremos cómo la visualización de datos nos ayuda a informarnos.
 
 ## Diagrama de dispersión
 
@@ -96,7 +95,7 @@ ggplot( aes(fertility, life_expectancy, color = continent)) +
 geom_point()
 ```
 
-En 1962, la visión de "el Occidente versus el mundo en desarrollo" se basaba en cierta realidad. ¿Sigue siendo así 50 años después?
+En 1962, la visión del "Occidente versus el mundo en desarrollo" se basaba en cierta realidad. ¿Sigue siendo así 50 años después?
 
 ## Separar en facetas
 
@@ -258,7 +257,7 @@ geom_histogram(binwidth = 1, color = "black")
 
 Utilizamos el argumento `color = "black"`para dibujar un límite y distinguir claramente los compartimientos.
 
-En este gráfico, vemos que para la mayoría de los países, los promedios están por debajo de \$10 a day. Sin embargo, la mayoría del eje-x está dedicado a  `r filter(gapminder, year == past_year & !is.na(gdp)) %>% summarise(x = sum(dollars_per_day>10)) %>% pull(x)` países con promedio de menos de \$10. Por lo tanto, el gráfico no es muy informativo con respecto a países con valores inferiores a \$10 por día.
+En este gráfico, vemos que para la mayoría de los países, los promedios están por debajo de \$10 por día. Sin embargo, la mayoría del eje-x está dedicado a  `r filter(gapminder, year == past_year & !is.na(gdp)) %>% summarise(x = sum(dollars_per_day>10)) %>% pull(x)` países con promedio de menos de \$10. Por lo tanto, el gráfico no es muy informativo con respecto a países con valores inferiores a \$10 por día.
 
 Sería más informativo poder ver rápidamente cuántos países tienen ingresos diarios promedio de aproximadamente $1 (extremadamente pobre), \$2 (muy pobre), \$4 (pobre), \$8 (promedio), \$16 (acomodado), \$32 (rico), \$64 (muy rico) por día. Estos cambios son multiplicativos y las transformaciones logarítmicas convierten los cambios multiplicativos en aditivos: cuando se usa la base 2, la duplicación de un valor se convierte en un aumento de 1.
 
@@ -506,7 +505,7 @@ facet_grid(. ~ year)
 
 Aquí pausamos para presentar otra importante característica de __ggplot2__. Como queremos comparar cada región antes y después, sería conveniente tener el diagrama de caja de `r past_year` al lado del de `r present_year` para cada región. En general, las comparaciones son más fáciles cuando los datos se grafican uno al lado del otro.
 
-Entonces, en lugar de separar en facetas, mantenemos los datos de cada año juntos y pedimos colorearlos (o rellenarlos) según el año. Tengan en cuenta que los grupos se separan automáticamente por año y cada par de diagramas de caja se dibujan uno al lado del otro. Como el año es un número, lo convertimos en un factor ya que __ggplot2__ asigna automáticamente un color a cada categoría de un factor. Recuerden que tenemos que convertir las columnas del año de numérico a factor.
+Entonces, en lugar de separar en facetas, mantenemos los datos de cada año juntos y pedimos colorearlos (o rellenarlos) según el año. Tengan en cuenta que los grupos se separan automáticamente por año y cada par de diagramas de caja se dibujan uno al lado del otro. Como el año es un número, lo convertimos en un factor ya que __ggplot2__ asigna automáticamente un color a cada categoría de un factor. Recuerden que tenemos que convertir la columnas `year` de numérica a factor.
 
 ```{r income-histogram-west-v-devel-by-year}
 gapminder %>%
@@ -589,7 +588,7 @@ El gráfico de arriba hace que parezca que hay el mismo número de países en ca
 
 ### Cómo obtener acceso a variables calculadas
 
-Para que las áreas de estas densidades sean proporcionales al tamaño de los grupos, simplemente podemos multiplicar los valores del eje-y por el tamaño del grupo. En el archivo de ayuda de `geom_density`, vemos que las funciones calculan una variable denominada `count` que hace exactamente esto. Queremos que esta variable, y no la densidad, esté en el eje-y.
+Para que las áreas de estas densidades sean proporcionales al tamaño de los grupos, simplemente multiplicamos los valores del eje-y por el tamaño del grupo. En el archivo de ayuda de `geom_density`, vemos que las funciones calculan una variable denominada `count` que hace exactamente esto. Queremos que esta variable, y no la densidad, esté en el eje-y.
 
 En __ggplot2__, obtenemos acceso a estas variables rodeando el nombre con dos puntos. Por lo tanto, utilizaremos el siguiente mapeo:
 
@@ -710,17 +709,17 @@ La relación entre estas dos variables es casi perfectamente lineal y el gráfic
 Observen que el gráfico utiliza una nueva transformación, la transformación logística.
 
 ### Transformación logística {#logit}
-La transformación logística o logit para una proporción o tasa $p$ se define como:
+La transformación logística o _logit_ para una proporción o tasa $p$ se define como:
 
 $$f(p) = \log \left( \frac{p}{1-p} \right)$$
 
 Cuando $p$ es una proporción o probabilidad, la cantidad que transformamos con el logaritmo, $p/(1-p)$, se llama _odds_. En este caso $p$ es la proporción de bebés que sobrevivieron. Los _odds_ nos dicen cuántos más bebés se espera que sobrevivan a que mueran. La transformación logarítmica lo hace simétrico. Si las tasas son iguales, entonces el _log odds_ es 0. Los aumentos multiplicativos se convierten en incrementos positivos o negativos, respectivamente.
 
-Esta escala es útil cuando queremos resaltar diferencias cercanas a 0 o 1. Para las tasas de supervivencia, esto es importante porque una tasa de supervivencia del 90% es inaceptable, mientras que una supervivencia del 99% es relativamente buena. Preferiríamos mucho una tasa de supervivencia más cercana al 99.9%. Queremos que nuestra escala resalte estas diferencias y el logit lo hace. Recuerden que 99.9/0.1 es aproximadamente 10 veces más grande que 99/1, que es aproximadamente 10 veces más grande que 90/10. Al usar el logaritmo, estos incrementos multiplicativos se convierten en aumentos constantes.
+Esta escala es útil cuando queremos resaltar diferencias cercanas a 0 o 1. Para las tasas de supervivencia, esto es importante porque una tasa de supervivencia del 90% es inaceptable, mientras que una supervivencia del 99% es relativamente buena. Preferiríamos mucho una tasa de supervivencia más cercana al 99.9%. Queremos que nuestra escala resalte estas diferencias y el _logit_ lo hace. Recuerden que 99.9/0.1 es aproximadamente 10 veces más grande que 99/1, que es aproximadamente 10 veces más grande que 90/10. Al usar el logaritmo, estos incrementos multiplicativos se convierten en aumentos constantes.
 
 ### Mostrar los datos
 
-Ahora, de vuelta a nuestro gráfico. Basado en el gráfico anterior, ¿concluimos que un país con bajos ingresos está destinado a tener una tasa de supervivencia baja? Además, ¿concluímos que las tasas de supervivencia en el África subsahariana son más bajas que en el sur de Asia, que a su vez son más bajas que en las islas del Pacífico y así sucesivamente?
+Ahora, de vuelta a nuestro gráfico. Basado en el gráfico anterior, ¿concluimos que un país con ingresos bajos está destinado a tener una tasa de supervivencia baja? Además, ¿concluímos que las tasas de supervivencia en el África subsahariana son más bajas que en el sur de Asia, que a su vez son más bajas que en las islas del Pacífico y así sucesivamente?
 
 Saltar a esta conclusión basada en un gráfico que muestra promedios se denomina una _falacia ecológica_. La relación casi perfecta entre las tasas de supervivencia y los ingresos solo se observa para los promedios a nivel regional. Una vez que mostramos todos los datos, vemos una historia más complicada:
 
