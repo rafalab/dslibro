@@ -1,0 +1,281 @@
+## Estudio de caso: The Big Short
+
+### Tasas de interés explicadas con modelo de oportunidad
+
+Los bancos también usan versiones más complejas de los modelos de muestreo que hemos discutido para decidir las tasas de interés. Supongamos que tiene un banco pequeño que tiene un historial de identificación de posibles propietarios de viviendas en los que se puede confiar para realizar pagos. De hecho, históricamente, en un año determinado, solo el 2% de sus clientes no pagan, lo que significa que no pagan el dinero que les prestó. Sin embargo, sabe que si simplemente presta dinero a todos sin intereses, terminará perdiendo dinero debido a este 2%. Aunque sabe que el 2% de sus clientes probablemente no pagarán, no sabe cuáles. Sin embargo, al cobrarles a todos un poco más en intereses, puede compensar las pérdidas incurridas debido a ese 2% y también cubrir sus costos operativos. También puede obtener ganancias, pero si establece tasas de interés demasiado altas, sus clientes irán a otro banco. Utilizamos todos estos hechos y alguna teoría de probabilidad para decidir qué tasa de interés debe cobrar.
+
+Suponga que su banco otorgará 1,000 préstamos por \$180,000 this year. Also, after adding up all costs, suppose your bank loses \$ 200,000 por ejecución hipotecaria. Para simplificar, asumimos que esto incluye todos los costos operativos. Un modelo de muestreo para este escenario puede codificarse así:
+
+```{r}
+n <- 1000
+loss_per_foreclosure <- -200000
+p <- 0.02
+defaults <- sample( c(0,1), n, prob=c(1-p, p), replace = TRUE)
+sum(defaults * loss_per_foreclosure)
+```
+
+Tenga en cuenta que la pérdida total definida por la suma final es una variable aleatoria. Cada vez que ejecuta el código anterior, obtiene una respuesta diferente. Podemos construir fácilmente una simulación de Monte Carlo para tener una idea de la distribución de esta variable aleatoria.
+
+```{r}
+B <- 10000
+losses <- replicate(B, {
+defaults <- sample( c(0,1), n, prob=c(1-p, p), replace = TRUE)
+sum(defaults * loss_per_foreclosure)
+})
+```
+
+<!--
+Aquí está la distribución de esta variable aleatoria:
+```{r losses-distribution, message=FALSE, warning=FALSE, echo=FALSE}
+library(tidyverse)
+data.frame(losses_in_millions = losses/10^6) %>% ggplot(aes(losses_in_millions)) + geom_histogram(binwidth = 0.6, col="black")
+```
+-->
+
+Sin embargo, realmente no necesitamos una simulación de Monte Carlo. Usando lo que hemos aprendido, el CLT nos dice que debido a que nuestras pérdidas son una suma de sorteos independientes, su distribución es aproximadamente normal con el valor esperado y los errores estándar dados por:
+
+```{r}
+n*(p*loss_per_foreclosure + (1-p)*0)
+sqrt(n)*abs(loss_per_foreclosure)*sqrt(p*(1-p))
+```
+
+Ahora podemos establecer una tasa de interés para garantizar que, en promedio, lleguemos a un punto de equilibrio. Básicamente, necesitamos agregar una cantidad $x$ a cada préstamo, que en este caso están representados por sorteos, de modo que el valor esperado es 0. Si definimos $l$ para ser la pérdida por ejecución hipotecaria, necesitamos:
+
+$$
+lp + x(1-p) = 0
+$$
+
+lo que implica $x$ es
+
+```{r}
+- loss_per_foreclosure*p/(1-p)
+```
+
+o una tasa de interés de `r - p*loss_per_foreclosure/(1-p)/ 180000`.
+
+Sin embargo, todavía tenemos un problema. Aunque esta tasa de interés garantiza que, en promedio, llegamos a un punto de equilibrio, existe una probabilidad del 50 \% de que perdamos dinero. Si nuestro banco pierde dinero, tenemos que cerrarlo. Por lo tanto, debemos elegir una tasa de interés que haga improbable que esto suceda. Al mismo tiempo, si la tasa de interés es demasiado alta, nuestros clientes irán a otro banco, por lo que debemos estar dispuestos a asumir algunos riesgos. Entonces, digamos que queremos que nuestras posibilidades de perder dinero sean de 1 en 100, ¿qué significa $x$ cantidad debe ser ahora? Este es un poco más difícil. Queremos la suma $S$ tener:
+
+$$\mbox{Pr}(S<0) = 0.01$$
+
+Lo sabemos $S$ es aproximadamente normal. El valor esperado de $S$ es
+
+$$\mbox{E}[S] = \{ lp + x(1-p)\}n$$
+
+con $n$ el número de sorteos, que en este caso representa préstamos. El error estándar es
+
+$$\mbox{SD}[S] = |x-l| \sqrt{np(1-p)}.$$
+
+Porque $x$ es positivo y $l$ negativo $|x-l|=x-l$. Tenga en cuenta que estas son solo una aplicación de las fórmulas mostradas anteriormente, pero que usan símbolos más compactos.
+
+Ahora vamos a utilizar un "truco" matemático que es muy común en las estadísticas. Sumamos y restamos las mismas cantidades a ambos lados del evento. $S<0$ para que la probabilidad no cambie y terminemos con una variable aleatoria normal estándar a la izquierda, que luego nos permitirá escribir una ecuación con solo $x$ como un desconocido Este "truco" es el siguiente:
+
+Si $\mbox{Pr}(S<0) = 0.01$ luego
+$$
+\mbox{Pr}\left(\frac{S - \mbox{E}[S]}{\mbox{SE}[S]} < \frac{ - \mbox{E}[S]}{\mbox{SE}[S]}\right)
+$$
+Y recuerda $\mbox{E}[S]$ y $\mbox{SE}[S]$ son el valor esperado y el error estándar de $S$, respectivamente. Todo lo que hicimos arriba fue sumar y dividir por la misma cantidad en ambos lados. Hicimos esto porque ahora el término de la izquierda es una variable aleatoria normal estándar, a la que cambiaremos el nombre $Z$.
+Ahora completamos los espacios en blanco con la fórmula real para el valor esperado y el error estándar:
+
+$$
+\mbox{Pr}\left(Z < \frac{- \{ lp + x(1-p)\}n}{(x-l) \sqrt{np(1-p)}}\right) = 0.01
+$$
+
+Puede parecer complicado, pero recuerda que $l$, $p$ y $n$ son todas cantidades conocidas, por lo que eventualmente las reemplazaremos con números.
+
+Ahora, debido a que Z es un azar normal con valor esperado 0 y error estándar 1, significa que la cantidad en el lado derecho del signo <debe ser igual a:
+
+```{r}
+qnorm(0.01)
+```
+
+para que la ecuación sea verdadera. Recuérdalo $z=$ `qnorm(0.01)` nos da el valor de $z$ para cual:
+
+$$
+\mbox{Pr}(Z \leq z) = 0.01
+$$
+
+Esto significa que el lado derecho de la ecuación complicada debe ser $z$=`qnorm(0.01)`.
+
+$$
+\frac{- \{ lp + x(1-p)\}n} {(x-l) \sqrt{n p (1-p)}} = z
+$$
+
+El truco funciona porque terminamos con una expresión que contiene $x$ que sabemos tiene que ser igual a una cantidad conocida $z$. Resolviendo para $x$ ahora es simplemente álgebra:
+
+$$ x = - l \frac{ np - z \sqrt{np(1-p)}}{n(1-p) + z \sqrt{np(1-p)}}$$
+
+cual es:
+```{r}
+l <- loss_per_foreclosure
+z <- qnorm(0.01)
+x <- -l*( n*p - z*sqrt(n*p*(1-p)))/ ( n*(1-p) + z*sqrt(n*p*(1-p)))
+x
+```
+
+Nuestra tasa de interés ahora sube a `r x/180000`. Esta sigue siendo una tasa de interés muy competitiva. Al elegir esta tasa de interés, ahora tenemos una ganancia esperada por préstamo de:
+
+```{r}
+loss_per_foreclosure*p + x*(1-p)
+```
+
+que es un beneficio total esperado de aproximadamente:
+
+```{r}
+n*(loss_per_foreclosure*p + x*(1-p))
+```
+
+dolares!
+
+Podemos ejecutar una simulación de Monte Carlo para verificar nuestras aproximaciones teóricas:
+
+```{r, cache=TRUE}
+B <- 100000
+profit <- replicate(B, {
+draws <- sample( c(x, loss_per_foreclosure), n,
+prob=c(1-p, p), replace = TRUE)
+sum(draws)
+})
+mean(profit)
+mean(profit<0)
+```
+
+### El gran corto
+
+Uno de sus empleados señala que, dado que el banco está haciendo `r prettyNum(round(loss_per_foreclosure*p + x*(1-p)), big.mark=",")` dólares por préstamo, ¡el banco debería otorgar más préstamos! Por qué solo $n$? Usted explica que encontrar esos $n$ los clientes fueron difíciles. Necesita un grupo que sea predecible y que mantenga bajas las posibilidades de incumplimiento. Luego señala que incluso si la probabilidad de incumplimiento es mayor, siempre que nuestro valor esperado sea positivo, puede minimizar sus posibilidades de pérdidas al aumentar $n$ y confiando en la ley de grandes números.
+
+Afirma que incluso si la tasa predeterminada es el doble, digamos 4%, si establecemos la tasa un poco más alta que este valor:
+```{r}
+p <- 0.04
+r <- (- loss_per_foreclosure*p/(1-p))/ 180000
+r
+```
+
+nos beneficiaremos Al 5%, tenemos garantizado un valor positivo esperado de:
+
+```{r}
+r <- 0.05
+x <- r*180000
+loss_per_foreclosure*p + x * (1-p)
+```
+
+y puede minimizar nuestras posibilidades de perder dinero simplemente aumentando $n$ ya que:
+
+$$
+\mbox{Pr}(S < 0) =
+\mbox{Pr}\left(Z < - \frac{\mbox{E}[S]}{\mbox{SE}[S]}\right)
+$$
+con $Z$ una variable aleatoria normal estándar como se muestra anteriormente. Si definimos $\mu$ y $\sigma$ para ser el valor esperado y la desviación estándar de la urna, respectivamente (es decir, de un solo préstamo), usando las fórmulas anteriores tenemos: $\mbox{E}[S]= n\mu$ y $\mbox{SE}[S]= \sqrt{n}\sigma$. Entonces si definimos $z$=`qnorm(0.01)`, tenemos:
+$$
+- \frac{n\mu}{\sqrt{n}\sigma} = - \frac{\sqrt{n}\mu}{\sigma} = z
+$$
+lo que implica que si dejamos:
+
+$$
+n \geq z^2 \sigma^2/ \mu^2
+$$
+tenemos garantizada una probabilidad de menos de 0.01. La implicación es que, siempre y cuando $\mu$ es positivo, podemos encontrar un $n$ eso minimiza la probabilidad de una pérdida. Esta es una forma de la ley de los grandes números: cuando $n$ es grande, nuestras ganancias promedio por préstamo convergen a la ganancia esperada $\mu$.
+
+
+Con $x$ arreglado, ahora podemos preguntar qué $n$ ¿necesitamos que la probabilidad sea 0.01? En nuestro ejemplo, si damos a conocer:
+
+```{r}
+z <- qnorm(0.01)
+n <- ceiling((z^2*(x-l)^2*p*(1-p))/(l*p + x*(1-p))^2)
+n
+```
+
+préstamos, la probabilidad de perder es de aproximadamente 0.01 y se espera que ganemos un total de
+
+```{r}
+n*(loss_per_foreclosure*p + x * (1-p))
+```
+
+dolares! Podemos confirmar esto con una simulación de Monte Carlo:
+
+
+```{r}
+p <- 0.04
+x <- 0.05*180000
+profit <- replicate(B, {
+draws <- sample( c(x, loss_per_foreclosure), n,
+prob=c(1-p, p), replace = TRUE)
+sum(draws)
+})
+mean(profit)
+```
+
+Esto parece una obviedad. Como resultado, su colega decide abandonar su banco y comenzar su propia compañía hipotecaria de alto riesgo. Unos meses después, el banco de su colega se declaró en quiebra. Se escribe un libro y finalmente se hace una película relatando el error que cometieron su amigo y muchos otros. ¿Que pasó?
+
+El esquema de su colega se basó principalmente en esta fórmula matemática:
+$$
+\mbox{SE}[(X_1+X_2+\dots+X_n)/ n] = \sigma/ \sqrt{n}
+$$
+
+Haciendo $n$ grande, minimizamos el error estándar de nuestro beneficio por préstamo. Sin embargo, para que esta regla se cumpla, el $X$ s deben ser sorteos independientes: el incumplimiento de una persona debe ser independiente del incumplimiento de otros. Tenga en cuenta que en el caso de promediar el **mismo** evento una y otra vez, un ejemplo extremo de eventos que no son independientes, obtenemos un error estándar que es $\sqrt{n}$ veces más grande:
+$$
+\mbox{SE}[(X_1+X_1+\dots+X_1)/ n] = \mbox{SE}[n X_1/ n] = \sigma > \sigma/ \sqrt{n}
+$$
+
+Para construir una simulación más realista que la original que ejecutó su colega, supongamos que hay un evento global que afecta a todas las personas con hipotecas de alto riesgo y cambia su probabilidad. Asumiremos que con una probabilidad de 50-50, todas las probabilidades suben o bajan ligeramente a algún lugar entre 0.03 y 0.05. Pero le sucede a todos a la vez, no solo a una persona. Estos sorteos ya no son independientes.
+
+```{r}
+p <- 0.04
+x <- 0.05*180000
+profit <- replicate(B, {
+new_p <- 0.04 + sample(seq(-0.01, 0.01, length = 100), 1)
+draws <- sample( c(x, loss_per_foreclosure), n,
+prob=c(1-new_p, new_p), replace = TRUE)
+sum(draws)
+})
+```
+
+Tenga en cuenta que nuestro beneficio esperado sigue siendo grande:
+
+```{r}
+mean(profit)
+```
+
+Sin embargo, la probabilidad de que el banco tenga ganancias negativas se dispara a:
+
+```{r}
+mean(profit<0)
+```
+
+Aún más aterrador es que la probabilidad de perder más de 10 millones de dólares es:
+
+```{r}
+mean(profit < -10000000)
+```
+
+Para entender cómo sucede esto, mire la distribución:
+
+```{r profit-distribution}
+data.frame(profit_in_millions=profit/10^6) %>%
+ggplot(aes(profit_in_millions)) +
+geom_histogram(color="black", binwidth = 5)
+```
+
+La teoría se rompe por completo y la variable aleatoria tiene mucha más variabilidad de lo esperado. El colapso financiero de 2007 se debió, entre otras cosas, a los "expertos" financieros que asumieron la independencia cuando no había ninguno.
+
+## Ejercicios
+
+1\. Crea una variable aleatoria $S$ con las ganancias de su banco si otorga 10,000 préstamos, la tasa predeterminada es 0.3 y pierde \$ 200,000 en cada ejecución hipotecaria. Sugerencia: use el código que mostramos en la sección anterior, pero cambie los parámetros.
+
+2\. Ejecute una simulación de Monte Carlo con 10.000 resultados para $S$. Haz un histograma de los resultados.
+
+
+3\. ¿Cuál es el valor esperado de $S$?
+
+
+4\. ¿Cuál es el error estándar de $S$?
+
+5\. Supongamos que otorgamos préstamos por \$ 180,000. ¿Cuál debería ser la tasa de interés para que nuestro valor esperado sea 0?
+
+6\. (Más difícil) ¿Cuál debería ser la tasa de interés para que la posibilidad de perder dinero sea 1 en 20? En notación matemática, ¿cuál debería ser la tasa de interés para que $\mbox{Pr}(S<0) = 0.05$ ?
+
+7\. Si el banco quiere minimizar las probabilidades de perder dinero, ¿cuál de las siguientes opciones **no** hace subir las tasas de interés?
+
+a. Un grupo más pequeño de préstamos.
+si. Una mayor probabilidad de incumplimiento.
+c. Una menor probabilidad requerida de perder dinero.
+re. El número de simulaciones de Monte Carlo.
