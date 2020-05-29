@@ -2,9 +2,9 @@
 
 ### Tasas de interés explicadas con modelo de oportunidad
 
-Los bancos también usan versiones más complejas de los modelos de muestreo que hemos discutido para decidir las tasas de interés. Supongamos que tiene un banco pequeño que tiene un historial de identificación de posibles propietarios de viviendas en los que se puede confiar para realizar pagos. De hecho, históricamente, en un año determinado, solo el 2% de sus clientes no pagan, lo que significa que no pagan el dinero que les prestó. Sin embargo, sabe que si simplemente presta dinero a todos sin intereses, terminará perdiendo dinero debido a este 2%. Aunque sabe que el 2% de sus clientes probablemente no pagarán, no sabe cuáles. Sin embargo, al cobrarles a todos un poco más en intereses, puede compensar las pérdidas incurridas debido a ese 2% y también cubrir sus costos operativos. También puede obtener ganancias, pero si establece tasas de interés demasiado altas, sus clientes irán a otro banco. Utilizamos todos estos hechos y alguna teoría de probabilidad para decidir qué tasa de interés debe cobrar.
+Los bancos también usan versiones más complejas de los modelos de muestreo que hemos discutido para decidir las tasas de interés. Supongamos que compran un banco pequeño que tiene un historial de identificación de posibles propietarios de viviendas en los que se puede confiar para realizar pagos. De hecho, históricamente, en un año determinado, solo el 2% de sus clientes no pagan el dinero que se les prestó. Sin embargo, el banco sabe que si simplemente le presta dinero a todos sus clientes sin intereses, terminará perdiendo dinero debido a este 2%. Aunque el banco sabe que el 2% de sus clientes probablemente no pagarán, no sabe cuáles son esos. Sin embargo, al cobrarles a todos un poco más en intereses, pueden compensar las pérdidas incurridas debido a ese 2% y también cubrir sus costos operativos. También pueden obtener ganancias, pero si establecen tasas de interés demasiado altas, los clientes se irán a otro banco. Utilizaremos todos estos hechos y un poco de teoría de probabilidad para decidir qué tasa de interés deben cobrar.
 
-Suponga que su banco otorgará 1,000 préstamos por \$180,000 this year. Also, after adding up all costs, suppose your bank loses \$ 200,000 por ejecución hipotecaria. Para simplificar, asumimos que esto incluye todos los costos operativos. Un modelo de muestreo para este escenario puede codificarse así:
+Supongamos que su banco otorgará 1,000 préstamos por \$180,000 este año. Además, tras sumar todos los costos, supongamos que su banco pierde \$ 200,000 por ejecución hipotecaria. Para simplificar, asumimos que esto incluye todos los costos operativos. Un modelo de muestreo para este escenario puede codificarse así:
 
 ```{r}
 n <- 1000
@@ -14,7 +14,7 @@ defaults <- sample( c(0,1), n, prob=c(1-p, p), replace = TRUE)
 sum(defaults * loss_per_foreclosure)
 ```
 
-Tenga en cuenta que la pérdida total definida por la suma final es una variable aleatoria. Cada vez que ejecuta el código anterior, obtiene una respuesta diferente. Podemos construir fácilmente una simulación de Monte Carlo para tener una idea de la distribución de esta variable aleatoria.
+Tengan en cuenta que la pérdida total definida por la suma final es una variable aleatoria. Cada vez que ejecutan el código anterior, obtienen una respuesta diferente. Podemos construir fácilmente una simulación Monte Carlo para tener una idea de la distribución de esta variable aleatoria.
 
 ```{r}
 B <- 10000
@@ -32,20 +32,20 @@ data.frame(losses_in_millions = losses/10^6) %>% ggplot(aes(losses_in_millions))
 ```
 -->
 
-Sin embargo, realmente no necesitamos una simulación de Monte Carlo. Usando lo que hemos aprendido, el CLT nos dice que debido a que nuestras pérdidas son una suma de sorteos independientes, su distribución es aproximadamente normal con el valor esperado y los errores estándar dados por:
+Sin embargo, realmente no necesitamos una simulación Monte Carlo. Usando lo que hemos aprendido, el CLT nos dice que, debido a que nuestras pérdidas son una suma de sorteos independientes, su distribución es aproximadamente normal con el valor esperado y los errores estándar dados por:
 
 ```{r}
 n*(p*loss_per_foreclosure + (1-p)*0)
 sqrt(n)*abs(loss_per_foreclosure)*sqrt(p*(1-p))
 ```
 
-Ahora podemos establecer una tasa de interés para garantizar que, en promedio, lleguemos a un punto de equilibrio. Básicamente, necesitamos agregar una cantidad $x$ a cada préstamo, que en este caso están representados por sorteos, de modo que el valor esperado es 0. Si definimos $l$ para ser la pérdida por ejecución hipotecaria, necesitamos:
+Ahora podemos establecer una tasa de interés para garantizar que, como promedio, lleguemos a un punto de equilibrio. Básicamente, necesitamos agregar una cantidad $x$ a cada préstamo, que en este caso están representados por [fix] sorteos/draws, de modo que el valor esperado es 0. Si definimos $l$ para ser la pérdida por ejecución hipotecaria, necesitamos:
 
 $$
 lp + x(1-p) = 0
 $$
 
-lo que implica $x$ es
+que implica $x$ es:
 
 ```{r}
 - loss_per_foreclosure*p/(1-p)
@@ -53,42 +53,43 @@ lo que implica $x$ es
 
 o una tasa de interés de `r - p*loss_per_foreclosure/(1-p)/ 180000`.
 
-Sin embargo, todavía tenemos un problema. Aunque esta tasa de interés garantiza que, en promedio, llegamos a un punto de equilibrio, existe una probabilidad del 50 \% de que perdamos dinero. Si nuestro banco pierde dinero, tenemos que cerrarlo. Por lo tanto, debemos elegir una tasa de interés que haga improbable que esto suceda. Al mismo tiempo, si la tasa de interés es demasiado alta, nuestros clientes irán a otro banco, por lo que debemos estar dispuestos a asumir algunos riesgos. Entonces, digamos que queremos que nuestras posibilidades de perder dinero sean de 1 en 100, ¿qué significa $x$ cantidad debe ser ahora? Este es un poco más difícil. Queremos la suma $S$ tener:
+Sin embargo, todavía tenemos un problema. Aunque esta tasa de interés garantiza que, como promedio, lleguen a un punto de equilibrio, existe una probabilidad del 50\% de que pierdan dinero. Si su banco pierde dinero, tendrán que cerrarlo. Por lo tanto, deben elegir una tasa de interés que los protega de esto. Al mismo tiempo, si la tasa de interés es demasiado alta, sus clientes se irán a otro banco, por lo que debens estar dispuestos a asumir algunos riesgos. Entonces, digamos que quieren que sus posibilidades de perder dinero sean de 1 en 100, entonces ¿qué cantidad debe ser $x$ ahora? Esto es un poco más difícil. Queremos que la suma $S$ tenga:
 
 $$\mbox{Pr}(S<0) = 0.01$$
 
-Lo sabemos $S$ es aproximadamente normal. El valor esperado de $S$ es
+Sabemos que $S$ es aproximadamente normal. El valor esperado de $S$ es
 
 $$\mbox{E}[S] = \{ lp + x(1-p)\}n$$
 
-con $n$ el número de sorteos, que en este caso representa préstamos. El error estándar es
+con $n$ el número de [fix] sorteos/elecciones, que en este caso representa préstamos. El error estándar es:
 
 $$\mbox{SD}[S] = |x-l| \sqrt{np(1-p)}.$$
 
-Porque $x$ es positivo y $l$ negativo $|x-l|=x-l$. Tenga en cuenta que estas son solo una aplicación de las fórmulas mostradas anteriormente, pero que usan símbolos más compactos.
+Porque $x$ es positivo y $l$ negativo $|x-l|=x-l$. Tengan en cuenta que estas son solo una aplicación de las fórmulas mostradas anteriormente, pero que usan símbolos más compactos.
 
-Ahora vamos a utilizar un "truco" matemático que es muy común en las estadísticas. Sumamos y restamos las mismas cantidades a ambos lados del evento. $S<0$ para que la probabilidad no cambie y terminemos con una variable aleatoria normal estándar a la izquierda, que luego nos permitirá escribir una ecuación con solo $x$ como un desconocido Este "truco" es el siguiente:
+Ahora vamos a utilizar un "truco" matemático que es muy común en las estadísticas. Sumamos y restamos las mismas cantidades a ambos lados del evento. $S<0$ para que la probabilidad no cambie y terminemos con una variable aleatoria normal estándar a la izquierda, que luego nos permitirá escribir una ecuación con solo $x$ como un desconocido. Este "truco" es el siguiente:
 
-Si $\mbox{Pr}(S<0) = 0.01$ luego
+Si $\mbox{Pr}(S<0) = 0.01$ luego:
+
 $$
 \mbox{Pr}\left(\frac{S - \mbox{E}[S]}{\mbox{SE}[S]} < \frac{ - \mbox{E}[S]}{\mbox{SE}[S]}\right)
 $$
-Y recuerda $\mbox{E}[S]$ y $\mbox{SE}[S]$ son el valor esperado y el error estándar de $S$, respectivamente. Todo lo que hicimos arriba fue sumar y dividir por la misma cantidad en ambos lados. Hicimos esto porque ahora el término de la izquierda es una variable aleatoria normal estándar, a la que cambiaremos el nombre $Z$.
+[fix] Y recuerden $\mbox{E}[S]$ y $\mbox{SE}[S]$ son el valor esperado y el error estándar de $S$, respectivamente. Todo lo que hicimos arriba fue sumar y dividir por la misma cantidad en ambos lados. Hicimos esto porque ahora el término de la izquierda es una variable aleatoria normal estándar, a la que cambiaremos el nombre $Z$.
 Ahora completamos los espacios en blanco con la fórmula real para el valor esperado y el error estándar:
 
 $$
 \mbox{Pr}\left(Z < \frac{- \{ lp + x(1-p)\}n}{(x-l) \sqrt{np(1-p)}}\right) = 0.01
 $$
 
-Puede parecer complicado, pero recuerda que $l$, $p$ y $n$ son todas cantidades conocidas, por lo que eventualmente las reemplazaremos con números.
+Puede parecer complicado, pero recuerden que $l$, $p$ y $n$ son todas cantidades conocidas, por lo que eventualmente las reemplazaremos con números.
 
-Ahora, debido a que Z es un azar normal con valor esperado 0 y error estándar 1, significa que la cantidad en el lado derecho del signo <debe ser igual a:
+Ahora, debido a que Z es un [fix] azar normal con valor esperado 0 y error estándar 1, significa que la cantidad en el lado derecho del [fix] signo < debe ser igual a:
 
 ```{r}
 qnorm(0.01)
 ```
 
-para que la ecuación sea verdadera. Recuérdalo $z=$ `qnorm(0.01)` nos da el valor de $z$ para cual:
+para que la ecuación sea [fix] verdadera/cierta. Recuérdalo $z=$ `qnorm(0.01)` nos da el valor de $z$ para cual:
 
 $$
 \mbox{Pr}(Z \leq z) = 0.01
@@ -100,7 +101,7 @@ $$
 \frac{- \{ lp + x(1-p)\}n} {(x-l) \sqrt{n p (1-p)}} = z
 $$
 
-El truco funciona porque terminamos con una expresión que contiene $x$ que sabemos tiene que ser igual a una cantidad conocida $z$. Resolviendo para $x$ ahora es simplemente álgebra:
+El truco funciona porque terminamos con una expresión que contiene $x$, que sabemos tiene que ser igual a una cantidad conocida $z$. Resolviendo para $x$ ahora es simplemente álgebra:
 
 $$ x = - l \frac{ np - z \sqrt{np(1-p)}}{n(1-p) + z \sqrt{np(1-p)}}$$
 
@@ -126,7 +127,7 @@ n*(loss_per_foreclosure*p + x*(1-p))
 
 dolares!
 
-Podemos ejecutar una simulación de Monte Carlo para verificar nuestras aproximaciones teóricas:
+Podemos ejecutar una simulación Monte Carlo para verificar nuestras aproximaciones teóricas:
 
 ```{r, cache=TRUE}
 B <- 100000
@@ -139,9 +140,9 @@ mean(profit)
 mean(profit<0)
 ```
 
-### El gran corto
+### The Big Short
 
-Uno de sus empleados señala que, dado que el banco está haciendo `r prettyNum(round(loss_per_foreclosure*p + x*(1-p)), big.mark=",")` dólares por préstamo, ¡el banco debería otorgar más préstamos! Por qué solo $n$? Usted explica que encontrar esos $n$ los clientes fueron difíciles. Necesita un grupo que sea predecible y que mantenga bajas las posibilidades de incumplimiento. Luego señala que incluso si la probabilidad de incumplimiento es mayor, siempre que nuestro valor esperado sea positivo, puede minimizar sus posibilidades de pérdidas al aumentar $n$ y confiando en la ley de grandes números.
+Uno de sus empleados señala que, dado que el banco está haciendo `r prettyNum(round(loss_per_foreclosure*p + x*(1-p)), big.mark=",")` dólares por préstamo, ¡el banco debería otorgar más préstamos! ¿Por qué solo $n$? Usted explica que encontrar esos $n$ clientes fue difícil. Necesita un grupo que sea predecible y que mantenga bajas las posibilidades de incumplimiento. Luego señala que incluso si la probabilidad de incumplimiento es mayor, siempre que nuestro valor esperado sea positivo, puede minimizar sus posibilidades de pérdidas al aumentar $n$ y confiando en la ley de grandes números.
 
 Afirma que incluso si la tasa predeterminada es el doble, digamos 4%, si establecemos la tasa un poco más alta que este valor:
 ```{r}
@@ -150,7 +151,7 @@ r <- (- loss_per_foreclosure*p/(1-p))/ 180000
 r
 ```
 
-nos beneficiaremos Al 5%, tenemos garantizado un valor positivo esperado de:
+[fix] nos beneficiaremos. Al 5%, tenemos garantizado un valor positivo esperado de:
 
 ```{r}
 r <- 0.05
@@ -276,6 +277,6 @@ La teoría se rompe por completo y la variable aleatoria tiene mucha más variab
 7\. Si el banco quiere minimizar las probabilidades de perder dinero, ¿cuál de las siguientes opciones **no** hace subir las tasas de interés?
 
 a. Un grupo más pequeño de préstamos.
-si. Una mayor probabilidad de incumplimiento.
+b. Una mayor probabilidad de incumplimiento.
 c. Una menor probabilidad requerida de perder dinero.
-re. El número de simulaciones de Monte Carlo.
+d. El número de simulaciones de Monte Carlo.
