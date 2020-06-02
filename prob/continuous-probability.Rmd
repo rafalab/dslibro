@@ -27,7 +27,7 @@ Tengan en cuenta que todavía no hemos introducido la probabilidad en el context
 1 - F(70)
 ```
 
-Una vez que se define un CDF, podemos usar esto para calcular la probabilidad de cualquier subconjunto. Por ejemplo, la probabilidad de que un estudiante esté entre altura `a` y altura `b` es:
+Una vez que se defina un CDF, podemos usar esto para calcular la probabilidad de cualquier subconjunto. Por ejemplo, la probabilidad de que un estudiante esté entre altura `a` y altura `b` es:
 
 ```{r, eval=FALSE}
 F(b)-F(a)
@@ -61,7 +61,7 @@ rafalib::mypar()
 plot(prop.table(table(x)), xlab = "a = Height in inches", ylab = "Pr(X = a)")
 ```
 
-Mientras que la mayoría de los estudiantes redondearon sus alturas a la pulgada más cercana, otros informaron valores con más precisión. Un estudiante informó que su altura era 69.6850393700787 pulgadas, que equivale 177 centímetros. La probabilidad asignada a esta altura es `r 1/length(x)` o 1 en `r length(x)`. La probabilidad de 70 pulgadas es mucho mayor en `r mean(x==70)`, pero ¿tiene sentido pensar que la probabilidad de tener exactamente 70 pulgadas es diferente de 69.6850393700787? Claramente, es mucho más útil para fines de análisis de datos tratar este resultado como una variable numérica continua, teniendo en cuenta que muy pocas personas, o tal vez ninguna, son exactamente 70 pulgadas, y que la razón por la que obtenemos más valores en 70 es porque las personas redondean a la pulgada más cercana.
+Mientras que la mayoría de los estudiantes redondearon sus alturas a la pulgada más cercana, otros indicaron valores con más precisión. Un estudiante indicó que su altura era 69.6850393700787 pulgadas, que equivale 177 centímetros. La probabilidad asignada a esta altura es `r 1/length(x)` o 1 en `r length(x)`. La probabilidad de 70 pulgadas es mucho mayor en `r mean(x==70)`, pero ¿tiene sentido pensar que la probabilidad de tener exactamente 70 pulgadas es diferente de 69.6850393700787? Claramente, es mucho más útil para fines de análisis de datos tratar este resultado como una variable numérica continua, teniendo en cuenta que muy pocas personas, o tal vez ninguna, son exactamente 70 pulgadas, y que la razón por la que obtenemos más valores en 70 es porque las personas redondean a la pulgada más cercana.
 
 [fix] Con distribuciones continuas, la probabilidad de un valor singular ni siquiera se define. Por ejemplo, no tiene sentido preguntar cuál es la probabilidad de que un valor distribuido normalmente sea 70. En cambio, definimos probabilidades para intervalos. Por lo tanto, podríamos preguntar cuál es la probabilidad de que alguien mida entre 69.5 y 70.5.
 
@@ -73,7 +73,7 @@ mean(x <= 69.5) - mean(x <= 68.5)
 mean(x <= 70.5) - mean(x <= 69.5)
 ```
 
-Tengan en cuenta lo cerca que nos acercamos con la aproximación normal:
+Tengan en cuenta lo mucho que nos acercamos con la aproximación normal:
 
 ```{r}
 pnorm(68.5, m, s) - pnorm(67.5, m, s)
@@ -93,7 +93,7 @@ con:
 pnorm(70.9, m, s) - pnorm(70.1, m, s)
 ```
 
-En general, llamamos a esta situación _discretización_. Aunque la distribución de altura real es continua, las alturas reportadas tienden a ser más comunes en valores discretos, en este caso, debido al redondeo.Con tal que sepamos cómo lidiar con esta realidad, la aproximación normal puede ser una herramienta muy útil.
+En general, llamamos a esta situación _discretización_. Aunque la distribución de altura real es continua, las alturas reportadas tienden a ser más comunes en valores discretos, en este caso, debido al redondeo. Con tal que sepamos cómo lidiar con esta realidad, la aproximación normal puede ser una herramienta muy útil.
 
 ### La densidad de probabilidad
 
@@ -138,11 +138,11 @@ geom_ribbon(aes(ymin = 0, ymax = y), data = dat_ribbon)
 
 La curva que ven es la densidad de probabilidad para la distribución normal. En R, obtenemos esto usando la función `dnorm`.
 
-Aunque puede no ser inmediatamente obvio por qué es útil conocer las densidades de probabilidad, comprender este concepto será esencial para aquellos que quieran ajustar modelos a datos para los que no hay funciones predefinidas disponibles.
+[fix check] Aunque puede no ser inmediatamente obvio por qué es útil conocer las densidades de probabilidad, comprender este concepto será esencial para aquellos que quieran ajustar modelos a datos para los que no hay funciones predefinidas disponibles.
 
 ## Simulaciones Monte Carlo para variables continuas
 
-R provee funciones para generar resultados normalmente distribuidos. Específicamente, la función `rnorm` toma tres argumentos: tamaño, promedio (predeterminado a 0) y desviación estándar (predeterminado a 1) y produce números aleatorios. Aquí hay un ejemplo de cómo podríamos generar datos que se parezcan a nuestras alturas informadas:
+R provee funciones para generar resultados normalmente distribuidos. Específicamente, la función `rnorm` toma tres argumentos: tamaño, promedio (predeterminado a 0) y desviación estándar (predeterminado a 1) y produce números aleatorios. Aquí hay un ejemplo de cómo podríamos generar datos que se parezcan a nuestras alturas:
 
 ```{r}
 n <- length(x)
@@ -151,7 +151,7 @@ s <- sd(x)
 simulated_heights <- rnorm(n, m, s)
 ```
 
-No es sorprendente que la distribución se vea normal:
+No sorprende que la distribución se vea normal:
 
 ```{r simulated-heights, echo=FALSE}
 data.frame(simulated_heights = simulated_heights) %>%
@@ -161,7 +161,7 @@ geom_histogram(color="black", binwidth = 1)
 
 Esta es una de las funciones más útiles en R, ya que nos permite generar datos que imitan eventos naturales y responder a preguntas relacionadas con lo que podría suceder por casualidad al ejecutar simulaciones Monte Carlo.
 
-Si, por ejemplo, elegimos 800 hombres al azar, ¿cuál es la distribución de la persona más alta? ¿Cuán raro es un hombre de 7 pies o _seven footer_ en un grupo de 800 hombres? La siguiente simulación Monte Carlo nos ayuda a responder esa pregunta:
+Si, por ejemplo, elegimos 800 hombres al azar, ¿cuál es la distribución de la persona más alta? ¿Cuán raro es un hombre de 7 pies o un _seven footer_ en un grupo de 800 hombres? La siguiente simulación Monte Carlo nos ayuda a responder esa pregunta:
 
 ```{r}
 B <- 10000
@@ -188,7 +188,7 @@ Tengan en cuenta que no parece normal.
 
 ## Distribuciones continuas
 
-Introdujimos la distribución normal en la Sección \@ref(normal-distribution) y se usó como ejemplo arriba. La distribución normal no es la única distribución teórica útil. Otras distribuciones continuas que podemos encontrar son _student-t_, chi-cuadrada, exponencial, gamma, beta y beta-binomial. R provee funciones para calcular la densidad, los cuantiles, las funciones de distribución acumulada y para generar simulaciones Monte Carlo. R usa una convención que nos ayuda recordar los nombres:  usar las letras `d`, `q`, `p` y `r` delante de una [fix] taquigrafía/ "shorthand" para la distribución. Ya hemos visto las funciones `dnorm`, `pnorm` y `rnorm` para la distribución normal. La función `qnorm` nos da los cuantiles. Por lo tanto, podemos dibujar una distribución como esta:
+Introdujimos la distribución normal en la Sección \@ref(normal-distribution) y se usó como ejemplo anteriormente. La distribución normal no es la única distribución teórica útil. Otras distribuciones continuas que podemos encontrar son _student-t_, chi-cuadrada, exponencial, gamma, beta y beta-binomial. R provee funciones para calcular la densidad, los cuantiles, las funciones de distribución acumulada y para generar simulaciones Monte Carlo. R usa una convención que nos ayuda recordar los nombres:  usar las letras `d`, `q`, `p` y `r` delante de una [fix] taquigrafía/ "shorthand" para la distribución. Ya hemos visto las funciones `dnorm`, `pnorm` y `rnorm` para la distribución normal. La función `qnorm` nos da los cuantiles. Por lo tanto, podemos dibujar una distribución como esta:
 
 ```{r normal-density, eval=FALSE}
 x <- seq(-4, 4, length.out = 100)
@@ -211,10 +211,10 @@ qplot(x, f, geom = "line", data = data.frame(x, f = dnorm(x)))
 4\. Repita el ejercicio anterior, pero convierta todo a centímetros. Es decir, multiplique cada altura, incluyendo la desviación estándar, por 2.54. ¿Cuál es la respuesta ahora?
 
 
-5\. Tenga en cuenta que la respuesta a la pregunta no cambia cuando cambian las unidades. Esto tiene sentido ya que la respuesta a la pregunta se debe ser afectada por las unidades que usamos. De hecho, si se fija bien, notará que 61 y 64 están a 1 SD de distancia del promedio. Calcule la probabilidad de que una variable aleatoria distribuida normal y aleatoriamente esté dentro de 1 SD del promedio.
+5\. Tenga en cuenta que la respuesta a la pregunta no cambia cuando cambian las unidades. Esto tiene sentido ya que la respuesta a la pregunta no debe ser afectada por las unidades que usamos. De hecho, si se fija bien, notará que 61 y 64 están a 1 SD de distancia del promedio. Calcule la probabilidad de que una variable aleatoria distribuida normal y aleatoriamente esté dentro de 1 SD del promedio.
 
 
-6\. Para ver las matemáticas que explican por qué las respuestas a las preguntas 3, 4 y 5 son las mismas, supongamos que tenemos una variable aleatoria con promedio $m$ y error estándar $s$. Supongamos que preguntamos la probabilidad de $X$ ser más pequeño o igual a $a$. Recuerda que, por definición, $a$ es $(a - m)/s$ desviaciones estandar $s$ lejos del promedio $m$. La probabilidad es:
+6\. Para ver las matemáticas que explican por qué las respuestas a las preguntas 3, 4 y 5 son las mismas, supongamos que tenemos una variable aleatoria con promedio $m$ y error estándar $s$. Supongamos que queremos saber la probabilidad de $X$ ser más pequeño o igual a $a$. Recuerda que, por definición, $a$ es $(a - m)/s$ desviaciones estandar $s$ lejos del promedio $m$. La probabilidad es:
 
 $$
 \mbox{Pr}(X \leq a)
@@ -244,6 +244,6 @@ d. `pnorm(a)`
 7\. Imagine que la distribución de los hombres adultos es aproximadamente normal con un valor esperado de 69 y una desviación estándar de 3. ¿Cuán alto es el hombre en el percentil 99? Sugerencia: use `qnorm`.
 
 
-8\. [fix read all] La distribución de las puntuaciones de CI (_IQ_ en inglés) se distribuye aproximadamente de manera normal. El promedio es 100 y la desviación estándar es 15. Suponga que desea conocer la distribución de los coeficientes intelectuales más altos en todas las clases de graduación si nacen 10,000 personas cada una en su distrito escolar. Ejecute una simulación Monte Carlo con `B=1000` generando 10,000 puntuaciones de CI y manteniendo/ los más altos. Haga un histograma.
+8\. [fix read all] La distribución de las puntuaciones de CI (_IQ_ en inglés) se distribuye aproximadamente de manera normal. El promedio es 100 y la desviación estándar es 15. Suponga que desea conocer la distribución de los coeficientes intelectuales más altos en todas las clases de graduación si nacen 10,000 personas cada una en su distrito escolar. Ejecute una simulación Monte Carlo con `B=1000` generando 10,000 puntuaciones de CI y manteniendo los más altos/ "keeping the highest": highest what?. Haga un histograma.
 
 
