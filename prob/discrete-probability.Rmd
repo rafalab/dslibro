@@ -124,7 +124,7 @@ No sorprende que obtengamos resultados muy similares a los obtenidos previamente
 
 ## Independencia
 
-Decimos que dos eventos son independientes si el resultado de uno no afecta al otro. El ejemplo clásico es el lanzamiento de monedas. Cada vez que lanzamos una moneda, la probabilidad de ver cara es 1/2, independientemente de los resultados de lanzamientos anteriores. Lo mismo es cierto cuando recogemos canicas de una bolsa con reemplazo. [fix] En el ejemplo anterior, la probabilidad de rojo es 0.40 independientemente de las elecciones anteriores.
+Decimos que dos eventos son independientes si el resultado de uno no afecta al otro. El ejemplo clásico es el lanzamiento de monedas. Cada vez que lanzamos una moneda, la probabilidad de ver cara es 1/2, independientemente de los resultados de lanzamientos anteriores. Lo mismo es cierto cuando recogemos canicas de una bolsa con reemplazo. En el ejemplo anterior, la probabilidad de rojo es 0.40 independientemente de las elecciones anteriores.
 
 Muchos ejemplos de eventos que no son independientes provienen de juegos de cartas. Cuando repartimos la primera carta, la probabilidad de obtener una K es 1/13 ya que hay trece posibilidades: Dos, Tres, $\dots$, Diez, J, Q, K y As. Pero si repartimos una K como la primera carta y no la reemplazamos en la baraja, las probabilidades de que una segunda carta sea K es menor porque solo quedan tres Ks: la probabilidad es 3 de 51. Estos eventos por lo tanto **no son independientes**: el primer resultado afecta al siguiente.
 
@@ -303,7 +303,7 @@ first_card <- hands[,1]
 second_card <- hands[,2]
 ```
 
-[fix how can a hand have one card] Ahora los casos para los cuales la primera mano era una K se pueden calcular así:
+Ahora los casos para los cuales la primera carta era una K se pueden calcular así:
 
 ```{r}
 kings <- paste("King", suits)
@@ -350,7 +350,7 @@ hands <- combinations(52, 2, v = deck)
 mean(hands[,1] %in% aces & hands[,2] %in% facecard)
 ```
 
-[fix check para] En la última línea, suponemos que el As es la primera carta que nos dan. Esto es solo porque sabemos cómo `combination` enumera las posibilidades y enumerará este caso primero. Pero para estar seguros, podríamos haber producido la misma respuesta al escribir lo siguiente:
+En la última línea, suponemos que el As es la primera carta que recibimos. Esto lo sabemos porque, sabiendo como `combination` enumera las posibilidades, entendemos que enumerará este caso primero. Pero para estar seguros, podríamos haber producido la misma respuesta al escribir lo siguiente:
 
 ```{r}
 mean((hands[,1] %in% aces & hands[,2] %in% facecard) |
@@ -405,11 +405,11 @@ En esta sección, describimos dos ejemplos populares de probabilidad discreta: e
 
 ### Problema Monty Hall
 
-[fix check all] En la década de 1970 en EE.UU, hubo un juego televiso llamado "Let's Make a Deal" y Monty Hall era el anfitrión. En algún momento del juego, se le pedía al concursante que eligiera una de tres puertas. Detrás de una puerta había un premio, mientras detrás de las otras puertas tenían una cabra que señalaba que el concursante había perdido. Después de que el concursante eligiera una puerta y antes de revelar si esa puerta contenía un premio, Monty Hall abría una de las otras dos puertas y le mostraba al concursante que no había ningún premio detrás de esa puerta. Luego le preguntaba al concursante: "¿Quieres cambiar de puerta?" ¿Qué harían Uds.?
+En la década de 1970 en EE.UU, hubo un juego televiso llamado "Let's Make a Deal" y Monty Hall era el anfitrión. En algún momento del juego, se le pedía al concursante que eligiera una de tres puertas. Detrás de una puerta había un premio, mientras que detrás de las otras puertas tenían una cabra que señalaba que el concursante había perdido. Después de que el concursante eligiera una puerta y antes de revelar si esa puerta contenía un premio, Monty Hall abría una de las otras dos puertas y le mostraba al concursante que no había ningún premio detrás de esa puerta. Luego le preguntaba al concursante: "¿Quieres cambiar de puerta?" ¿Qué harían Uds.?
 
-Podemos usar la probabilidad para mostrar que si se quedan con la opción de la puerta original, sus posibilidades de ganar un premio siguen siendo 1 en 3. [fix check] Sin embargo, si cambian a la otra puerta, ¡sus posibilidades de ganar duplican a 2 en 3! Esto parece contradictorio. Muchas personas piensan incorrectamente que ambas posibilidades son 1 en 2 ya que uno elige entre 2 opciones. Pueden ver una explicación matemática detallada en Khan Academy^[https://www.khanacademy.org/math/precalculus/prob-comb/dependent-events-precalc/v/monty-hall-problem] o leer una en Wikipedia^[https://en.wikipedia.org/wiki/Monty_Hall_problem]. A continuación, usamos una simulación Monte Carlo para ver qué estrategia es mejor. [fix] Tengan en cuenta que este código se escribe en más detalle de lo necesario para fines pedagógicos.
+Podemos usar la probabilidad para mostrar que si se quedan con la opción de la puerta original, sus posibilidades de ganar un premio siguen siendo 1 en 3. Sin embargo, si cambian a la otra puerta, ¡sus posibilidades de ganar duplican a 2 en 3! Esto parece contradictorio. Muchas personas piensan incorrectamente que ambas posibilidades son 1 en 2 ya que uno elige entre 2 opciones. Pueden ver una explicación matemática detallada en Khan Academy^[https://www.khanacademy.org/math/precalculus/prob-comb/dependent-events-precalc/v/monty-hall-problem] o leer una en Wikipedia^[https://en.wikipedia.org/wiki/Monty_Hall_problem]. A continuación, usamos una simulación Monte Carlo para ver qué estrategia es mejor. Tengan en cuenta que este código se escribe con más detalle de lo necesario para fines pedagógicos.
 
-[fix] Comencemos con la estrategia del palo/"stick strategy"??:
+Comencemos con la estrategia de no cambiar de puerta:
 
 ```{r}
 B <- 10000
@@ -431,11 +431,11 @@ switch <- replicate(B, monty_hall("switch"))
 mean(switch)
 ```
 
-[fix check] Mientras escribimos el código, notamos que las líneas que comienzan con `my_pick` y `show` no afectan la última operación lógica cuando nos atenemos a nuestra elección original. De esto, debemos darnos cuenta de que la probabilidad es de 1 en 3, con lo que comenzamos. Cuando cambiamos, la estimación Monte Carlo confirma el cálculo de 2/3. Esto nos ayuda entender el problema mejor al mostrar que estamos quitando una puerta, `show`, que definitivamente no esconde un premio de nuestras opciones. También vemos que, a menos que lo hagamos bien cuando elegimos por primera vez, ustedes ganan: 1 - 1/3 = 2/3.
+Mientras escribimos el código, notamos que las líneas que comienzan con `my_pick` y `show` no afectan la última operación lógica cuando nos atenemos a nuestra elección original. De esto, debemos darnos cuenta de que la probabilidad es de 1 en 3, la misma con la cual comenzamos. Cuando cambiamos, la estimación Monte Carlo confirma el cálculo de 2/3. Esto nos ayuda entender el problema mejor al mostrar que estamos quitando una puerta, `show`, que definitivamente no esconde un premio de nuestras opciones. También vemos que, a menos que lo hagamos bien cuando elegimos por primera vez, ustedes ganan: 1 - 1/3 = 2/3.
 
 ### Problema de cumpleaños
 
-Supongamos que están en un salón de clases con 50 personas. Si suponemos que este es un grupo de 50 personas seleccionadas al azar, ¿cuál es la probabilidad de que al menos dos personas tengan el mismo cumpleaños? Aunque es algo avanzado, podemos deducir esto matemáticamente. Haremos esto más tarde, pero aquí usamos una simulación Monte Carlo. Para simplificar, suponemos que nadie nació el 29 de febrero. En realidad esto no cambia mucho la respuesta.
+Imagínense que están en un salón de clase con 50 personas. Si suponemos que este es un grupo de 50 personas seleccionadas al azar, ¿cuál es la probabilidad de que al menos dos personas tengan el mismo cumpleaños? Aunque es algo avanzado, podemos deducir esto matemáticamente. Haremos esto más tarde, pero aquí usamos una simulación Monte Carlo. Para simplificar, suponemos que nadie nació el 29 de febrero. En realidad esto no cambia mucho la respuesta.
 
 Primero, tengan en cuenta que los cumpleaños se pueden representar como números entre 1 y 365, por lo que se puede obtener una muestra de 50 cumpleaños de esta manera:
 
@@ -476,9 +476,9 @@ mean(results)
 
 ¿Esperaban que la probabilidad fuera tan alta?
 
-Las personas tienden a subestimar estas probabilidades. Para tener una idea de por qué es tan alto, piense en lo que sucede cuando el tamaño del grupo es cercano a 365. En esta etapa, se nos acaban los días y la probabilidad es una.
+Las personas tienden a subestimar estas probabilidades. Para tener una idea de por qué es tan alta, piensen en lo que sucede cuando el tamaño del grupo se acerca a 365. Con 365, se nos acaban los días y la probabilidad es una.
 
-[fix check all paragraph] Digamos que queremos usar este conocimiento para apostar con amigos sobre si dos personas en un grupo de personas tienen el mismo cumpleaños. ¿Cuándo son las posibilidades superiores a 50%? ¿Superiores a 75%?
+Digamos que queremos usar este conocimiento para apostar con amigos sobre si dos personas en un grupo tienen el mismo cumpleaños. ¿Con un grupo de qué tamaño son las posibilidades superiores a 50%? ¿Superiores a 75%?
 
 Empecemos creando una tabla de consulta. Rápidamente podemos crear una función para calcular esto para cualquier tamaño de grupo:
 
@@ -490,7 +490,7 @@ mean(results)
 ```
 
 
-[check] Usando la función `sapply`, podemos realizar operaciones elemento por elemento en cualquier función:
+Usando la función `sapply`, podemos realizar operaciones elemento por elemento en cualquier función:
 
 ```{r}
 n <- seq(1,60)
@@ -510,7 +510,7 @@ Ahora calculemos las probabilidades exactas en lugar de usar aproximaciones Mont
 
 Para simplificar las matemáticas, en lugar de calcular la probabilidad de que ocurra, calcularemos la probabilidad de que no ocurra. Para esto, usamos la regla de la multiplicación.
 
-[fix check all] Comencemos con la primera persona. La probabilidad de que persona 1 tenga un cumpleaños único es 1. La probabilidad de que persona 2 tenga un cumpleaños único, dado que persona 1 ya cumplió uno, es 364/365. Luego, dado que las dos primeras personas tienen cumpleaños únicos, persona 3 tiene 363 días para elegir. Continuamos de esta manera y encontramos que las posibilidades de que todas las 50 personas tengan un cumpleaños único son:
+Comencemos con la primera persona. La probabilidad de que persona 1 tenga un cumpleaños único es 1. La probabilidad de que persona 2 tenga un cumpleaños único, dado que ya se le asignó un día a persona 1, es 364/365. Luego, dado que las dos primeras personas tienen cumpleaños únicos, persona 3 tiene 363 días para elegir. Continuamos de esta manera y encontramos que las posibilidades de que todas las 50 personas tengan un cumpleaños único son:
 
 $$
 1 \times \frac{364}{365}\times\frac{363}{365} \dots \frac{365-n + 1}{365}
@@ -530,9 +530,9 @@ qplot(n, prob) + geom_line(aes(n, eprob), col = "red")
 Este gráfico muestra que la simulación Monte Carlo ofrece una muy buena estimación de la probabilidad exacta. Si no hubiera sido posible calcular las probabilidades exactas, aún habríamos podido estimar con precisión las probabilidades.
 
 
-## [fix] Infinito en la práctica
+## Infinito en la práctica
 
-La teoría descrita aquí requiere repetir experimentos una y otra vez para siempre. En la práctica no podemos hacer esto. En los ejemplos anteriores, utilizamos $B=10,000$ experimentos Monte Carlo y resultó que esto nos dio estimaciones precisas. Cuanto mayor sea este número, más precisa será la estimación hasta que la aproximación sea tan buena que sus computadoras no puedan notar la diferencia. Pero en cálculos más complejos, 10,000 puede ser insuficiente. Además, para algunos cálculos, 10,000 experimentos podrían ser computacionalmente infactibles. En la práctica, no sabremos cuál es la respuesta, por lo que no sabremos si nuestra estimación Monte Carlo es precisa. [fix] Sabemos que entre más grande sea $B$, mejor será la aproximación. ¿Pero cuán grande necesitamos que sea? Esta es realmente una pregunta desafiante y contestarla frecuentemente requiere una formación avanzada en estadística teórica.
+La teoría descrita aquí requiere repetir experimentos una y otra vez para siempre. En la práctica no podemos hacer esto. En los ejemplos anteriores, utilizamos $B=10,000$ experimentos Monte Carlo y resultó que esto nos dio estimaciones precisas. Cuanto mayor sea este número, más precisa será la estimación hasta que la aproximación sea tan buena que sus computadoras no puedan notar la diferencia. Pero en cálculos más complejos, 10,000 puede ser insuficiente. Además, para algunos cálculos, 10,000 experimentos podrían ser computacionalmente infactibles. En la práctica, no sabremos cuál es la respuesta, por lo que no sabremos si nuestra estimación Monte Carlo es precisa. Sabemos que entre más grande sea $B$, mejor será la aproximación. ¿Pero cuán grande necesitamos que sea? Esta es realmente una pregunta desafiante y frecuentemente contestarla requiere una formación avanzada en estadística teórica.
 
 Un enfoque práctico que describiremos aquí es verificar la estabilidad de la estimación. A continuación ofrecemos un ejemplo con el problema de cumpleaños para un grupo de 25 personas.
 
@@ -559,24 +559,24 @@ En este gráfico, podemos ver que los valores comienzan a estabilizarse (es deci
 2\. ¿Cuál es la probabilidad de que la canica no sea cian?
 
 
-3\. En lugar de escoger solo una vez, considere escoger dos canicas. Usted saca la primera canica sin devolverla a la bolsa. Este es un muestreo **sin** reemplazo. ¿Cuál es la probabilidad de que la primera canica sea cian y la segunda no sea cian?
+3\. En lugar de escoger solo una vez, escoja dos canicas. Saque la primera canica sin devolverla a la bolsa. Este es un muestreo **sin** reemplazo. ¿Cuál es la probabilidad de que la primera canica sea cian y la segunda no sea cian?
 
 
-4\. Ahora repita el experimento, pero esta vez, después de sacar la primera canica y regsitrar el color, devuélvala a la bolsa y agite la bolsa. Este es un muestreo **con** reemplazo. ¿Cuál es la probabilidad de que la primera canica sea cian y la segunda canica no sea cian?
+4\. Ahora repita el experimento, pero esta vez, después de sacar la primera canica y anotar el color, devuélvala a la bolsa y agite la bolsa. Este es un muestreo **con** reemplazo. ¿Cuál es la probabilidad de que la primera canica sea cian y la segunda canica no sea cian?
 
 
-5\. [fix] Dos eventos $A$ y $B$ son independientes si $\mbox{Pr}(A \mbox{ and } B) = \mbox{Pr}(A) P(B)$. ¿Bajo qué situación son independientes la seleccion?
+5\. Dos eventos $A$ y $B$ son independientes si $\mbox{Pr}(A \mbox{ and } B) = \mbox{Pr}(A) P(B)$. ¿Bajo qué situación son independientes la selección?
 
-a. No reemplazas el articulo seleccionado.
-b. Reemplazas el articulo seleccionado.
+a. No reemplaza el articulo seleccionado.
+b. Reemplaza el articulo seleccionado.
 c. Ninguno.
 d. Ambos.
 
 6\. Digamos que ha sacado 5 canicas de la bolsa, con reemplazo, y todas han sido amarillas. ¿Cuál es la probabilidad de que la próxima sea amarilla?
 
-7\. Si lanzas un dado de 6 lados seis veces, ¿cuál es la probabilidad de no ver un 6?
+7\. Si lanza un dado de 6 lados seis veces, ¿cuál es la probabilidad de no ver un 6?
 
-8\. [fix] Dos equipos de baloncesto, digamos los Celtics y los Cavs, están jugando una serie de siete juegos. Los Cavs son un mejor equipo y tienen un 60% de posibilidad de ganar cada juego. ¿Cuál es la probabilidad de que los Celtics ganen **al menos** un juego?
+8\. Dos equipos de baloncesto, digamos los Celtics y los Cavs, están jugando una serie de siete juegos. Los Cavs son un mejor equipo y tienen un 60% de posibilidad de ganar cada juego. ¿Cuál es la probabilidad de que los Celtics ganen **al menos** un juego?
 
 9\. Cree una simulación Monte Carlo para confirmar su respuesta al problema anterior. Utilizar `B <- 10000` simulaciones. Sugerencia: use el siguiente código para generar los resultados de los primeros cuatro juegos:
 
@@ -589,7 +589,7 @@ Los Celtics deben ganar uno de estos 4 juegos.
 
 11\. Confirme los resultados de la pregunta anterior con una simulación Monte Carlo.
 
-12\. Dos equipos, $A$ y $B$, están jugando una serie de siete juegos. Equipo $A$ es mejor que equipo $B$ y tiene un $p>0.5$ posibilidad de ganar cada juego. Dado un valor $p$, la probabilidad de ganar la serie para el equipo de abajo $B$ se puede calcular con la siguiente función basada en una simulación Monte Carlo:
+12\. Dos equipos, $A$ y $B$, están jugando una serie de siete juegos. Equipo $A$ es mejor que equipo $B$ y tiene un $p>0.5$ posibilidad de ganar cada juego. Dado un valor $p$, la probabilidad de que el equipo no favorito $B$ gane la serie se puede calcular con la siguiente función basada en una simulación Monte Carlo:
 
 ```{r, eval=FALSE}
 prob_win <- function(p){
@@ -602,9 +602,9 @@ mean(result)
 }
 ```
 
-Usa la función `sapply` para calcular la probabilidad, llámela `Pr`, de ganar para `p <- seq(0.5, 0.95, 0.025)`. Luego grafica el resultado.
+Use la función `sapply` para calcular la probabilidad, llámela `Pr`, de ganar para `p <- seq(0.5, 0.95, 0.025)`. Luego grafique el resultado.
 
-13\. Repita el ejercicio anterior, pero ahora mantenga la probabilidad fija en `p <- 0.75` y calcule la probabilidad de diferentes longitudes de serie: lo mejor de 1 juego, 3 juegos, 5 juegos, ... Específicamente, `N <- seq(1, 25, 2)`. Sugerencia: use esta función:
+13\. Repita el ejercicio anterior, pero ahora mantenga la probabilidad fija en `p <- 0.75` y calcule la probabilidad para diferentes números de juegos necesarios para acabar la serie: ganar 1 juego, ganar 2 de 3 juegos, ganar 3 de 5 juegos, ... Específicamente, `N <- seq(1, 25, 2)`. Sugerencia: use esta función:
 
 ```{r, eval = FALSE}
 prob_win <- function(N, p=0.75){
