@@ -6,7 +6,7 @@ Comenzamos explorando algunos principios básicos relacionados con datos categó
 
 Si bien la palabra probabilidad se usa en el lenguaje cotidiano, responder a preguntas sobre la probabilidad es difícil, si no imposible. Aquí discutimos una definición matemática de _probabilidad_ que nos permite dar respuestas precisas a ciertas preguntas.
 
-Por ejemplo, si tengo 2 canicas rojas y 3 canicas azules dentro de una bolsa^[https://en.wikipedia.org/wiki/Urn_problem] y escojo una al azar, ¿cuál es la probabilidad de elegir una roja? Nuestra intuición nos dice que la respuesta es 2/5 o 40%. Se puede dar una definición precisa al señalar que hay cinco resultados posibles de los cuales dos satisfacen la condición necesaria para el evento "escoger una canica roja". Dado que cada uno de los cinco resultados tiene la misma posibilidad de ocurrir, concluimos que la probabilidad es .4 para rojo y .6 para azul.
+Por ejemplo, si tengo 2 canicas rojas y 3 canicas azules dentro de una urna^[https://en.wikipedia.org/wiki/Urn_problem] (muchos libros de probabilidad usan este término arcaico, así que nosotros también) y escojo una al azar, ¿cuál es la probabilidad de elegir una roja? Nuestra intuición nos dice que la respuesta es 2/5 o 40%. Se puede dar una definición precisa al señalar que hay cinco resultados posibles de los cuales dos satisfacen la condición necesaria para el evento "escoger una canica roja". Dado que cada uno de los cinco resultados tiene la misma posibilidad de ocurrir, concluimos que la probabilidad es .4 para rojo y .6 para azul.
 
 Una forma más tangible de pensar en la probabilidad de un evento es la proporción de veces que ocurre el evento cuando repetimos el experimento un número infinito de veces, independientemente y bajo las mismas condiciones.
 
@@ -19,7 +19,7 @@ En aplicaciones de ciencia de datos, frecuentemente trabajaremos con variables c
 
 ### Distribuciones de probabilidad
 
-Si conocemos la frecuencia relativa de las diferentes categorías, definir una distribución para resultados categóricos es relativamente sencillo. Simplemente asignamos una probabilidad a cada categoría. En los casos que pueden considerarse como canicas en una bolsa, para cada tipo de canica, su proporción define la distribución.
+Si conocemos la frecuencia relativa de las diferentes categorías, definir una distribución para resultados categóricos es relativamente sencillo. Simplemente asignamos una probabilidad a cada categoría. En los casos que pueden considerarse como canicas en una urna, para cada tipo de canica, su proporción define la distribución.
 
 Si estamos llamando al azar a votantes probables de una población que es 44% demócratas, 44% republicanos, 10% indecisos y 2% del partido verde, estas proporciones definen la probabilidad para cada grupo. La distribución de probabilidad es:
 
@@ -33,16 +33,16 @@ Si estamos llamando al azar a votantes probables de una población que es 44% de
 
 ## Simulaciones Monte Carlo para datos categóricos
 
-Las computadoras ofrecen una forma de realizar el experimento aleatorio sencillo descrito anteriormente: elegir una canica al azar de una bolsa que contiene tres canicas azules y dos rojas. Los generadores de números aleatorios nos permiten imitar el proceso de escoger al azar.
+Las computadoras ofrecen una forma de realizar el experimento aleatorio sencillo descrito anteriormente: elegir una canica al azar de una urna que contiene tres canicas azules y dos rojas. Los generadores de números aleatorios nos permiten imitar el proceso de escoger al azar.
 
-Un ejemplo es la función `sample` en R. Demostramos su uso en el código a continuación. Primero, usamos la función `rep` para generar la bolsa:
+Un ejemplo es la función `sample` en R. Demostramos su uso en el código a continuación. Primero, usamos la función `rep` para generar la urna:
 
 ```{r}
 beads <- rep(c("red", "blue"), times = c(2,3))
 beads
 ```
 
-y luego usamos `sample` para elegir una canica al azar:
+y luego usamos `sample` para escoger una canica al azar:
 
 ```{r}
 sample(beads, 1)
@@ -96,7 +96,7 @@ En los ejercicios, es posible que les pidamos que fijen la semilla para asegurar
 
 ### Con y sin reemplazo
 
-La función `sample` tiene un argumento que nos permite elegir más de un elemento de la bolsa. Sin embargo, por defecto, esta selección ocurre _sin reemplazo_: después de seleccionar una canica, no se vuelve a colocar en la bolsa. Observen lo que sucede cuando pedimos seleccionar cinco canicas al azar:
+La función `sample` tiene un argumento que nos permite elegir más de un elemento de la urna. Sin embargo, por defecto, esta selección ocurre _sin reemplazo_: después de seleccionar una canica, no se vuelve a colocar en la urna. Observen lo que sucede cuando pedimos seleccionar cinco canicas al azar:
 
 ```{r}
 sample(beads, 5)
@@ -112,7 +112,7 @@ sample(beads, 6)
 
 `Error in sample.int(length(x), size, replace, prob) : cannot take a sample larger than the population when 'replace = FALSE'`
 
-Sin embargo, la función `sample` se puede usar directamente, sin el uso de `replicate`, para repetir el mismo experimento de elegir 1 de las 5 canicas, continuamente, en las mismas condiciones. Para hacer esto, muestreamos _con reemplazo_: se devuelve la canica a la bolsa después de seleccionarla.
+Sin embargo, la función `sample` se puede usar directamente, sin el uso de `replicate`, para repetir el mismo experimento de elegir 1 de las 5 canicas, continuamente, en las mismas condiciones. Para hacer esto, muestreamos _con reemplazo_: se devuelve la canica a la urna después de seleccionarla.
 Podemos decirle a `sample` que haga esto cambiando el argumento `replace`, que por defecto es `FALSE`, a `replace = TRUE`:
 
 ```{r}
@@ -124,11 +124,11 @@ No sorprende que obtengamos resultados muy similares a los obtenidos previamente
 
 ## Independencia
 
-Decimos que dos eventos son independientes si el resultado de uno no afecta al otro. El ejemplo clásico es el lanzamiento de monedas. Cada vez que lanzamos una moneda, la probabilidad de ver cara es 1/2, independientemente de los resultados de lanzamientos anteriores. Lo mismo es cierto cuando recogemos canicas de una bolsa con reemplazo. En el ejemplo anterior, la probabilidad de rojo es 0.40 independientemente de las elecciones anteriores.
+Decimos que dos eventos son independientes si el resultado de uno no afecta al otro. El ejemplo clásico es el lanzamiento de monedas. Cada vez que lanzamos una moneda, la probabilidad de ver cara es 1/2, independientemente de los resultados de lanzamientos anteriores. Lo mismo es cierto cuando recogemos canicas de una urna con reemplazo. En el ejemplo anterior, [fix] la probabilidad de rojo es 0.40 independientemente de las elecciones anteriores/regardless of the previous draws.
 
 Muchos ejemplos de eventos que no son independientes provienen de juegos de cartas. Cuando repartimos la primera carta, la probabilidad de obtener una K es 1/13 ya que hay trece posibilidades: Dos, Tres, $\dots$, Diez, J, Q, K y As. Pero si repartimos una K como la primera carta y no la reemplazamos en la baraja, las probabilidades de que una segunda carta sea K es menor porque solo quedan tres Ks: la probabilidad es 3 de 51. Estos eventos por lo tanto **no son independientes**: el primer resultado afecta al siguiente.
 
-Para ver un caso extremo de eventos no independientes, consideren nuestro ejemplo de escoger cinco canicas al azar **sin** reemplazo:
+Para ver un caso extremo de eventos no independientes, consideren nuestro ejemplo de [fix] escoger/drawing cinco canicas al azar **sin** reemplazo:
 
 ```{r, echo=FALSE}
 set.seed(1)
@@ -175,7 +175,7 @@ $$
 $$
 Usemos el juego de cartas Blackjack como ejemplo. En Blackjack, se les asignan dos cartas al azar. Después de ver lo que tienen, pueden pedir más cartas. El objetivo es acercarse más a 21 que el croupier, sin pasar. Las _cartas con figuras_  o _figuras_ (_face cards_ en inglés) valen 10 puntos y las Ases valen 11 o 1 (uno elige).
 
-Entonces, en un juego de Blackjack, para calcular las posibilidades de obtener un 21 sacando un As y luego una carta de figura, calculamos la probabilidad de que la primera carta sea un As y multiplicamos por la probabilidad de sacar una carta de figura o un 10 dado que la primera fue un As: $1/13 \times 16/51 \approx 0.025$.
+[fix check 'draws used sacar] Entonces, en un juego de Blackjack, para calcular las posibilidades de obtener un 21 sacando un As y luego una carta de figura, calculamos la probabilidad de que la primera carta sea un As y multiplicamos por la probabilidad de sacar una carta de figura o un 10 dado que la primera fue un As: $1/13 \times 16/51 \approx 0.025$.
 
 La regla de la multiplicación también se aplica a más de dos eventos. Podemos usar la inducción para incluir más eventos:
 
@@ -229,9 +229,9 @@ cat.dist = rep(0.025, 2), cex=0, cat.cex = rep(2.5,2))
 
 ## Combinaciones y permutaciones
 
-En nuestro primer ejemplo, imaginamos una bolsa con cinco canicas. Recuerden que para calcular la distribución de probabilidad de una elección, simplemente enumeramos todas las posibilidades. Hubo 5 y para cada evento, contamos cuántas de estas posibilidades estaban asociadas con el evento. Entonces la probabilidad de elegir una canica azul es 3/5 porque de los cinco resultados posibles, tres fueron azules.
+En nuestro primer ejemplo, imaginamos una urna con cinco canicas. Recuerden que para calcular la distribución de probabilidad de una [fix] elección/draw, simplemente enumeramos todas las posibilidades. Hubo 5 y para cada evento, contamos cuántas de estas posibilidades estaban asociadas con el evento. Entonces la probabilidad de elegir una canica azul es 3/5 porque de los cinco resultados posibles, tres fueron azules.
 
-Para casos más complicados, los cálculos no son tan sencillos. Por ejemplo, ¿cuál es la probabilidad de que si cojo cinco cartas sin reemplazo, obtengo todas cartas del mismo palo (_suit_ en inglés), lo que se conoce como "flush" en el póker? En un curso de probabilidad discreta, se aprende la teoría sobre cómo hacer estos cálculos. Aquí nos enfocamos en cómo usar el código R para calcular las respuestas.
+Para casos más complicados, los cálculos no son tan sencillos. Por ejemplo, ¿cuál es la probabilidad de que si [fix] draw/cojo cinco cartas sin reemplazo, obtengo todas cartas del mismo palo (_suit_ en inglés), lo que se conoce como "flush" en el póker? En un curso de probabilidad discreta, se aprende la teoría sobre cómo hacer estos cálculos. Aquí nos enfocamos en cómo usar el código R para calcular las respuestas.
 
 Primero, construyamos una baraja de cartas. Para esto, usaremos las funciones `expand.grid` y `paste`. Usamos `paste` para crear cadenas uniendo cadenas más pequeñas. Para hacer esto, tomamos el número y el tipo de una carta y creamos el nombre de la carta de esta manera:
 
@@ -329,7 +329,7 @@ $$
 $$
 
 
-¿Y qué tal si el orden no importa? Por ejemplo, en Blackjack si le dan un As y una carta de figura como su primera mano, se llama un _Natural 21_ y ganan automáticamente. Si quisiéramos calcular la probabilidad de que esto suceda, enumeraríamos las _combinaciones_, no las permutaciones, ya que el orden no importa.
+¿Y qué tal si el orden no importa? Por ejemplo, en Blackjack si le dan un As y una carta de figura como [fix] su primera mano/in the first draw, se llama un _Natural 21_ y ganan automáticamente. Si quisiéramos calcular la probabilidad de que esto suceda, enumeraríamos las _combinaciones_, no las permutaciones, ya que el orden no importa.
 
 ```{r}
 combinations(3,2)
@@ -360,7 +360,7 @@ mean((hands[,1] %in% aces & hands[,2] %in% facecard) |
 
 ### Ejemplo Monte Carlo
 
-En lugar de usar `combinations` para deducir la probabilidad exacta de un _Natural 21_, podemos usar un Monte Carlo para estimar esta probabilidad. En este caso, escogemos dos cartas una y otra vez y notamos cuántos 21s tenemos. Podemos usar la función `sample` para escoger dos cartas sin reemplazos:
+En lugar de usar `combinations` para deducir la probabilidad exacta de un _Natural 21_, podemos usar un Monte Carlo para estimar esta probabilidad. [fix draw] En este caso, escogemos dos cartas una y otra vez y notamos cuántos 21s tenemos. Podemos usar la función `sample` para escoger dos cartas sin reemplazos:
 
 ```{r}
 hand <- sample(deck, 2)
@@ -376,7 +376,7 @@ Y luego verificar si una carta es un As y la otra una figura o un 10. De ahora e
 
 Si repetimos esto 10,000 veces, obtenemos una muy buena aproximación de la probabilidad de un _Natural 21_.
 
-Comencemos escribiendo una función que escoja una mano y devuelva TRUE si obtenemos un 21. La función no necesita argumentos porque usa objetos definidos en el entorno global.
+[fix draw] Comencemos escribiendo una función que escoje una mano y devuelve TRUE si obtenemos un 21. La función no necesita argumentos porque usa objetos definidos en el entorno global.
 ```{r}
 blackjack <- function(){
 hand <- sample(deck, 2)
@@ -550,7 +550,7 @@ En este gráfico, podemos ver que los valores comienzan a estabilizarse (es deci
 
 
 
-## Ejercicios
+## Ejercicios [fix all these escoger/draw]
 
 
 1\. Se escoge una canica al azar de una bolsa que contiene: 3 canicas cian, 5 canicas magenta y 7 canicas amarillas. ¿Cuál es la probabilidad de que la canica sea cian?
@@ -565,7 +565,7 @@ En este gráfico, podemos ver que los valores comienzan a estabilizarse (es deci
 4\. Ahora repita el experimento, pero esta vez, después de sacar la primera canica y anotar el color, devuélvala a la bolsa y agite la bolsa. Este es un muestreo **con** reemplazo. ¿Cuál es la probabilidad de que la primera canica sea cian y la segunda canica no sea cian?
 
 
-5\. Dos eventos $A$ y $B$ son independientes si $\mbox{Pr}(A \mbox{ and } B) = \mbox{Pr}(A) P(B)$. ¿Bajo qué situación son independientes la selección?
+5\. Dos eventos $A$ y $B$ son independientes si $\mbox{Pr}(A \mbox{ and } B) = \mbox{Pr}(A) P(B)$. [fix] ¿Bajo qué situación son independientes los sorteos?
 
 a. No reemplaza el articulo seleccionado.
 b. Reemplaza el articulo seleccionado.

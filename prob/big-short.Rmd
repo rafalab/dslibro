@@ -2,7 +2,7 @@
 
 ### Tasas de interés explicadas con modelo de oportunidad
 
-Los bancos también usan versiones más complejas de los modelos de muestreo que hemos discutido para decidir las tasas de interés. Supongamos que compran un banco pequeño que tiene un historial de identificación de posibles propietarios de viviendas en los que se puede confiar para realizar pagos. De hecho, históricamente, en un año determinado, solo el 2% de sus clientes no pagan el dinero que se les prestó. Sin embargo, el banco sabe que si simplemente le presta dinero a todos sus clientes sin intereses, terminará perdiendo dinero debido a este 2%. Aunque el banco sabe que el 2% de sus clientes probablemente no pagarán, no sabe cuáles son esos. Sin embargo, al cobrarles a todos un poco más en intereses, pueden compensar las pérdidas incurridas debido a ese 2% y también cubrir sus costos operativos. También pueden obtener ganancias, pero si establecen tasas de interés demasiado altas, los clientes se irán a otro banco. Utilizaremos todos estos hechos y un poco de teoría de probabilidad para decidir qué tasa de interés deben cobrar.
+Los bancos también usan versiones más complejas de los modelos de muestreo que hemos discutido para decidir las tasas de interés. Supongamos que compran un banco pequeño que tiene un historial de identificar posibles propietarios de viviendas en los que se pueden confiar para realizar pagos. De hecho, históricamente, en un año determinado, solo el 2% de sus clientes no pagan el dinero que se les prestó. Sin embargo, el banco sabe que si simplemente le presta dinero a todos sus clientes sin intereses, terminará perdiendo dinero debido a este 2%. Aunque el banco sabe que el 2% de sus clientes probablemente no pagarán, no sabe cuáles son esos. Sin embargo, al cobrarles a todos un poco más en intereses, pueden compensar las pérdidas incurridas debido a ese 2% y también cubrir sus costos operativos. También pueden obtener ganancias, pero si establecen tasas de interés demasiado altas, los clientes se irán a otro banco. Utilizaremos todos estos hechos y un poco de teoría de probabilidad para decidir qué tasa de interés deben cobrar.
 
 Supongamos que su banco otorgará 1,000 préstamos por \$180,000 este año. Además, tras sumar todos los costos, supongamos que su banco pierde \$ 200,000 por ejecución hipotecaria. Para simplificar, asumimos que esto incluye todos los costos operativos. Un modelo de muestreo para este escenario puede codificarse así:
 
@@ -32,14 +32,14 @@ data.frame(losses_in_millions = losses/10^6) %>% ggplot(aes(losses_in_millions))
 ```
 -->
 
-Sin embargo, realmente no necesitamos una simulación Monte Carlo. Usando lo que hemos aprendido, el CLT nos dice que, debido a que nuestras pérdidas son una suma de sorteos independientes, su distribución es aproximadamente normal con el valor esperado y los errores estándar dados por:
+Realmente no necesitamos una simulación Monte Carlo. Usando lo que hemos aprendido, el CLT nos dice que, debido a que nuestras pérdidas son una suma de sorteos independientes, su distribución es aproximadamente normal con el valor esperado y los errores estándar dados por:
 
 ```{r}
 n*(p*loss_per_foreclosure + (1-p)*0)
 sqrt(n)*abs(loss_per_foreclosure)*sqrt(p*(1-p))
 ```
 
-Ahora podemos establecer una tasa de interés para garantizar que, como promedio, lleguemos a un punto de equilibrio. Básicamente, necesitamos agregar una cantidad $x$ a cada préstamo, que en este caso están representados por [fix] sorteos/draws, de modo que el valor esperado es 0. Si definimos $l$ para ser la pérdida por ejecución hipotecaria, necesitamos:
+Ahora podemos establecer una tasa de interés para garantizar que, como promedio, lleguemos a un punto de equilibrio. Básicamente, necesitamos agregar una cantidad $x$ a cada préstamo, que en este caso están representados por sorteos, de modo que el valor esperado es 0. Si definimos $l$ para ser la pérdida por ejecución hipotecaria, necesitamos:
 
 $$
 lp + x(1-p) = 0
@@ -165,7 +165,7 @@ $$
 \mbox{Pr}(S < 0) =
 \mbox{Pr}\left(Z < - \frac{\mbox{E}[S]}{\mbox{SE}[S]}\right)
 $$
-con $Z$ una variable aleatoria normal estándar como se muestra anteriormente. [fix check] Si definimos $\mu$ y $\sigma$ para ser respectivamente el valor esperado y la desviación estándar de la "bolsa" (es decir, de un solo préstamo), usando las fórmulas anteriores tenemos: $\mbox{E}[S]= n\mu$ y $\mbox{SE}[S]= \sqrt{n}\sigma$. Entonces, si definimos $z$=`qnorm(0.01)`, tenemos:
+con $Z$ una variable aleatoria normal estándar como se muestra anteriormente. [fix check] Si definimos $\mu$ y $\sigma$ para ser respectivamente el valor esperado y la desviación estándar de la urna (es decir, de un solo préstamo), usando las fórmulas anteriores tenemos: $\mbox{E}[S]= n\mu$ y $\mbox{SE}[S]= \sqrt{n}\sigma$. Entonces, si definimos $z$=`qnorm(0.01)`, tenemos:
 $$
 - \frac{n\mu}{\sqrt{n}\sigma} = - \frac{\sqrt{n}\mu}{\sigma} = z
 $$

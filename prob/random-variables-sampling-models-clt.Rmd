@@ -34,17 +34,17 @@ A veces es 1 y a veces es 0.
 
 ## Modelos de muestreo
 
-Muchos procedimientos de generación de datos, aquellos que producen los datos que estudiamos, pueden modelarse bastante bien como elecciones de una bolsa. Por ejemplo, podemos modelar el proceso de sondeo de votantes probables como sacar 0s (republicanos) y 1s (demócratas) de una bolsa que contiene el código 0 y 1 para todos los votantes probables. En los estudios epidemiológicos, a menudo suponemos que los sujetos de nuestro estudio son una muestra aleatoria de la población de interés. Los datos relacionados con un resultado específico se pueden modelar como una muestra aleatoria de una bolsa que contiene el resultado para toda la población de interés. De manera similar, en la investigación experimental, a menudo asumimos que los organismos individuales que estamos estudiando, por ejemplo, gusanos, moscas o ratones, son una muestra aleatoria de una población más grande. Los experimentos aleatorios también se pueden modelar mediante selecciones de una bolsa dada la forma en que los individuos se asignan en grupos: cuando se les asigna, dibujan su grupo al azar. Los modelos de muestreo son, por lo tanto, omnipresentes en la ciencia de datos. Los juegos de casino ofrecen una gran cantidad de ejemplos de situaciones del mundo real en las que se utilizan modelos de muestreo para responder preguntas específicas. Por lo tanto, comenzaremos con tales ejemplos.
+Muchos procedimientos de generación de datos, aquellos que producen los datos que estudiamos, pueden modelarse bastante bien como elecciones de una urna. Por ejemplo, podemos modelar el proceso de sondeo de votantes probables como sacar 0s (republicanos) y 1s (demócratas) de una urna que contiene el código 0 y 1 para todos los votantes probables. En los estudios epidemiológicos, a menudo suponemos que los sujetos de nuestro estudio son una muestra aleatoria de la población de interés. Los datos relacionados con un resultado específico se pueden modelar como una muestra aleatoria de una urna que contiene el resultado para toda la población de interés. De manera similar, en la investigación experimental, a menudo asumimos que los organismos individuales que estamos estudiando, por ejemplo, gusanos, moscas o ratones, son una muestra aleatoria de una población más grande. Los experimentos aleatorios también se pueden modelar mediante selecciones de una urna dada la forma en que los individuos se asignan en grupos: cuando se les asigna, dibujan su grupo al azar. Los modelos de muestreo son, por lo tanto, omnipresentes en la ciencia de datos. Los juegos de casino ofrecen una gran cantidad de ejemplos de situaciones del mundo real en las que se utilizan modelos de muestreo para responder preguntas específicas. Por lo tanto, comenzaremos con tales ejemplos.
 
 Supongamos que un casino muy pequeño los contratan para consultar si deben incluir las ruedas de la ruleta entre sus juegos. Para simplificar el ejemplo, asumiremos que jugarán 1,000 personas y que la única apuesta que puedes hacer en la ruleta es apostar en rojo o negro. El casino quiere que predigan cuánto dinero ganarán o perderán. Quieren una gama de valores y, en particular, quieren saber cuál es la posibilidad de perder dinero. Si esta probabilidad es demasiado alta, no instalaran ruedas de ruleta.
 
-Vamos a definir una variable aleatoria $S$ que representará las ganancias totales del casino. Comencemos por construir la bolsa. Una rueda de ruleta tiene 18 bolsillos rojos, 18 bolsillos negros y 2 verdes. Entonces, jugar un color en un juego de ruleta es equivalente a escoger de esta bolsa:
+Vamos a definir una variable aleatoria $S$ que representará las ganancias totales del casino. Comencemos por construir la urna. Una rueda de ruleta tiene 18 bolsillos rojos, 18 bolsillos negros y 2 verdes. Entonces, jugar un color en un juego de ruleta es equivalente a escoger de esta urna:
 
 ```{r}
 color <- rep(c("Black", "Red", "Green"), c(18, 18, 2))
 ```
 
-Los 1,000 resultados de 1,000 personas jugando son sorteos independientes de esta bolsa. Si aparece el rojo, el jugador gana y el casino pierde un dólar, por lo que sacamos un - \$1. De otra manera, el casino gana un dólar y nosotros sacamos un \$ 1. Para construir nuestra variable aleatoria $S$, podemos usar este código:
+Los 1,000 resultados de 1,000 personas jugando son sorteos independientes de esta urna. Si aparece el rojo, el jugador gana y el casino pierde un dólar, por lo que sacamos un - \$1. De otra manera, el casino gana un dólar y nosotros sacamos un \$ 1. Para construir nuestra variable aleatoria $S$, podemos usar este código:
 
 ```{r}
 n <- 1000
@@ -58,7 +58,7 @@ Como sabemos las proporciones de 1s y -1s, podemos generar las elecciones con un
 X <- sample(c(-1,1), n, replace = TRUE, prob=c(9/19, 10/19))
 ```
 
-Llamamos a esto un **modelo de muestreo** ya que estamos modelando el comportamiento aleatorio de la ruleta con el muestreo de elecciones de una bolsa. Las ganancias totales $S$ es simplemente la suma de estos 1,000 sorteos independientes:
+Llamamos a esto un **modelo de muestreo** ya que estamos modelando el comportamiento aleatorio de la ruleta con el muestreo de elecciones de una urna. Las ganancias totales $S$ es simplemente la suma de estos 1,000 sorteos independientes:
 
 ```{r}
 X <- sample(c(-1,1), n, replace = TRUE, prob=c(9/19, 10/19))
@@ -114,7 +114,7 @@ Vemos que la distribución parece ser aproximadamente normal. Un gráfico Q-Q co
 
 Este promedio y esta desviación estándar tienen nombres especiales. Se les conoce como _valor esperado_ y _error estándar_ de la variable aleatoria $S$. Diremos más sobre esto en la siguiente sección.
 
-La teoría estadística provee una forma de derivar la distribución de variables aleatorias definidas como extracciones aleatorias independientes de una bolsa. Específicamente, en nuestro ejemplo anterior, podemos mostrar que $(S+n)/2$ sigue una distribución binomial. [fix check eng typo] Por lo tanto, no necesitamos correr simulaciones Monte Carlo para saber la distribución de probabilidad de $S$. Lo hicimos con fines ilustrativos.
+La teoría estadística provee una forma de derivar la distribución de variables aleatorias definidas como extracciones aleatorias independientes de una urna. Específicamente, en nuestro ejemplo anterior, podemos mostrar que $(S+n)/2$ sigue una distribución binomial. [fix check eng typo] Por lo tanto, no necesitamos correr simulaciones Monte Carlo para saber la distribución de probabilidad de $S$. Lo hicimos con fines ilustrativos.
 
 [check eng typo] Podemos usar las funciones `dbinom` y `pbinom` para calcular las probabilidades exactamente. Por ejemplo, para calcular $\mbox{Pr}(S < 0)$ notamos que:
 
