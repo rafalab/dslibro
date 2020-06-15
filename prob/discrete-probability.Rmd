@@ -173,7 +173,7 @@ Si queremos saber la probabilidad de que ocurran dos eventos, digamos $A$ y $B$,
 $$
 \mbox{Pr}(A \mbox{ and } B) = \mbox{Pr}(A)\mbox{Pr}(B \mid A)
 $$
-Usemos el juego de cartas Blackjack como ejemplo. En Blackjack, se les asignan dos cartas al azar. Después de ver lo que tienen, pueden pedir más cartas. El objetivo es acercarse más a 21 que el croupier, sin pasar. Las _cartas con figuras_  o _figuras_ (_face cards_ en inglés) valen 10 puntos y las Ases valen 11 o 1 (uno elige).
+Usemos el juego de cartas Blackjack como ejemplo. En Blackjack, se les asignan dos cartas al azar. Después de ver lo que tienen, pueden pedir más cartas. El objetivo es acercarse más a 21 que el croupier, sin pasar. Las _cartas con figuras_ (_face cards_ en inglés) valen 10 puntos y las Ases valen 11 o 1 (uno elige).
 
 Entonces, en Blackjack, para calcular las probablidades de obtener un 21 recibiendo un As y luego una carta de figura, calculamos la probabilidad de que la primera carta sea un As y multiplicamos por la probabilidad de sacar una carta de figura o un 10 dado que la primera fue un As: $1/13 \times 16/51 \approx 0.025$.
 
@@ -233,7 +233,7 @@ En nuestro primer ejemplo, imaginamos una urna con cinco canicas. Recuerden que 
 
 Para casos más complicados, los cálculos no son tan sencillos. Por ejemplo, ¿cuál es la probabilidad de que si escojo cinco cartas sin reemplazo, obtenga todas cartas del mismo palo (_suit_ en inglés), lo que se conoce como "flush" en el póker? En un curso de probabilidad discreta, se aprende la teoría sobre cómo hacer estos cálculos. Aquí nos enfocamos en cómo usar el código R para calcular las respuestas.
 
-Primero, construyamos una baraja de cartas. Para esto, usaremos las funciones `expand.grid` y `paste`. Usamos `paste` para crear cadenas uniendo cadenas más pequeñas. Para hacer esto, tomamos el número y el tipo de una carta y creamos el nombre de la carta de esta manera:
+Primero, construyamos una baraja de cartas. Para esto, usaremos las funciones `expand.grid` y `paste`. Usamos `paste` para crear cadenas uniendo cadenas más pequeñas. Para hacer esto, tomamos el número y el palo de una carta y creamos el nombre de la carta de esta manera:
 
 ```{r}
 number <- "Three"
@@ -360,14 +360,14 @@ mean((hands[,1] %in% aces & hands[,2] %in% facecard) |
 
 ### Ejemplo Monte Carlo
 
-En lugar de usar `combinations` para deducir la probabilidad exacta de un _Natural 21_, podemos usar un Monte Carlo para estimar esta probabilidad. En este caso, escogemos dos cartas una y otra vez y notamos cuántos 21s tenemos. Podemos usar la función `sample` para escoger dos cartas sin reemplazos:
+En lugar de usar `combinations` para deducir la probabilidad exacta de un _Natural 21_, podemos usar una simulación Monte Carlo para estimar esta probabilidad. En este caso, escogemos dos cartas una y otra vez y notamos cuántos 21s tenemos. Podemos usar la función `sample` para escoger dos cartas sin reemplazos:
 
 ```{r}
 hand <- sample(deck, 2)
 hand
 ```
 
-Y luego verificar si una carta es un As y la otra una figura o un 10. De ahora en adelante, incluimos 10 cuando decimos _carta de figura_ o _figura_. Ahora necesitamos verificar ambas probabilidades:
+Y luego verificar si una carta es un As y la otra una carta de figura o un 10. De ahora en adelante, incluimos 10 cuando decimos _carta de figura_ o _figura_. Ahora necesitamos verificar ambas probabilidades:
 
 ```{r}
 (hands[1] %in% aces & hands[2] %in% facecard) |
@@ -505,7 +505,7 @@ prob <- sapply(n, compute_prob)
 qplot(n, prob)
 ```
 
-Ahora calculemos las probabilidades exactas en lugar de usar aproximaciones Monte Carlo. No solo obtenemos la respuesta exacta usando matemáticas, sino que los cálculos son mucho más rápidos ya que no tenemos que generar experimentos.
+Ahora calculemos las probabilidades exactas en lugar de usar simulaciones Monte Carlo. No solo obtenemos la respuesta exacta usando matemáticas, sino que los cálculos son mucho más rápidos ya que no tenemos que generar experimentos.
 
 
 Para simplificar las matemáticas, en lugar de calcular la probabilidad de que ocurra, calcularemos la probabilidad de que no ocurra. Para esto, usamos la regla de la multiplicación.
