@@ -1,0 +1,274 @@
+## Intervalos de confianza
+
+Los intervalos de confianza son un concepto muy útil ampliamente utilizado por los analistas de datos. Una versión de estos que se ve comúnmente proviene del `ggplot` geometría `geom_smooth`. Aquí hay un ejemplo usando un conjunto de datos de temperatura disponible en R:
+
+```{r first-confidence-intervals-example, warning=FALSE, message=FALSE, echo=FALSE}
+library(tidyverse)
+data("nhtemp")
+data.frame(year = as.numeric(time(nhtemp)), temperature=as.numeric(nhtemp)) %>%
+ggplot(aes(year, temperature)) +
+geom_point() +
+geom_smooth() +
+ggtitle("Average Yearly Temperatures in New Haven")
+```
+
+
+En la parte de Aprendizaje automático, aprenderemos cómo se forma la curva, pero por ahora considere el área sombreada alrededor de la curva. Esto se crea utilizando el concepto de intervalos de confianza.
+
+En nuestra competencia anterior, se le pidió que diera un intervalo. Si el intervalo que envió incluye el $p$, obtiene la mitad del dinero que gastó en su "encuesta" y pasa a la siguiente etapa de la competencia. Una forma de pasar a la segunda ronda es informar un intervalo muy grande. Por ejemplo, el intervalo $[0,1]$ está garantizado para incluir $p$. Sin embargo, con un intervalo tan grande, no tenemos posibilidades de ganar la competencia. Del mismo modo, si usted es un pronosticador de elecciones y predice que el diferencial será entre -100% y 100%, será ridiculizado por decir lo obvio. Incluso un intervalo más pequeño, como decir que el diferencial estará entre -10 y 10%, no se considerará grave.
+
+Por otro lado, cuanto menor es el intervalo que informamos, menores son nuestras posibilidades de ganar el premio. Del mismo modo, un encuestador audaz que informa intervalos muy pequeños y pierde la marca la mayor parte del tiempo no se considerará un buen encuestador. Queremos estar en algún punto intermedio.
+
+Podemos usar la teoría estadística que hemos aprendido para calcular la probabilidad de cualquier intervalo dado, incluyendo $p$. Si se nos pide que creemos un intervalo con, digamos, una probabilidad del 95 \% de incluir $p$, podemos hacer eso también. Estos se denominan intervalos de confianza del 95 \%.
+
+Cuando un encuestador informa una estimación y un margen de error, de alguna manera informa un intervalo de confianza del 95 \%. Vamos a mostrar cómo funciona esto matemáticamente.
+
+Queremos saber la probabilidad de que el intervalo $[\bar{X} - 2\hat{\mbox{SE}}(\bar{X}), \bar{X} - 2\hat{\mbox{SE}}(\bar{X})]$ contiene la verdadera proporción $p$. Primero, considere que el inicio y el final de estos intervalos son variables aleatorias: cada vez que tomamos una muestra, cambian. Para ilustrar esto, ejecute la simulación Monte Carlo arriba dos veces. Usamos los mismos parámetros que arriba:
+
+```{r}
+p <- 0.45
+N <- 1000
+```
+
+Y observe que el intervalo aquí:
+
+```{r}
+x <- sample(c(0, 1), size = N, replace = TRUE, prob = c(1-p, p))
+x_hat <- mean(x)
+se_hat <- sqrt(x_hat * (1 - x_hat)/ N)
+c(x_hat - 1.96 * se_hat, x_hat + 1.96 * se_hat)
+```
+
+es diferente de este:
+
+```{r}
+x <- sample(c(0,1), size=N, replace=TRUE, prob=c(1-p, p))
+x_hat <- mean(x)
+se_hat <- sqrt(x_hat * (1 - x_hat)/ N)
+c(x_hat - 1.96 * se_hat, x_hat + 1.96 * se_hat)
+```
+
+Siga muestreando y creando intervalos y verá la variación aleatoria.
+
+Para determinar la probabilidad de que el intervalo incluya $p$, necesitamos calcular esto:
+$$
+\mbox{Pr}\left(\bar{X} - 1.96\hat{\mbox{SE}}(\bar{X}) \leq p \leq \bar{X} + 1.96\hat{\mbox{SE}}(\bar{X})\right)
+$$
+
+Al restar y dividir las mismas cantidades en todas las partes de la ecuación, nosotros
+obtener que lo anterior es equivalente a:
+
+$$
+\mbox{Pr}\left(-1.96 \leq \frac{\bar{X}- p}{\hat{\mbox{SE}}(\bar{X})} \leq 1.96\right)
+$$
+
+
+El término en el medio es una variable aleatoria aproximadamente normal con valor esperado 0 y error estándar 1, que hemos estado denotando con $Z$, entonces tenemos:
+
+$$
+\mbox{Pr}\left(-1.96 \leq Z \leq 1.96\right)
+$$
+
+que podemos calcular rápidamente usando:
+
+```{r}
+pnorm(1.96) - pnorm(-1.96)
+```
+
+demostrando que tenemos una probabilidad del 95 \%.
+
+Si queremos tener una probabilidad mayor, digamos 99 \%, necesitamos multiplicar por lo que sea `z` cumple lo siguiente:
+
+
+$$
+\mbox{Pr}\left(-z \leq Z \leq z\right) = 0.99
+$$
+
+Utilizando:
+
+```{r}
+z <- qnorm(0.995)
+z
+```
+
+logrará esto porque por definición `pnorm(qnorm(0.995))` es 0.995 y por simetría `pnorm(1-qnorm(0.995))` es 1 - 0.995. Como consecuencia, tenemos que:
+
+
+```{r}
+pnorm(z) - pnorm(-z)
+```
+
+es `0.995 - 0.005 = 0.99`. Podemos usar este enfoque para cualquier proporción $p$: nosotros fijamos `z = qnorm(1 - (1 - p)/2)` porque $1 - (1 - p)/2 + (1 - p)/2 = p$.
+
+Entonces, por ejemplo, para $p=0.95$, $1 - (1-p)/2 = 0.975$ y obtenemos el 1.96 que hemos estado usando:
+
+```{r}
+qnorm(0.975)
+```
+
+### Una simulación de Monte Carlo
+
+Podemos ejecutar una simulación de Monte Carlo para confirmar que, de hecho, un intervalo de confianza del 95 \% incluye $p$ 95 \% del tiempo.
+
+```{r, echo=FALSE}
+set.seed(1)
+```
+
+```{r}
+N <- 1000
+B <- 10000
+inside <- replicate(B, {
+x <- sample(c(0,1), size = N, replace = TRUE, prob = c(1-p, p))
+x_hat <- mean(x)
+se_hat <- sqrt(x_hat * (1 - x_hat)/ N)
+between(p, x_hat - 1.96 * se_hat, x_hat + 1.96 * se_hat)
+})
+mean(inside)
+```
+
+
+La siguiente gráfica muestra los primeros 100 intervalos de confianza. En este caso, creamos la simulación para que la línea negra denote el parámetro que estamos tratando de estimar:
+
+```{r confidence-interval-coverage, message=FALSE, echo=FALSE, fig.height=6}
+set.seed(1)
+tab <- replicate(100, {
+x <- sample(c(0,1), size = N, replace = TRUE, prob = c(1-p, p))
+x_hat <- mean(x)
+se_hat <- sqrt(x_hat * (1 - x_hat)/ N)
+hit <- between(p, x_hat - 1.96 * se_hat, x_hat + 1.96 * se_hat)
+c(x_hat, x_hat - 1.96 * se_hat, x_hat + 2 * se_hat, hit)
+})
+
+tab <- data.frame(poll=1:ncol(tab), t(tab))
+names(tab)<-c("poll", "estimate", "low", "high", "hit")
+tab <- mutate(tab, p_inside = ifelse(hit, "Yes", "No") )
+ggplot(tab, aes(poll, estimate, ymin=low, ymax=high, col = p_inside)) +
+geom_point()+
+geom_errorbar() +
+coord_flip() +
+geom_hline(yintercept = p)
+```
+
+
+### El idioma correcto
+
+Al usar la teoría que describimos anteriormente, es importante recordar que son los intervalos los que son aleatorios, no $p$. En la gráfica anterior, podemos ver los intervalos aleatorios moviéndose y $p$, representado con la línea vertical, quedándose en el mismo lugar. La proporción de azul en la urna. $p$ no es. Entonces el 95 \% se relaciona con la probabilidad de que este intervalo aleatorio caiga por encima de $p$. Diciendo el $p$ tiene una probabilidad del 95 \% de estar entre esto y eso es técnicamente una declaración incorrecta porque $p$ no es al azar.
+
+## Ejercicios
+
+Para estos ejercicios, utilizaremos encuestas reales de las elecciones de 2016. Puede cargar los datos del paquete __dslabs__.
+
+```{r}
+library(dslabs)
+data("polls_us_election_2016")
+```
+
+Específicamente, utilizaremos todas las encuestas nacionales que finalizaron dentro de una semana antes de las elecciones.
+
+```{r, message=FALSE, message=FALSE}
+library(tidyverse)
+polls <- polls_us_election_2016 %>%
+filter(enddate >= "2016-10-31" & state == "U.S.")
+```
+
+1\. Para la primera encuesta, puede obtener el tamaño de las muestras y el porcentaje estimado de Clinton con:
+
+```{r, eval=FALSE}
+N <- polls$samplesize[1]
+x_hat <- polls$rawpoll_clinton[1]/100
+```
+
+Suponga que solo hay dos candidatos y construya un intervalo de confianza del 95% para la proporción de noche de elecciones $p$.
+
+
+2\. Ahora usa `dplyr` para agregar un intervalo de confianza como dos columnas, llámelas `lower` y `upper`, al objeto `poll`. Luego usa `select` para mostrar el `pollster`, `enddate`, `x_hat`,`lower`, `upper` variables Sugerencia: defina columnas temporales `x_hat` y `se_hat`.
+
+3\. La cuenta final para el voto popular fue Clinton 48.2% y Trump 46.1%. Agrega una columna, llámalo `hit`, a la tabla anterior que indica si el intervalo de confianza incluía la proporción verdadera $p=0.482$ o no.
+
+
+4\. Para la tabla que acaba de crear, qué proporción de intervalos de confianza incluyó $p$?
+
+
+5\. Si estos intervalos de confianza se construyen correctamente y la teoría se sostiene, qué proporción debería incluir $p$?
+
+
+6\. Una proporción mucho menor de las encuestas de lo esperado produce intervalos de confianza que contienen $p$. Si observa detenidamente la tabla, verá que la mayoría de las encuestas que no incluyen $p$ están subestimando. La razón de esto son los votantes indecisos, las personas encuestadas que aún no saben a quién votarán o no quieren decir.
+Debido a que, históricamente, los indecisos se dividen equitativamente entre los dos candidatos principales el día de las elecciones, es más informativo estimar la propagación o la diferencia entre la proporción de dos candidatos $d$, que en esta elección fue $0. 482 - 0.461 = 0.021$.
+Supongamos que solo hay dos partes y que $d = 2p - 1$ redefinir `polls` como abajo y
+vuelva a hacer el ejercicio 1, pero por la diferencia.
+
+```{r, message=FALSE, comment=FALSE}
+polls <- polls_us_election_2016 %>%
+filter(enddate >= "2016-10-31" & state == "U.S.") %>%
+mutate(d_hat = rawpoll_clinton/ 100 - rawpoll_trump/ 100)
+```
+
+
+
+7\. Ahora repita el ejercicio 3, pero por la diferencia.
+
+
+8\. Ahora repita el ejercicio 4, pero por la diferencia.
+
+
+9\. Aunque la proporción de intervalos de confianza aumenta sustancialmente, sigue siendo inferior a 0,95. En el próximo capítulo, aprendemos la razón de esto. Para motivar esto, haga un diagrama del error, la diferencia entre la estimación de cada encuesta y la real $d=0.021$. Estratificar por encuestador.
+
+10\. Vuelva a hacer la trama que hizo para el ejercicio 9, pero solo para los encuestadores que tomaron cinco o más encuestas.
+
+
+
+
+## Poder
+
+Los encuestadores no tienen éxito al proporcionar intervalos de confianza correctos, sino al predecir quién ganará. Cuando tomamos un tamaño de muestra de 25 cuentas, el intervalo de confianza para la propagación:
+
+```{r}
+N <- 25
+x_hat <- 0.48
+(2 * x_hat - 1) + c(-1.96, 1.96) * 2 * sqrt(x_hat * (1 - x_hat)/ N)
+```
+
+incluye 0. Si esto fuera una encuesta y nos viéramos obligados a hacer una declaración, tendríamos que decir que fue un "lanzamiento".
+
+Un problema con los resultados de nuestra encuesta es que, dado el tamaño de la muestra y el valor de $p$, tendríamos que sacrificar la probabilidad de una llamada incorrecta para crear un intervalo que no incluya 0.
+
+Esto no significa que la elección esté cerrada. Solo significa que tenemos un tamaño de muestra pequeño. En los libros de texto estadísticos esto se llama falta de poder. En el contexto de las encuestas, _power_ es la probabilidad de detectar spreads diferentes de 0.
+
+Al aumentar el tamaño de nuestra muestra, disminuimos nuestro error estándar y, por lo tanto, tenemos muchas más posibilidades de detectar la dirección de la propagación.
+
+
+## valores p
+
+los valores p son ubicuos en la literatura científica. Están relacionados con los intervalos de confianza, por lo que presentamos el concepto aquí.
+
+Consideremos las cuentas azules y rojas. Supongamos que, en lugar de querer una estimación de la propagación o la proporción de azul, solo me interesa la pregunta: ¿hay más cuentas azules o cuentas rojas? Quiero saber si la propagación $2p-1 > 0$.
+
+Digamos que tomamos una muestra aleatoria de $N=100$ y observamos $52$ cuentas azules, lo que nos da $2\bar{X}-1=0.04$. Esto parece estar apuntando a la existencia de más cuentas azules que rojas ya que 0.04 es mayor que 0. Sin embargo, como científicos de datos, debemos ser escépticos. Sabemos que hay una posibilidad involucrada en este proceso y podríamos obtener un 52 incluso cuando el diferencial real sea 0.
+Llamamos a la suposición de que la propagación es $2p-1=0$ una hipótesis nula. La hipótesis nula es la hipótesis del escéptico. Hemos observado una variable aleatoria $2*\bar{X}-1 = 0.04$ y el valor p es la respuesta a la pregunta: ¿qué tan probable es ver un valor tan grande, cuando la hipótesis nula es verdadera? Entonces escribimos:
+
+$$\mbox{Pr}(\mid \bar{X} - 0.5 \mid > 0.02 ) $$
+
+asumiendo el $2p-1=0$ o $p=0.5$. Bajo la hipótesis nula sabemos que:
+
+$$
+\sqrt{N}\frac{\bar{X} - 0.5}{\sqrt{0.5(1-0.5)}}
+$$
+
+es normal normal. Por lo tanto, podemos calcular la probabilidad anterior, que es el valor p.
+
+$$\mbox{Pr}\left(\sqrt{N}\frac{\mid \bar{X} - 0.5\mid}{\sqrt{0.5(1-0.5)}} > \sqrt{N} \frac{0.02}{ \sqrt{0.5(1-0.5)}}\right)$$
+
+
+```{r}
+N <- 100
+z <- sqrt(N)*0.02/0.5
+1 - (pnorm(z) - pnorm(-z))
+```
+
+En este caso, existe una gran posibilidad de ver 52 o más bajo la hipótesis nula.
+
+Tenga en cuenta que existe una estrecha conexión entre los valores p y los intervalos de confianza. Si un intervalo de confianza del 95% de la propagación no incluye 0, sabemos que el valor p debe ser menor que 0.05.
+
+Para obtener más información sobre los valores p, puede consultar cualquier libro de texto de estadísticas. Sin embargo, en general, preferimos informar los intervalos de confianza sobre los valores p, ya que nos da una idea del tamaño de la estimación. Si solo informamos el valor p, no proporcionamos información sobre la importancia del hallazgo en el contexto del problema.
+
+

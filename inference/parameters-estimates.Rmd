@@ -1,0 +1,194 @@
+# Inferencia estadística {#inference}
+
+En el capitulo \@ref(models) describiremos, con cierto detalle, cómo los agregadores de encuestas, como FiveThirtyEight, usan los datos para predecir los resultados de las elecciones. Para comprender cómo lo hacen, primero debemos aprender los conceptos básicos de _Inferencia estadística_, la parte de la estadística que ayuda a distinguir los patrones que surgen de la señal de los que surgen de la casualidad. La inferencia estadística es un tema amplio y aquí repasaremos los conceptos básicos utilizando las encuestas como un ejemplo motivador. Para describir los conceptos, complementamos las fórmulas matemáticas con simulaciones de Monte Carlo y código R.
+
+```{r, echo=FALSE}
+img_path <- "inference/img/"
+```
+
+## Encuestas
+
+Las encuestas de opinión se han llevado a cabo desde el siglo XIX. El objetivo general es describir las opiniones de una población específica sobre un conjunto de temas dado. En los últimos tiempos, estas encuestas han sido generalizadas durante las elecciones presidenciales. Las encuestas son útiles cuando entrevistar a cada miembro de una población en particular es logísticamente imposible. La estrategia general es entrevistar a un grupo más pequeño, elegido al azar, y luego inferir las opiniones de toda la población a partir de las opiniones del grupo más pequeño. La teoría estadística se usa para justificar el proceso. Esta teoría se conoce como _inferencia_ y es el tema principal de este capítulo.
+
+Quizás las encuestas de opinión más conocidas son las realizadas para determinar qué candidato es preferido por los votantes en una elección determinada. Los estrategas políticos hacen un uso extensivo de las encuestas para decidir, entre otras cosas, cómo invertir recursos. Por ejemplo, es posible que quieran saber en qué ubicaciones geográficas enfocar sus esfuerzos de "sacar el voto".
+
+Las elecciones son un caso particularmente interesante de encuestas de opinión porque la opinión real de toda la población se revela el día de las elecciones. Por supuesto, cuesta millones de dólares realizar una elección real, lo que hace que la votación sea una estrategia rentable para aquellos que desean pronosticar los resultados.
+
+Aunque típicamente los resultados de estas encuestas se mantienen privados, las organizaciones de noticias realizan encuestas similares porque los resultados tienden a ser de interés para el público en general y se hacen públicos. Eventualmente estaremos viendo tales datos.
+
+Real Clear Politics^[http://www.realclearpolitics.com] es un ejemplo de un agregador de noticias que organiza y publica resultados de encuestas. Por ejemplo, presentan los siguientes resultados de las encuestas que informan estimaciones del voto popular para las elecciones presidenciales de 2016^[http://www.realclearpolitics.com/epolls/2016/president/us/general_election_trump_vs_clinton-5491.html]:
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+#knitr::include_graphics(file.path(img_path,"rcp-polls.png"))
+url <- "https://www.realclearpolitics.com/epolls/2016/president/us/general_election_trump_vs_clinton-5491.html"
+library(rvest)
+tab <- read_html(url) %>% html_node("table") %>% html_table()
+tab <- tab %>% mutate(Poll = stringr::str_remove(Poll, "\\/.*")) %>%
+mutate(Poll = case_when(
+Poll == "BloombergBloomberg" ~ "Bloomberg",
+Poll == "FOX NewsFOX News" ~ "FOX News",
+Poll == "MonmouthMonmouth" ~ "Monmouth",
+Poll == "CBS NewsCBS News" ~ "CBS News",
+TRUE ~ Poll))
+names(tab) <- stringr::str_remove_all(names(tab), "\\s(.*)")
+if(knitr::is_html_output()){
+knitr::kable(tab, "html") %>%
+kableExtra::kable_styling(bootstrap_options = "striped", full_width = FALSE)
+} else{
+knitr::kable(tab, "latex", booktabs = TRUE) %>%
+kableExtra::kable_styling(font_size = 8)
+}
+```
+
+<!-- (Source: [Real Clear Politics](https://www.realclearpolitics.com/epolls/2016/president/us/general_election_trump_vs_clinton-5491.html)) -->
+
+Aunque en los Estados Unidos el voto popular no determina el resultado de las elecciones presidenciales, lo utilizaremos como un ejemplo ilustrativo y simple de qué tan bien funcionan las encuestas. Pronosticar la elección es un proceso más complejo ya que implica combinar resultados de 50 estados y DC y lo describimos en la Sección \@ref(election-forecasting).
+
+Hagamos algunas observaciones sobre la tabla de arriba. Primero, tenga en cuenta que las encuestas diferentes, todas tomadas días antes de las elecciones, informan una _difusión_ diferente: la diferencia estimada entre el apoyo a los dos candidatos. Observe también que los diferenciales informados rondan en torno a lo que terminó siendo el resultado real: Clinton ganó el voto popular en un 2,1%. También vemos una columna titulada **MoE** que significa _margin of error_.
+
+En esta sección, mostraremos cómo se pueden aplicar los conceptos de probabilidad que aprendimos en el capítulo anterior para desarrollar los enfoques estadísticos que hacen de las encuestas una herramienta eficaz. Aprenderemos los conceptos estadísticos necesarios para definir estimaciones y márgenes de errores, y mostraremos cómo podemos usarlos para pronosticar resultados finales relativamente bien y también proporcionar una estimación de la precisión de nuestro pronóstico. Una vez que aprendamos esto, podremos comprender dos conceptos que son ubicuos en la ciencia de datos: _intervalos de confianza_y_p-valores_. Finalmente, para comprender las declaraciones probabilísticas sobre la probabilidad de que un candidato gane, tendremos que aprender sobre el modelado bayesiano. En las secciones finales, lo reunimos todo para recrear la versión simplificada del modelo FiveThirtyEight y aplicarlo a las elecciones de 2016.
+
+Comenzamos conectando la teoría de probabilidad con la tarea de usar encuestas para aprender sobre una población.
+
+
+### El modelo de muestreo para encuestas
+
+Para ayudarnos a comprender la conexión entre las encuestas y lo que hemos aprendido, construyamos una situación similar a la que enfrentan los encuestadores. Para imitar el desafío que enfrentan los encuestadores reales en términos de competir con otros encuestadores por la atención de los medios, utilizaremos una urna llena de cuentas para representar a los votantes y fingiremos que estamos compitiendo por un premio de $ 25 dólares. El desafío es adivinar la extensión entre la proporción de cuentas azules y rojas en esta urna (en este caso, un tarro de pepinillos):
+
+
+```{r, echo=FALSE, out.width="1.5in"}
+knitr::include_graphics(file.path(img_path, "urn.jpg"))
+```
+
+Antes de hacer una predicción, puede tomar una muestra (con reemplazo) de la urna. Para imitar el hecho de que realizar encuestas es costoso, te cuesta \$0.10 per each bead you sample. Therefore, if your sample size is 250, and you win, you will break even since you will pay \$ 25 para recoger su premio de $ 25. Su entrada en la competencia puede ser un intervalo. Si el intervalo que envía contiene la proporción real, obtiene la mitad de lo que pagó y pasa a la segunda fase de la competencia. En la segunda fase, la entrada con el intervalo más pequeño se selecciona como el ganador.
+
+El paquete __dslabs__ incluye una función que muestra un sorteo aleatorio de esta urna:
+
+```{r, eval=FALSE}
+library(tidyverse)
+library(dslabs)
+take_poll(25)
+```
+
+```{r first-simulated-poll, message=FALSE, warning=FALSE, echo=FALSE}
+set.seed(1)
+library(tidyverse)
+library(dslabs)
+rafalib::mypar()
+take_poll(25)
+```
+
+Piense en cómo construiría su intervalo según los datos que se muestran arriba.
+
+Acabamos de describir un modelo de muestreo simple para encuestas de opinión. Las cuentas dentro de la urna representan a las personas que votarán el día de las elecciones. Los que votarán por el candidato republicano están representados con cuentas rojas y los demócratas con cuentas azules. Por simplicidad, suponga que no hay otros colores. Es decir, que solo hay dos partidos: republicano y demócrata.
+
+## Poblaciones, muestras, parámetros y estimaciones
+
+Queremos predecir la proporción de cuentas azules en la urna. Llamemos a esta cantidad $p$, que luego nos dice la proporción de cuentas rojas $1-p$ y la propagación $p - (1-p)$, que se simplifica a $2p - 1$.
+
+En los libros de texto estadísticos, las cuentas en la urna se llaman _población_. La proporción de cuentas azules en la población. $p$ se llama un parámetro Las 25 cuentas que vemos en la gráfica anterior se llaman _muestra_. La tarea de la inferencia estadística es predecir el parámetro. $p$ utilizando los datos observados en la muestra.
+
+¿Podemos hacer esto con las 25 observaciones anteriores? Ciertamente es informativo. Por ejemplo, dado que vemos 13 cuentas rojas y 12 azules, es poco probable que $p$ > .9 o $p$ <.1. ¿Pero estamos listos para predecir con certeza que hay más cuentas rojas que azules en el frasco?
+
+Queremos construir una estimación de $p$ utilizando solo la información que observamos. Una estimación debe considerarse como un resumen de los datos observados que consideramos informativos sobre el parámetro de interés. Parece intuitivo pensar que la proporción de cuentas azules en la muestra $0.48$ debe estar al menos relacionado con la proporción real $p$. ¿Pero simplemente predecimos $p$ ser 0.48? Primero, recuerde que la proporción muestral es una variable aleatoria. Si ejecutamos el comando `take_poll(25)` cuatro veces, obtenemos una respuesta diferente cada vez, ya que la proporción muestral es una variable aleatoria.
+
+
+```{r four-simulated-polls, echo=FALSE}
+par(mfrow=c(2,2), mar = c(3, 1, 3, 0), mgp = c(1.5, 0.5, 0))
+take_poll(25); take_poll(25); take_poll(25); take_poll(25)
+```
+
+
+Tenga en cuenta que en las cuatro muestras aleatorias que se muestran arriba, las proporciones de la muestra varían de 0.44 a 0.60. Al describir la distribución de esta variable aleatoria, podremos obtener información sobre cuán buena es esta estimación y cómo podemos mejorarla.
+
+### El promedio de la muestra
+
+La realización de una encuesta de opinión se modela como la toma de una muestra aleatoria de una urna. Estamos proponiendo el uso de la proporción de cuentas azules en nuestra muestra como una estimación del parámetro $p$. Una vez que tengamos este estimado, podemos reportar fácilmente un estimado para el spread $2p-1$, pero por simplicidad ilustraremos los conceptos para estimar $p$. Usaremos nuestro conocimiento de probabilidad para defender nuestro uso de la proporción muestral y cuantificaremos qué tan cerca creemos que está de la proporción poblacional $p$.
+
+Comenzamos definiendo la variable aleatoria $X$ como: $X=1$ si elegimos una cuenta azul al azar y $X=0$ si es rojo Esto implica que la población es una lista de 0s y 1s. Si tomamos muestras $N$ cuentas, entonces el promedio de los sorteos $X_1, \dots, X_N$ es equivalente a la proporción de cuentas azules en nuestra muestra. Esto es porque agregar el $X$ s es equivalente a contar las cuentas azules y dividir este recuento por el total $N$ es equivalente a calcular una proporción. Usamos el símbolo $\bar{X}$ para representar este promedio. En general, en los libros de texto de estadísticas, una barra en la parte superior de un símbolo significa el promedio. La teoría que acabamos de aprender sobre la suma de los sorteos se vuelve útil porque el promedio es una suma de sorteos multiplicada por la constante $1/N$:
+
+$$\bar{X} = 1/N \times \sum_{i=1}^N X_i$$
+
+Para simplificar, supongamos que los sorteos son independientes: después de ver cada cuenta muestreada, la devolvemos a la urna. En este caso, ¿qué sabemos sobre la distribución de la suma de los sorteos? Primero, sabemos que el valor esperado de la suma de los sorteos es $N$ veces el promedio de los valores en la urna. Sabemos que el promedio de los 0 y 1 en la urna debe ser $p$, la proporción de cuentas azules.
+
+Aquí encontramos una diferencia importante con lo que hicimos en el capítulo Probabilidad: no sabemos qué hay en la urna. Sabemos que hay cuentas azules y rojas, pero no sabemos cuántas de cada una. Esto es lo que queremos descubrir: estamos tratando de **estimar** $p$.
+
+### Parámetros
+
+Al igual que usamos variables para definir incógnitas en los sistemas de ecuaciones, en la inferencia estadística definimos _parámetros_ para definir partes desconocidas de nuestros modelos. En el modelo de urna que estamos utilizando para imitar una encuesta de opinión, no sabemos la proporción de cuentas azules en la urna. Definimos los parametros $p$ para representar esta cantidad. $p$ es el promedio de la urna porque si tomamos el promedio de 1s (azul) y 0s (rojo), obtenemos la proporción de cuentas azules. Dado que nuestro objetivo principal es descubrir qué es $p$, vamos a estimar este parámetro.
+
+Las ideas presentadas aquí sobre cómo estimamos los parámetros y proporcionan información sobre cuán buenas son estas estimaciones, se extrapolan a muchas tareas de ciencia de datos. Por ejemplo, podemos querer determinar la diferencia en la mejora de la salud entre los pacientes que reciben tratamiento y un grupo de control. Podemos preguntarnos, ¿cuáles son los efectos del tabaquismo en la salud de una población? ¿Cuáles son las diferencias en los grupos raciales de tiroteos fatales por parte de la policía? ¿Cuál es la tasa de cambio en la esperanza de vida en los Estados Unidos durante los últimos 10 años? Todas estas preguntas pueden enmarcarse como una tarea de estimar un parámetro de una muestra.
+
+### Encuesta versus pronóstico
+
+Antes de continuar, hagamos una aclaración importante relacionada con el problema práctico de pronosticar las elecciones. Si se realiza una encuesta cuatro meses antes de las elecciones, se estima la $p$ para ese momento y no para el día de las elecciones. los $p$ para la noche de las elecciones podría ser diferente ya que las opiniones de las personas fluctúan a través del tiempo. Las encuestas proporcionadas la noche anterior a las elecciones tienden a ser las más precisas ya que las opiniones no cambian tanto en un día. Sin embargo, los pronosticadores intentan crear herramientas que modelen cómo las opiniones varían a lo largo del tiempo e intentan predecir los resultados de la noche de elecciones teniendo en cuenta el hecho de que las opiniones fluctúan. Describiremos algunos enfoques para hacer esto en una sección posterior.
+
+### Propiedades de nuestra estimación: valor esperado y error estándar
+
+Para comprender qué tan buena es nuestra estimación, describiremos las propiedades estadísticas de la variable aleatoria definida anteriormente: la proporción muestral $\bar{X}$. Recuérdalo $\bar{X}$ es la suma de los sorteos independientes, por lo que se aplican las reglas que cubrimos en el capítulo de probabilidad.
+
+Usando lo que hemos aprendido, el valor esperado de la suma $N\bar{X}$ es $N \times$ el promedio de la urna, $p$. Entonces dividiendo por la constante no aleatoria $N$ nos da que el valor esperado del promedio $\bar{X}$ es $p$. Podemos escribirlo usando nuestra notación matemática:
+
+$$
+\mbox{E}(\bar{X}) = p
+$$
+
+También podemos usar lo que aprendimos para descubrir el error estándar: el error estándar de la suma es $\sqrt{N} \times$ la desviación estándar de la urna. ¿Podemos calcular el error estándar de la urna? Aprendimos una fórmula que nos dice que es $(1-0) \sqrt{p (1-p)}$ = $\sqrt{p (1-p)}$. Porque estamos dividiendo la suma por $N$, llegamos a la siguiente fórmula para el error estándar del promedio:
+
+$$
+\mbox{SE}(\bar{X}) = \sqrt{p(1-p)/N}
+$$
+
+Este resultado revela el poder de las encuestas. El valor esperado de la proporción muestral $\bar{X}$ es el parámetro de interés $p$ y podemos hacer que el error estándar sea tan pequeño como queramos aumentando $N$. La ley de los grandes números nos dice que con una encuesta lo suficientemente grande, nuestra estimación converge a $p$.
+
+Si realizamos una encuesta lo suficientemente grande como para que nuestro error estándar sea del 1%, estaremos bastante seguros de quién ganará. Pero, ¿qué tan grande debe ser la encuesta para que el error estándar sea tan pequeño?
+
+Un problema es que no sabemos $p$, por lo que no podemos calcular el error estándar. Sin embargo, con fines ilustrativos, supongamos que $p=0.51$ y trazar el error estándar frente al tamaño de la muestra $N$:
+
+```{r standard-error-versus-sample-size, echo=FALSE, message=FALSE, warning=FALSE}
+p <- 0.51
+N <- 10^seq(1,5, len=100)
+data.frame(N=N, SE = sqrt(p*(1-p)/N)) %>% ggplot(aes(N, SE)) + geom_line() + scale_x_continuous(breaks = c(10,100,1000,10000), trans = "log10")
+```
+
+De la trama vemos que necesitaríamos una encuesta de más de 10,000 personas para obtener el error estándar tan bajo. Raramente vemos encuestas de este tamaño debido en parte a los costos. De la tabla Real Clear Politics, aprendemos que los tamaños de muestra en las encuestas de opinión oscilan entre 500-3,500 personas. Para un tamaño de muestra de 1,000 y $p=0.51$, el error estándar es:
+```{r}
+sqrt(p*(1-p))/sqrt(1000)
+```
+
+o 1.5 puntos porcentuales. Entonces, incluso con grandes encuestas, para elecciones cerradas, $\bar{X}$ puede llevarnos por mal camino si no nos damos cuenta de que es una variable aleatoria. Sin embargo, en realidad podemos decir más sobre cuán cerca nos acercamos $p$ y hacemos eso en la Sección \@ref(clt).
+
+## Ejercicios
+
+1\. Supongamos que sondea una población en la que una proporción $p$ de los votantes son demócratas y $1-p$ son republicanos Su tamaño de muestra es $N=25$. Considere la variable aleatoria $S$ que es el **total** número de demócratas en su muestra. ¿Cuál es el valor esperado de esta variable aleatoria? Sugerencia: es una función de $p$.
+
+
+2\. ¿Cuál es el error estándar de $S$ ? Sugerencia: es una función de $p$.
+
+3\. Considere la variable aleatoria $S/N$. Esto es equivalente al promedio de la muestra, que hemos estado denotando como $\bar{X}$. ¿Cuál es el valor esperado de la $\bar{X}$? Sugerencia: es una función de $p$.
+
+4\. ¿Cuál es el error estándar de $\bar{X}$? Sugerencia: es una función de $p$.
+
+5\. Escribe una línea de código que te dé el error estándar `se` para el problema anterior para varios valores de $p$, especificamente para NA. Haz una trama de NA versus NA.
+
+
+6\. Copie el código anterior y póngalo dentro de un bucle for para hacer el diagrama para $N=25$, $N=100$ y $N=1000$.
+
+
+7\. Si nos interesa la diferencia en proporciones, $p - (1-p)$, nuestra estimación es $d = \bar{X} - (1-\bar{X})$. Use las reglas que aprendimos sobre sumas de variables aleatorias y variables aleatorias escaladas para derivar el valor esperado de $d$.
+
+
+8\. ¿Cuál es el error estándar de $d$?
+
+
+9\. Si el actual $p=.45$, significa que los republicanos están ganando por un margen relativamente grande desde $d= -.1$, que es un margen de victoria del 10%. En este caso, ¿cuál es el error estándar de $2\hat{X}-1$ si tomamos una muestra de $N=25$?
+
+
+10\. Dada la respuesta a 9, ¿cuál de las siguientes opciones describe mejor su estrategia de usar un tamaño de muestra de $N=25$?
+
+a. El valor esperado de nuestra estimación. $2\bar{X}-1$ es $d$, por lo que nuestra predicción será correcta.
+si. Nuestro error estándar es mayor que la diferencia, por lo que las posibilidades de $2\bar{X}-1$ ser positivo y despistarnos no fue tan pequeño. Deberíamos elegir un tamaño de muestra más grande.
+c. La diferencia es del 10% y el error estándar es de aproximadamente 0.2, por lo tanto, mucho más pequeño que la diferencia.
+re. Porque no sabemos $p$, no tenemos forma de saber que hacer $N$ más grande en realidad mejoraría nuestro error estándar.
+
+

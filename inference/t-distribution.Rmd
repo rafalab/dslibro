@@ -1,0 +1,86 @@
+## La distribución t {#t-dist}
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
+library(tidyverse)
+library(dslabs)
+data("polls_us_election_2016")
+ds_theme_set()
+polls <- polls_us_election_2016 %>%
+filter(state == "U.S." & enddate >= "2016-10-31" &
+(grade %in% c("A+","A","A-","B+") | is.na(grade))) %>%
+mutate(spread = rawpoll_clinton/100 - rawpoll_trump/100)
+
+one_poll_per_pollster <- polls %>% group_by(pollster) %>%
+filter(enddate == max(enddate)) %>%
+ungroup()
+```
+
+Arriba utilizamos el CLT con un tamaño de muestra de 15. Porque estamos estimando un segundo parámetro $\sigma$, se introduce una mayor variabilidad en nuestro intervalo de confianza, lo que da como resultado intervalos que son demasiado pequeños. Para tamaños de muestra muy grandes, esta variabilidad adicional es insignificante, pero, en general, para valores menores de 30 debemos ser cautelosos al usar el CLT.
+
+Sin embargo, si se sabe que los datos en la urna siguen una distribución normal, entonces tenemos una teoría matemática que nos dice cuánto más necesitamos hacer los intervalos para dar cuenta de la estimación de $\sigma$. Usando esta teoría, podemos construir intervalos de confianza para cualquier $N$. Pero, de nuevo, esto funciona solo si **se sabe que los datos en la urna siguen una distribución normal**. Entonces, para los datos 0, 1 de nuestro modelo de urna anterior, esta teoría definitivamente no se aplica.
+
+La estadística sobre los intervalos de confianza para $d$ se basan es
+
+$$
+Z = \frac{\bar{X} - d}{\sigma/\sqrt{N}}
+$$
+
+CLT nos dice que Z se distribuye aproximadamente normalmente con el valor esperado 0 y el error estándar 1. Pero en la práctica no sabemos $\sigma$ entonces usamos:
+
+$$
+Z = \frac{\bar{X} - d}{s/\sqrt{N}}
+$$
+
+
+Mediante la sustitución $\sigma$ con $s$ introducimos cierta variabilidad. La teoría nos dice que $Z$ sigue una distribución t con $N-1$ _grados de libertad_. Los grados de libertad es un parámetro que controla la variabilidad a través de colas más gruesas:
+
+```{r t-distribution-examples, echo=FALSE}
+x <- seq(-5,5, len=100)
+data.frame(x=x, Normal = dnorm(x, 0, 1), t_03 = dt(x,3), t_05 = dt(x,5), t_15=dt(x,15)) %>% gather(distribution, f, -x) %>% ggplot(aes(x,f, color = distribution)) + geom_line() +ylab("f(x)")
+```
+
+Si estamos dispuestos a asumir que los datos del efecto encuestador se distribuyen normalmente, en función de los datos de la muestra $X_1, \dots, X_N$,
+```{r poll-spread-qq}
+one_poll_per_pollster %>%
+ggplot(aes(sample=spread)) + stat_qq()
+```
+luego $Z$ sigue una distribución t con $N-1$ grados de libertad. Entonces quizás un mejor intervalo de confianza para $d$ es:
+
+
+```{r}
+z <- qt(0.975, nrow(one_poll_per_pollster)-1)
+one_poll_per_pollster %>%
+summarize(avg = mean(spread), moe = z*sd(spread)/sqrt(length(spread))) %>%
+mutate(start = avg - moe, end = avg + moe)
+```
+
+Un poco más grande que el que usa normal es
+
+```{r}
+qt(0.975, 14)
+```
+
+es mayor que
+
+```{r}
+qnorm(0.975)
+```
+
+La distribución t también se puede usar para modelar errores en desviaciones más grandes que son más probables que con la distribución normal, como se ve en las densidades que vimos anteriormente. Fivethirtyeight utiliza la distribución t para generar errores que modelen mejor las desviaciones que vemos en los datos electorales. Por ejemplo, en Wisconsin, el promedio de seis encuestas fue del 7% a favor de Clinton con una desviación estándar del 1%, pero Trump ganó un 0,7%. Incluso después de tener en cuenta el sesgo general, este 7,7% residual está más en línea con los datos distribuidos en t que la distribución normal.
+
+```{r}
+data("polls_us_election_2016")
+polls_us_election_2016 %>%
+filter(state =="Wisconsin" &
+enddate >="2016-10-31" &
+(grade %in% c("A+","A","A-","B+") | is.na(grade))) %>%
+mutate(spread = rawpoll_clinton/100 - rawpoll_trump/100) %>%
+mutate(state = as.character(state)) %>%
+left_join(results_us_election_2016, by = "state") %>%
+mutate(actual = clinton/100 - trump/100) %>%
+summarize(actual = first(actual), avg = mean(spread),
+sd = sd(spread), n = n()) %>%
+select(actual, avg, sd, n)
+```
+
+
