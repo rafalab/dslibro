@@ -1,6 +1,6 @@
 ## Estudio de caso: pronóstico de elecciones {#election-forecasting}
 
-En una sección anterior, generamos estas tablas de datos:
+En una sección anterior, generamos las siguientes tablas de datos:
 ```{r, message=FALSE, warning=FALSE}
 library(tidyverse)
 library(dslabs)
@@ -18,13 +18,13 @@ summarize(avg = mean(spread), se = sd(spread)/sqrt(length(spread))) %>%
 mutate(start = avg - 1.96*se, end = avg + 1.96*se)
 ```
 
-A continuación, los utilizaremos para nuestro pronóstico.
+A continuación, las utilizaremos para nuestro pronóstico.
 
 ### Enfoque bayesiano {#bayesian-approach}
 
-Los encuestadores tienden a hacer declaraciones probabilísticas sobre los resultados de las elecciones. Por ejemplo, "La posibilidad de que Obama gane el colegio electoral es del 91%" es una declaración probabilística sobre un parámetro que en secciones anteriores hemos señalado con $d$. Mostramos que para las elecciones de 2016, FiveThirtyEight le dio a Clinton una probabilidad del 81.4% de ganar el voto popular. Para hacer esto, utilizaron el enfoque bayesiano que describimos.
+Los encuestadores tienden a hacer declaraciones probabilísticas sobre los resultados de las elecciones. Por ejemplo, "La probabilidad de que Obama gane el colegio electoral es 91%" es una declaración probabilística sobre un parámetro que en secciones anteriores hemos señalado con $d$. Mostramos que para las elecciones de 2016, FiveThirtyEight le dio a Clinton una probabilidad de 81.4% de ganar el voto popular. Para hacer esto, [fix] utilizaron el/un enfoque bayesiano que describimos [where did you describe? fix eng?].
 
-Asumimos un modelo jerárquico similar al que hicimos para predecir el desempeño de un jugador de béisbol. Los libros de texto estadísticos escribirán el modelo así:
+Suponemos un modelo jerárquico similar al que hicimos para predecir el desempeño de un jugador de béisbol. Los libros de texto estadísticos escribirán el modelo así:
 
 $$
 \begin{aligned}
@@ -33,7 +33,7 @@ d &\sim N(\mu, \tau^2) \mbox{ describes our best guess had we not seen any polli
 \end{aligned}
 $$
 
-Para nuestra mejor estimación, notamos que antes de que haya datos de encuestas disponibles, podemos usar fuentes de datos que no sean datos de encuestas. Un enfoque popular es utilizar lo que los encuestadores llaman _fundamentals_, que se basan en propiedades sobre la economía actual que históricamente parecen tener un efecto a favor o en contra de la parte titular. No usaremos estos aquí. En cambio, usaremos $\mu = 0$, que se interpreta como un modelo que simplemente no proporciona información sobre quién ganará. Para la desviación estándar, usaremos datos históricos recientes que muestran que el ganador del voto popular tiene una extensión promedio de aproximadamente 3.5%. Por lo tanto, establecemos $\tau = 0.035$.
+[fix] Para nuestra mejor estimación/pronóstico, notamos que antes de que haya datos de encuestas disponibles, podemos usar fuentes de datos que no son datos de encuestas. Un enfoque popular es utilizar lo que los encuestadores llaman _fundamentos_, que se basan en [fix] propiedades sobre/características de la economía actual que históricamente parecen tener un efecto a favor o en contra el partido en el poder. No usaremos estos aquí. En cambio, usaremos $\mu = 0$, que se interpreta como un modelo que simplemente no ofrece información sobre quién ganará. Para la desviación estándar, usaremos datos históricos recientes que muestran que el ganador del voto popular tiene [fix] una extensión promedio "average spread" de aproximadamente 3.5%. Por lo tanto, establecemos $\tau = 0.035$.
 
 Ahora podemos usar las fórmulas para la distribución posterior del parámetro $d$: la probabilidad de $d>0$ dados los datos de la encuesta observada:
 
@@ -67,13 +67,13 @@ Esto dice que estamos 100% seguros de que Clinton ganará el voto popular, lo qu
 
 ### El sesgo general
 
-Una vez finalizadas las elecciones, se puede observar la diferencia entre las predicciones de los encuestadores y el resultado real. Una observación importante que nuestro modelo no tiene en cuenta es que es común ver un sesgo general que afecta a muchos encuestadores de la misma manera haciendo correlacionar los datos observados. No hay una buena explicación para esto, pero lo observamos en los datos históricos: en una elección, el promedio de las encuestas favorece a los demócratas en un 2%, luego en las siguientes elecciones favorecen a los republicanos en un 1%, luego en las próximas elecciones hay sin prejuicios, entonces en el siguiente los republicanos se ven favorecidos en un 3%, y así sucesivamente. En 2016, las encuestas fueron sesgadas a favor de los demócratas en un 1-2%.
+Una vez finalizadas las elecciones, se puede observar la diferencia entre las predicciones de los encuestadores y el resultado real. Una observación importante que nuestro modelo no toma en cuenta es que es común ver un sesgo general que afecta a muchos encuestadores de la misma manera [fix] haciendo que los datos observados estén correlacionados. No hay una buena explicación para esto, pero se observa en datos históricos: en una elección, el promedio de las encuestas favorece a los demócratas en un 2%, luego en las siguientes elecciones favorece a los republicanos en un 1%, entonces en las próximas elecciones no hay sesgo, luego en la siguiente los republicanos se ven favorecidos en un 3%, y así sucesivamente. [fix] En 2016, las encuestas favorecían a los demócratas en un 1-2%.
 
-Aunque sabemos que este término sesgo afecta nuestras encuestas, no tenemos forma de saber cuál es este sesgo hasta la noche de las elecciones. Por lo tanto, no podemos corregir nuestras encuestas en consecuencia. Lo que podemos hacer es incluir un término en nuestro modelo que explique esta variabilidad.
+Aunque sabemos que [fix eng too] este término sesgo afecta nuestras encuestas, no tenemos forma de saber cuál es /el/este sesgo hasta la noche de las elecciones. Por lo tanto, no podemos corregir nuestras encuestas en consecuencia. Lo que podemos hacer es incluir un término en nuestro modelo que explique esta variabilidad.
 
 ### Representaciones matemáticas de modelos.
 
-Supongamos que estamos recopilando datos de un encuestador y suponemos que no hay sesgo general. El encuestador recoge varias encuestas con un tamaño de muestra de $N$, por lo que observamos varias mediciones de la propagación $X_1, \dots, X_J$. La teoría nos dice que estas variables aleatorias tienen un valor esperado. $d$ y error estándar $2 \sqrt{p(1-p)/N}$. Comencemos usando el siguiente modelo para describir la variabilidad observada:
+Supongamos que estamos recopilando datos de un encuestador y suponemos/pensamos que no hay sesgo general. El encuestador recoge varias encuestas con un tamaño de muestra de $N$, por lo que observamos varias mediciones de la variabilidad $X_1, \dots, X_J$. La teoría nos dice que estas variables aleatorias tienen un valor esperado $d$ y un error estándar $2 \sqrt{p(1-p)/N}$. Comencemos usando el siguiente modelo para describir la variabilidad observada:
 
 $$
 X_j = d + \varepsilon_j.
@@ -89,7 +89,7 @@ p <- (d + 1)/2
 X <- d + rnorm(J, 0, 2 * sqrt(p * (1 - p)/ N))
 ```
 
-Ahora supongamos que tenemos $J=6$ puntos de datos de $I=5$ diferentes encuestadores. Para representar esto, ahora necesitamos dos índices, uno para el encuestador y otro para las encuestas que toma cada encuestador. Usamos $X_{ij}$ con $i$ representando al encuestador y $j$ representando el $j$-th encuesta de ese encuestador. Si aplicamos el mismo modelo, escribimos:
+Ahora supongamos que tenemos $J=6$ puntos de datos de $I=5$ diferentes encuestadores. Para representar esto, necesitamos dos índices, uno para el encuestador y otro para las encuestas que toma cada encuestador. Usamos $X_{ij}$ con $i$ representando al encuestador y $j$ representando la encuesta $j$ de ese encuestador. Si aplicamos el mismo modelo, escribimos:
 
 
 
@@ -97,7 +97,7 @@ $$
 X_{i,j} = d + \varepsilon_{i,j}
 $$
 
-Para simular datos, ahora tenemos que recorrer los encuestadores:
+Para simular datos, ahora tenemos que [fix] loop through/recorrer los encuestadores:
 
 ```{r}
 I <- 5
@@ -109,7 +109,6 @@ d + rnorm(J, 0, 2 * sqrt(p * (1 - p)/ N))
 ```
 
 Los datos simulados realmente no parecen capturar las características de los datos reales:
-
 
 ```{r simulated-data-without-bias, echo=FALSE, message=FALSE, warning=FALSE}
 polls %>% group_by(pollster) %>%
@@ -126,7 +125,7 @@ coord_flip() +
 facet_wrap( ~ type, scales = "free_y")
 ```
 
-El modelo anterior no tiene en cuenta la variabilidad de encuestador a encuestador. Para solucionar esto, agregamos un nuevo término para el efecto encuestador. Usaremos $h_i$ para representar el efecto de la casa de la $i$-th encuestador. El modelo ahora se aumenta a:
+El modelo anterior no toma en cuenta la variabilidad de encuestador a encuestador. Para solucionar esto, agregamos un nuevo término para el efecto de los encuestadores. Usaremos $h_i$ para representar [fix] the house effect/el efecto de la casa de la [fix ok?] encuestador número $i$. El modelo ahora se aumenta a:
 
 $$
 X_{i,j} = d + h_i + \varepsilon_{i,j}
