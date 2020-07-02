@@ -2,9 +2,9 @@
 
 El CLT nos dice que la función de distribución para una suma de sorteos es aproximadamente normal. También aprendimos que dividir una variable aleatoria normalmente distribuida por una constante también es una variable normalmente distribuida. Esto implica que la distribución de $\bar{X}$ es aproximadamente normal.
 
-En resumen, tenemos que $\bar{X}$ tiene una distribución aproximadamente normal con el valor esperado $p$ y error estándar $\sqrt{p(1-p)/N}$.
+En resumen, tenemos que $\bar{X}$ tiene una distribución aproximadamente normal con valor esperado $p$ y error estándar $\sqrt{p(1-p)/N}$.
 
-Ahora, ¿cómo nos ayuda esto? Supongamos que queremos saber cuál es la probabilidad de que estemos dentro del 1% de $p$. Básicamente estamos preguntando qué es
+Ahora, ¿cómo nos ayuda esto? Supongamos que queremos saber cuál es la probabilidad de que estamos a 1% de $p$.  Básicamente estamos preguntando cuánto es:
 
 $$
 \mbox{Pr}(| \bar{X} - p| \leq .01)
@@ -15,21 +15,21 @@ $$
 \mbox{Pr}(\bar{X}\leq p + .01) - \mbox{Pr}(\bar{X} \leq p - .01)
 $$
 
-¿Podemos responder esta pregunta? Podemos usar el truco matemático que aprendimos en el capítulo anterior. Reste el valor esperado y divida por el error estándar para obtener una variable aleatoria normal estándar, llámela $Z$, a la izquierda. Ya que $p$ es el valor esperado y $\mbox{SE}(\bar{X}) = \sqrt{p(1-p)/N}$ es el error estándar que obtenemos:
+¿Podemos responder a esta pregunta? Podemos usar el truco matemático que aprendimos en el capítulo anterior. Resten el valor esperado y dividan por el error estándar para obtener una variable aleatoria normal estándar, llámenla $Z$, a la izquierda. Ya que $p$ es el valor esperado y $\mbox{SE}(\bar{X}) = \sqrt{p(1-p)/N}$ es el error estándar, obtenemos:
 
 $$
 \mbox{Pr}\left(Z \leq \frac{ \,.01} {\mbox{SE}(\bar{X})} \right) -
 \mbox{Pr}\left(Z \leq - \frac{ \,.01} {\mbox{SE}(\bar{X})} \right)
 $$
 
-Un problema que tenemos es que no sabemos $p$ no sabemos $\mbox{SE}(\bar{X})$. Pero resulta que el CLT aún funciona si estimamos el error estándar usando $\bar{X}$ en lugar de $p$. Decimos que enchufamos la estimación. Nuestra estimación del error estándar es por lo tanto:
+Un problema que tenemos es que como no sabemos $p$, no sabemos $\mbox{SE}(\bar{X})$. Pero resulta que el CLT aún funciona si estimamos el error estándar usando $\bar{X}$ en lugar de $p$. Decimos que nosotros _plug-in_ la estimación. Nuestra estimación del error estándar es por lo tanto:
 
 $$
 \hat{\mbox{SE}}(\bar{X})=\sqrt{\bar{X}(1-\bar{X})/N}
 $$
 En los libros de texto de estadísticas, usamos un sombrerito para denotar estimaciones. La estimación se puede construir utilizando los datos observados y $N$.
 
-Ahora continuamos con nuestro cálculo, pero dividiendo por $\hat{\mbox{SE}}(\bar{X})=\sqrt{\bar{X}(1-\bar{X})/N})$ en lugar. En nuestra primera muestra teníamos 12 azules y 13 rojos así que $\bar{X} = 0.48$ y nuestra estimación del error estándar es:
+Ahora continuamos con nuestro cálculo, pero dividiendo por $\hat{\mbox{SE}}(\bar{X})=\sqrt{\bar{X}(1-\bar{X})/N})$. En nuestra primera muestra teníamos 12 azules y 13 rojos así que $\bar{X} = 0.48$ y nuestra estimación del error estándar es:
 
 ```{r}
 x_hat <- 0.48
@@ -37,13 +37,13 @@ se <- sqrt(x_hat*(1-x_hat)/25)
 se
 ```
 
-Y ahora podemos responder a la pregunta de la probabilidad de estar cerca de $p$. La respuesta es:
+Y ahora podemos responder a la pregunta sobre la probabilidad de estar cerca de $p$. La respuesta es:
 
 ```{r}
 pnorm(0.01/se) - pnorm(-0.01/se)
 ```
 
-Por lo tanto, existe una pequeña posibilidad de que estemos cerca. Una encuesta de solo $N=25$ la gente no es realmente muy útil, al menos no para una elección cerrada.
+Por lo tanto, existe una pequeña posibilidad de que estemos cerca. Una encuesta de solo $N=25$ personas no es realmente muy útil, al menos no para una elección cerrada.
 
 Anteriormente mencionamos el _margen de error_. Ahora podemos definirlo porque es simplemente dos veces el error estándar, que ahora podemos estimar. En nuestro caso es:
 
@@ -51,36 +51,36 @@ Anteriormente mencionamos el _margen de error_. Ahora podemos definirlo porque e
 1.96*se
 ```
 
-¿Por qué multiplicamos por 1.96? Porque si pregunta cuál es la probabilidad de que estemos dentro de 1.96 errores estándar de $p$, obtenemos:
+¿Por qué multiplicamos por 1.96? Porque si preguntan cuál es la probabilidad de que estemos dentro de 1.96 errores estándar de $p$, obtenemos:
 
 $$
 \mbox{Pr}\left(Z \leq \, 1.96\,\mbox{SE}(\bar{X})/ \mbox{SE}(\bar{X}) \right) -
 \mbox{Pr}\left(Z \leq - 1.96\, \mbox{SE}(\bar{X})/ \mbox{SE}(\bar{X}) \right)
 $$
-cual es:
+que es:
 
 $$
 \mbox{Pr}\left(Z \leq 1.96 \right) -
 \mbox{Pr}\left(Z \leq - 1.96\right)
 $$
 
-que sabemos es aproximadamente 95 \%:
+que sabemos es aproximadamente 95\%:
 
 ```{r}
 pnorm(1.96)-pnorm(-1.96)
 ```
 
-Por lo tanto, hay un 95% de probabilidad de que $\bar{X}$ estará dentro $1.96\times \hat{SE}(\bar{X})$, en nuestro caso dentro de aproximadamente `r round(1.96*se, 2)` de $p$. Tenga en cuenta que el 95% es una elección arbitraria y, a veces, se utilizan otros porcentajes, pero es el valor más utilizado para definir el margen de error. A menudo redondeamos 1.96 hasta 2 para simplificar la presentación.
+Por lo tanto, hay un 95% de probabilidad de que $\bar{X}$ estará dentro $1.96\times \hat{SE}(\bar{X})$, en nuestro caso aproximadamente dentro de `r round(1.96*se, 2)` de $p$. Tengan en cuenta que el 95% es una elección arbitraria y, a veces, se utilizan otros porcentajes, pero es el valor más utilizado para definir el margen de error. A menudo redondeamos 1.96 a 2 para simplificar la presentación.
 
-En resumen, el CLT nos dice que nuestra encuesta se basa en un tamaño de muestra de $25$ no es muy útil. Realmente no aprendemos mucho cuando el margen de error es tan grande. Todo lo que realmente podemos decir es que el voto popular no se ganará por un amplio margen. Esta es la razón por la cual los encuestadores tienden a usar tamaños de muestra más grandes.
+En resumen, el CLT nos dice que nuestra encuesta que se basa en un tamaño de muestra de $25$ no es muy útil. Realmente no aprendemos mucho cuando el margen de error es tan grande. Lo único que realmente podemos decir es que el voto popular no se ganará por un margen amplio. Esta es la razón por la cual los encuestadores tienden a usar tamaños de muestra más grandes.
 
-En la tabla anterior, vemos que los tamaños de muestra típicos oscilan entre 700 y 3500. Para ver cómo esto nos da un resultado mucho más práctico, tenga en cuenta que si hubiéramos obtenido un $\bar{X}$= 0.48 con un tamaño de muestra de 2,000, nuestro error estándar $\hat{\mbox{SE}}(\bar{X})$ habría sido `r n<-2000;se<-sqrt(0.48*(1-0.48)/n);se`. Entonces nuestro resultado es una estimación de `48`% con un margen de error de `r round(2*se*100)`% En este caso, el resultado es mucho más informativo y nos haría pensar que hay más bolas rojas que azules. Tenga en cuenta, sin embargo, que esto es hipotético. No hicimos una encuesta de 2,000 ya que no queremos arruinar la competencia.
-
-
-### Una simulación de Monte Carlo
+En la tabla anterior, vemos que los tamaños de muestra típicos oscilan entre 700 y 3500. Para ver cómo esto nos da un resultado mucho más práctico, noten que si hubiéramos obtenido un $\bar{X}$= 0.48 con un tamaño de muestra de 2,000, nuestro error estándar $\hat{\mbox{SE}}(\bar{X})$ habría sido `r n<-2000;se<-sqrt(0.48*(1-0.48)/n);se`. Entonces nuestro resultado es una estimación de `48`% con un margen de error de `r round(2*se*100)`%. En este caso, el resultado es mucho más informativo y nos haría pensar que hay más bolas rojas que azules. Recuerden, sin embargo, que esto es hipotético. No hicimos una encuesta de 2,000 ya que no queremos arruinar la competencia.
 
 
-Supongamos que queremos usar una simulación de Monte Carlo para corroborar las herramientas que hemos construido utilizando la teoría de la probabilidad. Para crear la simulación, escribiríamos código como este:
+### Una simulación Monte Carlo
+
+
+Supongamos que queremos usar una simulación Monte Carlo para corroborar las herramientas que hemos construido utilizando la teoría de la probabilidad. Para crear la simulación, escribiríamos código como este:
 
 ```{r, eval=FALSE}
 B <- 10000
@@ -91,9 +91,9 @@ mean(x)
 })
 ```
 
-El problema es, por supuesto, que no sabemos `p`. Podríamos construir una urna como la que se muestra arriba y ejecutar una simulación analógica (sin computadora). Llevaría mucho tiempo, pero podría tomar 10,000 muestras, contar las cuentas y realizar un seguimiento de las proporciones de azul. Podemos usar la función `take_poll(n=1000)` en lugar de dibujar desde una urna real, pero todavía tomaría tiempo contar las cuentas e ingresar los resultados.
+El problema es, por supuesto, que no sabemos `p`. Podríamos construir una urna como la que se muestra arriba y ejecutar una simulación analógica (sin computadora). Nos tomaría mucho tiempo, pero podríamos tomar 10,000 muestras, contar las cuentas y realizar un seguimiento de las proporciones de azul. Podemos usar la función `take_poll(n=1000)` en lugar de escoger de una urna real, pero todavía tomaría tiempo contar las cuentas e introducir los resultados.
 
-Por lo tanto, una cosa que hacemos para corroborar los resultados teóricos es elegir uno o varios valores de `p` y ejecuta las simulaciones. Vamos a configurar `p=0.45`. Entonces podemos simular una encuesta:
+Por lo tanto, una cosa que hacemos para corroborar los resultados teóricos es elegir uno o varios valores de `p` y ejecutar las simulaciones. Vamos a configurar `p=0.45`. Entonces podemos simular una encuesta:
 
 ```{r}
 p <- 0.45
@@ -103,7 +103,7 @@ x <- sample(c(0,1), size = N, replace = TRUE, prob = c(1-p, p))
 x_hat <- mean(x)
 ```
 
-En esta muestra particular, nuestra estimación es `x_hat`. Podemos usar ese código para hacer una simulación de Monte Carlo:
+En esta muestra particular, nuestra estimación es `x_hat`. Podemos usar ese código para hacer una simulación Monte Carlo:
 
 ```{r}
 B <- 10000
@@ -113,14 +113,14 @@ mean(x)
 })
 ```
 
-Para revisar, la teoría nos dice que $\bar{X}$ está aproximadamente distribuido normalmente, tiene valor esperado $p=$ `r p` y error estándar $\sqrt{p(1-p)/N}$ = NA. La simulación confirma esto:
+Para repasar, la teoría nos dice que la distribución de $\bar{X}$ es aproximadamente normal, tiene valor esperado $p=$ `r p` y error estándar $\sqrt{p(1-p)/N}$ = `r sqrt(p*(1-p)/N)`. La simulación confirma esto:
 
 ```{r}
 mean(x_hat)
 sd(x_hat)
 ```
 
-Un histograma y un gráfico qq confirman que la aproximación normal también es precisa:
+Un histograma y un gráfico Q-Q confirman que la aproximación normal también es precisa:
 
 ```{r normal-approximation-for-polls, echo=FALSE, warning=FALSE, message=FALSE, out.width="100%", fig.height=3}
 library(tidyverse)
@@ -137,18 +137,18 @@ xlab("Theoretical normal")
 grid.arrange(p1,p2, nrow=1)
 ```
 
-Por supuesto, en la vida real nunca podríamos realizar un experimento así porque no sabemos $p$. Pero podríamos ejecutarlo para varios valores de $p$ y $N$ y ver que la teoría realmente funciona bien para la mayoría de los valores. Puede hacerlo fácilmente volviendo a ejecutar el código anterior después de cambiar `p` y `N`.
+Por supuesto, en la vida real nunca podríamos realizar un experimento así porque no sabemos $p$. Pero podríamos ejecutarlo para varios valores de $p$ y $N$ y ver que la teoría realmente funciona bien para la mayoría de los valores. Pueden hacerlo fácilmente volviendo a ejecutar el código anterior después de cambiar `p` y `N`.
 
-### La propagación
+### La variabilidad
 
-La competencia es predecir la propagación, no la proporción. $p$. Sin embargo, dado que suponemos que solo hay dos partes, sabemos que la propagación es $p - (1-p) = 2p - 1$. Como resultado, todo lo que hemos hecho se puede adaptar fácilmente a una estimación de $2p - 1$. Una vez que tengamos nuestro estimado $\bar{X}$ y $\hat{\mbox{SE}}(\bar{X})$, estimamos el spread con $2\bar{X} - 1$ y, dado que estamos multiplicando por 2, el error estándar es $2\hat{\mbox{SE}}(\bar{X})$. Tenga en cuenta que restar 1 no agrega ninguna variabilidad, por lo que no afecta el error estándar.
+La competencia es predecir la variabilidad, no la proporción $p$. Sin embargo, dado que suponemos que solo hay dos partes, sabemos que la propagación es $p - (1-p) = 2p - 1$. Como resultado, todo lo que hemos hecho se puede adaptar fácilmente a una estimación de $2p - 1$. Una vez que tengamos nuestro estimado $\bar{X}$ y $\hat{\mbox{SE}}(\bar{X})$, estimamos la variabilidad con $2\bar{X} - 1$ y, dado que estamos multiplicando por 2, el error estándar es $2\hat{\mbox{SE}}(\bar{X})$. Tengan en cuenta que restar 1 no agrega variabilidad, por lo que no afecta el error estándar.
 
-Para nuestra muestra de 25 artículos anterior, nuestra estimación $p$ es `.48` con margen de error `.20` y nuestra estimación de la propagación es `0.04` con margen de error `.40`. Nuevamente, no es un tamaño de muestra muy útil. Sin embargo, el punto es que una vez que tenemos una estimación y un error estándar para $p$, lo tenemos para difundir $2p-1$.
+Para nuestra muestra anterior de 25 artículos, nuestra estimación $p$ es `.48` con margen de error `.20` y nuestra estimación de la variabilidad es `0.04` con margen de error `.40`. Nuevamente, no es un tamaño de muestra muy útil. Sin embargo, el punto es que una vez que tengamos una estimación y un error estándar para $p$, lo tenemos para la variabilidad $2p-1$.
 
 
-### Sesgo: ¿por qué no realizar una encuesta muy grande?
+### Sesgo: ¿por qué no realizar una encuesta bien grande?
 
-Para valores realistas de $p$, digamos de 0.35 a 0.65, si realizamos una encuesta muy grande con 100,000 personas, la teoría nos dice que predeciríamos la elección perfectamente ya que el mayor margen de error posible es de alrededor de 0.3 \%:
+Para valores realistas de $p$, digamos de 0.35 a 0.65, si realizamos una encuesta bien grande con 100,000 personas, la teoría nos dice que predeciríamos la elección perfectamente ya que el mayor margen de error posible es de alrededor de 0.3\%:
 
 ```{r standard-error-versus-p, echo=FALSE}
 N <- 100000
@@ -157,16 +157,16 @@ SE <- sapply(p, function(x) 2*sqrt(x*(1-x)/N))
 qplot(p, SE, geom = "line")
 ```
 
-Una razón es que realizar una encuesta de este tipo es muy costosa. Otra razón posiblemente más importante es que la teoría tiene sus limitaciones. El sondeo es mucho más complicado que recoger cuentas de una urna. Algunas personas pueden mentir a los encuestadores y otras pueden no tener teléfonos. Pero quizás la forma más importante en que una encuesta real difiere de un modelo de urna es que en realidad no sabemos con certeza quién está en nuestra población y quién no. ¿Cómo sabemos quién va a votar? ¿Estamos llegando a todos los votantes posibles? Por lo tanto, incluso si nuestro margen de error es muy pequeño, podría no ser exactamente correcto que nuestro valor esperado sea $p$. A esto lo llamamos sesgo. Históricamente, observamos que las encuestas están sesgadas, aunque no tanto. El sesgo típico parece ser de aproximadamente 1-2%. Esto hace que el pronóstico de las elecciones sea un poco más interesante y hablaremos sobre cómo modelar esto en un capítulo posterior.
+Una razón es que realizar una encuesta de este tipo es muy costosa. Otra razón posiblemente más importante es que la teoría tiene sus limitaciones. El sondeo es mucho más complicado que escoger cuentas de una urna. Algunas personas pueden mentirle a los encuestadores y otras pueden no tener teléfonos. Pero quizás la forma más importante en que una encuesta real difiere de un modelo de urna es que en realidad no sabemos con certeza quién está en nuestra población y quién no. ¿Cómo sabemos quién va a votar? ¿Estamos llegando a todos los votantes posibles? Por lo tanto, incluso si nuestro margen de error es muy pequeño, podría no ser exactamente correcto que nuestro valor esperado sea $p$. A esto lo llamamos sesgo. Históricamente, observamos que las encuestas están sesgadas, aunque no tanto. El sesgo típico parece ser de aproximadamente 1-2%. Esto hace que el pronóstico de las elecciones sea un poco más interesante y hablaremos sobre cómo modelar esto en un capítulo posterior.
 
 ## Ejercicios
 
-1\. Escriba una función _urn model_ que tome la proporción de demócratas $p$ y el tamaño de la muestra $N$ como argumentos y devuelve el promedio de la muestra si los demócratas son 1s y los republicanos son 0s. Llamar a la función `take_sample`.
+1\. Escriba una función que modela una urna que tome la proporción de demócratas $p$ y el tamaño de la muestra $N$ como argumentos y devuelva el promedio de la muestra si los demócratas son 1s y los republicanos son 0s. Llame a la función `take_sample`.
 
-2\. Ahora asume `p <- 0.45` y que su tamaño de muestra es $N=100$. Tome una muestra 10,000 veces y guarde el vector de NA en un objeto llamado NA. Sugerencia: use la función que escribió para el ejercicio 1 para escribir esto en una línea de código.
+2\. Ahora suponga que `p <- 0.45` y que su tamaño de muestra es $N=100$. Tome una muestra 10,000 veces y guarde el vector de `mean(X) - p` en un objeto llamado `errors`. Sugerencia: use la función que escribió para el ejercicio 1 para escribir esto en una línea de código.
 
 
-3\. El vector `errors` contiene, para cada muestra simulada, la diferencia entre el valor real $p$ y nuestra estimación $\bar{X}$. Nos referimos a esta diferencia como el _error_. Calcule el promedio y haga un histograma de los errores generados en la simulación de Monte Carlo y seleccione cuál de las siguientes opciones describe mejor sus distribuciones:
+3\. El vector `errors` contiene, para cada muestra simulada, la diferencia entre el valor real $p$ y nuestra estimación $\bar{X}$. Nos referimos a esta diferencia como el _error_. Calcule el promedio y haga un histograma de los errores generados en la simulación Monte Carlo y seleccione cuál de las siguientes opciones describe mejor sus distribuciones:
 
 ```{r, eval=FALSE}
 mean(errors)
@@ -174,53 +174,53 @@ hist(errors)
 ```
 
 a. Los errores son alrededor de 0.05.
-si. Los errores son todos acerca de -0.05.
+b. Los errores son todos alrededor de -0.05.
 c. Los errores se distribuyen simétricamente alrededor de 0.
-re. Los errores varían de -1 a 1.
+d. Los errores varían de -1 a 1.
 
 
-4\. El error $\bar{X}-p$ es una variable aleatoria En la práctica, el error no se observa porque no sabemos $p$. Aquí lo observamos porque construimos la simulación. ¿Cuál es el tamaño promedio del error si definimos el tamaño tomando el valor absoluto? $\mid \bar{X} - p \mid$ ?
+4\. El error $\bar{X}-p$ es una variable aleatoria. En la práctica, el error no se observa porque no sabemos $p$. Aquí lo observamos porque construimos la simulación. ¿Cuál es el tamaño promedio del error si definimos el tamaño tomando el valor absoluto $\mid \bar{X} - p \mid$?
 
 
 5\. El error estándar está relacionado con el **tamaño** típico del error que cometemos al predecir. Decimos **tamaño** porque acabamos de ver que los errores están centrados alrededor de 0, por lo que el valor de error promedio es 0. Por razones matemáticas relacionadas con el Teorema del límite central, en realidad utilizamos la desviación estándar de `errors` en lugar del promedio de los valores absolutos para cuantificar el tamaño típico. ¿Cuál es esta desviación estándar de los errores?
 
-6\. La teoría que acabamos de aprender nos dice cuál será esta desviación estándar porque es el error estándar de $\bar{X}$. Lo que nos dice la teoría es el error estándar de $\bar{X}$ para un tamaño de muestra de 100?
+6\. La teoría que acabamos de aprender nos dice cuál será esta desviación estándar porque es el error estándar de $\bar{X}$. Según la teoría, ¿cuánto es el error estándar de $\bar{X}$ para un tamaño de muestra de 100?
 
 
-7\. En la práctica, no sabemos $p$, por lo que construimos una estimación de la predicción teórica basada en enchufar $\bar{X}$ para $p$. Calcule esta estimación. Establecer la semilla en 1 con `set.seed(1)`.
+7\. En la práctica, no sabemos $p$, por lo que construimos una estimación de la predicción teórica basada en remplazar $p$ con  $\bar{X}$. Calcule esta estimación. Establezca la semilla en 1 con `set.seed(1)`.
 
 
-8\. Observe qué tan cerca están las estimaciones de error estándar obtenidas de la simulación de Monte Carlo (ejercicio 5), la predicción teórica (ejercicio 6) y la estimación de la predicción teórica (ejercicio 7). La teoría está funcionando y nos da un enfoque práctico para conocer el error típico que cometeremos si predecimos $p$ con $\bar{X}$. Otra ventaja que proporciona el resultado teórico es que da una idea de qué tan grande se requiere un tamaño de muestra para obtener la precisión que necesitamos. Anteriormente supimos que los errores estándar más grandes ocurren para $p=0.5$. Cree un gráfico del error estándar más grande para $N$ que van desde 100 hasta 5,000. Según este gráfico, ¿qué tan grande debe ser el tamaño de la muestra para tener un error estándar de aproximadamente 1%?
+8\. Observe cuán cerca están las estimaciones de error estándar obtenidas de la simulación Monte Carlo (ejercicio 5), la predicción teórica (ejercicio 6) y la estimación de la predicción teórica (ejercicio 7). La teoría está funcionando y nos da un enfoque práctico para conocer el error típico que cometeremos si predecimos $p$ con $\bar{X}$. Otra ventaja que provee el resultado teórico es que da una idea de cuán grande se requiere un tamaño de muestra para obtener la precisión que necesitamos. Anteriormente vimos que los errores estándar más grandes ocurren para $p=0.5$. Cree un gráfico del error estándar más grande para $N$ que va desde 100 hasta 5,000. Según este gráfico, ¿cuán grande debe ser el tamaño de la muestra para tener un error estándar de aproximadamente 1%?
 
 a. 100
-si. 500
+b. 500
 c. 2,500
-re. 4,000
+d. 4,000
 
 
-9\. Para el tamaño de la muestra $N=100$, el teorema del límite central nos dice que la distribución de $\bar{X}$ es:
+9\. Para el tamaño de la muestra $N=100$, el Teorema del límite central nos dice que la distribución de $\bar{X}$ es:
 
 a. prácticamente igual a $p$.
-si. aproximadamente normal con el valor esperado $p$ y error estándar $\sqrt{p(1-p)/N}$.
+b. aproximadamente normal con el valor esperado $p$ y error estándar $\sqrt{p(1-p)/N}$.
 c. aproximadamente normal con el valor esperado $\bar{X}$ y error estándar $\sqrt{\bar{X}(1-\bar{X})/N}$.
-re. No es una variable aleatoria.
+d. No es una variable aleatoria.
 
 
 10\. Según la respuesta del ejercicio 8, el error $\bar{X} - p$ es:
 
 a. prácticamente igual a 0.
-si. aproximadamente normal con el valor esperado $0$ y error estándar $\sqrt{p(1-p)/N}$.
+b. aproximadamente normal con el valor esperado $0$ y error estándar $\sqrt{p(1-p)/N}$.
 c. aproximadamente normal con el valor esperado $p$ y error estándar $\sqrt{p(1-p)/N}$.
-re. No es una variable aleatoria.
+d. No es una variable aleatoria.
 
-11\. Para corroborar su respuesta al ejercicio 9, haga un diagrama qq de `errors` generaste en el ejercicio 2 para ver si siguen una distribución normal.
-
-
-
-12\. Si $p=0.45$ y $N=100$ como en el ejercicio 2, use el CLT para estimar la probabilidad de que $\bar{X}>0.5$. Puedes asumir que sabes $p=0.45$ para este cálculo
+11\. Para corroborar su respuesta al ejercicio 9, haga un gráfico Q-Q de los `errors` generó en el ejercicio 2 para ver si siguen una distribución normal.
 
 
-13\. Suponga que está en una situación práctica y no sabe $p$. Tomar una muestra de tamaño $N=100$ y obtener una muestra promedio de $\bar{X} = 0.51$. ¿Cuál es la aproximación CLT para la probabilidad de que su error sea igual o mayor que 0.01?
+
+12\. Si $p=0.45$ y $N=100$ como en el ejercicio 2, use el CLT para estimar la probabilidad de que $\bar{X}>0.5$. Puede suponer que sabe que $p=0.45$ para este cálculo
+
+
+13\. Suponga que está en una situación práctica y no sabe $p$. Tome una muestra de tamaño $N=100$ y obtenga una muestra promedio de $\bar{X} = 0.51$. ¿Cuál es la aproximación del CLT para la probabilidad de que su error sea igual o mayor que 0.01?
 
 
 
