@@ -4,12 +4,12 @@
 set.seed(1984)
 ```
 
-Las pruebas estadísticas que hemos estudiado hasta ahora omiten un porción sustancial de los tipos de datos. Específicamente, no hemos discutido la inferencia para datos binarios, categóricos y ordinales. Para dar un ejemplo muy específico, considere el siguiente estudio de caso.
+Las pruebas estadísticas que hemos estudiado hasta ahora no incluyen varios tipos de datos. Específicamente, no hemos discutido la inferencia para datos binarios, categóricos y ordinales. Para dar un ejemplo muy específico, consideren el siguiente estudio de caso.
 
 
-[fix] Un documento de 2014 PNAS^[http://www.pnas.org/content/112/40/12349.abstract] analizó las tasas de éxito de las agencias de financiación en los Países Bajos y concluyó que su:
+[fix check ok] Un documento del 2014 PNAS^[http://www.pnas.org/content/112/40/12349.abstract] analizó las tasas de éxito de las agencias de financiamiento en los Países Bajos y concluyó que su:
 
-> [fix check] los resultados revelan un sesgo de género que favorece a los hombres solicitantes sobre las mujeres solicitantes en la priorización de sus evaluaciones de "calidad de investigador" (pero no de la "calidad de propuesta"), así como en el uso del lenguaje en los materiales de instrucción y evaluación.
+> los resultados revelan un sesgo de género que favorece a los hombres solicitantes sobre las mujeres solicitantes en la priorización de sus evaluaciones de "calidad de investigador" (pero no de "calidad de propuesta"), así como en el uso del lenguaje en los materiales de instrucción y evaluación.
 
 La evidencia principal de esta conclusión se reduce a una comparación de los porcentajes. La Tabla S1 en el documento incluye la información que necesitamos. Aquí están las tres columnas que muestran los resultados generales:
 
@@ -26,7 +26,7 @@ Tenemos estos valores para cada género:
 names(research_funding_rates)
 ```
 
-Podemos calcular los totales que tuvieron éxito y los totales que no lo tuvieron así:
+Podemos calcular el total de los que tuvieron éxito y el total de los que no lo tuvieron de la siguiente manera:
 
 ```{r}
 totals <- research_funding_rates %>%
@@ -45,8 +45,7 @@ totals %>% summarize(percent_men = yes_men/(yes_men+no_men),
 percent_women = yes_women/(yes_women+no_women))
 ```
 
-Pero, ¿podría esto deberse solo a la variabilidad aleatoria?
-Aquí aprendemos cómo realizar inferencia para este tipo de datos.
+Pero, ¿podría esto deberse solo a la variabilidad aleatoria? Aquí aprenderemos a realizar inferencia para este tipo de datos.
 
 
 ### Lady Tasting Tea
@@ -54,14 +53,13 @@ Aquí aprendemos cómo realizar inferencia para este tipo de datos.
 
 RA Fisher^[https://en.wikipedia.org/wiki/Ronald_Fisher] fue uno de los primeros en formalizar la prueba de hipótesis. El "Lady Tasting Tea" es uno de los ejemplos más famosos.
 
-La historia es la siguiente: una conocida de Fisher afirmó que ella podía detectar si se agrega leche antes o después de verter el té. Fisher se mostró escéptico. Diseñó un experimento para probar esta afirmación. Él le dio cuatro pares de
-tazas de té: una con leche vertida primero y la otra después. El orden era aleatorio. La hipótesis nula aquí es que ella está adivinando. Fisher dedujo la distribución del número de selecciones correctas suponiendo que las elecciones fueron aleatorias e independientes.
+La historia es la siguiente: una conocida de Fisher insistió que ella podía detectar si se agrega leche antes o después de verter el té. Fisher se mostró escéptico. Diseñó un experimento para probar esta afirmación. Él le dio cuatro pares de tazas de té: una con leche vertida primero y la otra después. El orden era aleatorio. La hipótesis nula aquí es que ella está adivinando. Fisher dedujo la distribución del número de selecciones correctas suponiendo que las elecciones fueron aleatorias e independientes.
 
 Como ejemplo, supongamos que escogió 3 de 4 correctamente. ¿Creemos
-ella tiene una habilidad especial? La pregunta básica que hacemos es: si ella realmente está adivinando, ¿cuáles son las posibilidades de que obtenga 3 o más correctas? Tal como lo hemos hecho antes, podemos calcular una probabilidad bajo la hipótesis nula de que ella está adivinando 4 de cada uno. Bajo esta hipótesis nula, podemos pensar en este ejemplo particular como sacar 4 bolas de una urna con 4 bolas azules (respuesta correcta) y 4 bolas rojas (respuesta incorrecta). Recuerden, ella sabe que hay cuatro antes del té y cuatro después.
+que ella tiene una habilidad especial? La pregunta básica que hacemos es: si ella realmente está adivinando, ¿cuáles son las posibilidades de que ella saque 3 o más correctas? Tal como lo hemos hecho antes, podemos calcular una probabilidad bajo la hipótesis nula de que ella está adivinando 4 de cada uno. Bajo esta hipótesis nula, podemos pensar en este ejemplo particular como sacar 4 bolas de una urna con 4 bolas azules (respuesta correcta) y 4 bolas rojas (respuesta incorrecta). Recuerden, ella sabe que hay cuatro antes del té y cuatro después.
 
 Bajo la hipótesis nula de que ella simplemente está adivinando, cada bola tiene la misma posibilidad de ser elegida. Entonces podemos usar combinaciones para averiguar cada probabilidad. La probabilidad de elegir 3 es
-${4 \choose 3} {4 \choose 1}/ {8 \choose 4} = 16/70$. La probabilidad de escoger bien las 4 veces es
+${4 \choose 3} {4 \choose 1}/ {8 \choose 4} = 16/70$. La probabilidad de elegir bien las 4 veces es
 ${4 \choose 4} {4 \choose 0}/{8 \choose 4}= 1/70$.
 Por lo tanto, la posibilidad de observar un 3 o algo más extremo,
 bajo la hipótesis nula, es $\approx 0.24$. Este es el valor p. El procedimiento que produjo este valor p se llama la _prueba exacta de Fisher_ (_Fisher's exact test_ en inglés) y utiliza la _distribución hipergeométrica_.
@@ -77,7 +75,7 @@ colnames(tab)<-c("Guessed before","Guessed after")
 tab
 ```
 
-Estas se conocen como una tabla 2x2. Para cada una de las cuatro combinaciones que se pueden obtener con un par de variables binarias, muestran los recuentos observados para cada ocurrencia.
+Estas se conocen como una tabla 2x2. Para cada una de las cuatro combinaciones que se pueden obtener con un par de variables binarias, muestra los recuentos observados para cada ocurrencia.
 
 La función `fisher.test` realiza los cálculos de inferencia anteriores:
 
@@ -87,17 +85,17 @@ fisher.test(tab, alternative="greater")$p.value
 
 ### Prueba de chi-cuadrado
 
-Tengan en cuenta que, en cierto modo, nuestro ejemplo de tasas de financiación es similar al "Lady Tasting Tea". Sin embargo, en el ejemplo de "Lady Tasting Tea", el número de cuentas azules y rojas se fija experimentalmente y el número de respuestas dadas para cada categoría también. Esto se debe a que Fisher se aseguró de que se vertieran cuatro tazas con leche antes del té y cuatro tazas con leche después del té y la señora lo sabía, por lo que las respuestas también tendrían que incluir cuatro antes y cuatro después. Si este es el caso, la suma de las filas y la suma de las columnas son fijas. Esto define restricciones sobre las posibles formas en que podemos llenar la tabla 2x2 y también nos permite usar la distribución hipergeométrica. En general, este no es el caso. No obstante, hay otro enfoque, la prueba de chi-cuadrado, que se describe a continuación.
+Tengan en cuenta que, en cierto sentido, nuestro ejemplo de tasas de financiamiento es parecido al de "Lady Tasting Tea". Sin embargo, en el ejemplo de "Lady Tasting Tea", el número de cuentas azules y rojas se fija experimentalmente y el número de respuestas dadas para cada categoría también. Esto se debe a que Fisher se aseguró de que se vertieran cuatro tazas con leche antes del té y cuatro tazas con leche después del té y la señora lo sabía, por lo que las respuestas también tendrían que incluir cuatro antes y cuatro después. Si este es el caso, la suma de las filas y la suma de las columnas son fijas. Esto define restricciones sobre las posibles formas en que podemos llenar la tabla 2x2 y también nos permite usar la distribución hipergeométrica. En general, este no es el caso. No obstante, hay otro enfoque, la prueba de chi-cuadrado, que se describe a continuación.
 
 
-Imaginen que tenemos `r prettyNum(totals, ,big.mark=",")` solicitantes, algunos son hombres y otros son mujeres y algunos reciben financiación, mientras que otros no. Vimos que las tasas de éxito para hombres y mujeres fueron:
+Imaginen que tenemos `r prettyNum(totals, ,big.mark=",")` solicitantes, algunos son hombres y otros son mujeres y algunos reciben financiamiento, mientras que otros no. Vimos que las tasas de éxito para hombres y mujeres fueron:
 
 ```{r}
 totals %>% summarize(percent_men = yes_men/(yes_men+no_men),
 percent_women = yes_women/(yes_women+no_women))
 ```
 
-respectivamente. ¿Volveríamos a ver esto si asignamos fondos al azar a la tasa general?
+respectivamente. ¿Volveríamos a ver esto si asignamos fondos al azar usando como tasa la tasa general?
 
 ```{r}
 rate <- totals %>%
@@ -125,7 +123,7 @@ men = (totals$no_men + totals$yes_men) * c(1 - rate, rate),
 women = (totals$no_women + totals$yes_women) * c(1 - rate, rate))
 ```
 
-Podemos ver que más hombres y menos mujeres de lo esperado recibieron fondos. Sin embargo, bajo la hipótesis nula, estas observaciones son variables aleatorias. [fix] La prueba de chi-cuadrado nos dice cuán probable es ver una desviación así de grande o más grande. Esta prueba utiliza un resultado asintótico, similar al CLT, relacionado con las sumas de resultados binarios independientes. La función `chisq.test` de R toma una tabla 2x2 y devuelve los resultados de la prueba:
+Podemos ver que más hombres y menos mujeres de lo esperado recibieron fondos. Sin embargo, bajo la hipótesis nula, estas observaciones son variables aleatorias. La prueba de chi-cuadrado nos dice cuán probable es ver una desviación así de grande o más grande. Esta prueba utiliza un resultado asintótico, similar al CLT, relacionado con las sumas de resultados binarios independientes. La función `chisq.test` de R toma una tabla 2x2 y devuelve los resultados de la prueba:
 
 ```{r}
 chisq_test <- two_by_two %>% select(-awarded) %>% chisq.test()
@@ -140,17 +138,18 @@ chisq_test$p.value
 
 ### Riesgo relativo {#odds-ratio}
 
-Un resumen estadístico informativo asociado con tablas 2x2 es el riesgo relativo (_odds ratio_ en inglés). [fix] Definan las dos variables como $X = 1$ si eres hombre y 0 de lo contrario, y $Y=1$ si está financiado y 0 de lo contrario. Las probabilidades de obtener fondos si eres hombre se definen:
+Un resumen estadístico informativo para tablas 2x2 es el riesgo relativo (_odds ratio_ en inglés). Definan las dos variables como $X = 1$ si eres hombre y 0 de lo contrario, y $Y=1$ si recibe financiamiento y 0 de lo contrario. Las probabilidades de obtener fondos si eres hombre se definen:
 
 $$\mbox{Pr}(Y=1 \mid X=1)/ \mbox{Pr}(Y=0 \mid X=1)$$
 
 y se pueden calcular así:
+
 ```{r}
 odds_men <- with(two_by_two, (men[2]/sum(men))/ (men[1]/sum(men)))
 odds_men
 ```
 
-Y las probabilidades de ser financiada si eres mujer son:
+Y las probabilidades de recibir financiamiento si eres mujer son:
 
 
 $$\mbox{Pr}(Y=1 \mid X=0)/ \mbox{Pr}(Y=0 \mid X=0)$$
@@ -162,7 +161,7 @@ odds_women <- with(two_by_two, (women[2]/sum(women))/ (women[1]/sum(women)))
 odds_women
 ```
 
-El riesgo relativo es la [fix] razón/ratio de estas dos probabilidades: ¿cuántas veces más grandes son las probabilidades para los hombres que para las mujeres?
+El riesgo relativo es la razón de estas dos probabilidades: ¿cuántas veces más grandes son las probabilidades para los hombres que para las mujeres?
 
 ```{r}
 odds_men/ odds_women
@@ -190,22 +189,21 @@ que es equivalente a $(ad)/ (bc)$
 ### Intervalos de confianza para el riesgo relativo
 
 Calcular intervalos de confianza para el riesgo relativo no es matemáticamente sencillo. A diferencia de otras estadísticas, para las cuales podemos derivar aproximaciones útiles de sus distribuciones, el riesgo relativo no es solo una
-relación, pero una relación de razones. Por lo tanto, no hay una forma simple de
-utilizando, por ejemplo, el CLT.
+relación, sino una relación de razones. Por lo tanto, no hay una forma simple de utilizar, por ejemplo, el CLT.
 
-Sin embargo, la teoría estadística nos dice que cuando las cuatro entradas de la tabla 2x2 son lo suficientemente grandes, entonces el [fix] log del riesgo relativo es aproximadamente normal con error estándar
+Sin embargo, la teoría estadística nos dice que cuando las cuatro entradas de la tabla 2x2 son lo suficientemente grandes, entonces el logaritmo del riesgo relativo es aproximadamente normal con error estándar.
 
 $$
 \sqrt{1/a + 1/b + 1/c + 1/d}
 $$
 
-Esto implica que un intervalo de confianza del 95% para [fix] el riesgo relativo logarítmico se puede formar por:
+Esto implica que un intervalo de confianza de 95% para el logaritmo del riesgo relativo se puede formar por:
 
 $$
 \log\left(\frac{ad}{bc}\right) \pm 1.96 \sqrt{1/a + 1/b + 1/c + 1/d}
 $$
 
-Exponiendo estos dos números podemos construir un intervalo de confianza del riesgo relativo.
+Exponenciando estos dos números podemos construir un intervalo de confianza del riesgo relativo.
 
 Usando R, podemos calcular este intervalo de confianza de la siguiente manera:
 ```{r}
@@ -216,7 +214,7 @@ pull(se)
 ci <- log_or + c(-1,1) * qnorm(0.975) * se
 ```
 
-Si queremos convertirlo de nuevo a la escala de; riesgo relativo, [fix] podemos exponer/we can exponentiate:
+Si queremos convertirlo de nuevo a la escala de riesgo relativo, podemos exponenciar:
 
 ```{r}
 exp(ci)
@@ -228,21 +226,18 @@ Tengan en cuenta que 1 no está incluido en el intervalo de confianza, lo que si
 2*(1 - pnorm(log_or, 0, se))
 ```
 
-Este es un valor p ligeramente diferente al de la prueba de chi-cuadrado. Esto se debe a que estamos utilizando una aproximación asintótica diferente a la distribución nula. Para obtener más información sobre la inferencia y la teoría asintótica de el riesgo relativo, consulte el libro _Generalized Linear Models_ de
-McCullagh y Nelder.
+Este es un valor p un poco diferente al de la prueba de chi-cuadrado. Esto se debe a que estamos utilizando una aproximación asintótica diferente a la distribución nula. Para obtener más información sobre la inferencia y la teoría asintótica de el riesgo relativo, consulte el libro _Generalized Linear Models_ de McCullagh y Nelder.
 
 ### Corrección de recuento pequeño
 
-Tengan en cuenta que [fix check] el riesgo relativo logarítmico/log odds ration no se define si alguna de las celdas de la tabla 2x2 es 0. Esto se debe a que si $a$, $b$, $c$ o $d$ es 0, el $\log(\frac{ad}{bc})$ es el logaritmo de 0 o tiene un 0 en el denominador. Para esta situación, es una práctica común evitar los 0 agregando 0.5 a cada celda. Esto se conoce como la _corrección de Haldane-Anscombe_ y se ha demostrado, tanto en la práctica como en la teoría, que funciona bien.
+Tengan en cuenta que el logaritmo del riesgo relativo no se define si alguna de las celdas de la tabla 2x2 es 0. Esto se debe a que si $a$, $b$, $c$ o $d$ es 0, el $\log(\frac{ad}{bc})$ es el logaritmo de 0 o tiene un 0 en el denominador. Para esta situación, es una práctica común evitar los 0 agregando 0.5 a cada celda. Esto se conoce como la _corrección de Haldane-Anscombe_ y se ha demostrado, tanto en la práctica como en la teoría, que funciona bien.
 
 
 ### Muestras grandes, valores p pequeños
 
-Como se mencionó anteriormente, indicar solo valores p no es una forma apropiada
-de indicar los resultados del análisis de datos. En revistas científicas, por ejemplo, algunos estudios parecen [fix] overemphasize/exagerar/enfatizar demasiado los valores de p. Algunos de estos estudios tienen muestras de gran tamaño e indican valores p impresionantemente pequeños. [fix check until end] Sin embargo, cuando uno mira de cerca a los resultados, se da cuenta de que los riesgos relativos son bastante modestos: apenas mayores.más grandes
-que 1. En este caso, la diferencia puede que no sea _prácticamente significativa_ o _científicamente significativa_.
+Como se mencionó anteriormente, informar solo valores p no es una forma apropiada de informar los resultados del análisis de datos. En revistas científicas, por ejemplo, algunos estudios parecen enfatizar demasiado los valores p. Algunos de estos estudios tienen muestras de gran tamaño e indican valores p impresionantemente pequeños. Sin embargo, cuando uno mira de cerca los resultados, se da cuenta que los riesgos relativos son bastante modestos: apenas mayores que 1. En este caso, la diferencia puede que no sea _prácticamente significativa_ o _científicamente significativa_.
 
-Tengan en cuenta que la relación entre el riesgo relativo y el valor p no es [fix] one-to-one/ de uno a uno.[fix: add "ya que"] Depende del tamaño de la muestra. Por lo tanto, un valor p muy pequeño no necesariamente significa un riesgo relativo muy grande. Observen lo que sucede con el valor p si multiplicamos nuestra tabla 2x2 por 10, que no cambia el riesgo relativo:
+Tengan en cuenta que la relación entre el riesgo relativo y el valor p no es [fix] one-to-one (look up one to one function)/ de uno a uno.[fix: add "ya que" or "Esta relación"] Depende del tamaño de la muestra. Por lo tanto, un valor p muy pequeño no necesariamente significa un riesgo relativo muy grande. Observen lo que sucede con el valor p si multiplicamos nuestra tabla 2x2 por 10, que no cambia el riesgo relativo:
 
 ```{r}
 two_by_two %>% select(-awarded) %>%
@@ -252,7 +247,7 @@ chisq.test() %>% .$p.value
 
 ## Ejercicios
 
-1\. [fix check all] Una atleta famosa tiene una carrera impresionante, ganando el 70% de sus 500 [fix] partidos de carrera/career matches. Sin embargo, a esta atleta la critican porque en eventos importantes, como los Juegos Olímpicos, tiene un récord de 8 victorias y 9 derrotas. Realice una prueba de chi-cuadrado para determinar si este récord se debe simplemente al azar en lugar de no competir bien bajo presión.
+1\. [fix check all] Una atleta famosa tiene una carrera impresionante, ganando el 70% de los 500 partidos de su carrera. Sin embargo, a esta atleta la critican porque en eventos importantes, como los Juegos Olímpicos, tiene un récord de 8 victorias y 9 derrotas. Realice una prueba de chi-cuadrado para determinar si este récord se debe simplemente al azar en lugar de no competir bien bajo presión.
 
 
 
@@ -260,7 +255,7 @@ chisq.test() %>% .$p.value
 
 a. En realidad no importa ya que dan exactamente el mismo valor p.
 b. El exacto de Fisher y el chi-cuadrado son nombres diferentes para la misma prueba.
-c. Debido a que la suma de las filas y columnas de la tabla 2x2 no son fijas, la distribución hipergeométrica no es una suposición apropiada para la hipótesis nula. [fix] Por esta razón, la prueba exacta de Fisher rara vez es aplicable con datos de observación.
+c. Debido a que la suma de las filas y columnas de la tabla 2x2 no son fijas, la distribución hipergeométrica no es una suposición apropiada para la hipótesis nula. Por esta razón, la prueba exacta de Fisher rara vez es aplicable a datos observacionales.
 d. Porque la prueba de chi-cuadrado se ejecuta más rápido.
 
 
@@ -270,7 +265,7 @@ d. Porque la prueba de chi-cuadrado se ejecuta más rápido.
 4\. Observe que el valor p es mayor que 0.05 pero el intervalo de confianza del 95% no incluye 1. ¿Qué explica esto?
 
 a. Cometimos un error en nuestro código.
-b. Estas no son [fix t-test] pruebas t, por lo que no aplica la conexión entre el valor p y los intervalos de confianza.
+b. Estas no son pruebas de la-t, por lo que no aplica la conexión entre el valor p y los intervalos de confianza.
 c. Se utilizan diferentes aproximaciones para el valor p y el cálculo del intervalo de confianza. Si tuviéramos un tamaño de muestra más grande, la coincidencia sería mejor.
 d. Deberíamos usar la prueba exacta de Fisher para obtener intervalos de confianza.
 

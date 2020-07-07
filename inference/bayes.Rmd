@@ -1,28 +1,28 @@
 ## Estadísticas bayesianas {#bayesian-statistics}
 
-¿Qué significa que un pronosticador electoral nos diga que un candidato determinado tiene un 90% de posibilidades de ganar? En el contexto del modelo de urna, esto sería equivalente a afirmar que la probabilidad $p>0.5$ es 90% Sin embargo, como discutimos anteriormente, en el modelo de urna $p$ es un parámetro fijo y no tiene sentido hablar de probabilidad. Con estadísticas bayesianas, modelamos $p$ como variable aleatoria y, por lo tanto, una declaración como "90% de probabilidad de ganar" es coherente con el enfoque.
+¿Qué significa que un pronosticador electoral nos diga que un candidato determinado tiene un 90% de posibilidades de ganar? En el contexto del modelo de urna, esto sería equivalente a afirmar que la probabilidad $p>0.5$ es 90%. Sin embargo, como discutimos anteriormente, en el modelo de urna $p$ es un parámetro fijo y no tiene sentido hablar de probabilidad. Con estadísticas bayesianas, modelamos $p$ como variable aleatoria y, por lo tanto, una declaración como "90% de probabilidad de ganar" es coherente.
 
 Los pronosticadores también usan modelos para describir la variabilidad en diferentes niveles. Por ejemplo, la variabilidad de muestreo, la variabilidad de encuestador a encuestador, la variabilidad diaria y la variabilidad de elección a elección. Uno de los enfoques más exitosos utilizados para esto son los modelos jerárquicos, que pueden explicarse en el contexto de las estadísticas bayesianas.
 
-En este capítulo describimos brevemente las estadísticas bayesianas. Para un tratamiento en profundidad de este tema, recomendamos uno de los siguientes libros de texto:
+En este capítulo describimos brevemente las estadísticas bayesianas. Para una exploración más profunda de este tema, recomendamos uno de los siguientes libros de texto:
 
-* Berger JO (1985). Teoría de decisión estadística y análisis bayesiano, 2a edición. Springer-Verlag.
+* Berger JO (1985). Statistical Decision Theory and Bayesian Analysis, 2nd edition. Springer-Verlag.
 
-* Lee PM (1989). Estadísticas bayesianas: una introducción. Oxford
+* Lee PM (1989). Bayesian Statistics: An Introduction. Oxford
 
 
 ### Teorema de Bayes
 
 Comenzamos describiendo el teorema de Bayes. Hacemos esto usando una hipotética prueba de fibrosis quística como ejemplo.
-Supongamos que una prueba de fibrosis quística tiene una precisión del 99%. Vamos a utilizar la siguiente notación:
+Supongamos que una prueba de fibrosis quística tiene una precisión de 99%. Vamos a utilizar la siguiente notación:
 
 $$
 \mbox{Prob}(+ \mid D=1)=0.99, \mbox{Prob}(- \mid D=0)=0.99
 $$
 
-con $+$ lo que significa una prueba positiva y $D$ representando si realmente tiene la enfermedad (1) o no (0).
+con $+$ significando una prueba positiva y $D$ representando si realmente tiene la enfermedad (1) o no (0).
 
-Supongamos que seleccionamos una persona al azar y dan positivo. ¿Cuál es la probabilidad de que tengan la enfermedad? Escribimos esto como $\mbox{Prob}(D=1 \mid +)?$ La tasa de fibrosis quística es de 1 en 3.900, lo que implica que $\mbox{Prob}(D=1)=0.00025$. Para responder a esta pregunta, utilizaremos el teorema de Bayes, que en general nos dice que:
+Supongamos que seleccionamos una persona al azar y dan positivo. ¿Cuál es la probabilidad de que tengan la enfermedad? [fix show rafa english remove ?] Escribimos esto como $\mbox{Prob}(D=1 \mid +)$. La tasa de fibrosis quística es de 1 en 3,900, lo que implica que $\mbox{Prob}(D=1)=0.00025$. Para responder a esta pregunta, utilizaremos el teorema de Bayes, que en general nos dice que:
 
 $$
 \mbox{Pr}(A \mid B) = \frac{\mbox{Pr}(B \mid A)\mbox{Pr}(A)}{\mbox{Pr}(B)}
@@ -37,17 +37,17 @@ $$
 \end{aligned}
 $$
 
-Conectando los números que obtenemos:
+usando estos números obtenemos:
 
 $$
 \frac{0.99 \cdot 0.00025}{0.99 \cdot 0.00025 + 0.01 \cdot (.99975)} = 0.02
 $$
 
-Esto dice que a pesar de que la prueba tiene una precisión de 0.99, la probabilidad de que la enfermedad reciba una prueba positiva es solo 0.02. Esto puede parecer contrario a la intuición para algunos, pero la razón de esto es porque tenemos que tener en cuenta la muy rara probabilidad de que una persona, elegida al azar, tenga la enfermedad. Para ilustrar esto, ejecutamos una simulación de Monte Carlo.
+Esto dice que a pesar de que la prueba tiene una precisión de 0.99, la probabilidad de tener la enfermedad dado una prueba positiva es solo 0.02. Aunque parezca contrario al sentido común, la razón de esto es porque tenemos que tener en cuenta la muy rara probabilidad de que una persona, elegida al azar, tenga la enfermedad. Para ilustrar esto, ejecutamos una simulación Monte Carlo.
 
 ## Simulación del teorema de Bayes
 
-La siguiente simulación está destinada a ayudarlo a visualizar el teorema de Bayes. Comenzamos seleccionando aleatoriamente 100,000 personas de una población en la cual la enfermedad en cuestión tiene una prevalencia de 1 en 4,000.
+La siguiente simulación está destinada a ayudarles visualizar el teorema de Bayes. Comenzamos seleccionando aleatoriamente 100,000 personas de una población en la cual la enfermedad en cuestión tiene una prevalencia de 1 en 4,000.
 
 ```{r, echo=FALSE}
 set.seed(3)
@@ -60,7 +60,7 @@ outcome <- sample(c("Disease","Healthy"), N, replace = TRUE,
 prob = c(prev, 1 - prev))
 ```
 
-Tenga en cuenta que hay muy pocas personas con la enfermedad:
+Tengan en cuenta que hay muy pocas personas con la enfermedad:
 
 ```{r}
 N_D <- sum(outcome == "Disease")
@@ -69,7 +69,7 @@ N_H <- sum(outcome == "Healthy")
 N_H
 ```
 
-Además, hay muchos sin la enfermedad, lo que hace más probable que veamos algunos falsos positivos dado que la prueba no es perfecta. Ahora cada persona se hace la prueba, que es correcta el 99% del tiempo:
+Además, hay muchos sin la enfermedad, lo que hace más probable que veamos algunos falsos positivos dado que la prueba no es perfecta. Ahora cada persona se hace la prueba, que acierta 99% del tiempo:
 
 ```{r}
 accuracy <- 0.99
@@ -80,14 +80,14 @@ test[outcome == "Healthy"] <- sample(c("-", "+"), N_H, replace = TRUE,
 prob = c(accuracy, 1 - accuracy))
 ```
 
-Debido a que hay muchos más controles que casos, incluso con una tasa baja de falsos positivos obtenemos más controles que los casos en el grupo que dieron positivo:
+Debido a que hay muchos más controles que casos, incluso con una tasa baja de falsos positivos obtenemos más controles que los casos en el grupo que dio positivo:
 
 
 ```{r}
 table(outcome, test)
 ```
 
-De esta tabla, vemos que la proporción de pruebas positivas que tienen la enfermedad es `r sum(test=="+" & outcome=="Disease")` fuera de `r sum(test=="+")`. Podemos ejecutar esto una y otra vez para ver que, de hecho, la probabilidad converge a aproximadamente 0.022.
+De esta tabla, vemos que la proporción de pruebas positivas que tienen la enfermedad es `r sum(test=="+" & outcome=="Disease")` de `r sum(test=="+")`. Podemos ejecutar esto una y otra vez para ver que, de hecho, la probabilidad converge a aproximadamente 0.022.
 
 
 ### Bayes en la práctica
@@ -99,9 +99,9 @@ El | Mes | En los murciélagos | H | AVG |
 |-------|---------|---|-----|
 El | Abril | 20 | 9 | .450 |
 
-El promedio de bateo ( `AVG`) la estadística es una forma de medir el éxito. En términos generales, nos dice la tasa de éxito al batear. Un `AVG` de .450 significa que José ha tenido éxito el 45% de las veces que ha bateado ( `At Bats`) que es bastante alto, históricamente hablando. Tenga en cuenta que nadie ha terminado una temporada con un `AVG` de .400 o más desde que Ted Williams lo hizo en 1941! Para ilustrar la forma en que los modelos jerárquicos son poderosos, intentaremos predecir el promedio de bateo de José al final de la temporada. Tenga en cuenta que en una temporada típica, los jugadores tienen alrededor de 500 al bate.
+La estadística del promedio de bateo (`AVG`) es una forma de medir el éxito. En términos generales, nos dice la tasa de éxito al batear. Un `AVG` de .450 significa que José ha tenido éxito el 45% de las veces que ha bateado (`At Bats`) que es bastante alto, históricamente hablando. ¡Tengan en cuenta que nadie ha terminado una temporada con un `AVG` de .400 o más desde que Ted Williams lo hizo en 1941! Para ilustrar la forma en que los modelos jerárquicos son poderosos, intentaremos predecir el promedio de bateo de José al final de la temporada. Noten que en una temporada típica, los jugadores tienen alrededor de 500 turnos al bate.
 
-Con las técnicas que hemos aprendido hasta ahora, denominadas técnicas frecuentes, lo mejor que podemos hacer es proporcionar un intervalo de confianza. Podemos pensar en los resultados de golpear como un binomio con una tasa de éxito de $p$. Entonces, si la tasa de éxito es de .450, el error estándar de solo 20 en los bates es:
+Con las técnicas que hemos aprendido hasta ahora, denominadas _técnicas frecuentistas_, lo mejor que podemos hacer es proporcionar un intervalo de confianza. Podemos pensar en los resultados de golpear como un binomio con una tasa de éxito de $p$. Entonces, si la tasa de éxito es de .450, el error estándar de solo 20 en los bates es:
 
 $$
 \sqrt{\frac{.450 (1-.450)}{20}}=.111
