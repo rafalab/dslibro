@@ -140,6 +140,8 @@
 | spreadsheets | hoja de cálculo|  | planilla de cálculo | hoja de cálculo |
 | subset | (extraer/crear) subconjunto | (extraer/crear) subconjunto | (crear un) subconjunto |
 | stacked  | apilado |  |  |
+| standard normal variable | variable normal unitaria | | | |
+| standard normal random variable | variable aleatoria con distribution normal unitaria | | | |
 | string | cadenas | | | |
 | __T__ | | | | |
 | tabs | pestañas | RStudio has a Viewer tab | pestañas | pestañas |
