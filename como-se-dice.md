@@ -144,6 +144,7 @@
 | standard normal random variable | variable aleatoria con distribution normal unitaria | | | |
 | string | cadenas | | | |
 | __T__ | | | | |
+| t statistic | estadística t o prueba t |  |  |  |
 | tabs | pestañas | RStudio has a Viewer tab | pestañas | pestañas |
 | test set | set de validación |  | set/datos de validación |  |
 | tidy data | datos _tidy_ | |  | datos ordenados | datos limpios/ordenados |
