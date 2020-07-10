@@ -19,32 +19,32 @@ Arriba utilizamos el CLT con un tamaño de muestra de 15. Porque estamos estiman
 
 Sin embargo, si se sabe que los datos en la urna siguen una distribución normal, entonces tenemos una teoría matemática que nos dice cuánto más grande necesitamos hacer los intervalos para tomar en cuenta la estimación de $\sigma$. Usando esta teoría, podemos construir intervalos de confianza para cualquier $N$. Pero, de nuevo, esto funciona solo si **se sabe que los datos en la urna siguen una distribución normal**. Entonces, para los datos 0, 1 de nuestro modelo de urna anterior, esta teoría definitivamente no aplica.
 
-[fix] La estadística en la que se basan los intervalos de confianza para $d$ es:
+La estadística en la que se basan los intervalos de confianza para $d$ es: 
 
 $$
 Z = \frac{\bar{X} - d}{\sigma/\sqrt{N}}
 $$
 
-CLT nos dice que Z [fix check] se distribuye aproximadamente normalmente con el valor esperado 0 y el error estándar 1. Pero en la práctica no sabemos $\sigma$ entonces usamos:
+El CLT nos dice que la distribución de Z es aproximadamente normal con valor esperado 0 y error estándar 1. Pero en la práctica no sabemos $\sigma$ entonces usamos:
 
 $$
 Z = \frac{\bar{X} - d}{s/\sqrt{N}}
 $$
 
 
-Mediante la sustitución $\sigma$ con $s$ introducimos cierta variabilidad. La teoría nos dice que $Z$ sigue una distribución t con $N-1$ _grados de libertad_. Los grados de libertad es un parámetro que controla la variabilidad a través de colas más gruesas:
+Al sustituir $\sigma$ con $s$, introducimos cierta variabilidad. La teoría nos dice que $Z$ sigue una distribución t con $N-1$ _grados de libertad_. Los grados de libertad son un parámetro que controla la variabilidad a través de colas más pesadas:
 
 ```{r t-distribution-examples, echo=FALSE}
 x <- seq(-5,5, len=100)
 data.frame(x=x, Normal = dnorm(x, 0, 1), t_03 = dt(x,3), t_05 = dt(x,5), t_15=dt(x,15)) %>% gather(distribution, f, -x) %>% ggplot(aes(x,f, color = distribution)) + geom_line() +ylab("f(x)")
 ```
 
-Si estamos dispuestos a asumir que los datos del efecto encuestador se distribuyen normalmente, en función de los datos de la muestra $X_1, \dots, X_N$,
+Si estamos dispuestos a suponer que los datos del efecto del encuestador siguen una distribución normal, según la muestra de datos $X_1, \dots, X_N$,
 ```{r poll-spread-qq}
 one_poll_per_pollster %>%
 ggplot(aes(sample=spread)) + stat_qq()
 ```
-luego $Z$ sigue una distribución t con $N-1$ grados de libertad. Entonces quizás un mejor intervalo de confianza para $d$ es:
+así que $Z$ sigue una distribución t con $N-1$ grados de libertad. Entonces quizás un mejor intervalo de confianza para $d$ es:
 
 
 ```{r}
@@ -54,19 +54,19 @@ summarize(avg = mean(spread), moe = z*sd(spread)/sqrt(length(spread))) %>%
 mutate(start = avg - moe, end = avg + moe)
 ```
 
-Un poco más grande que el que usa normal es
+que es un poco más grande que cuando usamos la distribución normal. Esto es porque:
 
 ```{r}
 qt(0.975, 14)
 ```
 
-es mayor que
+es más grande que:
 
 ```{r}
 qnorm(0.975)
 ```
 
-La distribución t también se puede usar para modelar errores en desviaciones más grandes que son más probables que con la distribución normal, como se ve en las densidades que vimos anteriormente. Fivethirtyeight utiliza la distribución t para generar errores que modelen mejor las desviaciones que vemos en los datos electorales. Por ejemplo, en Wisconsin, el promedio de seis encuestas fue del 7% a favor de Clinton con una desviación estándar del 1%, pero Trump ganó un 0,7%. Incluso después de tener en cuenta el sesgo general, este 7,7% residual está más en línea con los datos distribuidos en t que la distribución normal.
+[fix check] La distribución t también se puede usar para modelar errores cuando esperamos que la probabilidad de grandes desviaciones de la media sea mayor de lo que dicta la distribución normal. Fivethirtyeight utiliza la distribución t para generar errores que modelan mejor las desviaciones que vemos en los datos electorales. Por ejemplo, en Wisconsin, el promedio de seis encuestas fue 7% a favor de Clinton con una desviación estándar de 1%, pero Trump ganó por 0.7%. Incluso después de tomar en cuenta el sesgo general, este residuo de 7.7% está más en línea con datos que siguen la distribución t, que con datos que siguen la distribución normal.
 
 ```{r}
 data("polls_us_election_2016")
