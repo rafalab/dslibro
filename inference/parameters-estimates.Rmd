@@ -1,6 +1,6 @@
 # Inferencia estadística {#inference}
 
-En el capitulo \@ref(models) describiremos, con cierto detalle, cómo los agregadores de encuestas, como FiveThirtyEight, usan los datos para predecir los resultados de las elecciones. Para comprender cómo lo hacen, primero debemos aprender los conceptos básicos de _inferencia estadística_, la parte de la estadística que ayuda a distinguir los patrones reales de esos que surgen del azar. La inferencia estadística es un tema amplio y aquí repasaremos los conceptos básicos utilizando las encuestas como un ejemplo motivador. Para describir los conceptos, complementamos las fórmulas matemáticas con simulaciones de Monte Carlo y el código R.
+En el capitulo \@ref(models) describiremos, con cierto detalle, cómo los agregadores de encuestas, como FiveThirtyEight, usan los datos para predecir los resultados de las elecciones. Para entender cómo lo hacen, primero debemos aprender los conceptos básicos de la _inferencia estadística_, la parte de la estadística que ayuda a distinguir los patrones reales de esos que surgen del azar. La inferencia estadística es un tema amplio y aquí repasaremos los conceptos básicos utilizando las encuestas como un ejemplo motivador. Para describir los conceptos, complementamos las fórmulas matemáticas con simulaciones Monte Carlo y el código R.
 
 ```{r, echo=FALSE}
 img_path <- "inference/img/"
@@ -8,11 +8,11 @@ img_path <- "inference/img/"
 
 ## Encuestas
 
-Las encuestas de opinión se han llevado a cabo desde el siglo XIX. El objetivo general es describir las opiniones de una población específica sobre un set particular de temas. Recientemente, estas encuestas han sido mas notables durante las elecciones presidenciales en EE.UU.. Las encuestas son útiles cuando entrevistar a cada miembro de una población particular es logísticamente imposible. La estrategia general es entrevistar a un grupo más pequeño, elegido al azar, y luego inferir las opiniones de toda la población a partir de las opiniones del grupo más pequeño. La teoría estadística se que usa para justificar el proceso se conoce como _inferencia_ y es el tema principal de este capítulo.
+Las encuestas de opinión se han llevado a cabo desde el siglo XIX. El objetivo general es describir las opiniones de una población específica sobre un set particular de temas. Recientemente, estas encuestas han sido mas notables durante las elecciones presidenciales en EE.UU.. Las encuestas son útiles cuando entrevistar a cada miembro de una población particular es logísticamente imposible. La estrategia general es entrevistar a un grupo más pequeño, elegido al azar, y luego inferir las opiniones de toda la población a partir de las opiniones del grupo más pequeño. La teoría estadística que se usa para justificar el proceso se conoce como _inferencia_ y es el tema principal de este capítulo.
 
-Quizás las encuestas de opinión más conocidas son esas realizadas para determinar el candidato favorito de los votantes en una elección determinada. Los estrategas políticos hacen uso extensivo de las encuestas para decidir, entre otras cosas, cómo invertir recursos. Por ejemplo, es posible que quieran saber en qué ubicaciones geográficas enfocar sus esfuerzos de "sacar el voto".
+Quizás las encuestas de opinión más conocidas son esas realizadas para determinar el candidato favorito de los votantes en una elección determinada. Los estrategas políticos hacen uso extensivo de las encuestas para decidir, entre otras cosas, cómo invertir recursos. Por ejemplo, es posible que quieran saber en qué regiones geográficas enfocar sus esfuerzos de "sacar el voto".
 
-Las elecciones son un caso particularmente interesante de encuestas de opinión porque la opinión real de toda la población se revela el día de las elecciones. Por supuesto, cuesta millones de dólares realizar una elección real, lo que hace que las encuentas sean una estrategia efectiva para aquellos que desean pronosticar los resultados.
+Las elecciones son un caso particularmente interesante de encuestas de opinión porque la opinión real de toda la población se revela el día de las elecciones. Por supuesto, cuesta millones de dólares realizar una elección real, lo que hace que las encuentas sean una estrategia efectiva para aquellos que quieren pronosticar los resultados.
 
 Aunque típicamente los resultados de estas encuestas se mantienen privados, las organizaciones de noticias realizan encuestas similares porque los resultados tienden a ser de interés público y los datos se hacen públicos. Eventualmente estaremos analizando tales datos.
 
@@ -42,25 +42,25 @@ kableExtra::kable_styling(font_size = 8)
 
 <!-- (Source: [Real Clear Politics](https://www.realclearpolitics.com/epolls/2016/president/us/general_election_trump_vs_clinton-5491.html)) -->
 
-Aunque en Estados Unidos el voto popular no determina el resultado de las elecciones presidenciales, lo utilizaremos como un ejemplo ilustrativo y sencillo de cuán bien funcionan las encuestas. Pronosticar la elección es un proceso más complejo ya que implica combinar resultados de 50 estados y DC y lo describimos en la Sección \@ref(election-forecasting).
+Aunque en Estados Unidos el voto popular no determina el resultado de las elecciones presidenciales, lo utilizaremos como un ejemplo ilustrativo y sencillo de cuán bien funcionan las encuestas. Pronosticar la elección es un proceso más complejo ya que implica combinar resultados de 50 estados y DC y lo describiremos en la Sección \@ref(election-forecasting).
 
 Por ahora, hagamos algunas observaciones sobre la tabla anterior. Primero, tengan en cuenta que las diferentes encuestas, todas tomadas días antes de las elecciones, informan una _variabilidad_ diferente: la diferencia estimada entre el apoyo a los dos candidatos. Observen también que la variabilidad indicada ronda en torno a lo que acabó siendo el resultado real: Clinton ganó el voto popular por 2.1%. También vemos una columna titulada **MoE** que significa _margen de error_ (_margin of error_ en inglés).
 
-En esta sección, mostraremos cómo se pueden aplicar los conceptos de probabilidad que aprendimos en capítulos anteriores para desarrollar enfoques estadísticos que hacen de las encuestas una herramienta eficaz. Aprenderemos los conceptos estadísticos necesarios para definir _estimaciones_ y _márgenes de errores_, y mostraremos cómo podemos usar estos para pronosticar resultados finales relativamente precisos y también proveer una estimación de la precisión de nuestro pronóstico. Una vez que aprendamos esto, podremos comprender dos conceptos que son ubicuos en la ciencia de datos: _intervalos de confianza_ y _valores p_. Finalmente, para comprender las declaraciones probabilísticas sobre la probabilidad de que un candidato gane, tendremos que aprender sobre modelos bayesianos. En las secciones finales, lo reunimos todo para recrear la versión simplificada del modelo de FiveThirtyEight y aplicarlo a las elecciones presidenciales de 2016.
+En esta sección, mostraremos cómo se pueden aplicar los conceptos de probabilidad que aprendimos en capítulos anteriores para desarrollar enfoques estadísticos que hacen de las encuestas una herramienta eficaz. Estudiaremos los conceptos estadísticos necesarios para definir _estimaciones_ y _márgenes de errores_, y mostraremos cómo podemos usar estos para pronosticar resultados finales relativamente precisos y también proveer una estimación de la precisión de nuestro pronóstico. Una vez que aprendamos esto, podremos comprender dos conceptos que son ubicuos en la ciencia de datos: _intervalos de confianza_ y _valores p_. Finalmente, para comprender las declaraciones probabilísticas sobre la probabilidad de que un candidato gane, tendremos que aprender sobre modelos bayesianos. En las secciones finales, lo reunimos todo para recrear la versión simplificada del modelo de FiveThirtyEight y aplicarlo a las elecciones presidenciales de 2016.
 
 Comenzamos conectando la teoría de probabilidad con la tarea de usar encuestas para aprender sobre una población.
 
 
 ### El modelo de muestreo para encuestas
 
-Para ayudarnos a entender la conexión entre las encuestas y lo que hemos aprendido, construyamos una situación similar a la que enfrentan los encuestadores. Para imitar el desafío que enfrentan los encuestadores en términos de competir con otros encuestadores por la atención de los medios, utilizaremos una urna llena de cuentas para representar a los votantes y fingiremos que estamos compitiendo por un premio de $25 dólares. El desafío es adivinar la variabilidad entre la proporción de cuentas azules y de rojas en esta urna (en este caso, un frasco de pepinillos):
+Para ayudarnos a entender la conexión entre las encuestas y lo que hemos aprendido, vamos a construir una situación similar a la que enfrentan los encuestadores. Para imitar el desafío que enfrentan los encuestadores en términos de competir con otros encuestadores para la atención de los medios, utilizaremos una urna llena de cuentas para representar a los votantes y fingiremos que estamos compitiendo por un premio de $25 dólares. El desafío es adivinar la diferencia entre la proporción de cuentas azules y de cuentas rojas en esta urna (en este caso, un frasco de pepinillos): [fix eng too no image]
 
 
 ```{r, echo=FALSE, out.width="1.5in"}
 knitr::include_graphics(file.path(img_path, "urn.jpg"))
 ```
 
-Antes de hacer una predicción, pueden tomar una muestra (con reemplazo) de la urna. Para imitar el hecho de que realizar encuestas es costoso, les cuesta \$0.10 para cada cuenta que escojen. Por lo tanto, si el tamaño de su muestra es de 250 y ganan, ni ganarán ni perderán ya que pagarán \$25 por un premio de $25. Su entrada en la competencia puede ser un intervalo. Si el intervalo que envía contiene la proporción real, obtiene la mitad de lo que pagó y pasa a la segunda fase de la competencia. En la segunda fase, la entrada con el intervalo más pequeño se selecciona como el ganador.
+Antes de hacer una predicción, pueden tomar una muestra (con reemplazo) de la urna. Para imitar el hecho de que realizar encuestas es costoso, les cuesta \$0.10 cada vez que escojen una cuenta. Por lo tanto, si el tamaño de su muestra es 250 y ganan, ni ganarán ni perderán ya que acabarían pagando \$25 por un premio de $25. Su entrada en la competencia puede ser un intervalo. Si el intervalo que envía contiene la proporción real, obtiene la mitad de lo que pagó y pasa a la segunda fase de la competencia. En la segunda fase, la entrada con el intervalo más pequeño será el ganador.
 
 El paquete __dslabs__ incluye una función que muestra un sorteo aleatorio de esta urna:
 
@@ -78,15 +78,15 @@ rafalib::mypar()
 take_poll(25)
 ```
 
-Piensen en cómo construiría su intervalo según los datos que se muestran arriba.
+Piensen en cómo construirían su intervalo según los datos que se muestran arriba.
 
-Acabamos de describir un modelo de muestreo sencillo para encuestas de opinión. Las cuentas dentro de la urna representan a las personas que votarán el día de las elecciones. Los que votarán por el candidato republicano están representados con cuentas rojas y los demócratas con cuentas azules. Por simplicidad, supongan que no hay otros colores. Es decir, que solo hay dos partidos: republicano y demócrata.
+Acabamos de describir un modelo de muestreo sencillo para encuestas de opinión. Las cuentas dentro de la urna representan a las personas que votarán el día de las elecciones. Los que votarán por el candidato republicano están representados con cuentas rojas y los demócratas con cuentas azules. Para simplificar, supongan que no hay otros colores. Es decir, que solo hay dos partidos: republicano y demócrata.
 
 ## Poblaciones, muestras, parámetros y estimaciones
 
 Queremos predecir la proporción de cuentas azules en la urna. Llamemos a esta cantidad $p$, que luego nos dice la proporción de cuentas rojas $1-p$ y la variabilidad $p - (1-p)$, que se simplifica a $2p - 1$.
 
-En los libros de texto estadísticos, las cuentas en la urna se llaman _población_. La proporción de cuentas azules en la población $p$ se llama un _parámetro_. Las 25 cuentas que vemos en el gráfico anterior se llaman _muestra_. La tarea de la inferencia estadística es predecir el parámetro $p$ utilizando los datos observados en la muestra.
+En los libros de texto estadísticos, las cuentas en la urna se llaman la _población_. La proporción de cuentas azules en la población $p$ se llama un _parámetro_. Las 25 cuentas que vemos en el gráfico anterior se llaman la _muestra_. La tarea de la inferencia estadística es predecir el parámetro $p$ utilizando los datos observados en la muestra.
 
 ¿Podemos hacer esto con las 25 observaciones anteriores? Ciertamente es informativo. Por ejemplo, dado que vemos 13 cuentas rojas y 12 azules, es poco probable que $p$ > .9 o $p$ <.1. ¿Pero estamos listos para predecir con certeza que hay más cuentas rojas que azules en el frasco?
 
@@ -121,7 +121,7 @@ Las ideas presentadas aquí sobre cómo estimar los parámetros y proveer inform
 
 ### Encuesta versus pronóstico
 
-Antes de continuar, hagamos una aclaración importante relacionada con el problema práctico de pronosticar las elecciones. Si se realiza una encuesta cuatro meses antes de las elecciones, se estima la $p$ para ese momento y no para el día de las elecciones. La $p$ para la noche de las elecciones podría ser diferente ya que las opiniones de las personas fluctúan a través del tiempo. Las encuestas proveídas la noche anterior a las elecciones tienden a ser las más precisas ya que las opiniones no cambian tanto en un día. Sin embargo, los pronosticadores intentan crear herramientas que modelen cómo las opiniones varían a lo largo del tiempo e intentan predecir los resultados de la noche de elecciones teniendo en cuenta el hecho de que las opiniones fluctúan. Describiremos algunos enfoques para hacer esto en una sección posterior.
+Antes de continuar, hagamos una aclaración importante relacionada con el problema práctico de pronosticar las elecciones. Si se realiza una encuesta cuatro meses antes de las elecciones, se estima la $p$ para ese momento y no para el día de las elecciones. La $p$ para la noche de las elecciones podría ser diferente ya que las opiniones de las personas fluctúan a través del tiempo. Las encuestas realizadas la noche anterior a las elecciones tienden a ser las más precisas ya que las opiniones no cambian tanto en un día. Sin embargo, los pronosticadores intentan crear herramientas que modelen cómo las opiniones varían a lo largo del tiempo e intentan predecir los resultados de la noche de elecciones teniendo en cuenta el hecho de que las opiniones fluctúan. Describiremos algunos enfoques para hacer esto en una sección posterior.
 
 ### Propiedades de nuestra estimación: valor esperado y error estándar
 
