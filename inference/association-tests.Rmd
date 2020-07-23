@@ -45,21 +45,19 @@ totals %>% summarize(percent_men = yes_men/(yes_men+no_men),
 percent_women = yes_women/(yes_women+no_women))
 ```
 
-Pero, ¿podría esto deberse solo a la variabilidad aleatoria? Aquí aprenderemos a realizar inferencia para este tipo de datos.
+Pero, ¿podría esto deberse solo a la variabilidad aleatoria? Aquí aprenderemos a llevar a cabo inferencia estadística para este tipo de datos.
 
 
 ### Lady Tasting Tea
 
 
-RA Fisher^[https://en.wikipedia.org/wiki/Ronald_Fisher] fue uno de los primeros en formalizar la prueba de hipótesis. El "Lady Tasting Tea" es uno de los ejemplos más famosos.
+R.A. Fisher^[https://en.wikipedia.org/wiki/Ronald_Fisher] fue uno de los primeros en formalizar las pruebas de hipótesis. El "Lady Tasting Tea" es uno de los ejemplos más famosos.
 
-La historia es la siguiente: una conocida de Fisher insistió que ella podía detectar si se agrega leche antes o después de verter el té. Fisher se mostró escéptico. Diseñó un experimento para probar esta afirmación. Él le dio cuatro pares de tazas de té: una con leche vertida primero y la otra después. El orden era aleatorio. La hipótesis nula aquí es que ella está adivinando. Fisher dedujo la distribución del número de selecciones correctas suponiendo que las elecciones fueron aleatorias e independientes.
+La historia es la siguiente: una conocida de Fisher insistió que ella podía detectar si agregaban leche antes o después de verter el té. Fisher se mostró escéptico. Diseñó un experimento para probar esta afirmación. Él le dio cuatro pares de tazas de té. Cada par incluía una taza con leche vertida primero y la otra después del té. El orden era aleatorio. La hipótesis nula aquí es que ella está adivinando. Fisher dedujo la distribución del número de selecciones correctas suponiendo que las elecciones fueron aleatorias e independientes.
 
-Como ejemplo, supongamos que escogió 3 de 4 correctamente. ¿Creemos
-que ella tiene una habilidad especial? La pregunta básica que hacemos es: si ella realmente está adivinando, ¿cuáles son las posibilidades de que ella saque 3 o más correctas? Tal como lo hemos hecho antes, podemos calcular una probabilidad bajo la hipótesis nula de que ella está adivinando 4 de cada uno. Bajo esta hipótesis nula, podemos pensar en este ejemplo particular como sacar 4 bolas de una urna con 4 bolas azules (respuesta correcta) y 4 bolas rojas (respuesta incorrecta). Recuerden, ella sabe que hay cuatro antes del té y cuatro después.
+Como ejemplo, supongamos que la amiga escogió 3 de 4 correctamente. ¿Creemos que ella tiene una habilidad especial? La pregunta básica que hacemos es: si ella realmente está adivinando, ¿cuáles son las posibilidades de que ella saque 3 o más correctas? Tal como lo hemos hecho antes, podemos calcular una probabilidad bajo la hipótesis nula de que ella está adivinando 4 de cada una. Bajo esta hipótesis nula, podemos pensar en este ejemplo particular como sacar 4 cuentas de una urna con 4 cuentas azules (respuesta correcta) y 4 cuentas rojas (respuesta incorrecta). Recuerden, ella sabe que hay cuatro tasas con leche antes del té y cuatro con leche después.
 
-Bajo la hipótesis nula de que ella simplemente está adivinando, cada bola tiene la misma posibilidad de ser elegida. Entonces podemos usar combinaciones para averiguar cada probabilidad. La probabilidad de elegir 3 es
-${4 \choose 3} {4 \choose 1}/ {8 \choose 4} = 16/70$. La probabilidad de elegir bien las 4 veces es
+Bajo la hipótesis nula de que ella simplemente está adivinando, cada cuenta tiene la misma posibilidad de ser elegida. Entonces podemos usar combinaciones para averiguar cada probabilidad. La probabilidad de elegir 3 es ${4 \choose 3} {4 \choose 1}/ {8 \choose 4} = 16/70$. La probabilidad de elegir bien las 4 veces es
 ${4 \choose 4} {4 \choose 0}/{8 \choose 4}= 1/70$.
 Por lo tanto, la posibilidad de observar un 3 o algo más extremo,
 bajo la hipótesis nula, es $\approx 0.24$. Este es el valor p. El procedimiento que produjo este valor p se llama la _prueba exacta de Fisher_ (_Fisher's exact test_ en inglés) y utiliza la _distribución hipergeométrica_.
@@ -75,7 +73,7 @@ colnames(tab)<-c("Guessed before","Guessed after")
 tab
 ```
 
-Estas se conocen como una tabla 2x2. Para cada una de las cuatro combinaciones que se pueden obtener con un par de variables binarias, muestra los recuentos observados para cada ocurrencia.
+que se conoce como una tabla 2x2. Para cada una de las cuatro combinaciones que se pueden obtener con un par de variables binarias, la tabla muestra los recuentos observados para cada ocurrencia.
 
 La función `fisher.test` realiza los cálculos de inferencia anteriores:
 
@@ -138,7 +136,7 @@ chisq_test$p.value
 
 ### Riesgo relativo {#odds-ratio}
 
-Un resumen estadístico informativo para tablas 2x2 es el riesgo relativo (_odds ratio_ en inglés). Definan las dos variables como $X = 1$ si eres hombre y 0 de lo contrario, y $Y=1$ si recibe financiamiento y 0 de lo contrario. Las probabilidades de obtener fondos si eres hombre se definen:
+Un resumen estadístico informativo para tablas 2x2 es el riesgo relativo (_odds ratio_ en inglés). Definan las dos variables como $X = 1$ si eres hombre y 0 de lo contrario, y $Y=1$ si recibe financiamiento y 0 de lo contrario. Las probabilidades de obtener fondos si eres hombre se definen así:
 
 $$\mbox{Pr}(Y=1 \mid X=1)/ \mbox{Pr}(Y=0 \mid X=1)$$
 
@@ -188,10 +186,9 @@ que es equivalente a $(ad)/ (bc)$
 
 ### Intervalos de confianza para el riesgo relativo
 
-Calcular intervalos de confianza para el riesgo relativo no es matemáticamente sencillo. A diferencia de otras estadísticas, para las cuales podemos derivar aproximaciones útiles de sus distribuciones, el riesgo relativo no es solo una
-relación, sino una relación de razones. Por lo tanto, no hay una forma simple de utilizar, por ejemplo, el CLT.
+Calcular intervalos de confianza para el riesgo relativo no es matemáticamente sencillo. A diferencia de otras estadísticas, para las cuales podemos derivar aproximaciones útiles de sus distribuciones, el riesgo relativo no es solo una razón, sino una razón de razones. Por lo tanto, no hay una forma simple de utilizar, por ejemplo, el CLT.
 
-Sin embargo, la teoría estadística nos dice que cuando las cuatro entradas de la tabla 2x2 son lo suficientemente grandes, entonces el logaritmo del riesgo relativo es aproximadamente normal con error estándar.
+Sin embargo, la teoría estadística nos dice que cuando las cuatro entradas de la tabla 2x2 son lo suficientemente grandes, entonces el logaritmo del riesgo relativo es aproximadamente normal con error estándar: [fix eng add :]
 
 $$
 \sqrt{1/a + 1/b + 1/c + 1/d}
@@ -220,13 +217,13 @@ Si queremos convertirlo de nuevo a la escala de riesgo relativo, podemos exponen
 exp(ci)
 ```
 
-Tengan en cuenta que 1 no está incluido en el intervalo de confianza, lo que significa que el valor p es menor que 0.05. Podemos confirmar esto usando:
+Observen que 1 no está incluido en el intervalo de confianza, lo que significa que el valor p es menor que 0.05. Podemos confirmar esto usando:
 
 ```{r}
 2*(1 - pnorm(log_or, 0, se))
 ```
 
-Este es un valor p un poco diferente al de la prueba de chi-cuadrado. Esto se debe a que estamos utilizando una aproximación asintótica diferente a la distribución nula. Para obtener más información sobre la inferencia y la teoría asintótica de el riesgo relativo, consulte el libro _Generalized Linear Models_ de McCullagh y Nelder.
+Este es un valor p un poco diferente al de la prueba de chi-cuadrado. Esto se debe a que estamos utilizando una aproximación asintótica diferente a la distribución nula. Para obtener más información sobre la inferencia y la teoría asintótica del riesgo relativo, consulte el libro _Generalized Linear Models_ de McCullagh y Nelder.
 
 ### Corrección de recuento pequeño
 
@@ -235,9 +232,9 @@ Tengan en cuenta que el logaritmo del riesgo relativo no se define si alguna de 
 
 ### Muestras grandes, valores p pequeños
 
-Como se mencionó anteriormente, informar solo valores p no es una forma apropiada de informar los resultados del análisis de datos. En revistas científicas, por ejemplo, algunos estudios parecen enfatizar demasiado los valores p. Algunos de estos estudios tienen muestras de gran tamaño e indican valores p impresionantemente pequeños. Sin embargo, cuando uno mira de cerca los resultados, se da cuenta que los riesgos relativos son bastante modestos: apenas mayores que 1. En este caso, la diferencia puede que no sea _prácticamente significativa_ o _científicamente significativa_.
+Como se mencionó anteriormente, informar solo valores p no es una forma apropiada de informar los resultados del análisis de datos. En revistas científicas, por ejemplo, algunos estudios parecen enfatizar demasiado los valores p. Algunos de estos estudios tienen muestras de gran tamaño e indican valores p impresionantemente pequeños. Sin embargo, cuando uno mira de cerca los resultados, se da cuenta que los riesgos relativos son pequeños: apenas mayores que 1. En este caso, la diferencia puede que no sea _prácticamente significativa_ o _científicamente significativa_.
 
-Tengan en cuenta que la relación entre el riesgo relativo y el valor p no es una correspondencia uno-a-uno. La relacion depende del tamaño de la muestra. Por lo tanto, un valor p muy pequeño no necesariamente significa un riesgo relativo muy grande. Observen lo que sucede con el valor p si multiplicamos nuestra tabla 2x2 por 10, que no cambia el riesgo relativo:
+Tengan en cuenta que la relación entre el riesgo relativo y el valor p no es una correspondencia uno-a-uno. La relacion depende del tamaño de la muestra. Por lo tanto, un valor p muy pequeño no necesariamente significa un riesgo relativo muy grande. Observen lo que sucede con el valor p si multiplicamos nuestra tabla 2x2 por 10, lo cual no cambia el riesgo relativo:
 
 ```{r}
 two_by_two %>% select(-awarded) %>%
@@ -253,7 +250,7 @@ chisq.test() %>% .$p.value
 2\. ¿Por qué usamos la prueba de chi-cuadrado en lugar de la prueba exacta de Fisher en el ejercicio anterior?
 
 a. En realidad no importa ya que dan exactamente el mismo valor p.
-b. El exacto de Fisher y el chi-cuadrado son nombres diferentes para la misma prueba.
+b. La prueba exacta de Fisher y la de chi-cuadrado son nombres diferentes para la misma prueba.
 c. Debido a que la suma de las filas y columnas de la tabla 2x2 no son fijas, la distribución hipergeométrica no es una suposición apropiada para la hipótesis nula. Por esta razón, la prueba exacta de Fisher rara vez es aplicable a datos observacionales.
 d. Porque la prueba de chi-cuadrado se ejecuta más rápido.
 
@@ -261,7 +258,7 @@ d. Porque la prueba de chi-cuadrado se ejecuta más rápido.
 3\. Calcule el riesgo relativo de "perder bajo presión" junto con un intervalo de confianza.
 
 
-4\. Observe que el valor p es mayor que 0.05 pero el intervalo de confianza del 95% no incluye 1. ¿Qué explica esto?
+4\. Observe que el valor p es mayor que 0.05 pero el intervalo de confianza de 95% no incluye 1. ¿Qué explica esto?
 
 a. Cometimos un error en nuestro código.
 b. Estas no son pruebas de la-t, por lo que no aplica la conexión entre el valor p y los intervalos de confianza.
@@ -269,7 +266,7 @@ c. Se utilizan diferentes aproximaciones para el valor p y el cálculo del inter
 d. Deberíamos usar la prueba exacta de Fisher para obtener intervalos de confianza.
 
 
-5\. Multiplique la tabla 2x2 por dos y vea si el valor p y la recuperación de confianza coinciden mejor.
+5\. Multiplique la tabla 2x2 por dos y vea si el valor p y [fix eng confidence interval] el intervalo de confianza coinciden mejor.
 
 
 

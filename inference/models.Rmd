@@ -2,17 +2,17 @@
 
 >> "Todos los modelos están equivocados, pero algunos son útiles". --George E. P. Box
 
-El día antes de las elecciones presidenciales de 2008, FiveThirtyEight de Nate Silver declaró que "Barack Obama parece estar listo para una victoria electoral decisiva". Fueron hasta más lejos y predijeron que Obama ganaría las elecciones con 349 votos electorales a 189, y el voto popular por un margen de 6.1%. FiveThirtyEight también incluyó una declaración probabilística a su predicción declarando que Obama tenía una probablidad de 91% de ganar las elecciones. Las predicciones fueron bastante precisas y, en los resultados finales, Obama ganó el colegio electoral 365 a 173 y el voto popular por una diferencia de 7.2%. El desempeño de FiveThirtyEight en las elecciones de 2008 atrajo la atención de expertos políticos y personalidades de la televisión. Cuatro años después, la semana antes de las elecciones presidenciales de 2012, Nate Silver de FiveThirtyEight le estaba dando a Obama una probabilidad de 90% de ganar a pesar de que muchos de los expertos pensaban que los resultados finales estarían más cerca. El comentarista político Joe Scarborough dijo durante su show^[https://www.youtube.com/watch?v=TbKkjm-gheY]:
+El día antes de las elecciones presidenciales de 2008, FiveThirtyEight de Nate Silver declaró que "Barack Obama parece estar listo para una victoria electoral decisiva". Fueron hasta más lejos y predijeron que Obama ganaría las elecciones con 349 votos electorales a 189, y el voto popular por un margen de 6.1%. FiveThirtyEight también añadió una declaración probabilística a su predicción declarando que Obama tenía una probablidad de 91% de ganar las elecciones. Las predicciones fueron bastante precisas y, en los resultados finales, Obama ganó el colegio electoral 365 a 173 y el voto popular por una diferencia de 7.2%. El desempeño de FiveThirtyEight en las elecciones de 2008 atrajo la atención de expertos políticos y personalidades de la televisión. Cuatro años después, la semana antes de las elecciones presidenciales de 2012, Nate Silver de FiveThirtyEight le estaba dando a Obama una probabilidad de 90% de ganar a pesar de que muchos de los expertos pensaban que los resultados finales estarían más cerca. El comentarista político Joe Scarborough dijo durante su show^[https://www.youtube.com/watch?v=TbKkjm-gheY]:
 
 >> Cualquiera que piense que esta elección no está pareja en este momento es un tremendo ideólogo ... son un chiste.
 
 A lo que Nate Silver respondió a través de Twitter:
 
->> Si crees que es la elección está pareja, apostemos. Si Obama gana, usted dona $1,000 a la Cruz Roja Americana. Si Romney gana, yo lo hago. ¿De acuerdo?
+>> Si cree que la elección está pareja, apostemos. Si Obama gana, usted dona $1,000 a la Cruz Roja Americana. Si Romney gana, yo lo hago. ¿De acuerdo?
 
-En 2016, Silver no estaba tan seguro y le dio a Hillary Clinton solo una probabilidad de 71% de ganar. En contraste, la mayoría de los otros pronosticadores estaban casi seguros de que ella ganaría. Ella perdió. Pero 71% sigue siendo más de 50%, ¿se equivocó el Sr. Silver? Además, ¿qué significa la probabilidad en este contexto? ¿Están tirando los dados en algún lugar?
+En 2016, Silver no estaba tan seguro y le dio a Hillary Clinton solo una probabilidad de 71% de ganar. En contraste, la mayoría de los otros pronosticadores estaban casi seguros de que ella ganaría. Ella perdió. Pero 71% sigue siendo más de 50%, ¿se equivocó el Sr. Silver? Además, ¿qué significa la probabilidad en este contexto? ¿Alguien está tirando dados?
 
-En este capítulo, demostraremos cómo los _agregadores de encuestas_, como FiveThirtyEight, recopilaron y combinaron datos informados por diferentes expertos para producir mejores predicciones. Introduciremos las ideas detrás de los _modelos estadísticos_, también conocidos como _modelos de probabilidad_, que utilizaron los agregadores de encuestas para mejorar los pronósticos electorales en comparación a las encuestas individuales. En este capítulo, motivamos los modelos, construyendo sobre los conceptos de inferencia estadística que aprendimos en el Capítulo \@ref(inference). Comenzamos con modelos relativamente sencillos, tomando en cuenta que el ejercicio real de la ciencia de datos de pronosticar elecciones involucra algunos modelos bastante complejos, que presentamos al final del capítulo en la Sección \@ref(election-forecasting).
+En este capítulo demostraremos cómo los _agregadores de encuestas_, como FiveThirtyEight, recopilaron y combinaron datos informados por diferentes expertos para producir mejores predicciones. Introduciremos las ideas detrás de los _modelos estadísticos_, también conocidos como _modelos de probabilidad_, que utilizaron los agregadores de encuestas para mejorar los pronósticos electorales en comparación a las encuestas individuales. En este capítulo, motivamos los modelos, construyendo sobre los conceptos de inferencia estadística que aprendimos en el Capítulo \@ref(inference). Comenzamos con modelos relativamente sencillos, tomando en cuenta que el ejercicio real de la ciencia de datos de pronosticar elecciones involucra algunos modelos bastante complejos, que presentamos al final del capítulo en la Sección \@ref(election-forecasting).
 
 ```{r, echo=FALSE, message=FALSE}
 set.seed(2)
@@ -21,7 +21,7 @@ img_path <- "inference/img/"
 
 ## Agregadores de encuestas
 
-Como describimos anteriormente, unas semanas antes de las elecciones del 2012, Nate Silver le estaba dando a Obama una probabilidad de 90% de ganar. ¿Por qué tenía tanta confianza el señor Silver? Utilizaremos una simulación Monte Carlo para ilustrar la idea que tuvo el Sr. Silver y que otros no vieron. Para hacer esto, generamos resultados para 12 encuestas realizadas la semana anterior a las elecciones. Imitaremos tamaños de muestra de encuestas reales y construiremos e informaremoos intervalos de confianza de 95\% para cada una de las 12 encuestas. Guardaremos los resultados de esta simulación en un set de datos y agregamos una columna de ID de encuesta.
+Como describimos anteriormente, unas semanas antes de las elecciones del 2012, Nate Silver le estaba dando a Obama una probabilidad de 90% de ganar. ¿Por qué tenía tanta confianza el señor Silver? Utilizaremos una simulación Monte Carlo para ilustrar la idea que tuvo el Sr. Silver y que otros no vieron. Para hacer esto, generamos resultados para 12 encuestas realizadas la semana anterior a las elecciones. Imitaremos tamaños de muestra de encuestas reales y construiremos e informaremos intervalos de confianza de 95\% para cada una de las 12 encuestas. Guardaremos los resultados de esta simulación en un set de datos y agregaremos una columna de ID de encuesta.
 
 
 ```{r, message=FALSE, warning=FALSE}
@@ -43,7 +43,7 @@ sample_size = N)
 
 ```
 
-Aquí tenemos una visualización que muestra los intervalos que los encuestadores habrían informado sobre la diferencia entre Obama y Romney:
+Aquí tenemos una visualización que muestra los intervalos que los encuestadores reportaron para la diferencia entre Obama y Romney:
 
 ```{r simulated-polls, message=FALSE, echo=FALSE}
 ggplot(polls, aes(poll, estimate, ymin=low, ymax=high)) +
@@ -56,7 +56,7 @@ scale_y_continuous(limits = c(-0.17, 0.17)) +
 geom_hline(yintercept = 2*p-1, lty=2)
 ```
 
-No es sorprendente que las 12 encuestas informan intervalos de confianza que incluyen el resultado de la noche electoral (línea discontinua). Sin embargo, las 12 encuestas también incluyen 0 (línea negra sólida) también. Por lo tanto, si se les pide individualmente una predicción, los encuestadores tendrían que decir: es las probabilidades están parejas. A continuación describimos una idea clave que no consideraron.
+No es sorprendente que las 12 encuestas informan intervalos de confianza que incluyen el resultado de la noche electoral (línea discontinua). Sin embargo, las 12 encuestas también incluyen 0 (línea negra sólida). Por lo tanto, si se les pide individualmente una predicción, los encuestadores tendrían que decir: las probabilidades están parejas. A continuación describimos una idea clave que no consideraron.
 
 Los agregadores de encuestas, como Nate Silver, se dieron cuenta de que al combinar los resultados de diferentes encuestas, la precisión podría mejorar enormemente. Al hacer esto, estamos llevando a cabo una encuesta con un gran tamaño de muestra. Por lo tanto, podemos informar un intervalo de confianza menor de 95\% y una predicción más precisa.
 
@@ -74,7 +74,7 @@ summarize(avg = sum(estimate*sample_size)/ sum(sample_size)) %>%
 pull(avg)
 ```
 
-Una vez que tengamos una estimación de $d$, podemos construir una estimación de la proporción votando por Obama, que luego podemos usar para estimar el error estándar. Una vez que hacemos esto, vemos que nuestro margen de error es `r p_hat <- (1+d_hat)/2; moe <- 2*1.96*sqrt(p_hat*(1-p_hat)/sum(polls$sample_size)); moe`.
+Una vez que tengamos una estimación de $d$, podemos construir una estimación de la proporción votando por Obama, que luego podemos usar para estimar el error estándar. Tan pronto hacemos esto, vemos que nuestro margen de error es `r p_hat <- (1+d_hat)/2; moe <- 2*1.96*sqrt(p_hat*(1-p_hat)/sum(polls$sample_size)); moe`.
 
 Por lo tanto, podemos predecir que la variabilidad será `r round(d_hat*100,1)` más o menos `r round(moe*100 ,1)`, que no solo incluye el resultado real que observamos en la noche de las elecciones, sino que está bastante lejos de incluir 0. Una vez que combinamos las 12 encuestas, estamos seguros de que Obama ganará el voto popular.
 
@@ -98,7 +98,7 @@ geom_hline(yintercept = 2*p-1, lty=2)
 
 Por supuesto, esto fue solo una simulación para ilustrar la idea. El ejercicio real de la ciencia de datos de pronosticar elecciones es mucho más complicado y requiere modelos estadísticos. A continuación explicamos cómo los encuestadores ajustan los modelos multinivel a los datos y los utilizan para pronosticar los resultados electorales. En las elecciones presidenciales estadounidenses de 2008 y 2012, Nate Silver utilizó este enfoque para hacer una predicción casi perfecta y callar a los expertos.
 
-Desde las elecciones de 2008, otras organizaciones han comenzado su propio grupo de pronóstico de elecciones que, como el de Nate Silver, agrega datos de encuestas y utiliza modelos estadísticos para hacer predicciones. En 2016, los pronosticadores subestimaron por mucho las posibilidades de Trump de ganar. El día antes de las elecciones, el _New York Times_ informó^[https://www.nytimes.com/interactive/2016/upshot/presidential-polls-forecast.html] las siguientes probabilidades de que Hillary Clinton ganara la presidencia:
+Desde las elecciones de 2008, otras organizaciones han establecido sus propios grupos de pronóstico de elecciones que, como el de Nate Silver, agrega datos de encuestas y utiliza modelos estadísticos para hacer predicciones. En 2016, los pronosticadores subestimaron por mucho las posibilidades de Trump de ganar. El día antes de las elecciones, el _New York Times_ informó^[https://www.nytimes.com/interactive/2016/upshot/presidential-polls-forecast.html] las siguientes probabilidades de que Hillary Clinton ganara la presidencia:
 
 
 ```{r, echo=FALSE, out.width="100%"}
@@ -184,7 +184,7 @@ geom_text(data = tmp, mapping = aes(x = avg, y = m, label = avg_txt), inherit.ae
 Las áreas coloreadas representan valores con una probabilidad de 80% de incluir el resultado real, según el modelo de FiveThirtyEight.
 <!--(Source: [FiveThirtyEight](https://projects.fivethirtyeight.com/2016-election-forecast/))-->
 
-Presentamos datos reales de las elecciones presidenciales de EE. UU. de 2016 para mostrar cómo se motivan y se contruyen los modelos para producir estas predicciones. Para comprender la declaración de "81.4% de probabilidad" necesitamos describir las estadísticas bayesianas, lo que hacemos en las Secciones \@ref(bayesian-statistics) y \@ref(bayesian-approach).
+Presentamos datos reales de las elecciones presidenciales de EE. UU. de 2016 para mostrar cómo se motivan y se contruyen los modelos para producir estas predicciones. Para comprender la declaración "81.4% de probabilidad", necesitamos describir las estadísticas bayesianas, lo que hacemos en las Secciones \@ref(bayesian-statistics) y \@ref(bayesian-approach).
 
 ### Datos de encuesta
 
@@ -202,17 +202,17 @@ filter(state == "U.S." & enddate >= "2016-10-31" &
 (grade %in% c("A+","A","A-","B+") | is.na(grade)))
 ```
 
-Agregamos una estimación de la variabilidad:
+Agregamos la estimación de la diferencia:
 
 ```{r}
 polls <- polls %>%
 mutate(spread = rawpoll_clinton/100 - rawpoll_trump/100)
 ```
 
-Para este ejemplo, suponemos que solo hay dos partes y llamaremos $p$ a la proporción de votos para Clinton y $1-p$ a la proporción votando por Trump. Estamos interesados en la variabilidad $2p-1$. Llamemos a la variabilidad $d$ (por la diferencia).
+Para este ejemplo, suponemos que solo hay dos partes y llamaremos $p$ a la proporción de votos para Clinton y $1-p$ a la proporción votando por Trump. Estamos interesados en la diferencia $2p-1$. Llamemos a la diferencia $d$.
 
 
-Tenemos `r nrow(polls)` estimaciones de la variabilidad. La teoría que aprendimos nos dice que estas estimaciones son una variable aleatoria con una distribución de probabilidad que es aproximadamente normal. El valor esperado es la variabilidad de la noche electoral $d$ y el error estándar es $2\sqrt{p (1 - p)/ N}$. Suponiendo que el modelo de urna que describimos anteriormente es bueno, podemos usar esta información para construir un intervalo de confianza basado en los datos agregados. La variabilidad estimada es:
+Tenemos `r nrow(polls)` estimaciones de la diferencia La teoría que aprendimos nos dice que estas estimaciones son una variable aleatoria con una distribución de probabilidad que es aproximadamente normal. El valor esperado es la diferencia de la noche electoral $d$ y el error estándar es $2\sqrt{p (1 - p)/ N}$. Suponiendo que el modelo de urna que describimos anteriormente es bueno, podemos usar esta información para construir un intervalo de confianza basado en los datos agregados. La diferencia estimada es:
 
 ```{r}
 d_hat <- polls %>%
@@ -257,7 +257,7 @@ geom_point() +
 coord_flip()
 ```
 
-Esta gráfica revela un resultado inesperado. Primero, consideren que el error estándar predicho por la teoría para cada encuesta:
+Este gráfico revela un resultado inesperado. Primero, consideren que el error estándar predicho por la teoría para cada encuesta:
 
 ```{r}
 polls %>% group_by(pollster) %>%
@@ -286,9 +286,9 @@ Aquí hay un histograma de los datos para estos `r nrow(one_poll_per_pollster)` 
 qplot(spread, data = one_poll_per_pollster, binwidth = 0.01)
 ```
 
-En la sección anterior, vimos que usar la teoría del modelo de urna para combinar estos resultados a veces no es apropiado debido al efecto de encuestador. En cambio, modelaremos estos datos de variabilidad directamente.
+En la sección anterior, vimos que usar la teoría del modelo de urna para combinar estos resultados a veces no es apropiado debido al efecto de encuestador. En cambio, modelaremos estos datos de las diferencias directamente.
 
-El nuevo modelo también puede considerarse como un modelo de urna, aunque la conexión no es tan directa. En lugar de 0s (republicanos) y 1s (demócratas), nuestra urna ahora contiene los resultados de las encuestas de todos los posibles encuestadores. Suponemos que el valor esperado de nuestra urna es la variabilidad real $d=2p-1$.
+El nuevo modelo también puede considerarse como un modelo de urna, aunque la conexión no es tan directa. En lugar de 0s (republicanos) y 1s (demócratas), nuestra urna ahora contiene los resultados de las encuestas de todos los posibles encuestadores. Suponemos que el valor esperado de nuestra urna es la diferencia real $d=2p-1$.
 
 Dado que en lugar de 0s y 1s, nuestra urna contiene números continuos entre -1 y 1, la desviación estándar de la urna ya no es $\sqrt{p(1-p)}$. En vez de la variabilidad del muestreo de votantes, el error estándar ahora incluye la variabilidad entre encuestadores. Nuestra nueva urna también incluye la variabilidad de muestreo del sondeo. De cualquier manera, esta desviación estándar ahora es un parámetro desconocido. En los libros de texto de estadística, el símbolo griego $\sigma$ se usa para representar este parámetro.
 
@@ -301,13 +301,13 @@ $s = \sqrt{ \sum_{i=1}^N (X_i - \bar{X})^2/ (N-1)}$.
 
 A diferencia de la definición de desviación estándar de la población, ahora dividimos por $N-1$. Esto hace $s$ una mejor estimación de $\sigma$. Hay una explicación matemática para esto, que se explica en la mayoría de los libros de texto de estadística, pero no la cubrimos aquí.
 
-La función `sd` en R calcula la desviación estándar de la muestra:
+La función `sd` de R calcula la desviación estándar de la muestra:
 
 ```{r}
 sd(one_poll_per_pollster$spread)
 ```
 
-Ahora estamos listos para formar un nuevo intervalo de confianza basado en nuestro nuevo modelo basado en datos:
+Ahora estamos listos para formar un nuevo intervalo de confianza basado en nuestro nuevo modelo y en datos:
 
 ```{r}
 results <- one_poll_per_pollster %>%
@@ -318,7 +318,7 @@ end = avg + 1.96 * se)
 round(results * 100, 1)
 ```
 
-Nuestro intervalo de confianza ahora es más amplio ya que incorpora la variabilidad del encuestador. Incluye el resultado de la noche electoral de 2.1%. Además, tengan en cuenta que era lo suficientemente pequeño como para no incluir 0, lo que significa que estábamos seguros de que Clinton ganaría el voto popular.
+Nuestro intervalo de confianza ahora es más amplio ya que incorpora la variabilidad de encuestador. Incluye el resultado de la noche electoral de 2.1%. Además, tengan en cuenta que era lo suficientemente pequeño como para no incluir 0, lo que significa que estábamos seguros de que Clinton ganaría el voto popular.
 
 ¿Estamos listos ahora para declarar una probabilidad de que Clinton gane el voto popular? Aún no. En nuestro modelo $d$ es un parámetro fijo, por lo que no podemos hablar de probabilidades. Para proporcionar probabilidades, necesitaremos aprender sobre las estadísticas bayesianas.
 
@@ -343,7 +343,7 @@ pull(height)
 3\. ¿Qué nos dice la teoría sobre el promedio de la muestra? $\bar{X}$ y como se relaciona con $\mu$?
 
 a. Es prácticamente idéntico a $\mu$.
-b. Es una variable aleatoria con valor esperado. $\mu$ y error estándar $\sigma/\sqrt{N}$.
+b. Es una variable aleatoria con valor esperado $\mu$ y error estándar $\sigma/\sqrt{N}$.
 c. Es una variable aleatoria con valor esperado $\mu$ y error estándar $\sigma$.
 d. No contiene información.
 
@@ -368,7 +368,7 @@ state == "U.S.") %>%
 mutate(spread = rawpoll_clinton/100 - rawpoll_trump/100)
 ```
 
-Queremos responder a la pregunta: ¿hay un sesgo en la encuesta? Haga un gráfico que muestre los diferenciales para cada encuesta.
+Queremos contestar la pregunta: ¿hay un sesgo en la encuesta? Haga un gráfico que muestre la diferencia para cada encuesta.
 
 
 8\. Los datos parecen sugerir que hay una diferencia. Sin embargo, estos datos están sujetos a variabilidad. Quizás las diferencias que observamos se deben al azar.
@@ -381,19 +381,19 @@ $$
 Y_{i,j} = d + b_i + \varepsilon_{i,j}
 $$
 
-con $i=1,2$ indexando los dos encuestadores, $b_i$ el sesgo para el encuestador $i$ y $\varepsilon_{ij}$ representando variabilidad aleatoria de las encuestas. Suponemos que los $\varepsilon$ son independientes entre sí, tienen valor esperado $0$ y desviación estándar $\sigma_i$ independientemente de $j$.
+con $i=1,2$ indexando los dos encuestadores, $b_i$ el sesgo para el encuestador $i$ y $\varepsilon_{ij}$ representando la variabilidad aleatoria de las encuestas. Suponemos que los $\varepsilon$ son independientes entre sí, tienen valor esperado $0$ y desviación estándar $\sigma_i$ independientemente de $j$.
 
 ¿Cuál de las siguientes mejor representa nuestra pregunta?
 
 a. ¿Es $\varepsilon_{i,j}$ = 0?
 b. ¿Cuán cerca están los $Y_{i,j}$ a $d$?
 c. ¿Es $b_1 \neq b_2$?
-d. ¿Son $b_1 = 0$ y $b_2 = 0$ ?
+d. ¿Son $b_1 = 0$ y $b_2 = 0$?
 
 9\. En el lado derecho de este modelo solo $\varepsilon_{i,j}$ es una variable aleatoria. Los otros dos son constantes. ¿Cuál es el valor esperado de $Y_{1,j}$?
 
 
-10\. Supongamos que definimos $\bar{Y}_1$ como el promedio de los resultados de la encuesta del primer encuestador, $Y_{1,1},\dots,Y_{1,N_1}$ con $N_1$ el número de encuestas realizadas por el primer encuestador:
+10\. [fix eng chnage first poll to pollseter] Supongamos que definimos $\bar{Y}_1$ como el promedio de los resultados de la encuesta del primer encuestador, $Y_{1,1},\dots,Y_{1,N_1}$ con $N_1$ el número de encuestas realizadas por el primer encuestador:
 
 ```{r, eval=FALSE}
 polls %>%
@@ -420,13 +420,13 @@ summarize(N_1 = n())
 17\. ¿Qué nos dice el CLT sobre la distribución de $\bar{Y}_2 - \bar{Y}_1$?
 
 a. Nada porque este no es el promedio de una muestra.
-b. Porque el $Y_{ij}$ son aproximadamente normales, también lo son los promedios.
+b. Como el $Y_{ij}$ son aproximadamente normales, también lo son los promedios.
 c. Como $\bar{Y}_2$ y $\bar{Y}_1$ son promedios de muestras, si suponemos que $N_2$ y $N_1$ son lo suficientemente grandes, cada uno es aproximadamente normal. La diferencia de normales también es normal.
 d. Los datos no son 0 o 1, por lo que el CLT no se aplica.
 
 18\. Hemos construido una variable aleatoria que tiene un valor esperado $b_2 - b_1$, la diferencia de sesgo del encuestador. Si nuestro modelo se cumple, entonces esta variable aleatoria tiene una distribución aproximadamente normal y sabemos su error estándar. El error estándar depende de $\sigma_1$ y $\sigma_2$, pero podemos usar las desviaciones estándar de muestra que calculamos anteriormente. Comenzamos preguntando: ¿$b_2 - b_1$ es diferente de 0? Use toda la información que hemos aprendido anteriormente para construir un intervalo de confianza de 95% para la diferencia $b_2$ y $b_1$.
 
-19\. El intervalo de confianza nos dice que hay un efecto encuestador relativamente fuerte que resulta en una diferencia de aproximadamente 5%. La variabilidad aleatoria no parece explicarlo. Podemos calcular un valor p para transmitir el hecho de que el azar no lo explica. ¿Cuál es el valor p?
+19\. El intervalo de confianza nos dice que hay un efecto encuestador relativamente fuerte que resulta en una diferencia de aproximadamente 5%. La variabilidad aleatoria no parece explicarlo. Podemos calcular un valor p para explicar el hecho de que el azar no lo explica. ¿Cuál es el valor p?
 
 
 20\. La estadística formada al dividir nuestra estimación de $b_2-b_1$ por su error estándar estimado:
@@ -435,7 +435,7 @@ $$
 \frac{\bar{Y}_2 - \bar{Y}_1}{\sqrt{s_2^2/N_2 + s_1^2/N_1}}
 $$
 
-se llama la estadística t. Ahora observe que tenemos más de dos encuestadores. También podemos probar para el efecto de encuestador utilizando todos los encuestadores, no solo dos. La idea es comparar la variabilidad entre encuestas con la variabilidad dentro de las encuestas. De hecho, podemos construir estadísticas para probar los efectos y aproximar su distribución. El área de estadísticas que hace esto se llama Análisis de la varianza o ANOVA por sus siglas en inglés. No lo cubrimos aquí, pero ANOVA provee un conjunto muy útil de herramientas para responder a preguntas como: ¿hay un efecto encuestador?
+se llama la estadística t. Ahora observe que tenemos más de dos encuestadores. También podemos probar para el efecto de encuestador utilizando todos los encuestadores, no solo dos. La idea es comparar la variabilidad entre encuestas con la variabilidad dentro de las encuestas. De hecho, podemos construir estadísticas para probar los efectos y aproximar su distribución. El área de estadísticas que hace esto se llama Análisis de la varianza o ANOVA por sus siglas en inglés. No lo cubrimos aquí, pero ANOVA provee un set muy útil de herramientas para responder a preguntas como: ¿hay un efecto encuestador?
 
 Para este ejercicio, cree una nueva tabla:
 

@@ -33,9 +33,9 @@ d &\sim N(\mu, \tau^2) \mbox{ describes our best guess had we not seen any polli
 \end{aligned}
 $$
 
-Para hacer nuestro mejor pronóstico, notamos que antes de que haya datos de encuestas disponibles, podemos usar fuentes de datos que no son datos de encuestas. Un enfoque popular es utilizar lo que los encuestadores llaman _fundamentos_, que se basan en características que históricamente parecen tener un efecto a favor o en contra del partido en poder como, por ejemplo, el estado de la economía. No usaremos estos aquí. En cambio, usaremos $\mu = 0$, que se interpreta como un modelo que no ofrece información sobre quién ganará. Para la desviación estándar, usaremos datos históricos recientes que muestran que el ganador del voto popular tiene una variabilidad promedio de aproximadamente 3.5%. Por lo tanto, establecemos $\tau = 0.035$.
+Para hacer nuestro mejor pronóstico, notamos que antes de que haya datos de encuestas disponibles, podemos usar fuentes de datos que no son datos de encuestas. Un enfoque popular es utilizar lo que los encuestadores llaman _fundamentals_, que se basan en características que históricamente parecen tener un efecto a favor o en contra del partido en poder como, por ejemplo, el estado de la economía. No usaremos estos aquí. En cambio, usaremos $\mu = 0$, que se interpreta como un modelo que no ofrece información sobre quién ganará. Para la desviación estándar, usaremos datos históricos recientes que muestran que el ganador del voto popular tiene una variabilidad promedio de aproximadamente 3.5%. Por lo tanto, fijamos $\tau = 0.035$.
 
-Ahora podemos usar las fórmulas para la distribución posterior del parámetro $d$: la probabilidad de que $d>0$ dado los datos de la encuesta observada:
+Ahora podemos usar las fórmulas para la distribución a posteriori del parámetro $d$: la probabilidad de que $d>0$ dado los datos de la encuesta observada:
 
 ```{r}
 mu <- 0
@@ -51,13 +51,13 @@ posterior_mean
 posterior_se
 ```
 
-Para hacer una declaración de probabilidad, usamos el hecho de que la distribución posterior también es normal. Y tenemos un intervalo creíble de:
+Para hacer una declaración de probabilidad, usamos el hecho de que la distribución a posteriori también es normal. Y tenemos un intervalo de confianza de Bayes de:
 
 ```{r}
 posterior_mean + c(-1.96, 1.96)*posterior_se
 ```
 
-La probabilidad posterior $\mbox{Pr}(d>0 \mid \bar{X})$ se puede calcular así:
+La probabilidad a posteriori $\mbox{Pr}(d>0 \mid \bar{X})$ se puede calcular así:
 
 ```{r}
 1 - pnorm(0, posterior_mean, posterior_se)
@@ -67,9 +67,9 @@ Esto dice que estamos 100% seguros de que Clinton ganará el voto popular, lo qu
 
 ### El sesgo general
 
-Una vez finalizadas las elecciones, se puede observar la diferencia entre las predicciones de los encuestadores y el resultado real. Una observación importante que nuestro modelo no considera es que es común ver un sesgo general que afecta a muchos encuestadores de la misma manera, que entonces conduce a que los datos observados estén correlacionados. No hay una buena explicación para esto, pero se observa en datos históricos: en una elección, el promedio de las encuestas favorece a los demócratas por 2%, luego en las siguientes elecciones favorece a los republicanos por 1%, entonces en las próximas elecciones no hay sesgo, luego en la siguiente los republicanos se son los favoritos por 3%, y así sucesivamente. En 2016, las encuestas favorecían/favorecieron a los demócratas por 1-2%.
+Una vez finalizadas las elecciones, se puede observar la diferencia entre las predicciones de los encuestadores y el resultado real. Una observación importante que nuestro modelo no considera es que es común ver un sesgo general que afecta a muchos encuestadores de la misma manera, que entonces conduce a que los datos observados estén correlacionados. No hay una buena explicación para esto, pero se observa en datos históricos: en una elección, el promedio de las encuestas favorece a los demócratas por 2%, luego en las siguientes elecciones favorece a los republicanos por 1%, entonces en las próximas elecciones no hay sesgo, luego en la siguiente los republicanos son los favoritos por 3%, y así sucesivamente. En 2016, las encuestas favorecieron a los demócratas por 1-2%.
 
-Aunque sabemos que este sesgo afecta nuestras encuestas, no tenemos forma de saber cuán grande es este sesgo hasta la noche de las elecciones. Por lo tanto, no podemos corregir nuestras encuestas en consecuencia. Lo que podemos hacer es incluir un término en nuestro modelo que explique esta variabilidad.
+Aunque sabemos que este sesgo afecta a nuestras encuestas, no tenemos forma de saber cuán grande es este sesgo hasta la noche de las elecciones. Como consecuencia, no podemos corregir nuestras encuestas para tomar este sesgo en cuenta. Lo que podemos hacer es incluir un término en nuestro modelo que explique esta variabilidad.
 
 ### Representaciones matemáticas de modelos.
 
@@ -78,7 +78,7 @@ Supongamos que estamos recopilando datos de un encuestador y suponemos que no ha
 $$
 X_j = d + \varepsilon_j.
 $$
-Usamos el índice $j$ para representar las diferentes encuestas y definimos $\varepsilon_j$ para ser una variable aleatoria que explica la variabilidad entre encuestas individuales introducida por el error de muestreo. Para hacer esto, suponemos que su promedio es 0 y error estándar es $2 \sqrt{p(1-p)/N}$. Si $d$ es 2.1 y el tamaño de la muestra para estas encuestas es de 2,000, podemos simular $J=6$ puntos de datos de este modelo así:
+Usamos el índice $j$ para representar las diferentes encuestas y definimos $\varepsilon_j$ para ser una variable aleatoria que explica la variabilidad entre encuestas individuales introducida por el error de muestreo. Para hacer esto, suponemos que su promedio es 0 y su error estándar es $2 \sqrt{p(1-p)/N}$. Si $d$ es 2.1 y el tamaño de la muestra para estas encuestas es de 2,000, podemos simular $J=6$ puntos de datos de este modelo así:
 
 ```{r}
 set.seed(3)
@@ -89,7 +89,7 @@ p <- (d + 1)/2
 X <- d + rnorm(J, 0, 2 * sqrt(p * (1 - p)/ N))
 ```
 
-Ahora supongamos que tenemos $J=6$ puntos de datos de $I=5$ diferentes encuestadores. Para representar esto, necesitamos dos índices, uno para el encuestador y otro para las encuestas que cada encuestador toma. Usamos $X_{ij}$ con $i$ representando al encuestador y $j$ representando la encuesta $j$ de ese encuestador. Si aplicamos el mismo modelo, escribimos:
+Ahora supongamos que tenemos $J=6$ puntos de datos de $I=5$ diferentes encuestadores. Para representar esto, necesitamos dos índices, uno para el encuestador y otro para las encuestas que cada encuestador toma. Usamos $X_{ij}$ con $i$ representando al encuestador y $j$ representando la encuesta número $j$ de ese encuestador. Si aplicamos el mismo modelo, escribimos:
 
 
 $$
@@ -208,7 +208,7 @@ Hasta ahora nos hemos enfocado en el voto popular. Pero en Estados Unidos, las e
 results_us_election_2016 %>% top_n(5, electoral_votes)
 ```
 
-Con algunas excepciones menores que no discutimos, los votos electorales se ganan todo o nada. Por ejemplo, si su candidato gana California con solo 1 voto, aún obtiene los 55 votos electorales. Esto significa que al ganar algunos estados grandes por un amplio margen, pero al perder muchos estados pequeños por pequeños márgenes, se puede ganar el voto popular, pero perder el colegio electoral que es lo que decide el ganador. Esto sucedió en 1876, 1888, 2000 y 2016. La idea detrás de esto es evitar que algunos estados grandes tengan el poder de dominar las elecciones presidenciales. Sin embargo, muchas personas en Estados Unidos consideran que el colegio electoral es injusto y les gustaría abolirlo.
+Con algunas excepciones menores que no discutimos, los votos electorales se ganan todo o nada. Por ejemplo, si un candidato gana California con solo 1 voto, aún obtiene los 55 votos electorales. Esto significa que al ganar algunos estados grandes por un amplio margen, pero al perder muchos estados pequeños por pequeños márgenes, se puede ganar el voto popular, pero perder el colegio electoral que es lo que decide el ganador. Esto sucedió en 1876, 1888, 2000 y 2016. La idea detrás de esto es evitar que algunos estados grandes tengan el poder de dominar las elecciones presidenciales. Sin embargo, muchas personas en Estados Unidos consideran que el colegio electoral es injusto y les gustaría abolirlo.
 
 Ahora estamos listos para predecir el resultado del colegio electoral para 2016. Comenzamos agregando los resultados de una encuesta realizada durante la última semana antes de las elecciones. Utilizamos `str_detect`, una función que discutiremos más adelante en la Sección \@ref(stringr), para eliminar encuestas que cubren solo parte de un estado. 
 
@@ -224,7 +224,7 @@ summarize(avg = mean(spread), sd = sd(spread), n = n()) %>%
 mutate(state = as.character(state))
 ```
 
-Aquí están las cinco estados con los resultados más cercanos según las encuestas:
+Aquí están los cinco estados con los resultados más cerrados según las encuestas:
 
 ```{r}
 results %>% arrange(abs(avg))

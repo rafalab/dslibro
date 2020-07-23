@@ -95,13 +95,13 @@ De esta tabla, vemos que la proporción de pruebas positivas que tienen la enfer
 
 José Iglesias es un jugador de béisbol profesional. En abril de 2013, cuando comenzaba su carrera, se desempeñaba bastante bien:
 
-El | Mes | En los murciélagos | H | AVG |
+Month | Mes | At Bats | H | AVG |
 |-------|---------|---|-----|
-El | Abril | 20 | 9 | .450 |
+| Abril | 20 | 9 | .450 |
 
-La estadística del promedio de bateo (`AVG`) es una forma de medir el éxito. En términos generales, nos dice la tasa de éxito al batear. Un `AVG` de .450 significa que José ha tenido éxito el 45% de las veces que ha bateado (`At Bats`) que es bastante alto, históricamente hablando. ¡Tengan en cuenta que nadie ha terminado una temporada con un `AVG` de .400 o más desde que Ted Williams lo hizo en 1941! Para ilustrar la forma en que los modelos jerárquicos son poderosos, intentaremos predecir el promedio de bateo de José al final de la temporada. Noten que en una temporada típica, los jugadores tienen alrededor de 500 turnos al bate.
+La estadística del promedio de bateo (`AVG`) es una forma de medir el éxito. En términos generales, nos dice la tasa de éxito al batear. Un `AVG` de .450 significa que José ha tenido éxito el 45% de las veces que ha bateado (`At Bats`) que es bastante alto, históricamente hablando. Tengan en cuenta que nadie ha terminado una temporada con un `AVG` de .400 o más desde que Ted Williams lo hizo en 1941. Para ilustrar la forma en que los modelos jerárquicos son eficaces, intentaremos predecir el promedio de bateo de José al final de la temporada. Recuerden que en una temporada típica, los jugadores tienen alrededor de 500 turnos al bate.
 
-Con las técnicas que hemos aprendido hasta ahora, denominadas _técnicas frecuentistas_, lo mejor que podemos hacer es proporcionar un intervalo de confianza. Podemos pensar en los resultados de golpear como un binomio con una tasa de éxito de $p$. Entonces, si la tasa de éxito es de .450, el error estándar de solo 20 en los bates es:
+Con las técnicas que hemos aprendido hasta ahora, denominadas _técnicas frecuentistas_, lo mejor que podemos hacer es proporcionar un intervalo de confianza. Podemos pensar en los resultados de batear como un binomio con una tasa de éxito de $p$. Entonces, si la tasa de éxito es .450, el error estándar de solo 20 turnos al bate (_at bats_ en inglés):
 
 $$
 \sqrt{\frac{.450 (1-.450)}{20}}=.111
@@ -109,11 +109,11 @@ $$
 
 Esto significa que nuestro intervalo de confianza es $.450 - .222$ a $.450 + .222$ o $.228$ a $.672$.
 
-Esta predicción tiene dos problemas. Primero, es muy grande, por lo que no es muy útil. Segundo, está centrado en .450, lo que implica que nuestra mejor suposición es que este nuevo jugador romperá el récord de Ted Williams.
+Esta predicción tiene dos problemas. Primero, es muy grande, por lo que no es muy útil. Segundo, está centrada en .450, lo que implica que nuestra mejor conjetura es que este nuevo jugador romperá el récord de Ted Williams.
 
-Si sigue el béisbol, esta última afirmación parecerá incorrecta y esto se debe a que está utilizando implícitamente un modelo jerárquico que tiene en cuenta la información de años de seguir el béisbol. Aquí mostramos cómo podemos cuantificar esta intuición.
+Sin embargo, para los fanáticos del béisbol, esta última afirmación no tiene sentido. Los fanáticos implícitamente emplean un modelo jerárquico que toma en cuenta la información de años de seguir el béisbol. Aquí mostramos cómo podemos cuantificar esta intuición.
 
-Primero, exploremos la distribución de los promedios de bateo para todos los jugadores con más de 500 al bate durante las tres temporadas anteriores:
+Primero, exploremos la distribución de los promedios de bateo para todos los jugadores con más de 500 turnos al bate durante las tres temporadas anteriores:
 
 ```{r batting-averages-histogram, echo=FALSE, out.width="100%", fig.height=3, message=FALSE, warning=FALSE}
 library(tidyverse)
@@ -126,20 +126,20 @@ geom_histogram(color="black", binwidth = .01) +
 facet_wrap( ~ yearID)
 ```
 
-El jugador promedio tenía un `AVG` de .275 y la desviación estándar de la población de jugadores fue de 0.027. Entonces podemos ver que .450 sería una anomalía, ya que está a más de seis desviaciones estándar de la media.
+El jugador promedio tuvo un `AVG` de .275 y la desviación estándar de la población de jugadores fue 0.027. Entonces podemos ver que .450 sería una anomalía, ya que está a más de seis desviaciones estándar de la media.
 
-Entonces, ¿tiene suerte José o es el mejor bateador visto en los últimos 50 años? Quizás sea una combinación de suerte y talento. ¿Pero cuánto de cada uno? Si nos convencemos de que tiene suerte, deberíamos cambiarlo por un equipo que confíe en la observación de .450 y tal vez esté sobreestimando su potencial.
+Entonces, ¿tiene suerte José o es el mejor bateador visto en los últimos 50 años? Quizás sea una combinación de suerte y talento. ¿Pero cuánto de cada uno? Si nos convencemos de que tiene suerte, deberíamos cambiarlo a otro equipo que confíe en la observación de .450 y tal vez sobreestime su potencial.
 
 
 ## Modelos jerárquicos
 
-El modelo jerárquico proporciona una descripción matemática de cómo llegamos a ver la observación de .450. Primero, elegimos un jugador al azar con una habilidad intrínseca resumida por, por ejemplo, $p$. Luego vemos 20 resultados aleatorios con probabilidad de éxito $p$.
+El modelo jerárquico ofrece una descripción matemática de cómo llegamos a ver la observación de .450. Primero, elegimos un jugador al azar con una habilidad intrínseca resumida por, por ejemplo, $p$. Luego vemos 20 resultados aleatorios con probabilidad de éxito $p$.
 
-Utilizamos un modelo para representar dos niveles de variabilidad en nuestros datos. Primero, a cada jugador se le asigna una habilidad natural para golpear. Usaremos el símbolo $p$ para representar esta habilidad. Tu puedes pensar en $p$ como el promedio de bateo al que convergerías si este jugador en particular bateara una y otra vez.
+Utilizamos un modelo para representar dos niveles de variabilidad en nuestros datos. Primero, a cada jugador se le asigna una habilidad natural para batear. Usaremos el símbolo $p$ para representar esta habilidad. Pueden pensar en $p$ como el promedio de bateo al que convergería si este jugador en particular bateara repetidas veces.
 
-En base a las parcelas que mostramos anteriormente, asumimos que $p$ tiene una distribución normal. Con valor esperado .270 y error estándar 0.027.
+De acuerdo con los graficos que mostramos anteriormente, asumimos que $p$ tiene una distribución normal, con valor esperado .270 y error estándar 0.027.
 
-Ahora el segundo nivel de variabilidad tiene que ver con la suerte al batear. Independientemente de lo bueno que sea el jugador, a veces tienes mala suerte y a veces tienes buena suerte. En cada turno al bate, este jugador tiene una probabilidad de éxito $p$. Si sumamos estos éxitos y fracasos, entonces el CLT nos dice que el promedio observado, llámelo $Y$, tiene una distribución normal con el valor esperado $p$ y error estándar $\sqrt{p(1-p)/N}$ con $N$ el número de al bate
+Ahora el segundo nivel de variabilidad tiene que ver con la suerte al batear. Independientemente de lo bueno que sea el jugador, a veces tiene mala suerte y a veces tiene buena suerte. En cada turno al bate, este jugador tiene una probabilidad de éxito $p$. Si sumamos estos éxitos y fracasos, entonces el CLT nos dice que el promedio observado, llámelo $Y$, tiene una distribución normal con el valor esperado $p$ y error estándar $\sqrt{p(1-p)/N}$ con $N$ el número de turnos al bate.
 
 Los libros de texto estadísticos escribirán el modelo así:
 $$
@@ -148,7 +148,7 @@ p &\sim N(\mu, \tau^2) \\
 Y \mid p &\sim N(p, \sigma^2)
 \end{aligned}
 $$
-Aquí el $\sim$ el símbolo nos dice que la variable aleatoria a la izquierda del símbolo sigue la distribución a la derecha y $N(a,b^2)$ representa la distribución normal con media $a$ y desviación estándar $b$. Los $\mid$ se lee como _conditioned on_, y significa que estamos tratando la variable aleatoria a la derecha del símbolo como se conoce. Nos referimos al modelo como jerárquico porque necesitamos saber $p$, el primer nivel, para modelar $Y$, el segundo nivel. En nuestro ejemplo, el primer nivel describe la aleatoriedad en la asignación de talento a un jugador y el segundo describe la aleatoriedad en el rendimiento de este jugador en particular una vez que hemos fijado el parámetro de talento. En un marco bayesiano, el primer nivel se llama _distribución anterior_ y el segundo la _distribución de muestreo_. El análisis de datos que hemos realizado aquí sugiere que establezcamos $\mu = .270$, $\tau = 0.027$ y $\sigma^2 = p(1-p)/N$.
+Aquí el símbolo $\sim$ nos dice que la variable aleatoria a la izquierda del símbolo sigue la distribución a la derecha y $N(a,b^2)$ representa la distribución normal con media $a$ y desviación estándar $b$. El $\mid$ se lee como _condicionado_, y significa que estamos tratando la variable aleatoria a la derecha del símbolo como si se conociera su valor. Nos referimos al modelo como jerárquico porque necesitamos saber $p$, el primer nivel, para modelar $Y$, el segundo nivel. En nuestro ejemplo, el primer nivel describe la aleatoriedad en la asignación de talento a un jugador y en el segundo se describe la aleatoriedad en el desempeño de este jugador una vez fijemos el parámetro de talento. En un marco bayesiano, el primer nivel se llama _distribución a priori_ y el segundo la _distribución muestral_. El análisis de datos que hemos realizado aquí sugiere que establezcamos $\mu = .270$, $\tau = 0.027$ y $\sigma^2 = p(1-p)/N$.
 
 Ahora, usemos este modelo para los datos de José. Supongamos que queremos predecir su habilidad innata en la forma de su verdadero promedio de bateo $p$. Este sería el modelo jerárquico para nuestros datos:
 
@@ -159,7 +159,7 @@ Y \mid p &\sim N(p, .111^2)
 \end{aligned}
 $$
 
-Ahora estamos listos para calcular una distribución a posteriori para resumir nuestra predicción de $p$. La versión continua de la regla de Bayes se puede usar aquí para derivar la _función de probabilidad a posteriori_, que es la distribución de $p$ suponiendo que observemos $Y=y$. En nuestro caso, podemos demostrar que cuando arreglamos $Y=y$, $p$ sigue una distribución normal con el valor esperado:
+Ahora estamos listos para calcular una distribución a posteriori para resumir nuestra predicción de $p$. La versión continua de la regla de Bayes se puede usar aquí para derivar la _función de probabilidad a posteriori_, que es la distribución de $p$ suponiendo que observemos $Y=y$. En nuestro caso, podemos demostrar que cuando fijamos $Y=y$, $p$ sigue una distribución normal con el valor esperado:
 
 $$
 \begin{aligned}
@@ -169,7 +169,7 @@ $$
 \end{aligned}
 $$
 
-Este es un promedio ponderado del promedio de la población. $\mu$ y los datos observados $y$. El peso depende de la DE de la población. $\tau$ y la SD de nuestros datos observados $\sigma$. Este promedio ponderado a veces se denomina _shrinking_ porque _shrinks_ las estimaciones hacia una media previa. En el caso de José Iglesias, tenemos:
+Este es un promedio ponderado del promedio de la población $\mu$ y los datos observados $y$. El peso depende de la SD de la población $\tau$ y de la SD de nuestros datos observados $\sigma$. Este promedio ponderado a veces se denomina _contracción_ (_shrinking_ en inglés) porque _contrae_ las estimaciones hacia la media de la distribución a priori. En el caso de José Iglesias tenemos:
 
 $$
 \begin{aligned}
@@ -180,61 +180,59 @@ B &=\frac{.111^2}{.111^2 + .027^2} = 0.944\\
 \end{aligned}
 $$
 
-No mostramos la derivación aquí, pero el error estándar puede ser:
+No mostramos la derivación aquí, pero el error estándar se puede demostrar que es:
 
 $$
 \mbox{SE}(p\mid y)^2 = \frac{1}{1/\sigma^2+1/\tau^2}
 = \frac{1}{1/.111^2 + 1/.027^2} = 0.00069
 $$
-y la desviación estándar es por lo tanto $0.026$. Entonces comenzamos con un intervalo de confianza frecuente del 95% que ignoraba los datos de otros jugadores y resumía solo los datos de José: .450 $\pm$ 0.220. Luego usamos un enfoque bayesiano que incorporaba datos de otros jugadores y otros años para obtener una probabilidad a posteriori. En realidad, esto se conoce como un enfoque empírico de Bayes porque utilizamos datos para construir el anterior. [fix "from the posterior" check sent] Desde la parte a posteriori, podemos informar lo que se llama un _intervalo creíble_ de 95% informando una región, centrada en la media, con una probabilidad de 95% de ocurrir. En nuestro caso, esto resulta ser: .285 $\pm$ 0.052.
+y, por lo tanto, la desviación estándar es $0.026$. Entonces comenzamos con un intervalo de confianza frecuentista de 95% que ignoraba los datos de otros jugadores y resumía solo los datos de José: .450 $\pm$ 0.220. Luego usamos un enfoque bayesiano que incorporaba datos de otros jugadores y otros años para obtener una probabilidad a posteriori. De hecho, esto se conoce como un enfoque empírico bayesiano porque utilizamos datos para construir la distribución a priori. Desde la distribución a posteriori, podemos calcular lo que se llama un _intervalo de confianza de Bayes_ o _intervalo de Bayes_ (_credible interval_ en inglés) de 95%. Para hacer esto, construimos una región, centrada en la media, con una probabilidad de 95% de ocurrir. En nuestro caso, esto resulta ser: .285 $\pm$ 0.052.
 
-El intervalo creíble bayesiano sugiere que si otro equipo está impresionado por la observación de .450, deberíamos considerar intercambiar a José, ya que pronosticamos que estará ligeramente por encima del promedio. Curiosamente, los Medias Rojas cambiaron a José a los Tigres de Detroit en julio. Estos son los promedios de bateo de José Iglesias para los próximos cinco meses:
+El intervalo de Bayes sugiere que si otro equipo está impresionado por el promedio observado de .450, deberíamos considerar cambiar a José, ya que pronosticamos que estará ligeramente por encima del promedio. Curiosamente, los Red Sox cambiaron a José a los Detroit Tigers en julio. Estos son los promedios de bateo de José Iglesias para los próximos cinco meses:
 
-| Mes | Al bate | Hits | AVG |
+| Mes | At Bat | Hits | AVG |
 |-----|------|-----|-----|
-| Abril | 20 | 9 | .450 |
-| Mayo | 26 | 11 | .423 |
-| Junio | 86 | 34 | .395 |
-| Julio | 83 | 17 | .205 |
-| Agosto | 85 | 25 | .294 |
-| Septiembre | 50 | 10 | .200 |
+| abril | 20 | 9 | .450 |
+| mayo | 26 | 11 | .423 |
+| junio | 86 | 34 | .395 |
+| julio | 83 | 17 | .205 |
+| agosto | 85 | 25 | .294 |
+| septiembre | 50 | 10 | .200 |
 | Total sin abril | 330 | 97 | .293 |
 
-Aunque ambos intervalos incluyeron el promedio final de bateo, el intervalo creíble bayesiano proporcionó una predicción mucho más precisa. En particular, predijo que no sería tan bueno durante el resto de la temporada.
+Aunque ambos intervalos incluyeron el promedio final de bateo, el intervalo de Bayes ofreció una predicción mucho más precisa. En particular, predijo que no sería tan bueno durante el resto de la temporada.
 
 ## Ejercicios
 
-1\. En 1999, en Inglaterra, Sally Clark^[https://en.wikipedia.org/wiki/Sally_Clark] fue declarada culpable del asesinato de dos de sus hijos. Ambos bebés fueron encontrados muertos por la mañana, uno en 1996 y otro en 1998. En ambos casos, afirmó que la causa de la muerte fue el síndrome de muerte súbita del lactante (SMSL). No se encontró evidencia de daño físico en los dos bebés, por lo que la principal evidencia en su contra fue el testimonio del profesor Sir Roy Meadow, quien testificó que las posibilidades de que dos bebés murieran de SMSL eran de 1 en 73 millones. Llegó a esta cifra al encontrar que la tasa de SMSL era de 1 en 8,500 y luego calcular que la posibilidad de dos casos de SMSL era de 8,500 $\times$ 8,500 $\approx$ 73 millones. ¿Con cuál de los siguientes está de acuerdo?
+1\. En 1999, en Inglaterra, Sally Clark^[https://en.wikipedia.org/wiki/Sally_Clark] fue declarada culpable del asesinato de dos de sus hijos. Ambos niños fueron encontrados muertos por la mañana, uno en 1996 y otro en 1998. En ambos casos, Clark afirmó que la causa de la muerte fue el Síndrome de muerte súbita del lactante (SIDS o _Sudden Infant Death Syndrome_ en inglés). A ninguno de los niños le encontraron lesiones físicas, por lo que la principal evidencia en su contra fue el testimonio del profesor Sir Roy Meadow, quien testificó que las posibilidades de que dos niños de la misma madre murieran de SIDS eran de 1 en 73 millones. Llegó a esta cifra al encontrar que la tasa de SIDS era de 1 en 8,500 y luego calcular que la posibilidad de dos casos de SIDS era 8,500 $\times$ 8,500 $\approx$ 73 millones. ¿Con cuál de las siguientes declaraciones está de acuerdo?
 
-a. Sir Meadow supuso que la probabilidad de que el segundo hijo fuera afectado por el SMSL era independiente de la del primer hijo afectado, ignorando así las posibles causas genéticas. Si la genética juega un papel, entonces: $\mbox{Pr}(\mbox{second case of SIDS} \mid \mbox{first case of SIDS}) < \mbox{P}r(\mbox{first case of SIDS})$.
-si. Nada. La regla de multiplicación siempre se aplica de esta manera: $\mbox{Pr}(A \mbox{ and } B) =\mbox{Pr}(A)\mbox{Pr}(B)$
+a. Sir Meadow supuso que la probabilidad de que el segundo hijo fuera afectado por el SIDS era independiente de la del primer hijo afectado, ignorando así las posibles causas genéticas. Si la genética juega un papel, entonces: $\mbox{Pr}(\mbox{second case of SIDS} \mid \mbox{first case of SIDS}) < \mbox{P}r(\mbox{first case of SIDS})$.
+b. Nada. La regla de multiplicación siempre se aplica de esta manera: $\mbox{Pr}(A \mbox{ and } B) =\mbox{Pr}(A)\mbox{Pr}(B)$
 c. Sir Meadow es un experto y debemos confiar en sus cálculos.
-re. Los números no mienten.
+d. Los números no mienten.
 
 
-2\. Supongamos que de hecho hay un componente genético para el SMSL y la probabilidad de $\mbox{Pr}(\mbox{second case of SIDS} \mid \mbox{first case of SIDS}) = 1/100$, es mucho mayor que 1 en 8,500. ¿Cuál es la probabilidad de que sus dos hijos mueran de SMSL?
+2\. Supongamos que definitivamente hay un componente genético para el SIDS y la probabilidad de $\mbox{Pr}(\mbox{second case of SIDS} \mid \mbox{first case of SIDS}) = 1/100$, es mucho mayor que 1 en 8,500. ¿Cuál es la probabilidad de que sus dos hijos mueran de SIDS?
 
-3\. Muchos informes de prensa declararon que el experto afirmó que la probabilidad de que Sally Clark sea inocente es de 1 en 73 millones. Quizás el jurado y el juez también interpretaron el testimonio de esta manera. Esta probabilidad se puede escribir como la probabilidad de que una madre sea un psicópata asesino de hijos, dado que
-dos de sus hijos son encontrados muertos sin evidencia de daño físico.
-Según la regla de Bayes, ¿qué es esto?
+3\. Muchos informes de prensa declararon que el experto afirmó que la probabilidad de que Sally Clark sea inocente es 1 en 73 millones. Quizás el jurado y el juez también interpretaron el testimonio de esta manera. Esta probabilidad se puede escribir como la probabilidad de que una madre sea una psicópata asesina de hijos, dado que dos de sus hijos se encuentran muertos sin lesiones físicas. [fix que es que? esta probabilidad? fix eng?] Según la regla de Bayes, ¿qué es esto?
 
-4\. Suponga que la posibilidad de que un psicópata asesino de hijos encuentre la manera de matar a sus hijos, sin dejar evidencia de daño físico, es:
+4\. Suponga que la probabilidad de que una psicópata asesina de hijos encuentre la manera de matar a sus hijos, sin dejar evidencia física, es:
 
 $$
 \mbox{Pr}(A \mid B) = 0.50
 $$
 
-con A = dos de sus hijos son encontrados muertos sin evidencia de daño físico y B = una madre es una psicópata asesina de hijos = 0.50. Suponga que la tasa de madres psicópatas que asesinan hijos es de 1 en 1,000,000. Según el teorema de Bayes, ¿cuál es la probabilidad de $\mbox{Pr}(B \mid A)$ ?
+con A = dos de sus hijos los encuentran muertos sin lesiones físicas y B = una madre es una psicópata asesina de hijos = 0.50. Suponga que la tasa de madres psicópatas que asesinan hijos es  en 1,000,000. Según el teorema de Bayes, ¿cuál es la probabilidad de $\mbox{Pr}(B \mid A)$ ?
 
 
-5/. Después de que Sally Clark fue declarada culpable, la Royal Statistical Society emitió un comunicado diciendo que "no había base estadística" para el reclamo del experto. Expresaron preocupación por el "mal uso de las estadísticas en los tribunales". Finalmente, Sally Clark fue absuelta en junio de 2003. ¿Qué extrañó el experto?
+5\. Después de que Sally Clark fue declarada culpable, la Royal Statistical Society emitió un comunicado diciendo que "no había base estadística" para el reclamo del experto. Expresaron preocupación por el "mal uso de las estadísticas en los tribunales". Finalmente, Sally Clark fue absuelta en junio de 2003. ¿Qué no consideró el experto Sir Roy Meadow?
 
 a. Cometió un error aritmético.
-si. Cometió dos errores. Primero, hizo un mal uso de la regla de multiplicación y no tuvo en cuenta lo raro que es para una madre asesinar a sus hijos. Después de usar la regla de Bayes, encontramos una probabilidad más cercana a 0.5 que 1 en 73 millones.
-c. Mezcló el numerador y el denominador de la regla de Bayes.
-re. No usó R.
+b. Cometió dos errores. Primero, hizo un mal uso de la regla de multiplicación y no tomó en cuenta lo raro que es que una madre asesine a sus hijos. Después de usar la regla de Bayes, encontramos una probabilidad más cercana a 0.5 que a 1 en 73 millones.
+c. Confundió el numerador y el denominador de la regla de Bayes.
+d. No usó R.
 
-6\. Florida es uno de los estados más vigilados en las elecciones de EE. UU. Porque tiene muchos votos electorales, y las elecciones son generalmente cerradas, y Florida tiende a ser un estado decisivo que puede votar de cualquier manera. Cree la siguiente tabla con las encuestas realizadas durante las últimas dos semanas:
+6\. Florida es uno de los estados más vigilados en las elecciones de EE. UU. porque tiene muchos votos electorales, y las elecciones son generalmente cerradas. Además, Florida tiende a ser un estado decisivo que puede votar para cualquiera de los dos partidos. Cree la siguiente tabla con las encuestas realizadas durante las últimas dos semanas:
 
 ```{r, eval=FALSE}
 library(tidyverse)
@@ -245,27 +243,27 @@ filter(state == "Florida" & enddate >= "2016-11-04" ) %>%
 mutate(spread = rawpoll_clinton/100 - rawpoll_trump/100)
 ```
 
-Tome la extensión promedio de estas encuestas. El CLT nos dice que este promedio es aproximadamente normal. Calcule un promedio y proporcione una estimación del error estándar. Guarde sus resultados en un objeto llamado `results`.
+Tome la diferencia promedio de estas encuestas. El CLT nos dice que este promedio es aproximadamente normal. Calcule un promedio y provea una estimación del error estándar. Guarde sus resultados en un objeto llamado `results`.
 
-7\. Ahora asuma un modelo bayesiano que establece la distribución previa para la propagación de la noche electoral de Florida $d$ ser normal con el valor esperado $\mu$ y desviación estándar $\tau$. ¿Cuáles son las interpretaciones de $\mu$ y $\tau$?
+7\. [fix check] Ahora suponga un modelo bayesiano que establece la distribución previa para la diferencia de la noche electoral de Florida $d$ ser normal con el valor esperado $\mu$ y desviación estándar $\tau$. ¿Cuáles son las interpretaciones de $\mu$ y $\tau$?
 
 a. $\mu$ y $\tau$ son números arbitrarios que nos permiten hacer declaraciones de probabilidad sobre $d$.
-si. $\mu$ y $\tau$ resuma lo que predeciríamos para Florida antes de ver las encuestas. Basado en elecciones pasadas, estableceríamos $\mu$ cerca de 0 porque tanto republicanos como demócratas han ganado, y $\tau$ a aproximadamente $0.02$, porque estas elecciones tienden a ser cercanas.
-c. $\mu$ y $\tau$ resumir lo que queremos que sea verdad. Por lo tanto, establecemos $\mu$ a $0.10$ y $\tau$ a $0.01$.
-re. La elección de prior no tiene ningún efecto en el análisis bayesiano.
+b. $\mu$ y $\tau$ resumen lo que predeciríamos para Florida antes de ver las encuestas. Basado en elecciones pasadas, fijaríamos $\mu$ cerca de 0 porque tanto Republicanos como Demócratas han ganado, y $\tau$ a aproximadamente en $0.02$, porque estas elecciones tienden a ser cerradas.
+c. $\mu$ y $\tau$ resumen lo que queremos que sea verdad. Por lo tanto, fijamos $\mu$ en $0.10$ y $\tau$ en $0.01$.
+d. [fix prior?] La elección de prior no tiene ningún efecto en el análisis bayesiano.
 
 
-8\. El CLT nos dice que nuestra estimación de la propagación $\hat{d}$ tiene distribución normal con valor esperado $d$ y desviación estándar $\sigma$ calculado en el problema 6. Use las fórmulas que mostramos para la distribución a posteriori para calcular el valor esperado de la distribución a posteriori si establecemos $\mu = 0$ y $\tau = 0.01$.
+8\. El CLT nos dice que nuestra estimación de la diferencia $\hat{d}$ tiene distribución normal con valor esperado $d$ y desviación estándar $\sigma$ calculada en el problema 6. Use las fórmulas que mostramos para la distribución a posteriori para calcular [fix] el valor esperado de la distribución a posteriori si fijamos/establecemos $\mu = 0$ y $\tau = 0.01$.
 
 
 9\. Ahora calcule la desviación estándar de la distribución a posteriori.
 
 
-10\. Usando el hecho de que la distribución a posteriori es normal, cree un intervalo que tenga un 95% de probabilidad de ocurrir centrado en el valor esperado a posteriori. Tenga en cuenta que llamamos a estos intervalos creíbles.
+10\. Usando el hecho de que la distribución a posteriori es normal, cree un intervalo que tenga un 95% de probabilidad de ocurrir centrado en el valor esperado a posteriori. [fix check] Llamaremos a estos intervalos de de Bayes .
 
 
 11\. Según este análisis, ¿cuál fue la probabilidad de que Trump ganara Florida?
 
-12\. Ahora usa la función `sapply` para cambiar la varianza anterior de `seq(0.05, 0.05, len = 100)` y observe cómo cambia la probabilidad haciendo un diagrama.
+12\. Ahora use la función `sapply` para cambiar [fix "the prior variance"] la varianza anterior de `seq(0.05, 0.05, len = 100)` y observe cómo cambia la probabilidad haciendo un gráfico.
 
 
