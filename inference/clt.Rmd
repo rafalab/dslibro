@@ -74,7 +74,7 @@ Por lo tanto, hay un 95% de probabilidad de que $\bar{X}$ estará dentro $1.96\t
 
 En resumen, el CLT nos dice que nuestra encuesta que se basa en un tamaño de muestra de $25$ no es muy útil. Realmente no aprendemos mucho cuando el margen de error es tan grande. Lo único que realmente podemos decir es que el voto popular no se ganará por un margen amplio. Esta es la razón por la cual los encuestadores tienden a usar tamaños de muestra más grandes.
 
-En la tabla anterior, vemos que los tamaños de muestra típicos oscilan entre 700 y 3500. Para ver cómo esto nos da un resultado mucho más práctico, noten que si hubiéramos obtenido un $\bar{X}$= 0.48 con un tamaño de muestra de 2,000, nuestro error estándar $\hat{\mbox{SE}}(\bar{X})$ habría sido `r n<-2000;se<-sqrt(0.48*(1-0.48)/n);se`. Entonces nuestro resultado es una estimación de `48`% con un margen de error de `r round(2*se*100)`%. En este caso, el resultado es mucho más informativo y nos haría pensar que hay más cuentas rojas que azules. Recuerden, sin embargo, que esto es hipotético. No hicimos una encuesta de 2,000 ya que no queremos dañar la competencia.
+En la tabla anterior, vemos que los tamaños de muestra típicos oscilan entre 700 y 3500. Para ver cómo esto nos da un resultado mucho más práctico, noten que si hubiéramos obtenido un $\bar{X}$= 0.48 con un tamaño de muestra de 2,000, nuestro error estándar $\hat{\mbox{SE}}(\bar{X})$ habría sido `r n<-2000;se<-sqrt(0.48*(1-0.48)/n);se`. Entonces nuestro resultado es una estimación de `48`% con un margen de error de `r round(2*se*100)`%. En este caso, el resultado es mucho más informativo y nos haría pensar que hay más cuentas rojas que azules. Recuerden, sin embargo, que esto es hipotético. No hicimos una encuesta de 2,000 ya que no queremos dañar el concurso.
 
 
 ### Una simulación Monte Carlo
@@ -157,11 +157,11 @@ SE <- sapply(p, function(x) 2*sqrt(x*(1-x)/N))
 qplot(p, SE, geom = "line")
 ```
 
-Una razón es que realizar una encuesta de este tipo es muy costosa. Otra razón posiblemente más importante es que la teoría tiene sus limitaciones. El sondeo es mucho más complicado que escoger cuentas de una urna. Algunas personas pueden mentirle a los encuestadores y otras pueden no tener teléfonos. Pero quizás la manera más importante en que una encuesta real difiere de un modelo de urna es que no sabemos con certeza quién está en nuestra población y quién no. ¿Cómo sabemos quién va a votar? ¿Todos los votantes tienen la misma posibilidad de ser encuestado? Aunque nuestro margen de error sea bien pequeño, es posible que nuestro valor esperado no sea exactamente $p$. A esto lo llamamos sesgo. Históricamente, observamos que las encuestas están sesgadas, aunque no tanto. El sesgo típico parece ser de aproximadamente 1-2%. Esto hace que el pronóstico de las elecciones sea un poco más interesante y hablaremos sobre cómo modelar esto en un capítulo posterior.
+Una razón es que realizar una encuesta de este tipo es muy costosa. Otra razón posiblemente más importante es que la teoría tiene sus limitaciones. El sondeo es mucho más complicado que escoger cuentas de una urna. Algunas personas pueden mentirle a los encuestadores y otras pueden no tener teléfonos. Pero quizás la manera más importante en que una encuesta real difiere de un modelo de urna es que no sabemos con certeza quién está en nuestra población y quién no. ¿Cómo sabemos quién va a votar? ¿Todos los votantes tienen la misma posibilidad de ser encuestado? Aunque nuestro margen de error sea bien pequeño, es posible que nuestro valor esperado no sea exactamente $p$. A esto lo llamamos sesgo. Históricamente, observamos que las encuestas están sesgadas, aunque no por mucho. El sesgo típico parece ser de aproximadamente 1-2%. Esto hace que el pronóstico de las elecciones sea un poco más interesante y hablaremos sobre cómo modelar esto en un capítulo posterior.
 
 ## Ejercicios
 
-1\. Escriba una función que modele una urna que toma la proporción de demócratas $p$ y el tamaño de la muestra $N$ como argumentos y devuelva el promedio de la muestra si los demócratas son 1s y los republicanos son 0s. Llame a la función `take_sample`.
+1\. Escriba una función que modele una urna que toma la proporción de demócratas $p$ y el tamaño de la muestra $N$ como argumentos y devuelva el promedio de la muestra si los demócratas son 1s y los republicanos son 0s. Nombre la función `take_sample`.
 
 2\. Ahora suponga que `p <- 0.45` y que su tamaño de muestra es $N=100$. Tome una muestra 10,000 veces y guarde el vector de `mean(X) - p` en un objeto llamado `errors`. Sugerencia: use la función que escribió para el ejercicio 1 para escribir esto en una línea de código.
 
@@ -187,7 +187,7 @@ d. Los errores varían de -1 a 1.
 6\. La teoría que acabamos de aprender nos dice cuál será esta desviación estándar porque es el error estándar de $\bar{X}$. Según la teoría, ¿cuánto es el error estándar de $\bar{X}$ para un tamaño de muestra de 100?
 
 
-7\. En la práctica, no sabemos $p$, por lo que construimos una estimación de la predicción teórica basada en remplazar $p$ con  $\bar{X}$. Calcule esta estimación. Establezca la semilla en 1 con `set.seed(1)`.
+7\. En la práctica, no sabemos $p$, por lo que construimos una estimación de la predicción teórica basada en remplazar $p$ con  $\bar{X}$. Calcule esta estimación. Fije la semilla en 1 con `set.seed(1)`.
 
 
 8\. Observe cuán cerca están las estimaciones de error estándar obtenidas de la simulación Monte Carlo (ejercicio 5), la predicción teórica (ejercicio 6) y la estimación de la predicción teórica (ejercicio 7). La teoría está funcionando y nos da un enfoque práctico para conocer el error típico que cometeremos si predecimos $p$ con $\bar{X}$. Otra ventaja que provee el resultado teórico es que da una idea de cuán grande tiene que ser el tamaño de muestra para obtener la precisión que necesitamos. Anteriormente vimos que los errores estándar más grandes ocurren para $p=0.5$. Cree un gráfico del error estándar más grande para $N$ que va desde 100 hasta 5,000. Según este gráfico, ¿cuán grande debe ser el tamaño de la muestra para tener un error estándar de aproximadamente 1%?
