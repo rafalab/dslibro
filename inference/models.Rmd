@@ -96,7 +96,7 @@ scale_y_continuous(limits = c(-0.17, 0.17)) +
 geom_hline(yintercept = 2*p-1, lty=2)
 ```
 
-Por supuesto, esto fue solo una simulación para ilustrar la idea. El ejercicio real de la ciencia de datos de pronosticar elecciones es mucho más complicado y requiere modelos estadísticos. A continuación explicamos cómo los encuestadores ajustan los modelos multinivel a los datos y los utilizan para pronosticar los resultados electorales. En las elecciones presidenciales estadounidenses del 2008 y 2012, Nate Silver utilizó este enfoque para hacer una predicción casi perfecta y callar a los expertos.
+Por supuesto, esto fue solo una simulación para ilustrar la idea. El ejercicio real de la ciencia de datos de pronosticar elecciones es mucho más complicado y requiere modelos estadísticos. A continuación explicamos cómo los encuestadores ajustan los modelos multinivel a los datos y los utilizan para pronosticar los resultados electorales. En las elecciones presidenciales estadounidensas del 2008 y 2012, Nate Silver utilizó este enfoque para hacer una predicción casi perfecta y callar a los expertos.
 
 Desde las elecciones del 2008, otras organizaciones han establecido sus propios grupos de pronóstico de elecciones que, como el de Nate Silver, agrega datos de encuestas y utiliza modelos estadísticos para hacer predicciones. En 2016, los pronosticadores subestimaron por mucho las posibilidades de Trump de ganar. El día antes de las elecciones, el _New York Times_ informó^[https://www.nytimes.com/interactive/2016/upshot/presidential-polls-forecast.html] las siguientes probabilidades de que Hillary Clinton ganara la presidencia:
 
@@ -188,7 +188,7 @@ Presentamos datos reales de las elecciones presidenciales de EE. UU. del 2016 pa
 
 ### Datos de encuesta
 
-Utilizamos datos de encuestas públicas organizados por FiveThirtyEight para las elecciones presidenciales del 2016. Los datos se incluyen como parte del paquete __dslabs__:
+Utilizamos datos públicos de encuestas organizados por FiveThirtyEight para las elecciones presidenciales del 2016. Los datos se incluyen como parte del paquete __dslabs__:
 
 ```{r}
 data(polls_us_election_2016)
@@ -228,7 +228,7 @@ moe <- 1.96 * 2 * sqrt(p_hat * (1 - p_hat)/ sum(polls$samplesize))
 moe
 ```
 
-Entonces informamos una variabilidad de `r round(d_hat*100,2)`\% con un margen de error de `r round(moe*100,2)`\%. En la noche de las elecciones, descubrimos que el porcentaje real era 2.1\%, que está fuera de un intervalo de confianza de 95\%. ¿Que pasó?
+Entonces informamos una diferencia de `r round(d_hat*100,2)`\% con un margen de error de `r round(moe*100,2)`\%. En la noche de las elecciones, descubrimos que el porcentaje real era 2.1\%, que está fuera de un intervalo de confianza de 95\%. ¿Que pasó?
 
 Un histograma de las variabilidades reportadas muestra un problema:
 ```{r polls-2016-spread-histogram}
@@ -265,7 +265,7 @@ filter(n() >= 6) %>%
 summarize(se = 2 * sqrt(p_hat * (1-p_hat)/ median(samplesize)))
 ```
 
-está entre 0.018 y 0.033, que concuerda con la variación de encuesta a encuesta que vemos para cada encuestador. Sin embargo, parece haber diferencias _entre las encuestadores_. Observen, por ejemplo, cómo el encuestador USC Dornsife/LA Times predice una ventaja de 4\% para Trump, mientras que Ipsos predice una ventaja mayor de 5\% para Clinton. La teoría que aprendimos no dice nada acerca de diferentes encuestadores que producen encuestas con diferentes valores esperados. Todas las encuestas deben tener el mismo valor esperado. FiveThirtyEight se refiere a estas diferencias como "house effects". También las llamamos _sesgo de encuestadores_.
+está entre 0.018 y 0.033, que concuerda con la variación de encuesta a encuesta que vemos para cada encuestador. Sin embargo, parece haber diferencias _entre los encuestadores_. Observen, por ejemplo, cómo el encuestador USC Dornsife/LA Times predice una ventaja de 4\% para Trump, mientras que Ipsos predice una ventaja mayor de 5\% para Clinton. La teoría que aprendimos no dice nada acerca de diferentes encuestadores que producen encuestas con diferentes valores esperados. Todas las encuestas deben tener el mismo valor esperado. FiveThirtyEight se refiere a estas diferencias como "house effects". También las llamamos _sesgo de encuestadores_.
 
 En la siguiente sección, en lugar de utilizar la teoría del modelo de urna, desarrollaremos un modelo basado en datos.
 
@@ -299,9 +299,9 @@ Nuestra tarea es estimar $d$. Como modelamos los valores observados $X_1,\dots X
 Un problema es que no sabemos $\sigma$. Pero la teoría nos dice que podemos estimar el modelo de urna $\sigma$ con la _desviación estándar de la muestra_ definida como
 $s = \sqrt{ \sum_{i=1}^N (X_i - \bar{X})^2/ (N-1)}$.
 
-A diferencia de la definición de desviación estándar de la población, ahora dividimos por $N-1$. Esto hace $s$ una mejor estimación de $\sigma$. Hay una explicación matemática para esto, que se explica en la mayoría de los libros de texto de estadística, pero no la cubrimos aquí.
+A diferencia de la definición de desviación estándar de la población, ahora dividimos por $N-1$. Esto hace $s$ una mejor estimación de $\sigma$. Hay una explicación matemática para esto, que se enseña en la mayoría de los libros de texto de estadística, pero no la cubrimos aquí.
 
-La función `sd` de R calcula la desviación estándar de la muestra:
+En R, la función `sd` calcula la desviación estándar de la muestra:
 
 ```{r}
 sd(one_poll_per_pollster$spread)
@@ -318,7 +318,7 @@ end = avg + 1.96 * se)
 round(results * 100, 1)
 ```
 
-Nuestro intervalo de confianza ahora es más amplio ya que incorpora la variabilidad de encuestador. Incluye el resultado de la noche electoral de 2.1%. Además, tengan en cuenta que era lo suficientemente pequeño como para no incluir 0, lo que significa que estábamos seguros de que Clinton ganaría el voto popular.
+Nuestro intervalo de confianza ahora es más amplio ya que incorpora la variabilidad de encuestador. Incluye el resultado de la noche electoral de 2.1%. Además, observen que era lo suficientemente pequeño como para no incluir 0, lo que significa que estábamos seguros de que Clinton ganaría el voto popular.
 
 ¿Estamos listos ahora para declarar una probabilidad de que Clinton gane el voto popular? Aún no. En nuestro modelo $d$ es un parámetro fijo, por lo que no podemos hablar de probabilidades. Para ofrecer probabilidades, necesitaremos aprender sobre las estadísticas bayesianas.
 
