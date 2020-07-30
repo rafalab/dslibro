@@ -1,0 +1,959 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+<head>
+
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>Capítulo 17 Regresión | Introducción a la Ciencia de Datos</title>
+  <meta name="description" content="Este libro presenta conceptos y destrezas que les ayudarán abordar los retos de situaciones actuales del análisis de datos. Cubre conceptos de probabilidad, inferencia estadística, regresión lineal y machine learning. Además, les permitirá desarrollar destrezas como la programación R, el wrangling de datos con dplyr, la visualización de datos con ggplot2, la organización de archivos con Shell de UNIX / Linux, el control de versiones con GitHub y la preparación de documentos reproducibles con R markdown." />
+  <meta name="generator" content="bookdown 0.18 and GitBook 2.6.7" />
+
+  <meta property="og:title" content="Capítulo 17 Regresión | Introducción a la Ciencia de Datos" />
+  <meta property="og:type" content="book" />
+  
+  
+  <meta property="og:description" content="Este libro presenta conceptos y destrezas que les ayudarán abordar los retos de situaciones actuales del análisis de datos. Cubre conceptos de probabilidad, inferencia estadística, regresión lineal y machine learning. Además, les permitirá desarrollar destrezas como la programación R, el wrangling de datos con dplyr, la visualización de datos con ggplot2, la organización de archivos con Shell de UNIX / Linux, el control de versiones con GitHub y la preparación de documentos reproducibles con R markdown." />
+  
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="Capítulo 17 Regresión | Introducción a la Ciencia de Datos" />
+  
+  <meta name="twitter:description" content="Este libro presenta conceptos y destrezas que les ayudarán abordar los retos de situaciones actuales del análisis de datos. Cubre conceptos de probabilidad, inferencia estadística, regresión lineal y machine learning. Además, les permitirá desarrollar destrezas como la programación R, el wrangling de datos con dplyr, la visualización de datos con ggplot2, la organización de archivos con Shell de UNIX / Linux, el control de versiones con GitHub y la preparación de documentos reproducibles con R markdown." />
+  
+
+<meta name="author" content="Rafael A. Irizarry" />
+
+
+<meta name="date" content="2020-07-30" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  
+  
+<link rel="prev" href="models.html"/>
+<link rel="next" href="modelos-lineales.html"/>
+<script src="libs/jquery-2.2.3/jquery.min.js"></script>
+<link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-clipboard.css" rel="stylesheet" />
+
+
+
+
+
+
+
+
+
+<script src="libs/kePrint-0.0.1/kePrint.js"></script>
+
+
+<style type="text/css">
+a.sourceLine { display: inline-block; line-height: 1.25; }
+a.sourceLine { pointer-events: none; color: inherit; text-decoration: inherit; }
+a.sourceLine:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode { white-space: pre; position: relative; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+code.sourceCode { white-space: pre-wrap; }
+a.sourceLine { text-indent: -1em; padding-left: 1em; }
+}
+pre.numberSource a.sourceLine
+  { position: relative; left: -4em; }
+pre.numberSource a.sourceLine::before
+  { content: attr(data-line-number);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; pointer-events: all; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {  }
+@media screen {
+a.sourceLine::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+<link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+
+<body>
+
+
+
+  <div class="book without-animation with-summary font-size-2 font-family-1" data-basepath=".">
+
+    <div class="book-summary">
+      <nav role="navigation">
+
+<ul class="summary">
+<li><a href="./">Introducción a la Ciencia de Datos</a></li>
+
+<li class="divider"></li>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i>Prefacio</a></li>
+<li class="chapter" data-level="" data-path="agradecimientos.html"><a href="agradecimientos.html"><i class="fa fa-check"></i>Agradecimientos</a></li>
+<li class="chapter" data-level="" data-path="introducción.html"><a href="introducción.html"><i class="fa fa-check"></i>Introducción</a><ul>
+<li class="chapter" data-level="" data-path="introducción.html"><a href="introducción.html#los-casos-de-estudio"><i class="fa fa-check"></i>Los casos de estudio</a></li>
+<li class="chapter" data-level="" data-path="introducción.html"><a href="introducción.html#quién-encontrará-útil-este-libro"><i class="fa fa-check"></i>¿Quién encontrará útil este libro?</a></li>
+<li class="chapter" data-level="" data-path="introducción.html"><a href="introducción.html#que-cubre-este-libro"><i class="fa fa-check"></i>¿Que cubre este libro?</a></li>
+<li class="chapter" data-level="" data-path="introducción.html"><a href="introducción.html#qué-no-cubre-este-libro"><i class="fa fa-check"></i>¿Qué no cubre este libro?</a></li>
+</ul></li>
+<li class="chapter" data-level="1" data-path="getting-started.html"><a href="getting-started.html"><i class="fa fa-check"></i><b>1</b> Comenzando con R y RStudio</a><ul>
+<li class="chapter" data-level="1.1" data-path="getting-started.html"><a href="getting-started.html#por-qué-r"><i class="fa fa-check"></i><b>1.1</b> ¿Por qué R?</a></li>
+<li class="chapter" data-level="1.2" data-path="getting-started.html"><a href="getting-started.html#la-consola-r"><i class="fa fa-check"></i><b>1.2</b> La consola R</a></li>
+<li class="chapter" data-level="1.3" data-path="getting-started.html"><a href="getting-started.html#scripts"><i class="fa fa-check"></i><b>1.3</b> <em>scripts</em></a></li>
+<li class="chapter" data-level="1.4" data-path="getting-started.html"><a href="getting-started.html#rstudio"><i class="fa fa-check"></i><b>1.4</b> RStudio</a><ul>
+<li class="chapter" data-level="1.4.1" data-path="getting-started.html"><a href="getting-started.html#paneles"><i class="fa fa-check"></i><b>1.4.1</b> Paneles</a></li>
+<li class="chapter" data-level="1.4.2" data-path="getting-started.html"><a href="getting-started.html#key-bindings"><i class="fa fa-check"></i><b>1.4.2</b> <em>Key bindings</em></a></li>
+<li class="chapter" data-level="1.4.3" data-path="getting-started.html"><a href="getting-started.html#cómo-ejecutar-comandos-mientras-edita-scripts"><i class="fa fa-check"></i><b>1.4.3</b> Cómo ejecutar comandos mientras edita <em>scripts</em></a></li>
+<li class="chapter" data-level="1.4.4" data-path="getting-started.html"><a href="getting-started.html#cómo-cambiar-las-opciones-globales"><i class="fa fa-check"></i><b>1.4.4</b> Cómo cambiar las opciones globales</a></li>
+</ul></li>
+<li class="chapter" data-level="1.5" data-path="getting-started.html"><a href="getting-started.html#instalación-de-paquetes-de-r"><i class="fa fa-check"></i><b>1.5</b> Instalación de paquetes de R</a></li>
+</ul></li>
+<li class="part"><span><b>I R</b></span></li>
+<li class="chapter" data-level="2" data-path="r-basics.html"><a href="r-basics.html"><i class="fa fa-check"></i><b>2</b> Lo básico de R</a><ul>
+<li class="chapter" data-level="2.1" data-path="r-basics.html"><a href="r-basics.html#caso-de-estudio-los-asesinatos-con-armas-en-ee.-uu."><i class="fa fa-check"></i><b>2.1</b> Caso de estudio: los asesinatos con armas en EE. UU.</a></li>
+<li class="chapter" data-level="2.2" data-path="r-basics.html"><a href="r-basics.html#lo-básico"><i class="fa fa-check"></i><b>2.2</b> Lo básico</a><ul>
+<li class="chapter" data-level="2.2.1" data-path="r-basics.html"><a href="r-basics.html#objetos"><i class="fa fa-check"></i><b>2.2.1</b> Objetos</a></li>
+<li class="chapter" data-level="2.2.2" data-path="r-basics.html"><a href="r-basics.html#el-espacio-de-trabajo"><i class="fa fa-check"></i><b>2.2.2</b> El espacio de trabajo</a></li>
+<li class="chapter" data-level="2.2.3" data-path="r-basics.html"><a href="r-basics.html#funciones"><i class="fa fa-check"></i><b>2.2.3</b> Funciones</a></li>
+<li class="chapter" data-level="2.2.4" data-path="r-basics.html"><a href="r-basics.html#otros-objetos-predefinidos"><i class="fa fa-check"></i><b>2.2.4</b> Otros objetos predefinidos</a></li>
+<li class="chapter" data-level="2.2.5" data-path="r-basics.html"><a href="r-basics.html#nombres-de-variables"><i class="fa fa-check"></i><b>2.2.5</b> Nombres de variables</a></li>
+<li class="chapter" data-level="2.2.6" data-path="r-basics.html"><a href="r-basics.html#cómo-guardar-su-espacio-de-trabajo"><i class="fa fa-check"></i><b>2.2.6</b> Cómo guardar su espacio de trabajo</a></li>
+<li class="chapter" data-level="2.2.7" data-path="r-basics.html"><a href="r-basics.html#scripts-motivantes"><i class="fa fa-check"></i><b>2.2.7</b> <em>Scripts</em> motivantes</a></li>
+<li class="chapter" data-level="2.2.8" data-path="r-basics.html"><a href="r-basics.html#cómo-comentar-su-código"><i class="fa fa-check"></i><b>2.2.8</b> Cómo comentar su código</a></li>
+</ul></li>
+<li class="chapter" data-level="2.3" data-path="r-basics.html"><a href="r-basics.html#ejercicios"><i class="fa fa-check"></i><b>2.3</b> Ejercicios</a></li>
+<li class="chapter" data-level="2.4" data-path="r-basics.html"><a href="r-basics.html#tipos-de-datos"><i class="fa fa-check"></i><b>2.4</b> Tipos de datos</a><ul>
+<li class="chapter" data-level="2.4.1" data-path="r-basics.html"><a href="r-basics.html#data-frames"><i class="fa fa-check"></i><b>2.4.1</b> <em>data frames</em></a></li>
+<li class="chapter" data-level="2.4.2" data-path="r-basics.html"><a href="r-basics.html#cómo-examinar-un-objeto"><i class="fa fa-check"></i><b>2.4.2</b> Cómo examinar un objeto</a></li>
+<li class="chapter" data-level="2.4.3" data-path="r-basics.html"><a href="r-basics.html#el-operador-de-acceso"><i class="fa fa-check"></i><b>2.4.3</b> El operador de acceso: <code>$</code></a></li>
+<li class="chapter" data-level="2.4.4" data-path="r-basics.html"><a href="r-basics.html#vectores-numéricos-de-caracteres-y-lógicos"><i class="fa fa-check"></i><b>2.4.4</b> Vectores: numéricos, de caracteres y lógicos</a></li>
+<li class="chapter" data-level="2.4.5" data-path="r-basics.html"><a href="r-basics.html#factors"><i class="fa fa-check"></i><b>2.4.5</b> Factores</a></li>
+<li class="chapter" data-level="2.4.6" data-path="r-basics.html"><a href="r-basics.html#listas"><i class="fa fa-check"></i><b>2.4.6</b> Listas</a></li>
+<li class="chapter" data-level="2.4.7" data-path="r-basics.html"><a href="r-basics.html#matrices"><i class="fa fa-check"></i><b>2.4.7</b> Matrices</a></li>
+</ul></li>
+<li class="chapter" data-level="2.5" data-path="r-basics.html"><a href="r-basics.html#ejercicios-1"><i class="fa fa-check"></i><b>2.5</b> Ejercicios</a></li>
+<li class="chapter" data-level="2.6" data-path="r-basics.html"><a href="r-basics.html#vectores"><i class="fa fa-check"></i><b>2.6</b> Vectores</a><ul>
+<li class="chapter" data-level="2.6.1" data-path="r-basics.html"><a href="r-basics.html#cómo-crear-vectores"><i class="fa fa-check"></i><b>2.6.1</b> Cómo crear vectores</a></li>
+<li class="chapter" data-level="2.6.2" data-path="r-basics.html"><a href="r-basics.html#nombres"><i class="fa fa-check"></i><b>2.6.2</b> Nombres</a></li>
+<li class="chapter" data-level="2.6.3" data-path="r-basics.html"><a href="r-basics.html#secuencias"><i class="fa fa-check"></i><b>2.6.3</b> Secuencias</a></li>
+<li class="chapter" data-level="2.6.4" data-path="r-basics.html"><a href="r-basics.html#cómo-crear-un-subconjunto"><i class="fa fa-check"></i><b>2.6.4</b> Cómo crear un subconjunto</a></li>
+</ul></li>
+<li class="chapter" data-level="2.7" data-path="r-basics.html"><a href="r-basics.html#la-conversión-forzada"><i class="fa fa-check"></i><b>2.7</b> La conversión forzada</a><ul>
+<li class="chapter" data-level="2.7.1" data-path="r-basics.html"><a href="r-basics.html#not-available-na"><i class="fa fa-check"></i><b>2.7.1</b> <em>Not available</em> (NA)</a></li>
+</ul></li>
+<li class="chapter" data-level="2.8" data-path="r-basics.html"><a href="r-basics.html#ejercicios-2"><i class="fa fa-check"></i><b>2.8</b> Ejercicios</a></li>
+<li class="chapter" data-level="2.9" data-path="r-basics.html"><a href="r-basics.html#sorting"><i class="fa fa-check"></i><b>2.9</b> <em>Sorting</em></a><ul>
+<li class="chapter" data-level="2.9.1" data-path="r-basics.html"><a href="r-basics.html#sort"><i class="fa fa-check"></i><b>2.9.1</b> <code>sort</code></a></li>
+<li class="chapter" data-level="2.9.2" data-path="r-basics.html"><a href="r-basics.html#order"><i class="fa fa-check"></i><b>2.9.2</b> <code>order</code></a></li>
+<li class="chapter" data-level="2.9.3" data-path="r-basics.html"><a href="r-basics.html#max-y-which.max"><i class="fa fa-check"></i><b>2.9.3</b> <code>max</code> y <code>which.max</code></a></li>
+<li class="chapter" data-level="2.9.4" data-path="r-basics.html"><a href="r-basics.html#rank"><i class="fa fa-check"></i><b>2.9.4</b> <code>rank</code></a></li>
+<li class="chapter" data-level="2.9.5" data-path="r-basics.html"><a href="r-basics.html#cuidado-con-el-reciclaje"><i class="fa fa-check"></i><b>2.9.5</b> Cuidado con el reciclaje</a></li>
+</ul></li>
+<li class="chapter" data-level="2.10" data-path="r-basics.html"><a href="r-basics.html#ejercicios-3"><i class="fa fa-check"></i><b>2.10</b> Ejercicios</a></li>
+<li class="chapter" data-level="2.11" data-path="r-basics.html"><a href="r-basics.html#aritmética-de-vectores"><i class="fa fa-check"></i><b>2.11</b> Aritmética de vectores</a><ul>
+<li class="chapter" data-level="2.11.1" data-path="r-basics.html"><a href="r-basics.html#rescaling-un-vector"><i class="fa fa-check"></i><b>2.11.1</b> <em>Rescaling</em> un vector</a></li>
+<li class="chapter" data-level="2.11.2" data-path="r-basics.html"><a href="r-basics.html#dos-vectores"><i class="fa fa-check"></i><b>2.11.2</b> Dos vectores</a></li>
+</ul></li>
+<li class="chapter" data-level="2.12" data-path="r-basics.html"><a href="r-basics.html#ejercicios-4"><i class="fa fa-check"></i><b>2.12</b> Ejercicios</a></li>
+<li class="chapter" data-level="2.13" data-path="r-basics.html"><a href="r-basics.html#indexación"><i class="fa fa-check"></i><b>2.13</b> Indexación</a><ul>
+<li class="chapter" data-level="2.13.1" data-path="r-basics.html"><a href="r-basics.html#crear-subconjuntos-con-lógicos"><i class="fa fa-check"></i><b>2.13.1</b> Crear subconjuntos con lógicos</a></li>
+<li class="chapter" data-level="2.13.2" data-path="r-basics.html"><a href="r-basics.html#operadores-lógicos"><i class="fa fa-check"></i><b>2.13.2</b> Operadores lógicos</a></li>
+<li class="chapter" data-level="2.13.3" data-path="r-basics.html"><a href="r-basics.html#which"><i class="fa fa-check"></i><b>2.13.3</b> <code>which</code></a></li>
+<li class="chapter" data-level="2.13.4" data-path="r-basics.html"><a href="r-basics.html#match"><i class="fa fa-check"></i><b>2.13.4</b> <code>match</code></a></li>
+<li class="chapter" data-level="2.13.5" data-path="r-basics.html"><a href="r-basics.html#in"><i class="fa fa-check"></i><b>2.13.5</b> <code>%in%</code></a></li>
+</ul></li>
+<li class="chapter" data-level="2.14" data-path="r-basics.html"><a href="r-basics.html#ejercicios-5"><i class="fa fa-check"></i><b>2.14</b> Ejercicios</a></li>
+<li class="chapter" data-level="2.15" data-path="r-basics.html"><a href="r-basics.html#gráficos-básicos"><i class="fa fa-check"></i><b>2.15</b> Gráficos básicos</a><ul>
+<li class="chapter" data-level="2.15.1" data-path="r-basics.html"><a href="r-basics.html#plot"><i class="fa fa-check"></i><b>2.15.1</b> <code>plot</code></a></li>
+<li class="chapter" data-level="2.15.2" data-path="r-basics.html"><a href="r-basics.html#hist"><i class="fa fa-check"></i><b>2.15.2</b> <code>hist</code></a></li>
+<li class="chapter" data-level="2.15.3" data-path="r-basics.html"><a href="r-basics.html#boxplot"><i class="fa fa-check"></i><b>2.15.3</b> <code>boxplot</code></a></li>
+<li class="chapter" data-level="2.15.4" data-path="r-basics.html"><a href="r-basics.html#image"><i class="fa fa-check"></i><b>2.15.4</b> <code>image</code></a></li>
+</ul></li>
+<li class="chapter" data-level="2.16" data-path="r-basics.html"><a href="r-basics.html#ejercicios-6"><i class="fa fa-check"></i><b>2.16</b> Ejercicios</a></li>
+</ul></li>
+<li class="chapter" data-level="3" data-path="conceptos-básicos-de-programación.html"><a href="conceptos-básicos-de-programación.html"><i class="fa fa-check"></i><b>3</b> Conceptos básicos de programación</a><ul>
+<li class="chapter" data-level="3.1" data-path="conceptos-básicos-de-programación.html"><a href="conceptos-básicos-de-programación.html#conditionals"><i class="fa fa-check"></i><b>3.1</b> Expresiones condicionales</a></li>
+<li class="chapter" data-level="3.2" data-path="conceptos-básicos-de-programación.html"><a href="conceptos-básicos-de-programación.html#cómo-definir-funciones"><i class="fa fa-check"></i><b>3.2</b> Cómo definir funciones</a></li>
+<li class="chapter" data-level="3.3" data-path="conceptos-básicos-de-programación.html"><a href="conceptos-básicos-de-programación.html#namespaces"><i class="fa fa-check"></i><b>3.3</b> <em>Namespaces</em></a></li>
+<li class="chapter" data-level="3.4" data-path="conceptos-básicos-de-programación.html"><a href="conceptos-básicos-de-programación.html#bucles-for"><i class="fa fa-check"></i><b>3.4</b> Bucles-for</a></li>
+<li class="chapter" data-level="3.5" data-path="conceptos-básicos-de-programación.html"><a href="conceptos-básicos-de-programación.html#vectorization"><i class="fa fa-check"></i><b>3.5</b> Vectorización y funcionales</a></li>
+<li class="chapter" data-level="3.6" data-path="conceptos-básicos-de-programación.html"><a href="conceptos-básicos-de-programación.html#ejercicios-7"><i class="fa fa-check"></i><b>3.6</b> Ejercicios</a></li>
+</ul></li>
+<li class="chapter" data-level="4" data-path="tidyverse.html"><a href="tidyverse.html"><i class="fa fa-check"></i><b>4</b> <em>tidyverse</em></a><ul>
+<li class="chapter" data-level="4.1" data-path="tidyverse.html"><a href="tidyverse.html#tidy-data"><i class="fa fa-check"></i><b>4.1</b> Data <em>tidy</em></a></li>
+<li class="chapter" data-level="4.2" data-path="tidyverse.html"><a href="tidyverse.html#ejercicios-8"><i class="fa fa-check"></i><b>4.2</b> Ejercicios</a></li>
+<li class="chapter" data-level="4.3" data-path="tidyverse.html"><a href="tidyverse.html#cómo-manipular-los-data-frames"><i class="fa fa-check"></i><b>4.3</b> Cómo manipular los <em>data frames</em></a><ul>
+<li class="chapter" data-level="4.3.1" data-path="tidyverse.html"><a href="tidyverse.html#cómo-añadir-una-columna-con-mutate"><i class="fa fa-check"></i><b>4.3.1</b> Cómo añadir una columna con <code>mutate</code></a></li>
+<li class="chapter" data-level="4.3.2" data-path="tidyverse.html"><a href="tidyverse.html#cómo-crear-subconjuntos-con-filter"><i class="fa fa-check"></i><b>4.3.2</b> Cómo crear subconjuntos con <code>filter</code></a></li>
+<li class="chapter" data-level="4.3.3" data-path="tidyverse.html"><a href="tidyverse.html#cómo-seleccionar-columnas-con-select"><i class="fa fa-check"></i><b>4.3.3</b> Cómo seleccionar columnas con <code>select</code></a></li>
+</ul></li>
+<li class="chapter" data-level="4.4" data-path="tidyverse.html"><a href="tidyverse.html#ejercicios-9"><i class="fa fa-check"></i><b>4.4</b> Ejercicios</a></li>
+<li class="chapter" data-level="4.5" data-path="tidyverse.html"><a href="tidyverse.html#el-pipe"><i class="fa fa-check"></i><b>4.5</b> El <em>pipe</em>: <code>%&gt;%</code></a></li>
+<li class="chapter" data-level="4.6" data-path="tidyverse.html"><a href="tidyverse.html#ejercicios-10"><i class="fa fa-check"></i><b>4.6</b> Ejercicios</a></li>
+<li class="chapter" data-level="4.7" data-path="tidyverse.html"><a href="tidyverse.html#cómo-resumir-datos"><i class="fa fa-check"></i><b>4.7</b> Cómo resumir datos</a><ul>
+<li class="chapter" data-level="4.7.1" data-path="tidyverse.html"><a href="tidyverse.html#summarize"><i class="fa fa-check"></i><b>4.7.1</b> <code>summarize</code></a></li>
+<li class="chapter" data-level="4.7.2" data-path="tidyverse.html"><a href="tidyverse.html#pull"><i class="fa fa-check"></i><b>4.7.2</b> <code>pull</code></a></li>
+<li class="chapter" data-level="4.7.3" data-path="tidyverse.html"><a href="tidyverse.html#group-by"><i class="fa fa-check"></i><b>4.7.3</b> Cómo agrupar y luego resumir con <code>group_by</code></a></li>
+</ul></li>
+<li class="chapter" data-level="4.8" data-path="tidyverse.html"><a href="tidyverse.html#cómo-ordenar-los-data-frames"><i class="fa fa-check"></i><b>4.8</b> Cómo ordenar los <em>data frames</em></a><ul>
+<li class="chapter" data-level="4.8.1" data-path="tidyverse.html"><a href="tidyverse.html#cómo-ordenar-anidadamente"><i class="fa fa-check"></i><b>4.8.1</b> Cómo ordenar anidadamente</a></li>
+<li class="chapter" data-level="4.8.2" data-path="tidyverse.html"><a href="tidyverse.html#los-primeros-n"><i class="fa fa-check"></i><b>4.8.2</b> Los primeros <span class="math inline">\(n\)</span></a></li>
+</ul></li>
+<li class="chapter" data-level="4.9" data-path="tidyverse.html"><a href="tidyverse.html#ejercicios-11"><i class="fa fa-check"></i><b>4.9</b> Ejercicios</a></li>
+<li class="chapter" data-level="4.10" data-path="tidyverse.html"><a href="tidyverse.html#tibbles"><i class="fa fa-check"></i><b>4.10</b> <em>Tibbles</em></a><ul>
+<li class="chapter" data-level="4.10.1" data-path="tidyverse.html"><a href="tidyverse.html#los-tibbles-se-ven-mejor"><i class="fa fa-check"></i><b>4.10.1</b> Los <em>tibbles</em> se ven mejor</a></li>
+<li class="chapter" data-level="4.10.2" data-path="tidyverse.html"><a href="tidyverse.html#los-subconjuntos-de-tibbles-son-tibbles"><i class="fa fa-check"></i><b>4.10.2</b> Los subconjuntos de <em>tibbles</em> son <em>tibbles</em></a></li>
+<li class="chapter" data-level="4.10.3" data-path="tidyverse.html"><a href="tidyverse.html#los-tibbles-pueden-tener-entradas-complejas"><i class="fa fa-check"></i><b>4.10.3</b> Los <em>tibbles</em> pueden tener entradas complejas</a></li>
+<li class="chapter" data-level="4.10.4" data-path="tidyverse.html"><a href="tidyverse.html#los-tibbles-se-pueden-agrupar"><i class="fa fa-check"></i><b>4.10.4</b> Los <em>tibbles</em> se pueden agrupar</a></li>
+<li class="chapter" data-level="4.10.5" data-path="tidyverse.html"><a href="tidyverse.html#cómo-crear-un-tibble-usando-tibble-en-lugar-de-data.frame"><i class="fa fa-check"></i><b>4.10.5</b> Cómo crear un <em>tibble</em> usando <code>tibble</code> en lugar de <code>data.frame</code></a></li>
+</ul></li>
+<li class="chapter" data-level="4.11" data-path="tidyverse.html"><a href="tidyverse.html#el-operador-punto"><i class="fa fa-check"></i><b>4.11</b> El operador punto</a></li>
+<li class="chapter" data-level="4.12" data-path="tidyverse.html"><a href="tidyverse.html#do"><i class="fa fa-check"></i><b>4.12</b> <code>do</code></a></li>
+<li class="chapter" data-level="4.13" data-path="tidyverse.html"><a href="tidyverse.html#el-paquete-purrr"><i class="fa fa-check"></i><b>4.13</b> El paquete <strong>purrr</strong></a></li>
+<li class="chapter" data-level="4.14" data-path="tidyverse.html"><a href="tidyverse.html#los-condicionales-de-tidyverse"><i class="fa fa-check"></i><b>4.14</b> Los condicionales de <em>tidyverse</em></a><ul>
+<li class="chapter" data-level="4.14.1" data-path="tidyverse.html"><a href="tidyverse.html#case_when"><i class="fa fa-check"></i><b>4.14.1</b> <code>case_when</code></a></li>
+<li class="chapter" data-level="4.14.2" data-path="tidyverse.html"><a href="tidyverse.html#between"><i class="fa fa-check"></i><b>4.14.2</b> <code>between</code></a></li>
+</ul></li>
+<li class="chapter" data-level="4.15" data-path="tidyverse.html"><a href="tidyverse.html#ejercicios-12"><i class="fa fa-check"></i><b>4.15</b> Ejercicios</a></li>
+</ul></li>
+<li class="chapter" data-level="5" data-path="importing-data.html"><a href="importing-data.html"><i class="fa fa-check"></i><b>5</b> Importando datos</a><ul>
+<li class="chapter" data-level="5.1" data-path="importing-data.html"><a href="importing-data.html#las-rutas-y-el-directorio-de-trabajo"><i class="fa fa-check"></i><b>5.1</b> Las rutas y el directorio de trabajo</a><ul>
+<li class="chapter" data-level="5.1.1" data-path="importing-data.html"><a href="importing-data.html#el-sistema-de-archivos"><i class="fa fa-check"></i><b>5.1.1</b> El sistema de archivos</a></li>
+<li class="chapter" data-level="5.1.2" data-path="importing-data.html"><a href="importing-data.html#las-rutas-relativas-y-completas"><i class="fa fa-check"></i><b>5.1.2</b> Las rutas relativas y completas</a></li>
+<li class="chapter" data-level="5.1.3" data-path="importing-data.html"><a href="importing-data.html#el-directorio-de-trabajo"><i class="fa fa-check"></i><b>5.1.3</b> El directorio de trabajo</a></li>
+<li class="chapter" data-level="5.1.4" data-path="importing-data.html"><a href="importing-data.html#cómo-generar-los-nombres-de-ruta"><i class="fa fa-check"></i><b>5.1.4</b> Cómo generar los nombres de ruta</a></li>
+<li class="chapter" data-level="5.1.5" data-path="importing-data.html"><a href="importing-data.html#cómo-copiar-los-archivos-usando-rutas"><i class="fa fa-check"></i><b>5.1.5</b> Cómo copiar los archivos usando rutas</a></li>
+</ul></li>
+<li class="chapter" data-level="5.2" data-path="importing-data.html"><a href="importing-data.html#los-paquetes-readr-y-readxl"><i class="fa fa-check"></i><b>5.2</b> Los paquetes readr y readxl</a><ul>
+<li class="chapter" data-level="5.2.1" data-path="importing-data.html"><a href="importing-data.html#readr"><i class="fa fa-check"></i><b>5.2.1</b> readr</a></li>
+<li class="chapter" data-level="5.2.2" data-path="importing-data.html"><a href="importing-data.html#readxl"><i class="fa fa-check"></i><b>5.2.2</b> readxl</a></li>
+</ul></li>
+<li class="chapter" data-level="5.3" data-path="importing-data.html"><a href="importing-data.html#ejercicios-13"><i class="fa fa-check"></i><b>5.3</b> Ejercicios</a></li>
+<li class="chapter" data-level="5.4" data-path="importing-data.html"><a href="importing-data.html#cómo-descargar-archivos"><i class="fa fa-check"></i><b>5.4</b> Cómo descargar archivos</a></li>
+<li class="chapter" data-level="5.5" data-path="importing-data.html"><a href="importing-data.html#las-funciones-de-importación-de-base-r"><i class="fa fa-check"></i><b>5.5</b> Las funciones de importación de base R</a><ul>
+<li class="chapter" data-level="5.5.1" data-path="importing-data.html"><a href="importing-data.html#scan"><i class="fa fa-check"></i><b>5.5.1</b> <code>scan</code></a></li>
+</ul></li>
+<li class="chapter" data-level="5.6" data-path="importing-data.html"><a href="importing-data.html#archivos-de-texto-versus-archivos-binarios"><i class="fa fa-check"></i><b>5.6</b> Archivos de texto versus archivos binarios</a></li>
+<li class="chapter" data-level="5.7" data-path="importing-data.html"><a href="importing-data.html#unicode-versus-ascii"><i class="fa fa-check"></i><b>5.7</b> Unicode versus ASCII</a></li>
+<li class="chapter" data-level="5.8" data-path="importing-data.html"><a href="importing-data.html#cómo-organizar-datos-con-hojas-de-cálculo"><i class="fa fa-check"></i><b>5.8</b> Cómo organizar datos con hojas de cálculo</a></li>
+<li class="chapter" data-level="5.9" data-path="importing-data.html"><a href="importing-data.html#ejercicios-14"><i class="fa fa-check"></i><b>5.9</b> Ejercicios</a></li>
+</ul></li>
+<li class="part"><span><b>II Visualización de datos</b></span></li>
+<li class="chapter" data-level="6" data-path="introducción-a-la-visualización-de-datos.html"><a href="introducción-a-la-visualización-de-datos.html"><i class="fa fa-check"></i><b>6</b> Introducción a la visualización de datos</a></li>
+<li class="chapter" data-level="7" data-path="ggplot2.html"><a href="ggplot2.html"><i class="fa fa-check"></i><b>7</b> ggplot2</a><ul>
+<li class="chapter" data-level="7.1" data-path="ggplot2.html"><a href="ggplot2.html#los-componentes-de-un-gráfico"><i class="fa fa-check"></i><b>7.1</b> Los componentes de un gráfico</a></li>
+<li class="chapter" data-level="7.2" data-path="ggplot2.html"><a href="ggplot2.html#objetos-ggplot"><i class="fa fa-check"></i><b>7.2</b> objetos <code>ggplot</code></a></li>
+<li class="chapter" data-level="7.3" data-path="ggplot2.html"><a href="ggplot2.html#geometrías"><i class="fa fa-check"></i><b>7.3</b> Geometrías</a></li>
+<li class="chapter" data-level="7.4" data-path="ggplot2.html"><a href="ggplot2.html#mapeos-estéticos"><i class="fa fa-check"></i><b>7.4</b> Mapeos estéticos</a></li>
+<li class="chapter" data-level="7.5" data-path="ggplot2.html"><a href="ggplot2.html#capas"><i class="fa fa-check"></i><b>7.5</b> Capas</a><ul>
+<li class="chapter" data-level="7.5.1" data-path="ggplot2.html"><a href="ggplot2.html#cómo-probar-varios-argumentos"><i class="fa fa-check"></i><b>7.5.1</b> Cómo probar varios argumentos</a></li>
+</ul></li>
+<li class="chapter" data-level="7.6" data-path="ggplot2.html"><a href="ggplot2.html#mapeos-estéticos-globales-versus-locales"><i class="fa fa-check"></i><b>7.6</b> Mapeos estéticos globales versus locales</a></li>
+<li class="chapter" data-level="7.7" data-path="ggplot2.html"><a href="ggplot2.html#escalas"><i class="fa fa-check"></i><b>7.7</b> Escalas</a></li>
+<li class="chapter" data-level="7.8" data-path="ggplot2.html"><a href="ggplot2.html#etiquetas-y-títulos"><i class="fa fa-check"></i><b>7.8</b> Etiquetas y títulos</a></li>
+<li class="chapter" data-level="7.9" data-path="ggplot2.html"><a href="ggplot2.html#categorías-como-colores"><i class="fa fa-check"></i><b>7.9</b> Categorías como colores</a></li>
+<li class="chapter" data-level="7.10" data-path="ggplot2.html"><a href="ggplot2.html#anotación-formas-y-ajustes"><i class="fa fa-check"></i><b>7.10</b> Anotación, formas y ajustes</a></li>
+<li class="chapter" data-level="7.11" data-path="ggplot2.html"><a href="ggplot2.html#add-on-packages"><i class="fa fa-check"></i><b>7.11</b> Paquetes complementarios</a></li>
+<li class="chapter" data-level="7.12" data-path="ggplot2.html"><a href="ggplot2.html#cómo-combinarlo-todo"><i class="fa fa-check"></i><b>7.12</b> Cómo combinarlo todo</a></li>
+<li class="chapter" data-level="7.13" data-path="ggplot2.html"><a href="ggplot2.html#qplot"><i class="fa fa-check"></i><b>7.13</b> Gráficos rápidos con <code>qplot</code></a></li>
+<li class="chapter" data-level="7.14" data-path="ggplot2.html"><a href="ggplot2.html#cuadrículas-de-gráficos"><i class="fa fa-check"></i><b>7.14</b> Cuadrículas de gráficos</a></li>
+<li class="chapter" data-level="7.15" data-path="ggplot2.html"><a href="ggplot2.html#ejercicios-15"><i class="fa fa-check"></i><b>7.15</b> Ejercicios</a></li>
+</ul></li>
+<li class="chapter" data-level="8" data-path="distributions.html"><a href="distributions.html"><i class="fa fa-check"></i><b>8</b> Cómo visualizar distribuciones de datos</a><ul>
+<li class="chapter" data-level="8.1" data-path="distributions.html"><a href="distributions.html#tipos-de-variables"><i class="fa fa-check"></i><b>8.1</b> Tipos de variables</a></li>
+<li class="chapter" data-level="8.2" data-path="distributions.html"><a href="distributions.html#estudio-de-caso-describiendo-alturas-de-estudiantes"><i class="fa fa-check"></i><b>8.2</b> Estudio de caso: describiendo alturas de estudiantes</a></li>
+<li class="chapter" data-level="8.3" data-path="distributions.html"><a href="distributions.html#la-función-de-distribución"><i class="fa fa-check"></i><b>8.3</b> La función de distribución</a></li>
+<li class="chapter" data-level="8.4" data-path="distributions.html"><a href="distributions.html#cdf-intro"><i class="fa fa-check"></i><b>8.4</b> Funciones de distribución acumulada</a></li>
+<li class="chapter" data-level="8.5" data-path="distributions.html"><a href="distributions.html#histogramas"><i class="fa fa-check"></i><b>8.5</b> Histogramas</a></li>
+<li class="chapter" data-level="8.6" data-path="distributions.html"><a href="distributions.html#densidad-suave"><i class="fa fa-check"></i><b>8.6</b> Densidad suave</a><ul>
+<li class="chapter" data-level="8.6.1" data-path="distributions.html"><a href="distributions.html#cómo-interpretar-el-eje-y"><i class="fa fa-check"></i><b>8.6.1</b> Cómo interpretar el eje-y</a></li>
+<li class="chapter" data-level="8.6.2" data-path="distributions.html"><a href="distributions.html#densidades-permiten-estratificación"><i class="fa fa-check"></i><b>8.6.2</b> Densidades permiten estratificación</a></li>
+</ul></li>
+<li class="chapter" data-level="8.7" data-path="distributions.html"><a href="distributions.html#ejercicios-16"><i class="fa fa-check"></i><b>8.7</b> Ejercicios</a></li>
+<li class="chapter" data-level="8.8" data-path="distributions.html"><a href="distributions.html#normal-distribution"><i class="fa fa-check"></i><b>8.8</b> La distribución normal</a></li>
+<li class="chapter" data-level="8.9" data-path="distributions.html"><a href="distributions.html#unidades-estándar"><i class="fa fa-check"></i><b>8.9</b> Unidades estándar</a></li>
+<li class="chapter" data-level="8.10" data-path="distributions.html"><a href="distributions.html#gráficos-q-q"><i class="fa fa-check"></i><b>8.10</b> Gráficos Q-Q</a></li>
+<li class="chapter" data-level="8.11" data-path="distributions.html"><a href="distributions.html#percentiles"><i class="fa fa-check"></i><b>8.11</b> Percentiles</a></li>
+<li class="chapter" data-level="8.12" data-path="distributions.html"><a href="distributions.html#diagramas-de-caja"><i class="fa fa-check"></i><b>8.12</b> Diagramas de caja</a></li>
+<li class="chapter" data-level="8.13" data-path="distributions.html"><a href="distributions.html#stratification"><i class="fa fa-check"></i><b>8.13</b> Estratificación</a></li>
+<li class="chapter" data-level="8.14" data-path="distributions.html"><a href="distributions.html#student-height-cont"><i class="fa fa-check"></i><b>8.14</b> Estudio de caso: descripción de alturas de estudiantes (continuación)</a></li>
+<li class="chapter" data-level="8.15" data-path="distributions.html"><a href="distributions.html#ejercicios-17"><i class="fa fa-check"></i><b>8.15</b> Ejercicios</a></li>
+<li class="chapter" data-level="8.16" data-path="distributions.html"><a href="distributions.html#other-geometries"><i class="fa fa-check"></i><b>8.16</b> Geometrías ggplot2</a><ul>
+<li class="chapter" data-level="8.16.1" data-path="distributions.html"><a href="distributions.html#diagramas-de-barras"><i class="fa fa-check"></i><b>8.16.1</b> Diagramas de barras</a></li>
+<li class="chapter" data-level="8.16.2" data-path="distributions.html"><a href="distributions.html#histogramas-1"><i class="fa fa-check"></i><b>8.16.2</b> Histogramas</a></li>
+<li class="chapter" data-level="8.16.3" data-path="distributions.html"><a href="distributions.html#gráficos-de-densidad"><i class="fa fa-check"></i><b>8.16.3</b> Gráficos de densidad</a></li>
+<li class="chapter" data-level="8.16.4" data-path="distributions.html"><a href="distributions.html#diagramas-de-caja-1"><i class="fa fa-check"></i><b>8.16.4</b> Diagramas de caja</a></li>
+<li class="chapter" data-level="8.16.5" data-path="distributions.html"><a href="distributions.html#gráficos-q-q-1"><i class="fa fa-check"></i><b>8.16.5</b> Gráficos Q-Q</a></li>
+<li class="chapter" data-level="8.16.6" data-path="distributions.html"><a href="distributions.html#imágenes"><i class="fa fa-check"></i><b>8.16.6</b> Imágenes</a></li>
+<li class="chapter" data-level="8.16.7" data-path="distributions.html"><a href="distributions.html#gráficos-rápidos"><i class="fa fa-check"></i><b>8.16.7</b> Gráficos rápidos</a></li>
+</ul></li>
+<li class="chapter" data-level="8.17" data-path="distributions.html"><a href="distributions.html#ejercicios-18"><i class="fa fa-check"></i><b>8.17</b> Ejercicios</a></li>
+</ul></li>
+<li class="chapter" data-level="9" data-path="gapminder.html"><a href="gapminder.html"><i class="fa fa-check"></i><b>9</b> Visualización de datos en la práctica</a><ul>
+<li class="chapter" data-level="9.1" data-path="gapminder.html"><a href="gapminder.html#estudio-de-caso-nuevas-ideas-sobre-la-pobreza"><i class="fa fa-check"></i><b>9.1</b> Estudio de caso: nuevas ideas sobre la pobreza</a><ul>
+<li class="chapter" data-level="9.1.1" data-path="gapminder.html"><a href="gapminder.html#la-prueba-de-hans-rosling"><i class="fa fa-check"></i><b>9.1.1</b> La prueba de Hans Rosling</a></li>
+</ul></li>
+<li class="chapter" data-level="9.2" data-path="gapminder.html"><a href="gapminder.html#diagrama-de-dispersión"><i class="fa fa-check"></i><b>9.2</b> Diagrama de dispersión</a></li>
+<li class="chapter" data-level="9.3" data-path="gapminder.html"><a href="gapminder.html#separar-en-facetas"><i class="fa fa-check"></i><b>9.3</b> Separar en facetas</a><ul>
+<li class="chapter" data-level="9.3.1" data-path="gapminder.html"><a href="gapminder.html#facet_wrap"><i class="fa fa-check"></i><b>9.3.1</b> <code>facet_wrap</code></a></li>
+<li class="chapter" data-level="9.3.2" data-path="gapminder.html"><a href="gapminder.html#escalas-fijas-para-mejores-comparaciones"><i class="fa fa-check"></i><b>9.3.2</b> Escalas fijas para mejores comparaciones</a></li>
+</ul></li>
+<li class="chapter" data-level="9.4" data-path="gapminder.html"><a href="gapminder.html#gráficos-de-series-de-tiempo"><i class="fa fa-check"></i><b>9.4</b> Gráficos de series de tiempo</a><ul>
+<li class="chapter" data-level="9.4.1" data-path="gapminder.html"><a href="gapminder.html#etiquetas-en-lugar-de-leyendas"><i class="fa fa-check"></i><b>9.4.1</b> Etiquetas en lugar de leyendas</a></li>
+</ul></li>
+<li class="chapter" data-level="9.5" data-path="gapminder.html"><a href="gapminder.html#transformaciones-de-datos"><i class="fa fa-check"></i><b>9.5</b> Transformaciones de datos</a><ul>
+<li class="chapter" data-level="9.5.1" data-path="gapminder.html"><a href="gapminder.html#transformación-logarítmica"><i class="fa fa-check"></i><b>9.5.1</b> Transformación logarítmica</a></li>
+<li class="chapter" data-level="9.5.2" data-path="gapminder.html"><a href="gapminder.html#qué-base"><i class="fa fa-check"></i><b>9.5.2</b> ¿Qué base?</a></li>
+<li class="chapter" data-level="9.5.3" data-path="gapminder.html"><a href="gapminder.html#transformar-los-valores-o-la-escala"><i class="fa fa-check"></i><b>9.5.3</b> ¿Transformar los valores o la escala?</a></li>
+</ul></li>
+<li class="chapter" data-level="9.6" data-path="gapminder.html"><a href="gapminder.html#cómo-visualizar-distribuciones-multimodales"><i class="fa fa-check"></i><b>9.6</b> Cómo visualizar distribuciones multimodales</a></li>
+<li class="chapter" data-level="9.7" data-path="gapminder.html"><a href="gapminder.html#cómo-comparar-múltiples-distribuciones-con-diagramas-de-caja-y-gráficos-ridge"><i class="fa fa-check"></i><b>9.7</b> Cómo comparar múltiples distribuciones con diagramas de caja y gráficos <em>ridge</em></a><ul>
+<li class="chapter" data-level="9.7.1" data-path="gapminder.html"><a href="gapminder.html#diagrama-de-caja"><i class="fa fa-check"></i><b>9.7.1</b> Diagrama de caja</a></li>
+<li class="chapter" data-level="9.7.2" data-path="gapminder.html"><a href="gapminder.html#gráficos-ridge"><i class="fa fa-check"></i><b>9.7.2</b> Gráficos <em>ridge</em></a></li>
+<li class="chapter" data-level="9.7.3" data-path="gapminder.html"><a href="gapminder.html#ejemplo-distribuciones-de-ingresos-de-1970-versus-2010"><i class="fa fa-check"></i><b>9.7.3</b> Ejemplo: distribuciones de ingresos de 1970 versus 2010</a></li>
+<li class="chapter" data-level="9.7.4" data-path="gapminder.html"><a href="gapminder.html#cómo-obtener-acceso-a-variables-calculadas"><i class="fa fa-check"></i><b>9.7.4</b> Cómo obtener acceso a variables calculadas</a></li>
+<li class="chapter" data-level="9.7.5" data-path="gapminder.html"><a href="gapminder.html#densidades-ponderadas"><i class="fa fa-check"></i><b>9.7.5</b> Densidades ponderadas</a></li>
+</ul></li>
+<li class="chapter" data-level="9.8" data-path="gapminder.html"><a href="gapminder.html#la-falacia-ecológica-y-la-importancia-de-mostrar-los-datos"><i class="fa fa-check"></i><b>9.8</b> La falacia ecológica y la importancia de mostrar los datos</a><ul>
+<li class="chapter" data-level="9.8.1" data-path="gapminder.html"><a href="gapminder.html#logit"><i class="fa fa-check"></i><b>9.8.1</b> Transformación logística</a></li>
+<li class="chapter" data-level="9.8.2" data-path="gapminder.html"><a href="gapminder.html#mostrar-los-datos"><i class="fa fa-check"></i><b>9.8.2</b> Mostrar los datos</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="10" data-path="principios-de-visualización-de-datos.html"><a href="principios-de-visualización-de-datos.html"><i class="fa fa-check"></i><b>10</b> Principios de visualización de datos</a><ul>
+<li class="chapter" data-level="10.1" data-path="principios-de-visualización-de-datos.html"><a href="principios-de-visualización-de-datos.html#cómo-codificar-datos-utilizando-señales-visuales"><i class="fa fa-check"></i><b>10.1</b> Cómo codificar datos utilizando señales visuales</a></li>
+<li class="chapter" data-level="10.2" data-path="principios-de-visualización-de-datos.html"><a href="principios-de-visualización-de-datos.html#sepa-cuándo-incluir-0"><i class="fa fa-check"></i><b>10.2</b> Sepa cuándo incluir 0</a></li>
+<li class="chapter" data-level="10.3" data-path="principios-de-visualización-de-datos.html"><a href="principios-de-visualización-de-datos.html#no-distorsionar-cantidades"><i class="fa fa-check"></i><b>10.3</b> No distorsionar cantidades</a></li>
+<li class="chapter" data-level="10.4" data-path="principios-de-visualización-de-datos.html"><a href="principios-de-visualización-de-datos.html#ordenar-categorías-por-un-valor-significativo"><i class="fa fa-check"></i><b>10.4</b> Ordenar categorías por un valor significativo</a></li>
+<li class="chapter" data-level="10.5" data-path="principios-de-visualización-de-datos.html"><a href="principios-de-visualización-de-datos.html#mostrar-los-datos-1"><i class="fa fa-check"></i><b>10.5</b> Mostrar los datos</a></li>
+<li class="chapter" data-level="10.6" data-path="principios-de-visualización-de-datos.html"><a href="principios-de-visualización-de-datos.html#cómo-facilitar-comparaciones"><i class="fa fa-check"></i><b>10.6</b> Cómo facilitar comparaciones</a><ul>
+<li class="chapter" data-level="10.6.1" data-path="principios-de-visualización-de-datos.html"><a href="principios-de-visualización-de-datos.html#use-ejes-comunes"><i class="fa fa-check"></i><b>10.6.1</b> Use ejes comunes</a></li>
+<li class="chapter" data-level="10.6.2" data-path="principios-de-visualización-de-datos.html"><a href="principios-de-visualización-de-datos.html#alinee-gráficos-verticalmente-para-ver-cambios-horizontales-y-horizontalmente-para-ver-cambios-verticales"><i class="fa fa-check"></i><b>10.6.2</b> Alinee gráficos verticalmente para ver cambios horizontales y horizontalmente para ver cambios verticales</a></li>
+<li class="chapter" data-level="10.6.3" data-path="principios-de-visualización-de-datos.html"><a href="principios-de-visualización-de-datos.html#considere-transformaciones"><i class="fa fa-check"></i><b>10.6.3</b> Considere transformaciones</a></li>
+<li class="chapter" data-level="10.6.4" data-path="principios-de-visualización-de-datos.html"><a href="principios-de-visualización-de-datos.html#señales-visuales-comparadas-deben-estar-adyacentes"><i class="fa fa-check"></i><b>10.6.4</b> Señales visuales comparadas deben estar adyacentes</a></li>
+<li class="chapter" data-level="10.6.5" data-path="principios-de-visualización-de-datos.html"><a href="principios-de-visualización-de-datos.html#use-color"><i class="fa fa-check"></i><b>10.6.5</b> Use color</a></li>
+</ul></li>
+<li class="chapter" data-level="10.7" data-path="principios-de-visualización-de-datos.html"><a href="principios-de-visualización-de-datos.html#piense-en-los-daltónicos"><i class="fa fa-check"></i><b>10.7</b> Piense en los daltónicos</a></li>
+<li class="chapter" data-level="10.8" data-path="principios-de-visualización-de-datos.html"><a href="principios-de-visualización-de-datos.html#gráficos-para-dos-variables"><i class="fa fa-check"></i><b>10.8</b> Gráficos para dos variables</a><ul>
+<li class="chapter" data-level="10.8.1" data-path="principios-de-visualización-de-datos.html"><a href="principios-de-visualización-de-datos.html#slope-charts"><i class="fa fa-check"></i><b>10.8.1</b> Slope charts</a></li>
+<li class="chapter" data-level="10.8.2" data-path="principios-de-visualización-de-datos.html"><a href="principios-de-visualización-de-datos.html#gráfico-bland-altman"><i class="fa fa-check"></i><b>10.8.2</b> Gráfico Bland-Altman</a></li>
+</ul></li>
+<li class="chapter" data-level="10.9" data-path="principios-de-visualización-de-datos.html"><a href="principios-de-visualización-de-datos.html#cómo-codificar-una-tercera-variable"><i class="fa fa-check"></i><b>10.9</b> Cómo codificar una tercera variable</a></li>
+<li class="chapter" data-level="10.10" data-path="principios-de-visualización-de-datos.html"><a href="principios-de-visualización-de-datos.html#evite-los-gráficos-pseudo-tridimensionales"><i class="fa fa-check"></i><b>10.10</b> Evite los gráficos pseudo-tridimensionales</a></li>
+<li class="chapter" data-level="10.11" data-path="principios-de-visualización-de-datos.html"><a href="principios-de-visualización-de-datos.html#evite-demasiados-dígitos-significativos"><i class="fa fa-check"></i><b>10.11</b> Evite demasiados dígitos significativos</a></li>
+<li class="chapter" data-level="10.12" data-path="principios-de-visualización-de-datos.html"><a href="principios-de-visualización-de-datos.html#conozca-a-su-audiencia"><i class="fa fa-check"></i><b>10.12</b> Conozca a su audiencia</a></li>
+<li class="chapter" data-level="10.13" data-path="principios-de-visualización-de-datos.html"><a href="principios-de-visualización-de-datos.html#ejercicios-19"><i class="fa fa-check"></i><b>10.13</b> Ejercicios</a></li>
+<li class="chapter" data-level="10.14" data-path="principios-de-visualización-de-datos.html"><a href="principios-de-visualización-de-datos.html#vaccines"><i class="fa fa-check"></i><b>10.14</b> Estudio de caso: las vacunas y las enfermedades infecciosas</a></li>
+<li class="chapter" data-level="10.15" data-path="principios-de-visualización-de-datos.html"><a href="principios-de-visualización-de-datos.html#ejercicios-20"><i class="fa fa-check"></i><b>10.15</b> Ejercicios</a></li>
+</ul></li>
+<li class="chapter" data-level="11" data-path="robust-summaries.html"><a href="robust-summaries.html"><i class="fa fa-check"></i><b>11</b> Resúmenes robustos</a><ul>
+<li class="chapter" data-level="11.1" data-path="robust-summaries.html"><a href="robust-summaries.html#valores-atípicos"><i class="fa fa-check"></i><b>11.1</b> Valores atípicos</a></li>
+<li class="chapter" data-level="11.2" data-path="robust-summaries.html"><a href="robust-summaries.html#mediana"><i class="fa fa-check"></i><b>11.2</b> Mediana</a></li>
+<li class="chapter" data-level="11.3" data-path="robust-summaries.html"><a href="robust-summaries.html#el-rango-intercuartil-iqr"><i class="fa fa-check"></i><b>11.3</b> El rango intercuartil (IQR)</a></li>
+<li class="chapter" data-level="11.4" data-path="robust-summaries.html"><a href="robust-summaries.html#la-definición-de-tukey-de-un-valor-atípico"><i class="fa fa-check"></i><b>11.4</b> La definición de Tukey de un valor atípico</a></li>
+<li class="chapter" data-level="11.5" data-path="robust-summaries.html"><a href="robust-summaries.html#desviación-absoluta-mediana"><i class="fa fa-check"></i><b>11.5</b> Desviación absoluta mediana</a></li>
+<li class="chapter" data-level="11.6" data-path="robust-summaries.html"><a href="robust-summaries.html#ejercicios-21"><i class="fa fa-check"></i><b>11.6</b> Ejercicios</a></li>
+<li class="chapter" data-level="11.7" data-path="robust-summaries.html"><a href="robust-summaries.html#estudio-de-caso-alturas-autoreportadas-de-estudiantes"><i class="fa fa-check"></i><b>11.7</b> Estudio de caso: alturas autoreportadas de estudiantes</a></li>
+</ul></li>
+<li class="part"><span><b>III Estadísticas con R</b></span></li>
+<li class="chapter" data-level="12" data-path="introducción-a-las-estadísticas-con-r.html"><a href="introducción-a-las-estadísticas-con-r.html"><i class="fa fa-check"></i><b>12</b> Introducción a las estadísticas con R</a></li>
+<li class="chapter" data-level="13" data-path="probabilidad.html"><a href="probabilidad.html"><i class="fa fa-check"></i><b>13</b> Probabilidad</a><ul>
+<li class="chapter" data-level="13.1" data-path="probabilidad.html"><a href="probabilidad.html#probabilidad-discreta"><i class="fa fa-check"></i><b>13.1</b> Probabilidad discreta</a><ul>
+<li class="chapter" data-level="13.1.1" data-path="probabilidad.html"><a href="probabilidad.html#frecuencia-relativa"><i class="fa fa-check"></i><b>13.1.1</b> Frecuencia relativa</a></li>
+<li class="chapter" data-level="13.1.2" data-path="probabilidad.html"><a href="probabilidad.html#notación"><i class="fa fa-check"></i><b>13.1.2</b> Notación</a></li>
+<li class="chapter" data-level="13.1.3" data-path="probabilidad.html"><a href="probabilidad.html#distribuciones-de-probabilidad"><i class="fa fa-check"></i><b>13.1.3</b> Distribuciones de probabilidad</a></li>
+</ul></li>
+<li class="chapter" data-level="13.2" data-path="probabilidad.html"><a href="probabilidad.html#simulaciones-monte-carlo-para-datos-categóricos"><i class="fa fa-check"></i><b>13.2</b> Simulaciones Monte Carlo para datos categóricos</a><ul>
+<li class="chapter" data-level="13.2.1" data-path="probabilidad.html"><a href="probabilidad.html#fijar-la-semilla-aleatoria"><i class="fa fa-check"></i><b>13.2.1</b> Fijar la semilla aleatoria</a></li>
+<li class="chapter" data-level="13.2.2" data-path="probabilidad.html"><a href="probabilidad.html#con-y-sin-reemplazo"><i class="fa fa-check"></i><b>13.2.2</b> Con y sin reemplazo</a></li>
+</ul></li>
+<li class="chapter" data-level="13.3" data-path="probabilidad.html"><a href="probabilidad.html#independencia"><i class="fa fa-check"></i><b>13.3</b> Independencia</a></li>
+<li class="chapter" data-level="13.4" data-path="probabilidad.html"><a href="probabilidad.html#probabilidades-condicionales"><i class="fa fa-check"></i><b>13.4</b> Probabilidades condicionales</a></li>
+<li class="chapter" data-level="13.5" data-path="probabilidad.html"><a href="probabilidad.html#reglas-de-la-adición-y-de-la-multiplicación"><i class="fa fa-check"></i><b>13.5</b> Reglas de la adición y de la multiplicación</a><ul>
+<li class="chapter" data-level="13.5.1" data-path="probabilidad.html"><a href="probabilidad.html#regla-de-la-multiplicación"><i class="fa fa-check"></i><b>13.5.1</b> Regla de la multiplicación</a></li>
+<li class="chapter" data-level="13.5.2" data-path="probabilidad.html"><a href="probabilidad.html#regla-de-la-multiplicación-bajo-independencia"><i class="fa fa-check"></i><b>13.5.2</b> Regla de la multiplicación bajo independencia</a></li>
+<li class="chapter" data-level="13.5.3" data-path="probabilidad.html"><a href="probabilidad.html#regla-de-la-adición"><i class="fa fa-check"></i><b>13.5.3</b> Regla de la adición</a></li>
+</ul></li>
+<li class="chapter" data-level="13.6" data-path="probabilidad.html"><a href="probabilidad.html#combinaciones-y-permutaciones"><i class="fa fa-check"></i><b>13.6</b> Combinaciones y permutaciones</a><ul>
+<li class="chapter" data-level="13.6.1" data-path="probabilidad.html"><a href="probabilidad.html#ejemplo-monte-carlo"><i class="fa fa-check"></i><b>13.6.1</b> Ejemplo Monte Carlo</a></li>
+</ul></li>
+<li class="chapter" data-level="13.7" data-path="probabilidad.html"><a href="probabilidad.html#ejemplos"><i class="fa fa-check"></i><b>13.7</b> Ejemplos</a><ul>
+<li class="chapter" data-level="13.7.1" data-path="probabilidad.html"><a href="probabilidad.html#problema-monty-hall"><i class="fa fa-check"></i><b>13.7.1</b> Problema Monty Hall</a></li>
+<li class="chapter" data-level="13.7.2" data-path="probabilidad.html"><a href="probabilidad.html#problema-de-cumpleaños"><i class="fa fa-check"></i><b>13.7.2</b> Problema de cumpleaños</a></li>
+</ul></li>
+<li class="chapter" data-level="13.8" data-path="probabilidad.html"><a href="probabilidad.html#infinito-en-la-práctica"><i class="fa fa-check"></i><b>13.8</b> Infinito en la práctica</a></li>
+<li class="chapter" data-level="13.9" data-path="probabilidad.html"><a href="probabilidad.html#ejercicios-22"><i class="fa fa-check"></i><b>13.9</b> Ejercicios</a></li>
+<li class="chapter" data-level="13.10" data-path="probabilidad.html"><a href="probabilidad.html#probabilidad-continua"><i class="fa fa-check"></i><b>13.10</b> Probabilidad continua</a></li>
+<li class="chapter" data-level="13.11" data-path="probabilidad.html"><a href="probabilidad.html#distribuciones-teóricas-continuas"><i class="fa fa-check"></i><b>13.11</b> Distribuciones teóricas continuas</a><ul>
+<li class="chapter" data-level="13.11.1" data-path="probabilidad.html"><a href="probabilidad.html#distribuciones-teóricas-como-aproximaciones"><i class="fa fa-check"></i><b>13.11.1</b> Distribuciones teóricas como aproximaciones</a></li>
+<li class="chapter" data-level="13.11.2" data-path="probabilidad.html"><a href="probabilidad.html#la-densidad-de-probabilidad"><i class="fa fa-check"></i><b>13.11.2</b> La densidad de probabilidad</a></li>
+</ul></li>
+<li class="chapter" data-level="13.12" data-path="probabilidad.html"><a href="probabilidad.html#simulaciones-monte-carlo-para-variables-continuas"><i class="fa fa-check"></i><b>13.12</b> Simulaciones Monte Carlo para variables continuas</a></li>
+<li class="chapter" data-level="13.13" data-path="probabilidad.html"><a href="probabilidad.html#distribuciones-continuas"><i class="fa fa-check"></i><b>13.13</b> Distribuciones continuas</a></li>
+<li class="chapter" data-level="13.14" data-path="probabilidad.html"><a href="probabilidad.html#ejercicios-23"><i class="fa fa-check"></i><b>13.14</b> Ejercicios</a></li>
+</ul></li>
+<li class="chapter" data-level="14" data-path="variables-aleatorias.html"><a href="variables-aleatorias.html"><i class="fa fa-check"></i><b>14</b> Variables aleatorias</a><ul>
+<li class="chapter" data-level="14.1" data-path="variables-aleatorias.html"><a href="variables-aleatorias.html#variables-aleatorias-1"><i class="fa fa-check"></i><b>14.1</b> Variables aleatorias</a></li>
+<li class="chapter" data-level="14.2" data-path="variables-aleatorias.html"><a href="variables-aleatorias.html#modelos-de-muestreo"><i class="fa fa-check"></i><b>14.2</b> Modelos de muestreo</a></li>
+<li class="chapter" data-level="14.3" data-path="variables-aleatorias.html"><a href="variables-aleatorias.html#la-distribución-de-probabilidad-de-una-variable-aleatoria"><i class="fa fa-check"></i><b>14.3</b> La distribución de probabilidad de una variable aleatoria</a></li>
+<li class="chapter" data-level="14.4" data-path="variables-aleatorias.html"><a href="variables-aleatorias.html#distribuciones-versus-distribuciones-de-probabilidad"><i class="fa fa-check"></i><b>14.4</b> Distribuciones versus distribuciones de probabilidad</a></li>
+<li class="chapter" data-level="14.5" data-path="variables-aleatorias.html"><a href="variables-aleatorias.html#notación-para-variables-aleatorias"><i class="fa fa-check"></i><b>14.5</b> Notación para variables aleatorias</a></li>
+<li class="chapter" data-level="14.6" data-path="variables-aleatorias.html"><a href="variables-aleatorias.html#el-valor-esperado-y-el-error-estándar"><i class="fa fa-check"></i><b>14.6</b> El valor esperado y el error estándar</a><ul>
+<li class="chapter" data-level="14.6.1" data-path="variables-aleatorias.html"><a href="variables-aleatorias.html#población-sd-versus-la-muestra-sd"><i class="fa fa-check"></i><b>14.6.1</b> Población SD versus la muestra SD</a></li>
+</ul></li>
+<li class="chapter" data-level="14.7" data-path="variables-aleatorias.html"><a href="variables-aleatorias.html#teorema-del-límite-central"><i class="fa fa-check"></i><b>14.7</b> Teorema del límite central</a><ul>
+<li class="chapter" data-level="14.7.1" data-path="variables-aleatorias.html"><a href="variables-aleatorias.html#cuán-grande-es-grande-en-el-teorema-del-límite-central"><i class="fa fa-check"></i><b>14.7.1</b> ¿Cuán grande es grande en el teorema del límite central?</a></li>
+</ul></li>
+<li class="chapter" data-level="14.8" data-path="variables-aleatorias.html"><a href="variables-aleatorias.html#propiedades-estadísticas-de-promedios"><i class="fa fa-check"></i><b>14.8</b> Propiedades estadísticas de promedios</a></li>
+<li class="chapter" data-level="14.9" data-path="variables-aleatorias.html"><a href="variables-aleatorias.html#ley-de-los-grandes-números"><i class="fa fa-check"></i><b>14.9</b> Ley de los grandes números</a><ul>
+<li class="chapter" data-level="14.9.1" data-path="variables-aleatorias.html"><a href="variables-aleatorias.html#malinterpretando-la-ley-de-promedios"><i class="fa fa-check"></i><b>14.9.1</b> Malinterpretando la ley de promedios</a></li>
+</ul></li>
+<li class="chapter" data-level="14.10" data-path="variables-aleatorias.html"><a href="variables-aleatorias.html#ejercicios-24"><i class="fa fa-check"></i><b>14.10</b> Ejercicios</a></li>
+<li class="chapter" data-level="14.11" data-path="variables-aleatorias.html"><a href="variables-aleatorias.html#estudio-de-caso-the-big-short"><i class="fa fa-check"></i><b>14.11</b> Estudio de caso: The Big Short</a><ul>
+<li class="chapter" data-level="14.11.1" data-path="variables-aleatorias.html"><a href="variables-aleatorias.html#tasas-de-interés-explicadas-con-modelo-de-oportunidad"><i class="fa fa-check"></i><b>14.11.1</b> Tasas de interés explicadas con modelo de oportunidad</a></li>
+<li class="chapter" data-level="14.11.2" data-path="variables-aleatorias.html"><a href="variables-aleatorias.html#the-big-short"><i class="fa fa-check"></i><b>14.11.2</b> The Big Short</a></li>
+</ul></li>
+<li class="chapter" data-level="14.12" data-path="variables-aleatorias.html"><a href="variables-aleatorias.html#ejercicios-25"><i class="fa fa-check"></i><b>14.12</b> Ejercicios</a></li>
+</ul></li>
+<li class="chapter" data-level="15" data-path="inference.html"><a href="inference.html"><i class="fa fa-check"></i><b>15</b> Inferencia estadística</a><ul>
+<li class="chapter" data-level="15.1" data-path="inference.html"><a href="inference.html#encuestas"><i class="fa fa-check"></i><b>15.1</b> Encuestas</a><ul>
+<li class="chapter" data-level="15.1.1" data-path="inference.html"><a href="inference.html#el-modelo-de-muestreo-para-encuestas"><i class="fa fa-check"></i><b>15.1.1</b> El modelo de muestreo para encuestas</a></li>
+</ul></li>
+<li class="chapter" data-level="15.2" data-path="inference.html"><a href="inference.html#poblaciones-muestras-parámetros-y-estimaciones"><i class="fa fa-check"></i><b>15.2</b> Poblaciones, muestras, parámetros y estimaciones</a><ul>
+<li class="chapter" data-level="15.2.1" data-path="inference.html"><a href="inference.html#el-promedio-de-la-muestra"><i class="fa fa-check"></i><b>15.2.1</b> El promedio de la muestra</a></li>
+<li class="chapter" data-level="15.2.2" data-path="inference.html"><a href="inference.html#parámetros"><i class="fa fa-check"></i><b>15.2.2</b> Parámetros</a></li>
+<li class="chapter" data-level="15.2.3" data-path="inference.html"><a href="inference.html#encuesta-versus-pronóstico"><i class="fa fa-check"></i><b>15.2.3</b> Encuesta versus pronóstico</a></li>
+<li class="chapter" data-level="15.2.4" data-path="inference.html"><a href="inference.html#propiedades-de-nuestra-estimación-valor-esperado-y-error-estándar"><i class="fa fa-check"></i><b>15.2.4</b> Propiedades de nuestra estimación: valor esperado y error estándar</a></li>
+</ul></li>
+<li class="chapter" data-level="15.3" data-path="inference.html"><a href="inference.html#ejercicios-26"><i class="fa fa-check"></i><b>15.3</b> Ejercicios</a></li>
+<li class="chapter" data-level="15.4" data-path="inference.html"><a href="inference.html#clt"><i class="fa fa-check"></i><b>15.4</b> Teorema del límite central en la práctica</a><ul>
+<li class="chapter" data-level="15.4.1" data-path="inference.html"><a href="inference.html#una-simulación-monte-carlo"><i class="fa fa-check"></i><b>15.4.1</b> Una simulación Monte Carlo</a></li>
+<li class="chapter" data-level="15.4.2" data-path="inference.html"><a href="inference.html#la-diferencia"><i class="fa fa-check"></i><b>15.4.2</b> La diferencia</a></li>
+<li class="chapter" data-level="15.4.3" data-path="inference.html"><a href="inference.html#sesgo-por-qué-no-realizar-una-encuesta-bien-grande"><i class="fa fa-check"></i><b>15.4.3</b> Sesgo: ¿por qué no realizar una encuesta bien grande?</a></li>
+</ul></li>
+<li class="chapter" data-level="15.5" data-path="inference.html"><a href="inference.html#ejercicios-27"><i class="fa fa-check"></i><b>15.5</b> Ejercicios</a></li>
+<li class="chapter" data-level="15.6" data-path="inference.html"><a href="inference.html#intervalos-de-confianza"><i class="fa fa-check"></i><b>15.6</b> Intervalos de confianza</a><ul>
+<li class="chapter" data-level="15.6.1" data-path="inference.html"><a href="inference.html#una-simulación-monte-carlo-1"><i class="fa fa-check"></i><b>15.6.1</b> Una simulación Monte Carlo</a></li>
+<li class="chapter" data-level="15.6.2" data-path="inference.html"><a href="inference.html#el-idioma-correcto"><i class="fa fa-check"></i><b>15.6.2</b> El idioma correcto</a></li>
+</ul></li>
+<li class="chapter" data-level="15.7" data-path="inference.html"><a href="inference.html#ejercicios-28"><i class="fa fa-check"></i><b>15.7</b> Ejercicios</a></li>
+<li class="chapter" data-level="15.8" data-path="inference.html"><a href="inference.html#poder"><i class="fa fa-check"></i><b>15.8</b> Poder</a></li>
+<li class="chapter" data-level="15.9" data-path="inference.html"><a href="inference.html#valores-p"><i class="fa fa-check"></i><b>15.9</b> valores p</a></li>
+<li class="chapter" data-level="15.10" data-path="inference.html"><a href="inference.html#association-tests"><i class="fa fa-check"></i><b>15.10</b> Pruebas de asociación</a><ul>
+<li class="chapter" data-level="15.10.1" data-path="inference.html"><a href="inference.html#lady-tasting-tea"><i class="fa fa-check"></i><b>15.10.1</b> Lady Tasting Tea</a></li>
+<li class="chapter" data-level="15.10.2" data-path="inference.html"><a href="inference.html#tablas-2x2"><i class="fa fa-check"></i><b>15.10.2</b> Tablas 2x2</a></li>
+<li class="chapter" data-level="15.10.3" data-path="inference.html"><a href="inference.html#prueba-de-chi-cuadrado"><i class="fa fa-check"></i><b>15.10.3</b> Prueba de chi-cuadrado</a></li>
+<li class="chapter" data-level="15.10.4" data-path="inference.html"><a href="inference.html#odds-ratio"><i class="fa fa-check"></i><b>15.10.4</b> Riesgo relativo</a></li>
+<li class="chapter" data-level="15.10.5" data-path="inference.html"><a href="inference.html#intervalos-de-confianza-para-el-riesgo-relativo"><i class="fa fa-check"></i><b>15.10.5</b> Intervalos de confianza para el riesgo relativo</a></li>
+<li class="chapter" data-level="15.10.6" data-path="inference.html"><a href="inference.html#corrección-de-recuento-pequeño"><i class="fa fa-check"></i><b>15.10.6</b> Corrección de recuento pequeño</a></li>
+<li class="chapter" data-level="15.10.7" data-path="inference.html"><a href="inference.html#muestras-grandes-valores-p-pequeños"><i class="fa fa-check"></i><b>15.10.7</b> Muestras grandes, valores p pequeños</a></li>
+</ul></li>
+<li class="chapter" data-level="15.11" data-path="inference.html"><a href="inference.html#ejercicios-29"><i class="fa fa-check"></i><b>15.11</b> Ejercicios</a></li>
+</ul></li>
+<li class="chapter" data-level="16" data-path="models.html"><a href="models.html"><i class="fa fa-check"></i><b>16</b> Modelos estadísticos</a><ul>
+<li class="chapter" data-level="16.1" data-path="models.html"><a href="models.html#agregadores-de-encuestas"><i class="fa fa-check"></i><b>16.1</b> Agregadores de encuestas</a><ul>
+<li class="chapter" data-level="16.1.1" data-path="models.html"><a href="models.html#datos-de-encuesta"><i class="fa fa-check"></i><b>16.1.1</b> Datos de encuesta</a></li>
+<li class="chapter" data-level="16.1.2" data-path="models.html"><a href="models.html#sesgo-de-los-encuestadores"><i class="fa fa-check"></i><b>16.1.2</b> Sesgo de los encuestadores</a></li>
+</ul></li>
+<li class="chapter" data-level="16.2" data-path="models.html"><a href="models.html#data-driven-model"><i class="fa fa-check"></i><b>16.2</b> Modelos basados en datos</a></li>
+<li class="chapter" data-level="16.3" data-path="models.html"><a href="models.html#ejercicios-30"><i class="fa fa-check"></i><b>16.3</b> Ejercicios</a></li>
+<li class="chapter" data-level="16.4" data-path="models.html"><a href="models.html#bayesian-statistics"><i class="fa fa-check"></i><b>16.4</b> Estadísticas bayesianas</a><ul>
+<li class="chapter" data-level="16.4.1" data-path="models.html"><a href="models.html#teorema-de-bayes"><i class="fa fa-check"></i><b>16.4.1</b> Teorema de Bayes</a></li>
+</ul></li>
+<li class="chapter" data-level="16.5" data-path="models.html"><a href="models.html#simulación-del-teorema-de-bayes"><i class="fa fa-check"></i><b>16.5</b> Simulación del teorema de Bayes</a><ul>
+<li class="chapter" data-level="16.5.1" data-path="models.html"><a href="models.html#bayes-en-la-práctica"><i class="fa fa-check"></i><b>16.5.1</b> Bayes en la práctica</a></li>
+</ul></li>
+<li class="chapter" data-level="16.6" data-path="models.html"><a href="models.html#modelos-jerárquicos"><i class="fa fa-check"></i><b>16.6</b> Modelos jerárquicos</a></li>
+<li class="chapter" data-level="16.7" data-path="models.html"><a href="models.html#ejercicios-31"><i class="fa fa-check"></i><b>16.7</b> Ejercicios</a></li>
+<li class="chapter" data-level="16.8" data-path="models.html"><a href="models.html#election-forecasting"><i class="fa fa-check"></i><b>16.8</b> Estudio de caso: pronóstico de elecciones</a><ul>
+<li class="chapter" data-level="16.8.1" data-path="models.html"><a href="models.html#bayesian-approach"><i class="fa fa-check"></i><b>16.8.1</b> Enfoque bayesiano</a></li>
+<li class="chapter" data-level="16.8.2" data-path="models.html"><a href="models.html#el-sesgo-general"><i class="fa fa-check"></i><b>16.8.2</b> El sesgo general</a></li>
+<li class="chapter" data-level="16.8.3" data-path="models.html"><a href="models.html#representaciones-matemáticas-de-modelos"><i class="fa fa-check"></i><b>16.8.3</b> Representaciones matemáticas de modelos</a></li>
+<li class="chapter" data-level="16.8.4" data-path="models.html"><a href="models.html#prediciendo-el-colegio-electoral"><i class="fa fa-check"></i><b>16.8.4</b> Prediciendo el colegio electoral</a></li>
+<li class="chapter" data-level="16.8.5" data-path="models.html"><a href="models.html#pronósticos"><i class="fa fa-check"></i><b>16.8.5</b> Pronósticos</a></li>
+</ul></li>
+<li class="chapter" data-level="16.9" data-path="models.html"><a href="models.html#ejercicios-32"><i class="fa fa-check"></i><b>16.9</b> Ejercicios</a></li>
+<li class="chapter" data-level="16.10" data-path="models.html"><a href="models.html#t-dist"><i class="fa fa-check"></i><b>16.10</b> La distribución t</a></li>
+</ul></li>
+<li class="chapter" data-level="17" data-path="regression.html"><a href="regression.html"><i class="fa fa-check"></i><b>17</b> Regresión</a><ul>
+<li class="chapter" data-level="17.1" data-path="regression.html"><a href="regression.html#estudio-de-caso-la-altura-es-hereditaria"><i class="fa fa-check"></i><b>17.1</b> Estudio de caso: ¿la altura es hereditaria?</a></li>
+<li class="chapter" data-level="17.2" data-path="regression.html"><a href="regression.html#corr-coef"><i class="fa fa-check"></i><b>17.2</b> El coeficiente de correlación</a><ul>
+<li class="chapter" data-level="17.2.1" data-path="regression.html"><a href="regression.html#la-correlación-de-muestra-es-una-variable-aleatoria"><i class="fa fa-check"></i><b>17.2.1</b> La correlación de muestra es una variable aleatoria</a></li>
+<li class="chapter" data-level="17.2.2" data-path="regression.html"><a href="regression.html#la-correlación-no-siempre-es-un-resumen-útil"><i class="fa fa-check"></i><b>17.2.2</b> La correlación no siempre es un resumen útil</a></li>
+</ul></li>
+<li class="chapter" data-level="17.3" data-path="regression.html"><a href="regression.html#conditional-expectation"><i class="fa fa-check"></i><b>17.3</b> Expectativas condicionales</a></li>
+<li class="chapter" data-level="17.4" data-path="regression.html"><a href="regression.html#la-línea-de-regresión"><i class="fa fa-check"></i><b>17.4</b> La línea de regresión</a><ul>
+<li class="chapter" data-level="17.4.1" data-path="regression.html"><a href="regression.html#la-regresión-mejora-la-precisión"><i class="fa fa-check"></i><b>17.4.1</b> La regresión mejora la precisión</a></li>
+<li class="chapter" data-level="17.4.2" data-path="regression.html"><a href="regression.html#distribución-normal-bivariada-avanzada"><i class="fa fa-check"></i><b>17.4.2</b> Distribución normal bivariada (avanzada)</a></li>
+<li class="chapter" data-level="17.4.3" data-path="regression.html"><a href="regression.html#varianza-explicada"><i class="fa fa-check"></i><b>17.4.3</b> Varianza explicada</a></li>
+<li class="chapter" data-level="17.4.4" data-path="regression.html"><a href="regression.html#advertencia-hay-dos-líneas-de-regresión"><i class="fa fa-check"></i><b>17.4.4</b> Advertencia: hay dos líneas de regresión</a></li>
+</ul></li>
+<li class="chapter" data-level="17.5" data-path="regression.html"><a href="regression.html#ejercicios-33"><i class="fa fa-check"></i><b>17.5</b> Ejercicios</a></li>
+</ul></li>
+<li class="chapter" data-level="18" data-path="modelos-lineales.html"><a href="modelos-lineales.html"><i class="fa fa-check"></i><b>18</b> Modelos lineales</a><ul>
+<li class="chapter" data-level="18.1" data-path="modelos-lineales.html"><a href="modelos-lineales.html#estudio-de-caso-moneyball"><i class="fa fa-check"></i><b>18.1</b> Estudio de caso: Moneyball</a><ul>
+<li class="chapter" data-level="18.1.1" data-path="modelos-lineales.html"><a href="modelos-lineales.html#sabermetics"><i class="fa fa-check"></i><b>18.1.1</b> Sabermetics</a></li>
+<li class="chapter" data-level="18.1.2" data-path="modelos-lineales.html"><a href="modelos-lineales.html#conceptos-básicos-de-béisbol"><i class="fa fa-check"></i><b>18.1.2</b> Conceptos básicos de béisbol</a></li>
+<li class="chapter" data-level="18.1.3" data-path="modelos-lineales.html"><a href="modelos-lineales.html#no-hay-premios-para-bb"><i class="fa fa-check"></i><b>18.1.3</b> No hay premios para BB</a></li>
+<li class="chapter" data-level="18.1.4" data-path="modelos-lineales.html"><a href="modelos-lineales.html#base-en-bolas-o-bases-robadas"><i class="fa fa-check"></i><b>18.1.4</b> Base en bolas o bases robadas?</a></li>
+<li class="chapter" data-level="18.1.5" data-path="modelos-lineales.html"><a href="modelos-lineales.html#regresión-aplicada-a-las-estadísticas-de-béisbol"><i class="fa fa-check"></i><b>18.1.5</b> Regresión aplicada a las estadísticas de béisbol</a></li>
+</ul></li>
+<li class="chapter" data-level="18.2" data-path="modelos-lineales.html"><a href="modelos-lineales.html#confusión"><i class="fa fa-check"></i><b>18.2</b> Confusión</a><ul>
+<li class="chapter" data-level="18.2.1" data-path="modelos-lineales.html"><a href="modelos-lineales.html#comprender-la-confusión-a-través-de-la-estratificación"><i class="fa fa-check"></i><b>18.2.1</b> Comprender la confusión a través de la estratificación</a></li>
+<li class="chapter" data-level="18.2.2" data-path="modelos-lineales.html"><a href="modelos-lineales.html#regresión-multivariante"><i class="fa fa-check"></i><b>18.2.2</b> Regresión multivariante</a></li>
+</ul></li>
+<li class="chapter" data-level="18.3" data-path="modelos-lineales.html"><a href="modelos-lineales.html#lse"><i class="fa fa-check"></i><b>18.3</b> Estimaciones de mínimos cuadrados</a><ul>
+<li class="chapter" data-level="18.3.1" data-path="modelos-lineales.html"><a href="modelos-lineales.html#interpretando-modelos-lineales"><i class="fa fa-check"></i><b>18.3.1</b> Interpretando modelos lineales</a></li>
+<li class="chapter" data-level="18.3.2" data-path="modelos-lineales.html"><a href="modelos-lineales.html#estimaciones-de-mínimos-cuadrados-lse"><i class="fa fa-check"></i><b>18.3.2</b> Estimaciones de mínimos cuadrados (LSE)</a></li>
+<li class="chapter" data-level="18.3.3" data-path="modelos-lineales.html"><a href="modelos-lineales.html#los-lm-función"><i class="fa fa-check"></i><b>18.3.3</b> Los <code>lm</code> función</a></li>
+<li class="chapter" data-level="18.3.4" data-path="modelos-lineales.html"><a href="modelos-lineales.html#lse-son-variables-aleatorias"><i class="fa fa-check"></i><b>18.3.4</b> LSE son variables aleatorias</a></li>
+<li class="chapter" data-level="18.3.5" data-path="modelos-lineales.html"><a href="modelos-lineales.html#los-valores-pronosticados-son-variables-aleatorias"><i class="fa fa-check"></i><b>18.3.5</b> Los valores pronosticados son variables aleatorias</a></li>
+</ul></li>
+<li class="chapter" data-level="18.4" data-path="modelos-lineales.html"><a href="modelos-lineales.html#ejercicios-34"><i class="fa fa-check"></i><b>18.4</b> Ejercicios</a></li>
+<li class="chapter" data-level="18.5" data-path="modelos-lineales.html"><a href="modelos-lineales.html#regresión-lineal-en-el-tidyverse"><i class="fa fa-check"></i><b>18.5</b> Regresión lineal en el tidyverse</a><ul>
+<li class="chapter" data-level="18.5.1" data-path="modelos-lineales.html"><a href="modelos-lineales.html#el-paquete-de-escoba"><i class="fa fa-check"></i><b>18.5.1</b> El paquete de escoba</a></li>
+</ul></li>
+<li class="chapter" data-level="18.6" data-path="modelos-lineales.html"><a href="modelos-lineales.html#ejercicios-35"><i class="fa fa-check"></i><b>18.6</b> Ejercicios</a></li>
+<li class="chapter" data-level="18.7" data-path="modelos-lineales.html"><a href="modelos-lineales.html#estudio-de-caso-moneyball-continuación"><i class="fa fa-check"></i><b>18.7</b> Estudio de caso: Moneyball (continuación)</a><ul>
+<li class="chapter" data-level="18.7.1" data-path="modelos-lineales.html"><a href="modelos-lineales.html#agregar-información-de-salario-y-posición"><i class="fa fa-check"></i><b>18.7.1</b> Agregar información de salario y posición</a></li>
+<li class="chapter" data-level="18.7.2" data-path="modelos-lineales.html"><a href="modelos-lineales.html#escogiendo-nueve-jugadores"><i class="fa fa-check"></i><b>18.7.2</b> Escogiendo nueve jugadores</a></li>
+</ul></li>
+<li class="chapter" data-level="18.8" data-path="modelos-lineales.html"><a href="modelos-lineales.html#la-falacia-de-la-regresión"><i class="fa fa-check"></i><b>18.8</b> La falacia de la regresión</a></li>
+<li class="chapter" data-level="18.9" data-path="modelos-lineales.html"><a href="modelos-lineales.html#modelos-de-error-de-medición"><i class="fa fa-check"></i><b>18.9</b> Modelos de error de medición</a></li>
+<li class="chapter" data-level="18.10" data-path="modelos-lineales.html"><a href="modelos-lineales.html#ejercicios-36"><i class="fa fa-check"></i><b>18.10</b> Ejercicios</a></li>
+</ul></li>
+<li class="chapter" data-level="19" data-path="la-asociación-no-es-causalidad.html"><a href="la-asociación-no-es-causalidad.html"><i class="fa fa-check"></i><b>19</b> La asociación no es causalidad</a><ul>
+<li class="chapter" data-level="19.1" data-path="la-asociación-no-es-causalidad.html"><a href="la-asociación-no-es-causalidad.html#correlación-espuria"><i class="fa fa-check"></i><b>19.1</b> Correlación espuria</a></li>
+<li class="chapter" data-level="19.2" data-path="la-asociación-no-es-causalidad.html"><a href="la-asociación-no-es-causalidad.html#valores-atípicos-1"><i class="fa fa-check"></i><b>19.2</b> Valores atípicos</a></li>
+<li class="chapter" data-level="19.3" data-path="la-asociación-no-es-causalidad.html"><a href="la-asociación-no-es-causalidad.html#inversión-de-causa-y-efecto"><i class="fa fa-check"></i><b>19.3</b> Inversión de causa y efecto</a></li>
+<li class="chapter" data-level="19.4" data-path="la-asociación-no-es-causalidad.html"><a href="la-asociación-no-es-causalidad.html#confusores"><i class="fa fa-check"></i><b>19.4</b> Confusores</a><ul>
+<li class="chapter" data-level="19.4.1" data-path="la-asociación-no-es-causalidad.html"><a href="la-asociación-no-es-causalidad.html#ejemplo-admisiones-uc-berkeley"><i class="fa fa-check"></i><b>19.4.1</b> Ejemplo: admisiones UC Berkeley</a></li>
+<li class="chapter" data-level="19.4.2" data-path="la-asociación-no-es-causalidad.html"><a href="la-asociación-no-es-causalidad.html#confusión-explicada-gráficamente"><i class="fa fa-check"></i><b>19.4.2</b> Confusión explicada gráficamente</a></li>
+<li class="chapter" data-level="19.4.3" data-path="la-asociación-no-es-causalidad.html"><a href="la-asociación-no-es-causalidad.html#promedio-después-de-estratificar"><i class="fa fa-check"></i><b>19.4.3</b> Promedio después de estratificar</a></li>
+</ul></li>
+<li class="chapter" data-level="19.5" data-path="la-asociación-no-es-causalidad.html"><a href="la-asociación-no-es-causalidad.html#la-paradoja-de-simpson"><i class="fa fa-check"></i><b>19.5</b> La paradoja de Simpson</a></li>
+<li class="chapter" data-level="19.6" data-path="la-asociación-no-es-causalidad.html"><a href="la-asociación-no-es-causalidad.html#ejercicios-37"><i class="fa fa-check"></i><b>19.6</b> Ejercicios</a></li>
+</ul></li>
+<li class="divider"></li>
+<li><a href="https://github.com/rstudio/bookdown" target="blank">Published with bookdown</a></li>
+
+</ul>
+
+      </nav>
+    </div>
+
+    <div class="book-body">
+      <div class="body-inner">
+        <div class="book-header" role="navigation">
+          <h1>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">Introducción a la Ciencia de Datos</a>
+          </h1>
+        </div>
+
+        <div class="page-wrapper" tabindex="-1" role="main">
+          <div class="page-inner">
+
+            <section class="normal" id="section-">
+<div id="regression" class="section level1">
+<h1><span class="header-section-number">Capítulo 17</span> Regresión</h1>
+<p>Hasta este punto, este libro se ha centrado principalmente en variables individuales. Sin embargo, en aplicaciones de ciencia de datos, es muy común estar interesado en la relación entre dos o más variables. Por ejemplo, en el capítulo <a href="#linear-models"><strong>??</strong></a> utilizaremos un enfoque basado en datos que examina la relación entre las estadísticas de los jugadores y el éxito para guiar la construcción de un equipo de béisbol con un presupuesto limitado. Antes de profundizar en este ejemplo más complejo, presentamos los conceptos necesarios para comprender la regresión utilizando una ilustración más simple. De hecho, utilizamos el conjunto de datos del que nació la regresión.</p>
+<p>El ejemplo es de la genética. Francis Galton<a href="#fn65" class="footnote-ref" id="fnref65"><sup>65</sup></a> estudió la variación y la herencia de los rasgos humanos. Entre muchos otros rasgos, Galton recopiló y estudió datos de estatura de familias para tratar de entender la herencia. Mientras hacía esto, desarrolló los conceptos de correlación y regresión, así como una conexión a pares de datos que siguen una distribución normal. Por supuesto, en el momento en que se recopilaron estos datos, nuestro conocimiento de la genética era bastante limitado en comparación con lo que sabemos hoy. Una pregunta muy específica que Galton intentó responder fue: ¿qué tan bien podemos predecir la altura de un niño en función de la altura de los padres? La técnica que desarrolló para responder a esta pregunta, la regresión, también se puede aplicar a nuestra pregunta de béisbol. La regresión puede aplicarse también en muchas otras circunstancias.</p>
+<p><strong>Nota histórica</strong>: Galton hizo importantes contribuciones a las estadísticas y la genética, pero también fue uno de los primeros defensores de la eugenesia, un movimiento filosófico científicamente defectuoso favorecido por muchos biólogos de la época de Galton pero con terribles consecuencias históricas. Puede leer más sobre esto aquí: [<a href="https://pged.org/history-eugenics-and-genetics/font" class="uri">https://pged.org/history-eugenics-and-genetics/font</a>&gt;(<a href="https://pged.org/history-eugenics-and-genetics/" class="uri">https://pged.org/history-eugenics-and-genetics/</a>).</p>
+<div id="estudio-de-caso-la-altura-es-hereditaria" class="section level2">
+<h2><span class="header-section-number">17.1</span> Estudio de caso: ¿la altura es hereditaria?</h2>
+<p>Tenemos acceso a los datos de altura familiar de Galton a través del paquete <strong>HistData</strong>. Estos datos contienen alturas en varias docenas de familias: madres, padres, hijas e hijos. Para imitar el análisis de Galton, crearemos un conjunto de datos con las alturas de los padres y un hijo de cada familia seleccionado al azar:</p>
+<div class="sourceCode" id="cb631"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb631-1" data-line-number="1"><span class="kw">library</span>(tidyverse)</a>
+<a class="sourceLine" id="cb631-2" data-line-number="2"><span class="kw">library</span>(HistData)</a>
+<a class="sourceLine" id="cb631-3" data-line-number="3"><span class="kw">data</span>(<span class="st">&quot;GaltonFamilies&quot;</span>)</a>
+<a class="sourceLine" id="cb631-4" data-line-number="4"></a>
+<a class="sourceLine" id="cb631-5" data-line-number="5"><span class="kw">set.seed</span>(<span class="dv">1983</span>)</a>
+<a class="sourceLine" id="cb631-6" data-line-number="6">galton_heights &lt;-<span class="st"> </span>GaltonFamilies <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb631-7" data-line-number="7"><span class="kw">filter</span>(gender <span class="op">==</span><span class="st"> &quot;male&quot;</span>) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb631-8" data-line-number="8"><span class="kw">group_by</span>(family) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb631-9" data-line-number="9"><span class="kw">sample_n</span>(<span class="dv">1</span>) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb631-10" data-line-number="10"><span class="kw">ungroup</span>() <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb631-11" data-line-number="11"><span class="kw">select</span>(father, childHeight) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb631-12" data-line-number="12"><span class="kw">rename</span>(<span class="dt">son =</span> childHeight)</a></code></pre></div>
+<p>En los ejercicios, veremos otras relaciones, incluidas madres e hijas.</p>
+<p>Supongamos que se nos pide que resumamos los datos de padre e hijo. Dado que ambas distribuciones están bien aproximadas por la distribución normal, podríamos usar los dos promedios y las dos desviaciones estándar como resúmenes:</p>
+<div class="sourceCode" id="cb632"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb632-1" data-line-number="1">galton_heights <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb632-2" data-line-number="2"><span class="kw">summarize</span>(<span class="kw">mean</span>(father), <span class="kw">sd</span>(father), <span class="kw">mean</span>(son), <span class="kw">sd</span>(son))</a>
+<a class="sourceLine" id="cb632-3" data-line-number="3"><span class="co">#&gt; # A tibble: 1 x 4</span></a>
+<a class="sourceLine" id="cb632-4" data-line-number="4"><span class="co">#&gt;   `mean(father)` `sd(father)` `mean(son)` `sd(son)`</span></a>
+<a class="sourceLine" id="cb632-5" data-line-number="5"><span class="co">#&gt;            &lt;dbl&gt;        &lt;dbl&gt;       &lt;dbl&gt;     &lt;dbl&gt;</span></a>
+<a class="sourceLine" id="cb632-6" data-line-number="6"><span class="co">#&gt; 1           69.1         2.55        69.2      2.71</span></a></code></pre></div>
+<p>Sin embargo, este resumen no describe una característica importante de los datos: la tendencia de que cuanto más alto es el padre, más alto es el hijo.</p>
+<div class="sourceCode" id="cb633"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb633-1" data-line-number="1">galton_heights <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">ggplot</span>(<span class="kw">aes</span>(father, son)) <span class="op">+</span></a>
+<a class="sourceLine" id="cb633-2" data-line-number="2"><span class="kw">geom_point</span>(<span class="dt">alpha =</span> <span class="fl">0.5</span>)</a></code></pre></div>
+<p><img src="libro_files/figure-html/scatterplot-1.png" width="40%" style="display: block; margin: auto;" /></p>
+<p>Aprenderemos que el coeficiente de correlación es un resumen informativo de cómo dos variables se mueven juntas y luego veremos cómo se puede usar para predecir una variable usando la otra.</p>
+</div>
+<div id="corr-coef" class="section level2">
+<h2><span class="header-section-number">17.2</span> El coeficiente de correlación</h2>
+<p>El coeficiente de correlación se define para una lista de pares. <span class="math inline">\((x_1, y_1), \dots, (x_n,y_n)\)</span> como el promedio del producto de los valores estandarizados:</p>
+<p><span class="math display">\[
+\rho = \frac{1}{n} \sum_{i=1}^n \left( \frac{x_i-\mu_x}{\sigma_x} \right)\left( \frac{y_i-\mu_y}{\sigma_y} \right)
+\]</span>
+con <span class="math inline">\(\mu_x, \mu_y\)</span> los promedios de <span class="math inline">\(x_1,\dots, x_n\)</span> y <span class="math inline">\(y_1, \dots, y_n\)</span>, respectivamente, y <span class="math inline">\(\sigma_x, \sigma_y\)</span> las desviaciones estándar. La letra griega <span class="math inline">\(\rho\)</span> se usa comúnmente en libros de estadística para denotar la correlación. La letra griega para <span class="math inline">\(r\)</span>, <span class="math inline">\(\rho\)</span>, porque es la primera letra de regresión. Pronto aprendemos sobre la conexión entre correlación y regresión. Podemos representar la fórmula anterior con código R usando:</p>
+<div class="sourceCode" id="cb634"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb634-1" data-line-number="1">rho &lt;-<span class="st"> </span><span class="kw">mean</span>(<span class="kw">scale</span>(x) <span class="op">*</span><span class="st"> </span><span class="kw">scale</span>(y))</a></code></pre></div>
+<p>Para comprender por qué esta ecuación de hecho resume cómo se mueven dos variables juntas, considere la <span class="math inline">\(i\)</span>-th entrada de <span class="math inline">\(x\)</span> es <span class="math inline">\(\left( \frac{x_i-\mu_x}{\sigma_x} \right)\)</span> SD fuera del promedio. Del mismo modo, el <span class="math inline">\(y_i\)</span> que se combina con <span class="math inline">\(x_i\)</span>, es <span class="math inline">\(\left( \frac{y_1-\mu_y}{\sigma_y} \right)\)</span> SD lejos del promedio <span class="math inline">\(y\)</span>. Si <span class="math inline">\(x\)</span> y <span class="math inline">\(y\)</span> no están relacionados, el producto <span class="math inline">\(\left( \frac{x_i-\mu_x}{\sigma_x} \right)\left( \frac{y_i-\mu_y}{\sigma_y} \right)\)</span> será positivo ( <span class="math inline">\(+ \times +\)</span> y <span class="math inline">\(- \times -\)</span> ) tan a menudo como negativo ( <span class="math inline">\(+ \times -\)</span> y <span class="math inline">\(- \times +\)</span>) y tendrá un promedio de alrededor de 0. Esta correlación es el promedio y, por lo tanto, las variables no relacionadas tendrán 0 correlaciones. Si, en cambio, las cantidades varían juntas, entonces estamos promediando productos en su mayoría positivos ( <span class="math inline">\(+ \times +\)</span> y <span class="math inline">\(- \times -\)</span>) y obtenemos una correlación positiva. Si varían en direcciones opuestas, obtenemos una correlación negativa.</p>
+<p>El coeficiente de correlación siempre está entre -1 y 1. Podemos mostrar esto matemáticamente: considere que no podemos tener una correlación más alta que cuando comparamos una lista consigo misma (correlación perfecta) y en este caso la correlación es:</p>
+<p><span class="math display">\[
+\rho = \frac{1}{n} \sum_{i=1}^n \left( \frac{x_i-\mu_x}{\sigma_x} \right)^2 =
+\frac{1}{\sigma_x^2} \frac{1}{n} \sum_{i=1}^n \left( x_i-\mu_x \right)^2 =
+\frac{1}{\sigma_x^2} \sigma^2_x =
+1
+\]</span></p>
+<p>Una derivación similar, pero con <span class="math inline">\(x\)</span> y su opuesto exacto, prueba que la correlación tiene que ser mayor o igual a -1.</p>
+<p>Para otros pares, la correlación está entre -1 y 1. La correlación entre las alturas de padre e hijo es de aproximadamente 0.5:</p>
+<div class="sourceCode" id="cb635"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb635-1" data-line-number="1">galton_heights <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">summarize</span>(<span class="dt">r =</span> <span class="kw">cor</span>(father, son)) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">pull</span>(r)</a>
+<a class="sourceLine" id="cb635-2" data-line-number="2"><span class="co">#&gt; [1] 0.433</span></a></code></pre></div>
+<p>Para ver cómo se ven los datos para diferentes valores de <span class="math inline">\(\rho\)</span>, aquí hay seis ejemplos de pares con correlaciones que van desde -0.9 a 0.99:</p>
+<p><img src="libro_files/figure-html/what-correlation-looks-like-1.png" width="70%" style="display: block; margin: auto;" /></p>
+<div id="la-correlación-de-muestra-es-una-variable-aleatoria" class="section level3">
+<h3><span class="header-section-number">17.2.1</span> La correlación de muestra es una variable aleatoria</h3>
+<p>Antes de continuar conectando la correlación con la regresión, recordemos la variabilidad aleatoria.</p>
+<p>En la mayoría de las aplicaciones de ciencia de datos, observamos datos que incluyen variación aleatoria. Por ejemplo, en muchos casos, no observamos datos para toda la población de interés, sino para una muestra aleatoria. Al igual que con la desviación promedio y estándar, la * correlación de muestra * es la estimación más comúnmente utilizada de la correlación de la población. Esto implica que la correlación que calculamos y usamos como resumen es una variable aleatoria.</p>
+<p>A modo de ilustración, supongamos que el 179 pares de padres e hijos es toda nuestra población. Un genetista menos afortunado solo puede permitirse mediciones de una muestra aleatoria de 25 pares. La correlación de la muestra se puede calcular con:</p>
+<div class="sourceCode" id="cb636"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb636-1" data-line-number="1">R &lt;-<span class="st"> </span><span class="kw">sample_n</span>(galton_heights, <span class="dv">25</span>, <span class="dt">replace =</span> <span class="ot">TRUE</span>) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb636-2" data-line-number="2"><span class="kw">summarize</span>(<span class="dt">r =</span> <span class="kw">cor</span>(father, son)) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">pull</span>(r)</a></code></pre></div>
+<p><code>R</code> es una variable aleatoria Podemos ejecutar una simulación de Monte Carlo para ver su distribución:</p>
+<div class="sourceCode" id="cb637"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb637-1" data-line-number="1">B &lt;-<span class="st"> </span><span class="dv">1000</span></a>
+<a class="sourceLine" id="cb637-2" data-line-number="2">N &lt;-<span class="st"> </span><span class="dv">25</span></a>
+<a class="sourceLine" id="cb637-3" data-line-number="3">R &lt;-<span class="st"> </span><span class="kw">replicate</span>(B, {</a>
+<a class="sourceLine" id="cb637-4" data-line-number="4"><span class="kw">sample_n</span>(galton_heights, N, <span class="dt">replace =</span> <span class="ot">TRUE</span>) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb637-5" data-line-number="5"><span class="kw">summarize</span>(<span class="dt">r=</span><span class="kw">cor</span>(father, son)) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb637-6" data-line-number="6"><span class="kw">pull</span>(r)</a>
+<a class="sourceLine" id="cb637-7" data-line-number="7">})</a>
+<a class="sourceLine" id="cb637-8" data-line-number="8"><span class="kw">qplot</span>(R, <span class="dt">geom =</span> <span class="st">&quot;histogram&quot;</span>, <span class="dt">binwidth =</span> <span class="fl">0.05</span>, <span class="dt">color =</span> <span class="kw">I</span>(<span class="st">&quot;black&quot;</span>))</a></code></pre></div>
+<p><img src="libro_files/figure-html/sample-correlation-distribution-1.png" width="70%" style="display: block; margin: auto;" /></p>
+<p>Vemos que el valor esperado de <code>R</code> es la correlación poblacional:</p>
+<div class="sourceCode" id="cb638"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb638-1" data-line-number="1"><span class="kw">mean</span>(R)</a>
+<a class="sourceLine" id="cb638-2" data-line-number="2"><span class="co">#&gt; [1] 0.431</span></a></code></pre></div>
+<p>y que tiene un error estándar relativamente alto en relación con el rango de valores <code>R</code> puede tomar:</p>
+<div class="sourceCode" id="cb639"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb639-1" data-line-number="1"><span class="kw">sd</span>(R)</a>
+<a class="sourceLine" id="cb639-2" data-line-number="2"><span class="co">#&gt; [1] 0.161</span></a></code></pre></div>
+<p>Entonces, al interpretar las correlaciones, recuerde que las correlaciones derivadas de las muestras son estimaciones que contienen incertidumbre.</p>
+<p>Además, tenga en cuenta que debido a que la correlación de la muestra es un promedio de sorteos independientes, el límite central se aplica realmente. Por lo tanto, para lo suficientemente grande <span class="math inline">\(N\)</span>, la distribución de <code>R</code> es aproximadamente normal con el valor esperado <span class="math inline">\(\rho\)</span>. La desviación estándar, que es algo compleja de derivar, es <span class="math inline">\(\sqrt{\frac{1-r^2}{N-2}}\)</span>.</p>
+<p>En nuestro ejemplo, <span class="math inline">\(N=25\)</span> no parece ser lo suficientemente grande como para que la aproximación sea buena:</p>
+<div class="sourceCode" id="cb640"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb640-1" data-line-number="1"><span class="kw">ggplot</span>(<span class="kw">aes</span>(<span class="dt">sample=</span>R), <span class="dt">data =</span> <span class="kw">data.frame</span>(R)) <span class="op">+</span></a>
+<a class="sourceLine" id="cb640-2" data-line-number="2"><span class="kw">stat_qq</span>() <span class="op">+</span></a>
+<a class="sourceLine" id="cb640-3" data-line-number="3"><span class="kw">geom_abline</span>(<span class="dt">intercept =</span> <span class="kw">mean</span>(R), <span class="dt">slope =</span> <span class="kw">sqrt</span>((<span class="dv">1</span><span class="op">-</span><span class="kw">mean</span>(R)<span class="op">^</span><span class="dv">2</span>)<span class="op">/</span>(N<span class="dv">-2</span>)))</a></code></pre></div>
+<p><img src="libro_files/figure-html/small-sample-correlation-not-normal-1.png" width="40%" style="display: block; margin: auto;" /></p>
+<p>Si aumentas <span class="math inline">\(N\)</span>, verá que la distribución converge a la normalidad.</p>
+</div>
+<div id="la-correlación-no-siempre-es-un-resumen-útil" class="section level3">
+<h3><span class="header-section-number">17.2.2</span> La correlación no siempre es un resumen útil</h3>
+<p>La correlación no siempre es un buen resumen de la relación entre dos variables. Los siguientes cuatro conjuntos de datos artificiales, conocidos como el cuarteto de Anscombe, ilustran este punto. Todos estos pares tienen una correlación de 0.82:</p>
+<pre><code>#&gt; `geom_smooth()` using formula &#39;y ~ x&#39;</code></pre>
+<p><img src="libro_files/figure-html/ascombe-quartet-1.png" width="70%" style="display: block; margin: auto;" /></p>
+<p>La correlación solo es significativa en un contexto particular. Para ayudarnos a comprender cuándo es que la correlación es significativa como estadística resumida, volveremos al ejemplo de predecir la altura de un hijo usando la altura de su padre. Esto ayudará a motivar y definir la regresión lineal. Comenzamos demostrando cómo la correlación puede ser útil para la predicción.</p>
+</div>
+</div>
+<div id="conditional-expectation" class="section level2">
+<h2><span class="header-section-number">17.3</span> Expectativas condicionales</h2>
+<p>Supongamos que se nos pide que adivinemos la altura de un hijo seleccionado al azar y no sabemos la altura de su padre. Debido a que la distribución de las alturas de los hijos es aproximadamente normal, conocemos la altura promedio, 69.2, is the value with the highest proportion and would be the prediction with the highest chance of minimizing the error. But what if we are told that the father is taller than average, say 72 inches tall, do we still guess 69.2para el hijo?</p>
+<p>Resulta que si pudiéramos recopilar datos de un gran número de padres que miden 72 pulgadas, la distribución de las alturas de sus hijos se distribuiría normalmente. Esto implica que el promedio de la distribución calculada en este subconjunto sería nuestra mejor predicción.</p>
+<p>En general, llamamos a este enfoque <em>condicionamiento</em>. La idea general es que estratificamos una población en grupos y calculamos resúmenes en cada grupo. Por lo tanto, el condicionamiento está relacionado con el concepto de estratificación descrito en la Sección <a href="distributions.html#stratification">8.13</a>. Para proporcionar una descripción matemática del condicionamiento, considere que tenemos una población de pares de valores <span class="math inline">\((x_1,y_1),\dots,(x_n,y_n)\)</span>, por ejemplo, todas las alturas de padre e hijo en Inglaterra. En el capítulo anterior aprendimos que si tomas un par aleatorio <span class="math inline">\((X,Y)\)</span>, el valor esperado y el mejor predictor de <span class="math inline">\(Y\)</span> es <span class="math inline">\(\mbox{E}(Y) = \mu_y\)</span>, el promedio de la población <span class="math inline">\(1/n\sum_{i=1}^n y_i\)</span>. Sin embargo, ya no estamos interesados en la población general, sino en el subconjunto de una población con un grupo específico. <span class="math inline">\(x_i\)</span> valor, 72 pulgadas en nuestro ejemplo. Este subconjunto de la población también es una población y, por lo tanto, se aplican los mismos principios y propiedades que hemos aprendido. los <span class="math inline">\(y_i\)</span> en la subpoblación tienen una distribución, denominada <em>distribución condicional</em>, y esta distribución tiene un valor esperado denominado <em>condicional expectativa</em>. En nuestro ejemplo, la expectativa condicional es la altura promedio de todos los hijos en Inglaterra con padres de 72 pulgadas. La notación estadística para la expectativa condicional es</p>
+<p><span class="math display">\[
+\mbox{E}(Y \mid X = x)
+\]</span></p>
+<p>con <span class="math inline">\(x\)</span> representando el valor fijo que define ese subconjunto, por ejemplo 72 pulgadas. Del mismo modo, denotamos la desviación estándar de los estratos con</p>
+<p><span class="math display">\[
+\mbox{SD}(Y \mid X = x) = \sqrt{\mbox{Var}(Y \mid X = x)}
+\]</span></p>
+<p>Porque la expectativa condicional <span class="math inline">\(E(Y\mid X=x)\)</span> es el mejor predictor para la variable aleatoria <span class="math inline">\(Y\)</span> para un individuo en los estratos definidos por <span class="math inline">\(X=x\)</span>, muchos desafíos de la ciencia de datos se reducen a la estimación de esta cantidad. La desviación estándar condicional cuantifica la precisión de la predicción.</p>
+<p>En el ejemplo que hemos estado considerando, estamos interesados en calcular la altura promedio del hijo <em>condicionada</em> para que el padre tenga 72 pulgadas de alto. Queremos estimar <span class="math inline">\(E(Y|X=72)\)</span> utilizando la muestra recogida por Galton. Anteriormente aprendimos que el promedio de la muestra es el enfoque preferido para estimar el promedio de la población. Sin embargo, un desafío al usar este enfoque para estimar las expectativas condicionales es que para los datos continuos no tenemos muchos puntos de datos que coincidan exactamente con un valor en nuestra muestra. Por ejemplo, solo tenemos:</p>
+<div class="sourceCode" id="cb642"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb642-1" data-line-number="1"><span class="kw">sum</span>(galton_heights<span class="op">$</span>father <span class="op">==</span><span class="st"> </span><span class="dv">72</span>)</a>
+<a class="sourceLine" id="cb642-2" data-line-number="2"><span class="co">#&gt; [1] 8</span></a></code></pre></div>
+<p>padres que son exactamente 72 pulgadas. Si cambiamos el número a 72.5, obtenemos aún menos puntos de datos:</p>
+<div class="sourceCode" id="cb643"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb643-1" data-line-number="1"><span class="kw">sum</span>(galton_heights<span class="op">$</span>father <span class="op">==</span><span class="st"> </span><span class="fl">72.5</span>)</a>
+<a class="sourceLine" id="cb643-2" data-line-number="2"><span class="co">#&gt; [1] 1</span></a></code></pre></div>
+<p>Una forma práctica de mejorar estas estimaciones de las expectativas condicionales es definir estratos con valores similares de <span class="math inline">\(x\)</span>. En nuestro ejemplo, podemos redondear las alturas del padre a la pulgada más cercana y asumir que todas son 72 pulgadas. Si hacemos esto, terminamos con la siguiente predicción para el hijo de un padre que mide 72 pulgadas de alto:</p>
+<div class="sourceCode" id="cb644"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb644-1" data-line-number="1">conditional_avg &lt;-<span class="st"> </span>galton_heights <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb644-2" data-line-number="2"><span class="kw">filter</span>(<span class="kw">round</span>(father) <span class="op">==</span><span class="st"> </span><span class="dv">72</span>) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb644-3" data-line-number="3"><span class="kw">summarize</span>(<span class="dt">avg =</span> <span class="kw">mean</span>(son)) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb644-4" data-line-number="4"><span class="kw">pull</span>(avg)</a>
+<a class="sourceLine" id="cb644-5" data-line-number="5">conditional_avg</a>
+<a class="sourceLine" id="cb644-6" data-line-number="6"><span class="co">#&gt; [1] 70.5</span></a></code></pre></div>
+<p>Tenga en cuenta que un padre de 72 pulgadas es más alto que el promedio, específicamente, 72 - 69.1/2.5=
+1.1 standard deviations taller than the average father. Our prediction <code>r conditional_avg</code> is also taller than average, but only <code>r round ((conditional_avg - mean(galton_heights$son))/sd(galton_heights$son), 2)</code>desviaciones estándar mayores que el hijo promedio. Los hijos de padres de 72 pulgadas han retrocedido algunos hasta la altura promedio. Notamos que la reducción en la cantidad de DE más alta es de aproximadamente 0.5, que es la correlación. Como veremos en una sección posterior, esto no es una coincidencia.</p>
+<p>Si queremos hacer una predicción de cualquier altura, no solo 72, podríamos aplicar el mismo enfoque a cada estrato. La estratificación seguida de boxplots nos permite ver la distribución de cada grupo:</p>
+<div class="sourceCode" id="cb645"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb645-1" data-line-number="1">galton_heights <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">mutate</span>(<span class="dt">father_strata =</span> <span class="kw">factor</span>(<span class="kw">round</span>(father))) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb645-2" data-line-number="2"><span class="kw">ggplot</span>(<span class="kw">aes</span>(father_strata, son)) <span class="op">+</span></a>
+<a class="sourceLine" id="cb645-3" data-line-number="3"><span class="kw">geom_boxplot</span>() <span class="op">+</span></a>
+<a class="sourceLine" id="cb645-4" data-line-number="4"><span class="kw">geom_point</span>()</a></code></pre></div>
+<p><img src="libro_files/figure-html/boxplot-1-1.png" width="40%" style="display: block; margin: auto;" /></p>
+<p>No es sorprendente que los centros de los grupos estén aumentando con la altura.
+Además, estos centros parecen seguir una relación lineal. A continuación trazamos los promedios de cada grupo. Si tenemos en cuenta que estos promedios son variables aleatorias con errores estándar, los datos son consistentes con estos puntos siguiendo una línea recta:</p>
+<p><img src="libro_files/figure-html/conditional-averages-follow-line-1.png" width="40%" style="display: block; margin: auto;" /></p>
+<p>El hecho de que estos promedios condicionales sigan una línea no es una coincidencia. En la siguiente sección, explicamos que la línea que siguen estos promedios es lo que llamamos * línea de regresión *, que mejora la precisión de nuestras estimaciones. Sin embargo, no siempre es apropiado estimar las expectativas condicionales con la línea de regresión, por lo que también describimos la justificación teórica de Galton para usar la línea de regresión.</p>
+</div>
+<div id="la-línea-de-regresión" class="section level2">
+<h2><span class="header-section-number">17.4</span> La línea de regresión</h2>
+<p>Si estamos prediciendo una variable aleatoria <span class="math inline">\(Y\)</span> sabiendo el valor de otro <span class="math inline">\(X=x\)</span> usando una línea de regresión, entonces predecimos que para cada desviación estándar, <span class="math inline">\(\sigma_X\)</span>, ese <span class="math inline">\(x\)</span> aumenta por encima del promedio <span class="math inline">\(\mu_X\)</span>, <span class="math inline">\(Y\)</span> incrementar <span class="math inline">\(\rho\)</span> desviaciones estandar <span class="math inline">\(\sigma_Y\)</span> por encima del promedio <span class="math inline">\(\mu_Y\)</span> con <span class="math inline">\(\rho\)</span> la correlación entre <span class="math inline">\(X\)</span> y <span class="math inline">\(Y\)</span>. La fórmula para la regresión es por lo tanto:</p>
+<p><span class="math display">\[
+\left( \frac{Y-\mu_Y}{\sigma_Y} \right) = \rho \left( \frac{x-\mu_X}{\sigma_X} \right)
+\]</span></p>
+<p>Podemos reescribirlo así:</p>
+<p><span class="math display">\[
+Y = \mu_Y + \rho \left( \frac{x-\mu_X}{\sigma_X} \right) \sigma_Y
+\]</span></p>
+<p>Si hay una correlación perfecta, la línea de regresión predice un aumento que es el mismo número de DE. Si hay 0 correlación, entonces no usamos <span class="math inline">\(x\)</span> en absoluto para la predicción y simplemente predecir el promedio <span class="math inline">\(\mu_Y\)</span>. Para valores entre 0 y 1, la predicción está en algún punto intermedio. Si la correlación es negativa, predecimos una reducción en lugar de un aumento.</p>
+<p>Tenga en cuenta que si la correlación es positiva e inferior a 1, nuestra predicción está más cerca, en unidades estándar, de la altura promedio que el valor utilizado para predecir, <span class="math inline">\(x\)</span>, es al promedio de la <span class="math inline">\(x\)</span> s. Es por eso que lo llamamos <em>regresión</em>: el hijo retrocede a la altura promedio. De hecho, el título del artículo de Galton era: <em>Regresión hacia la mediocridad en estatura hereditaria</em>. Para agregar líneas de regresión a las parcelas, necesitaremos la fórmula anterior en la forma:</p>
+<p><span class="math display">\[
+y= b + mx \mbox{ with slope } m = \rho \frac{\sigma_y}{\sigma_x} \mbox{ and intercept } b=\mu_y - m \mu_x
+\]</span></p>
+<p>Aquí agregamos la línea de regresión a los datos originales:</p>
+<div class="sourceCode" id="cb646"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb646-1" data-line-number="1">mu_x &lt;-<span class="st"> </span><span class="kw">mean</span>(galton_heights<span class="op">$</span>father)</a>
+<a class="sourceLine" id="cb646-2" data-line-number="2">mu_y &lt;-<span class="st"> </span><span class="kw">mean</span>(galton_heights<span class="op">$</span>son)</a>
+<a class="sourceLine" id="cb646-3" data-line-number="3">s_x &lt;-<span class="st"> </span><span class="kw">sd</span>(galton_heights<span class="op">$</span>father)</a>
+<a class="sourceLine" id="cb646-4" data-line-number="4">s_y &lt;-<span class="st"> </span><span class="kw">sd</span>(galton_heights<span class="op">$</span>son)</a>
+<a class="sourceLine" id="cb646-5" data-line-number="5">r &lt;-<span class="st"> </span><span class="kw">cor</span>(galton_heights<span class="op">$</span>father, galton_heights<span class="op">$</span>son)</a>
+<a class="sourceLine" id="cb646-6" data-line-number="6"></a>
+<a class="sourceLine" id="cb646-7" data-line-number="7">galton_heights <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb646-8" data-line-number="8"><span class="kw">ggplot</span>(<span class="kw">aes</span>(father, son)) <span class="op">+</span></a>
+<a class="sourceLine" id="cb646-9" data-line-number="9"><span class="kw">geom_point</span>(<span class="dt">alpha =</span> <span class="fl">0.5</span>) <span class="op">+</span></a>
+<a class="sourceLine" id="cb646-10" data-line-number="10"><span class="kw">geom_abline</span>(<span class="dt">slope =</span> r <span class="op">*</span><span class="st"> </span>s_y<span class="op">/</span>s_x, <span class="dt">intercept =</span> mu_y <span class="op">-</span><span class="st"> </span>r <span class="op">*</span><span class="st"> </span>s_y<span class="op">/</span>s_x <span class="op">*</span><span class="st"> </span>mu_x)</a></code></pre></div>
+<p><img src="libro_files/figure-html/regression-line-1.png" width="40%" style="display: block; margin: auto;" /></p>
+<p>La fórmula de regresión implica que si primero estandarizamos las variables, es decir, restamos el promedio y dividimos por la desviación estándar, entonces la línea de regresión tiene una intersección 0 y una pendiente igual a la correlación. <span class="math inline">\(\rho\)</span>. Puedes hacer el mismo diagrama, pero usando unidades estándar como esta:</p>
+<div class="sourceCode" id="cb647"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb647-1" data-line-number="1">galton_heights <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb647-2" data-line-number="2"><span class="kw">ggplot</span>(<span class="kw">aes</span>(<span class="kw">scale</span>(father), <span class="kw">scale</span>(son))) <span class="op">+</span></a>
+<a class="sourceLine" id="cb647-3" data-line-number="3"><span class="kw">geom_point</span>(<span class="dt">alpha =</span> <span class="fl">0.5</span>) <span class="op">+</span></a>
+<a class="sourceLine" id="cb647-4" data-line-number="4"><span class="kw">geom_abline</span>(<span class="dt">intercept =</span> <span class="dv">0</span>, <span class="dt">slope =</span> r)</a></code></pre></div>
+<div id="la-regresión-mejora-la-precisión" class="section level3">
+<h3><span class="header-section-number">17.4.1</span> La regresión mejora la precisión</h3>
+<p>Comparemos los dos enfoques de predicción que hemos presentado:</p>
+<ol style="list-style-type: decimal">
+<li>Redondea las alturas de los padres a la pulgada más cercana, estratifica y luego toma el promedio.</li>
+<li>Calcule la línea de regresión y úsela para predecir.</li>
+</ol>
+<p>Utilizamos una muestra de simulación de Monte Carlo <span class="math inline">\(N=50\)</span> familias:</p>
+<div class="sourceCode" id="cb648"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb648-1" data-line-number="1">B &lt;-<span class="st"> </span><span class="dv">1000</span></a>
+<a class="sourceLine" id="cb648-2" data-line-number="2">N &lt;-<span class="st"> </span><span class="dv">50</span></a>
+<a class="sourceLine" id="cb648-3" data-line-number="3"></a>
+<a class="sourceLine" id="cb648-4" data-line-number="4"><span class="kw">set.seed</span>(<span class="dv">1983</span>)</a>
+<a class="sourceLine" id="cb648-5" data-line-number="5">conditional_avg &lt;-<span class="st"> </span><span class="kw">replicate</span>(B, {</a>
+<a class="sourceLine" id="cb648-6" data-line-number="6">dat &lt;-<span class="st"> </span><span class="kw">sample_n</span>(galton_heights, N)</a>
+<a class="sourceLine" id="cb648-7" data-line-number="7">dat <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">filter</span>(<span class="kw">round</span>(father) <span class="op">==</span><span class="st"> </span><span class="dv">72</span>) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb648-8" data-line-number="8"><span class="kw">summarize</span>(<span class="dt">avg =</span> <span class="kw">mean</span>(son)) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb648-9" data-line-number="9"><span class="kw">pull</span>(avg)</a>
+<a class="sourceLine" id="cb648-10" data-line-number="10">})</a>
+<a class="sourceLine" id="cb648-11" data-line-number="11"></a>
+<a class="sourceLine" id="cb648-12" data-line-number="12">regression_prediction &lt;-<span class="st"> </span><span class="kw">replicate</span>(B, {</a>
+<a class="sourceLine" id="cb648-13" data-line-number="13">dat &lt;-<span class="st"> </span><span class="kw">sample_n</span>(galton_heights, N)</a>
+<a class="sourceLine" id="cb648-14" data-line-number="14">mu_x &lt;-<span class="st"> </span><span class="kw">mean</span>(dat<span class="op">$</span>father)</a>
+<a class="sourceLine" id="cb648-15" data-line-number="15">mu_y &lt;-<span class="st"> </span><span class="kw">mean</span>(dat<span class="op">$</span>son)</a>
+<a class="sourceLine" id="cb648-16" data-line-number="16">s_x &lt;-<span class="st"> </span><span class="kw">sd</span>(dat<span class="op">$</span>father)</a>
+<a class="sourceLine" id="cb648-17" data-line-number="17">s_y &lt;-<span class="st"> </span><span class="kw">sd</span>(dat<span class="op">$</span>son)</a>
+<a class="sourceLine" id="cb648-18" data-line-number="18">r &lt;-<span class="st"> </span><span class="kw">cor</span>(dat<span class="op">$</span>father, dat<span class="op">$</span>son)</a>
+<a class="sourceLine" id="cb648-19" data-line-number="19">mu_y <span class="op">+</span><span class="st"> </span>r<span class="op">*</span>(<span class="dv">72</span> <span class="op">-</span><span class="st"> </span>mu_x)<span class="op">/</span>s_x<span class="op">*</span>s_y</a>
+<a class="sourceLine" id="cb648-20" data-line-number="20">})</a></code></pre></div>
+<p>Aunque el valor esperado de estas dos variables aleatorias es casi el mismo:</p>
+<div class="sourceCode" id="cb649"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb649-1" data-line-number="1"><span class="kw">mean</span>(conditional_avg, <span class="dt">na.rm =</span> <span class="ot">TRUE</span>)</a>
+<a class="sourceLine" id="cb649-2" data-line-number="2"><span class="co">#&gt; [1] 70.5</span></a>
+<a class="sourceLine" id="cb649-3" data-line-number="3"><span class="kw">mean</span>(regression_prediction)</a>
+<a class="sourceLine" id="cb649-4" data-line-number="4"><span class="co">#&gt; [1] 70.5</span></a></code></pre></div>
+<p>El error estándar para la predicción de regresión es sustancialmente menor:</p>
+<div class="sourceCode" id="cb650"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb650-1" data-line-number="1"><span class="kw">sd</span>(conditional_avg, <span class="dt">na.rm =</span> <span class="ot">TRUE</span>)</a>
+<a class="sourceLine" id="cb650-2" data-line-number="2"><span class="co">#&gt; [1] 0.964</span></a>
+<a class="sourceLine" id="cb650-3" data-line-number="3"><span class="kw">sd</span>(regression_prediction)</a>
+<a class="sourceLine" id="cb650-4" data-line-number="4"><span class="co">#&gt; [1] 0.452</span></a></code></pre></div>
+<p>La línea de regresión es, por lo tanto, mucho más estable que la media condicional. Hay una razón intuitiva para esto. El promedio condicional se calcula en un subconjunto relativamente pequeño: los padres que miden aproximadamente 72 pulgadas de alto. De hecho, en algunas de las permutaciones no tenemos datos, por eso utilizamos <code>na.rm=TRUE</code>. La regresión siempre usa todos los datos.</p>
+<p>Entonces, ¿por qué no usar siempre la regresión para la predicción? Porque no siempre es apropiado. Por ejemplo, Anscombe proporcionó casos para los cuales los datos no tienen una relación lineal. Entonces, ¿estamos justificados al usar la línea de regresión para predecir? Galton respondió esto en positivo para los datos de altura. La justificación, que incluimos en la siguiente sección, es algo más avanzada que el resto del capítulo.</p>
+</div>
+<div id="distribución-normal-bivariada-avanzada" class="section level3">
+<h3><span class="header-section-number">17.4.2</span> Distribución normal bivariada (avanzada)</h3>
+<p>La correlación y la pendiente de regresión son estadísticos de resumen ampliamente utilizados, pero a menudo se usan o malinterpretan mal. Los ejemplos de Anscombe proporcionan casos de conjuntos de datos sobre simplificados en los que resumir con correlación sería un error. Pero hay muchos más ejemplos de la vida real.</p>
+<p>La principal forma en que motivamos el uso de la correlación involucra lo que se llama <em>distribución normal bivariada</em>.</p>
+<p>Cuando un par de variables aleatorias se aproxima por la distribución normal bivariada, los diagramas de dispersión parecen óvalos. Como vimos en la sección <a href="regression.html#corr-coef">17.2</a>, pueden ser delgadas (alta correlación) o en forma de círculo (sin correlación).</p>
+<!--
+<img src="libro_files/figure-html/bivariate-ovals-1.png" width="70%" style="display: block; margin: auto;" />
+-->
+<p>Una forma más técnica de definir la distribución normal bivariada es la siguiente: si <span class="math inline">\(X\)</span> es una variable aleatoria normalmente distribuida, <span class="math inline">\(Y\)</span> también es una variable aleatoria normalmente distribuida, y la distribución condicional de <span class="math inline">\(Y\)</span> para cualquier <span class="math inline">\(X=x\)</span> es aproximadamente normal, entonces el par es aproximadamente bivariado normal.</p>
+<p>Si creemos que los datos de altura están bien aproximados por la distribución normal bivariada, entonces deberíamos ver la retención de aproximación normal para cada estrato. Aquí estratificamos las alturas del hijo por las alturas estandarizadas del padre y vemos que la suposición parece ser válida:</p>
+<div class="sourceCode" id="cb651"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb651-1" data-line-number="1">galton_heights <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb651-2" data-line-number="2"><span class="kw">mutate</span>(<span class="dt">z_father =</span> <span class="kw">round</span>((father <span class="op">-</span><span class="st"> </span><span class="kw">mean</span>(father))<span class="op">/</span><span class="st"> </span><span class="kw">sd</span>(father))) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb651-3" data-line-number="3"><span class="kw">filter</span>(z_father <span class="op">%in%</span><span class="st"> </span><span class="dv">-2</span><span class="op">:</span><span class="dv">2</span>) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb651-4" data-line-number="4"><span class="kw">ggplot</span>() <span class="op">+</span></a>
+<a class="sourceLine" id="cb651-5" data-line-number="5"><span class="kw">stat_qq</span>(<span class="kw">aes</span>(<span class="dt">sample =</span> son)) <span class="op">+</span></a>
+<a class="sourceLine" id="cb651-6" data-line-number="6"><span class="kw">facet_wrap</span>( <span class="op">~</span><span class="st"> </span>z_father)</a></code></pre></div>
+<p><img src="libro_files/figure-html/qqnorm-of-strata-1.png" width="70%" style="display: block; margin: auto;" /></p>
+<p>Ahora volvemos a definir la correlación. Galton utilizó estadísticas matemáticas para demostrar que, cuando dos variables siguen una distribución normal bivariada, calcular la línea de regresión es equivalente a calcular las expectativas condicionales. No mostramos la derivación aquí, pero podemos mostrar eso bajo este supuesto, para cualquier valor dado de <span class="math inline">\(x\)</span>, el valor esperado de <span class="math inline">\(Y\)</span> en pares para los cuales <span class="math inline">\(X=x\)</span> es:</p>
+<p><span class="math display">\[
+\mbox{E}(Y | X=x) = \mu_Y + \rho \frac{X-\mu_X}{\sigma_X}\sigma_Y
+\]</span></p>
+<p>Esta es la línea de regresión, con pendiente. <span class="math display">\[\rho \frac {\sigma_Y} {\sigma_X} e interceptar \]</span>. Es equivalente a la ecuación de regresión que mostramos anteriormente que se puede escribir así: <span class="math inline">\(\mu_y - m\mu_X\)</span></p>
+<p><span class="math display">\[
+\frac{\mbox{E}(Y \mid X=x) - \mu_Y}{\sigma_Y} = \rho \frac{x-\mu_X}{\sigma_X}
+\]</span></p>
+<p>Esto implica que, si nuestros datos son aproximadamente bivariados, la línea de regresión da la probabilidad condicional. Por lo tanto, podemos obtener una estimación mucho más estable de la expectativa condicional al encontrar la línea de regresión y usarla para predecir.</p>
+<p>En resumen, si nuestros datos son aproximadamente bivariados, entonces la expectativa condicional, la mejor predicción de <span class="math inline">\(Y\)</span> dado que sabemos el valor de <span class="math inline">\(X\)</span>, viene dado por la línea de regresión.</p>
+</div>
+<div id="varianza-explicada" class="section level3">
+<h3><span class="header-section-number">17.4.3</span> Varianza explicada</h3>
+<p>La teoría normal bivariada también nos dice que la desviación estándar de la distribución <em>condicional</em> descrita anteriormente es:</p>
+<p><span class="math display">\[
+\mbox{SD}(Y \mid X=x ) = \sigma_Y \sqrt{1-\rho^2}
+\]</span></p>
+<p>Para ver por qué esto es intuitivo, observe que sin condicionamiento, <span class="math inline">\(\mbox{SD}(Y) = \sigma_Y\)</span>, estamos viendo la variabilidad de todos los hijos. Pero una vez que condicionamos, solo observamos la variabilidad de los hijos con un padre alto de 72 pulgadas. Este grupo tenderá a ser algo alto, por lo que se reduce la desviación estándar.</p>
+<p>Específicamente, se reduce a <span class="math inline">\(\sqrt{1-\rho^2} = \sqrt{1 - 0.25}\)</span> = 0.87 de lo que era originalmente. Podríamos decir que las alturas del padre “explican” el 13% de la variabilidad observada en las alturas del hijo.</p>
+<p>La declaración &quot; <span class="math inline">\(X\)</span> explica tal y cual porcentaje de la variabilidad &quot;se usa comúnmente en los trabajos académicos. En este caso, este porcentaje realmente se refiere a la varianza (el SD al cuadrado). Entonces, si los datos son bivariados normales, la varianza se reduce en <span class="math inline">\(1-\rho^2\)</span> entonces decimos que <span class="math inline">\(X\)</span> explica <span class="math inline">\(1- (1-\rho^2)=\rho^2\)</span> (la correlación al cuadrado) de la varianza.</p>
+<p>Pero es importante recordar que la declaración de “varianza explicada” solo tiene sentido cuando los datos se aproximan mediante una distribución normal bivariada.</p>
+</div>
+<div id="advertencia-hay-dos-líneas-de-regresión" class="section level3">
+<h3><span class="header-section-number">17.4.4</span> Advertencia: hay dos líneas de regresión</h3>
+<p>Calculamos una línea de regresión para predecir la altura del hijo a partir de la altura del padre. Utilizamos estos cálculos:</p>
+<div class="sourceCode" id="cb652"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb652-1" data-line-number="1">mu_x &lt;-<span class="st"> </span><span class="kw">mean</span>(galton_heights<span class="op">$</span>father)</a>
+<a class="sourceLine" id="cb652-2" data-line-number="2">mu_y &lt;-<span class="st"> </span><span class="kw">mean</span>(galton_heights<span class="op">$</span>son)</a>
+<a class="sourceLine" id="cb652-3" data-line-number="3">s_x &lt;-<span class="st"> </span><span class="kw">sd</span>(galton_heights<span class="op">$</span>father)</a>
+<a class="sourceLine" id="cb652-4" data-line-number="4">s_y &lt;-<span class="st"> </span><span class="kw">sd</span>(galton_heights<span class="op">$</span>son)</a>
+<a class="sourceLine" id="cb652-5" data-line-number="5">r &lt;-<span class="st"> </span><span class="kw">cor</span>(galton_heights<span class="op">$</span>father, galton_heights<span class="op">$</span>son)</a>
+<a class="sourceLine" id="cb652-6" data-line-number="6">m_<span class="dv">1</span> &lt;-<span class="st"> </span>r <span class="op">*</span><span class="st"> </span>s_y<span class="op">/</span><span class="st"> </span>s_x</a>
+<a class="sourceLine" id="cb652-7" data-line-number="7">b_<span class="dv">1</span> &lt;-<span class="st"> </span>mu_y <span class="op">-</span><span class="st"> </span>m_<span class="dv">1</span><span class="op">*</span>mu_x</a></code></pre></div>
+<p>que nos da la función <span class="math inline">\(\mbox{E}(Y\mid X=x) =\)</span> 37.3 + 0.46 <span class="math inline">\(x\)</span>.</p>
+<p>¿Qué pasa si queremos predecir la altura del padre en función de la del hijo? Es importante saber que esto no se determina calculando la función inversa:
+<span class="math inline">\(x = \{ \mbox{E}(Y\mid X=x) -\)</span> 37.3 <span class="math inline">\(\}/\)</span> NA.</p>
+<p>Necesitamos calcular <span class="math inline">\(\mbox{E}(X \mid Y=y)\)</span>. Dado que los datos son aproximadamente bivariados normales, la teoría descrita anteriormente nos dice que esta expectativa condicional seguirá una línea con pendiente e intercepción:</p>
+<div class="sourceCode" id="cb653"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb653-1" data-line-number="1">m_<span class="dv">2</span> &lt;-<span class="st"> </span>r <span class="op">*</span><span class="st"> </span>s_x<span class="op">/</span><span class="st"> </span>s_y</a>
+<a class="sourceLine" id="cb653-2" data-line-number="2">b_<span class="dv">2</span> &lt;-<span class="st"> </span>mu_x <span class="op">-</span><span class="st"> </span>m_<span class="dv">2</span> <span class="op">*</span><span class="st"> </span>mu_y</a></code></pre></div>
+<p>Entonces obtenemos <span class="math inline">\(\mbox{E}(X \mid Y=y) =\)</span> 40.9 + 0.41 y. Nuevamente vemos una regresión al promedio: la predicción para el padre está más cerca del promedio del padre que las alturas del hijo <span class="math inline">\(y\)</span> es para el hijo promedio.</p>
+<p>Aquí hay una gráfica que muestra las dos líneas de regresión, con azul para predecir las alturas del hijo con las alturas del padre y rojo para predecir las alturas del padre con las alturas del hijo:</p>
+<div class="sourceCode" id="cb654"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb654-1" data-line-number="1">galton_heights <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb654-2" data-line-number="2"><span class="kw">ggplot</span>(<span class="kw">aes</span>(father, son)) <span class="op">+</span></a>
+<a class="sourceLine" id="cb654-3" data-line-number="3"><span class="kw">geom_point</span>(<span class="dt">alpha =</span> <span class="fl">0.5</span>) <span class="op">+</span></a>
+<a class="sourceLine" id="cb654-4" data-line-number="4"><span class="kw">geom_abline</span>(<span class="dt">intercept =</span> b_<span class="dv">1</span>, <span class="dt">slope =</span> m_<span class="dv">1</span>, <span class="dt">col =</span> <span class="st">&quot;blue&quot;</span>) <span class="op">+</span></a>
+<a class="sourceLine" id="cb654-5" data-line-number="5"><span class="kw">geom_abline</span>(<span class="dt">intercept =</span> <span class="op">-</span>b_<span class="dv">2</span><span class="op">/</span>m_<span class="dv">2</span>, <span class="dt">slope =</span> <span class="dv">1</span><span class="op">/</span>m_<span class="dv">2</span>, <span class="dt">col =</span> <span class="st">&quot;red&quot;</span>)</a></code></pre></div>
+<p><img src="libro_files/figure-html/two-regression-lines-1.png" width="40%" style="display: block; margin: auto;" /></p>
+</div>
+</div>
+<div id="ejercicios-33" class="section level2">
+<h2><span class="header-section-number">17.5</span> Ejercicios</h2>
+<p>1. Carga el <code>GaltonFamilies</code> datos de <strong>HistData</strong>. Los niños de cada familia se enumeran por género y luego por estatura. Crear un conjunto de datos llamado <code>galton_heights</code> eligiendo un hombre y una mujer al azar.</p>
+<p>2. Haga un diagrama de dispersión para las alturas entre madres e hijas, madres e hijos, padres e hijas, y padres e hijos.</p>
+<p>3. Calcule la correlación en las alturas entre madres e hijas, madres e hijos, padres e hijas, y padres e hijos.</p>
+
+</div>
+</div>
+<div class="footnotes">
+<hr />
+<ol start="65">
+<li id="fn65"><p><a href="https://en.wikipedia.org/wiki/Francis_Galton" class="uri">https://en.wikipedia.org/wiki/Francis_Galton</a><a href="regression.html#fnref65" class="footnote-back">↩</a></p></li>
+</ol>
+</div>
+            </section>
+
+          </div>
+        </div>
+      </div>
+<a href="models.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="modelos-lineales.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+    </div>
+  </div>
+<script src="libs/gitbook-2.6.7/js/app.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/lunr.js"></script>
+<script src="libs/gitbook-2.6.7/js/clipboard.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
+<script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-clipboard.js"></script>
+<script>
+gitbook.require(["gitbook"], function(gitbook) {
+gitbook.start({
+"sharing": {
+"github": false,
+"facebook": true,
+"twitter": true,
+"linkedin": false,
+"weibo": false,
+"instapaper": false,
+"vk": false,
+"all": ["facebook", "twitter", "linkedin", "weibo", "instapaper"]
+},
+"fontsettings": {
+"theme": "white",
+"family": "sans",
+"size": 2
+},
+"edit": {
+"link": "https://github.com/rafalab/dslibro/edit/master/regression/intro-to-regression.Rmd",
+"text": "Edit"
+},
+"history": {
+"link": null,
+"text": null
+},
+"view": {
+"link": null,
+"text": null
+},
+"download": null,
+"toc": {
+"collapse": "section"
+}
+});
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    var src = "true";
+    if (src === "" || src === "true") src = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML";
+    if (location.protocol !== "file:")
+      if (/^https?:/.test(src))
+        src = src.replace(/^https?:/, '');
+    script.src = src;
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+</body>
+
+</html>
