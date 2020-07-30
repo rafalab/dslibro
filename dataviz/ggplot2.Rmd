@@ -111,7 +111,7 @@ p
 
 ## Geometrías
 
-En `ggplot2` creamos gráficos agregando _capas_ (_layers_ en inglés). Las capas pueden definir geometrías, calcular estadísticas de resumen, definir qué escalas (_scales_ en inglés) usar o incluso cambiar estilos. Para agregar capas, usamos el símbolo `+`. En general, una línea de código se verá así:
+En `ggplot2` creamos gráficos agregando _capas_ (_layers_ en inglés). Las capas pueden definir geometrías, calcular estadísticas de resumen, definir qué escalas (_scales_ en inglés) usar o incluso cambiar estilos. Para añadir capas, usamos el símbolo `+`. En general, una línea de código se verá así:
 
 >> DATOS%>% `ggplot()` + CAPA 1 + CAPA 2 + ... + CAPA N
 
@@ -162,7 +162,7 @@ geom_point(aes(x = population/10^6, y = total))
 
 Podemos quitar el `x = ` y `y =` si quisiéramos ya que estos son el primer y el segundo argumento esperado, como se ve en la página de ayuda.
 
-En lugar de definir nuestro gráfico desde cero, también podemos agregar una capa al objeto `p` que se definió anteriormente como `p <- ggplot(data = murders)`:
+En lugar de definir nuestro gráfico desde cero, también podemos añadir una capa al objeto `p` que se definió anteriormente como `p <- ggplot(data = murders)`:
 
 ```{r ggplot-example-3}
 p + geom_point(aes(population/10^6, total))
@@ -174,7 +174,7 @@ La escala y las etiquetas se definen por defecto al agregar esta capa. Al igual 
 
 ## Capas
 
-Una segunda capa en el gráfico que queremos hacer implica agregar una etiqueta a cada punto para identificar el estado. Las funciones `geom_label` y `geom_text` nos permiten agregar texto al gráfico con o sin un rectángulo detrás del texto, respectivamente.
+Una segunda capa en el gráfico que queremos hacer implica añadir una etiqueta a cada punto para identificar el estado. Las funciones `geom_label` y `geom_text` nos permiten añadir texto al gráfico con o sin un rectángulo detrás del texto, respectivamente.
 
 Debido a que cada punto (cada estado en este caso) tiene una etiqueta, necesitamos un mapeo estético para hacer la conexión entre los puntos y las etiquetas. Al leer la página de ayuda, aprendemos que el mapeo entre el punto y la etiqueta se provee a través del argumento `label` de `aes`. Entonces el código se ve así:
 
@@ -254,7 +254,7 @@ Claramente, la segunda llamada a `geom_text` no usa `population` y `total`.
 
 ## Escalas
 
-Primero, las escalas que queremos están en escala logarítmica. Este no es el valor predeterminado, por lo que este cambio debe agregarse a través de una capa de _escalas_. Una mirada rápida a la hoja de referencia revela que la función `scale_x_continuous` nos permite controlar el comportamiento de las escalas. La usamos así:
+Primero, las escalas que queremos están en escala logarítmica. Este no es el valor predeterminado, por lo que este cambio debe añadirse a través de una capa de _escalas_. Una mirada rápida a la hoja de referencia revela que la función `scale_x_continuous` nos permite controlar el comportamiento de las escalas. La usamos así:
 
 
 ```{r ggplot-example-9}
@@ -278,7 +278,7 @@ scale_y_log10()
 
 ## Etiquetas y títulos
 
-Del mismo modo, la hoja de referencia revela que para cambiar las etiquetas y agregar un título, utilizamos las siguientes funciones:
+Del mismo modo, la hoja de referencia revela que para cambiar las etiquetas y añadir un título, utilizamos las siguientes funciones:
 
 ```{r ggplot-example-10}
 p + geom_point(size = 3) +
@@ -290,7 +290,7 @@ ylab("Total number of murders (log scale)") +
 ggtitle("US Gun Murders in 2010")
 ```
 
-¡Casi terminamos! Lo único que nos falta es agregar color, leyenda y cambios opcionales al estilo.
+¡Casi terminamos! Lo único que nos falta es añadir color, leyenda y cambios opcionales al estilo.
 
 ## Categorías como colores
 
@@ -322,13 +322,13 @@ p + geom_point(aes(col=region), size = 3)
 
 Los mapeos `x` y `y` se heredan de esos ya definidos en `p`, así que no los redefinimos. También movemos `aes` al primer argumento, ya que ahí es donde se esperan los mapeos en esta llamada.
 
-Aquí vemos otro comportamiento útil por defecto: __ggplot2__ automáticamente agrega una leyenda que asigna el color a la región. Para evitar agregar esta leyenda, establecemos el argumento `geom_point` como `show.legend = FALSE`.
+Aquí vemos otro comportamiento útil por defecto: __ggplot2__ automáticamente agrega una leyenda que asigna el color a la región. Para evitar añadir esta leyenda, establecemos el argumento `geom_point` como `show.legend = FALSE`.
 
 ## Anotación, formas y ajustes
 
-A menudo queremos agregar formas o anotaciones a las figuras que no se derivan directamente del mapeo estético; algunos ejemplos incluyen etiquetas, cuadros, áreas sombreadas y líneas.
+A menudo queremos añadir formas o anotaciones a las figuras que no se derivan directamente del mapeo estético; algunos ejemplos incluyen etiquetas, cuadros, áreas sombreadas y líneas.
 
-Aquí queremos agregar una línea que represente la tasa promedio de asesinatos en todo el país. Una vez que determinemos la tasa por millón a ser $r$, esta línea se define por la fórmula: $y = r x$, con $y$ y $x$ nuestros ejes: asesinatos totales y población en millones, respectivamente. En la escala logarítmica, esta línea se convierte en: $\log(y) = \log(r) + \log(x)$. Entonces, en nuestro gráfico, es una línea con pendiente 1 e intercepto $\log(r)$. Para calcular este valor, utilizamos nuestros conocimientos de __dplyr__:
+Aquí queremos añadir una línea que represente la tasa promedio de asesinatos en todo el país. Una vez que determinemos la tasa por millón a ser $r$, esta línea se define por la fórmula: $y = r x$, con $y$ y $x$ nuestros ejes: asesinatos totales y población en millones, respectivamente. En la escala logarítmica, esta línea se convierte en: $\log(y) = \log(r) + \log(x)$. Entonces, en nuestro gráfico, es una línea con pendiente 1 e intercepto $\log(r)$. Para calcular este valor, utilizamos nuestros conocimientos de __dplyr__:
 
 ```{r}
 r <- murders %>%
@@ -336,7 +336,7 @@ summarize(rate = sum(total)/ sum(population) * 10^6) %>%
 pull(rate)
 ```
 
-Para agregar una línea, usamos la función `geom_abline`. __ggplot2__ utiliza `ab` en el nombre para recordarnos que estamos suministrando el intercepto (`a`) y el pendiente (`b`). La línea predeterminada tiene pendiente 1 e intercepto 0, por lo que solo tenemos que definir el intercepto:
+Para añadir una línea, usamos la función `geom_abline`. __ggplot2__ utiliza `ab` en el nombre para recordarnos que estamos suministrando el intercepto (`a`) y el pendiente (`b`). La línea predeterminada tiene pendiente 1 e intercepto 0, por lo que solo tenemos que definir el intercepto:
 
 ```{r ggplot-example-13}
 p + geom_point(aes(col=region), size = 3) +
@@ -371,7 +371,7 @@ El estilo de un gráfico __ggplot2__ se puede cambiar usando las funciones de `t
 ds_theme_set()
 ```
 
-El paquete __ggthemes__ agrega muchos otros temas, incluso el tema `theme_economist` que escogimos. Después de instalar el paquete, pueden cambiar el estilo agregando una capa como la siguiente:
+El paquete __ggthemes__ añade muchos otros temas, incluso el tema `theme_economist` que escogimos. Después de instalar el paquete, pueden cambiar el estilo agregando una capa como la siguiente:
 
 ```{r, eval = FALSE}
 library(ggthemes)
@@ -380,7 +380,7 @@ p + theme_economist()
 
 Pueden ver cómo se ven algunos de los otros temas simplemente cambiando la función. Por ejemplo, pueden probar el tema `theme_fivethirtyeight()` en vez del anterior.
 
-La diferencia final tiene que ver con la posición de las etiquetas. En nuestro gráfico, algunas de las etiquetas se superponen. El paquete de complementos __ggrepel__ incluye una geometría que agrega etiquetas a la vez que garantiza que no se superpongan entre sí. Para utilizarla, simplemente cambiamos `geom_text` a `geom_text_repel`.
+La diferencia final tiene que ver con la posición de las etiquetas. En nuestro gráfico, algunas de las etiquetas se superponen. El paquete de complementos __ggrepel__ incluye una geometría que añade etiquetas a la vez que garantiza que no se superpongan entre sí. Para utilizarla, simplemente cambiamos `geom_text` a `geom_text_repel`.
 
 ## Cómo combinarlo todo
 
@@ -501,7 +501,7 @@ d. Un histograma.
 4\. ¿Cuál es la clase del objeto `p` que acaba de crear?
 
 
-5\. Ahora vamos a agregar una capa y las mapeos estéticos correspondientes. Para los datos de asesinatos, graficamos asesinatos totales versus tamaños de población. Explore el set de datos `murders` para recordar cuáles son los nombres de estas dos variables y escoja la respuesta correcta. __Sugerencia__: Mire `?murders`.
+5\. Ahora vamos a añadir una capa y las mapeos estéticos correspondientes. Para los datos de asesinatos, graficamos asesinatos totales versus tamaños de población. Explore el set de datos `murders` para recordar cuáles son los nombres de estas dos variables y escoja la respuesta correcta. __Sugerencia__: Mire `?murders`.
 
 a. `state` y `abb`
 b. `total_murders` y `population_size`
@@ -528,7 +528,7 @@ geom_point()
 Vuelva a hacer el gráfico pero ahora con total en el eje-x y población en el eje-y.
 
 
-8\. Si en lugar de puntos queremos agregar texto, podemos usar las geometrías `geom_text()` o `geom_label()`. El siguiente código:
+8\. Si en lugar de puntos queremos añadir texto, podemos usar las geometrías `geom_text()` o `geom_label()`. El siguiente código:
 
 ```{r, eval=FALSE}
 murders %>% ggplot(aes(population, total)) + geom_label()
@@ -560,7 +560,7 @@ d. Como queremos que todos los colores sean azules, no necesitamos asignar color
 
 12\. Ahora supongamos que queremos usar color para representar las diferentes regiones. En este caso, ¿cuál de los siguientes es el más apropiado?
 
-a. Agregar una columna llamada `color` a `murders` con el color que queremos usar.
+a. Añadir una columna llamada `color` a `murders` con el color que queremos usar.
 b. Como cada etiqueta necesita un color diferente, mapear los colores a través del argumento de color de `aes` .
 c. Utilizar el argumento `color` en `ggplot`.
 d. Como queremos que todos los colores sean azules, no necesitamos asignar colores, solo usar el argumento de color en `geom_label`.
@@ -580,4 +580,4 @@ Para cambiar el eje-y a una escala logarítmica, aprendimos sobre la función `s
 
 15\. Repita el ejercicio anterior pero ahora cambie ambos ejes para que estén en la escala logarítmica.
 
-16\. Ahora edite el código anterior para agregar el título "Gun murder data" al argumento. Sugerencia: use la función `ggtitle`.
+16\. Ahora edite el código anterior para añadir el título "Gun murder data" al argumento. Sugerencia: use la función `ggtitle`.
