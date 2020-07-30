@@ -71,9 +71,9 @@ Una vez finalizadas las elecciones, se puede observar la diferencia entre las pr
 
 Aunque sabemos que este sesgo afecta a nuestras encuestas, no tenemos forma de saber cuán grande es este sesgo hasta la noche de las elecciones. Como consecuencia, no podemos corregir nuestras encuestas para tomar este sesgo en cuenta. Lo que podemos hacer es incluir un término en nuestro modelo que explique esta variabilidad.
 
-### Representaciones matemáticas de modelos.
+### Representaciones matemáticas de modelos
 
-Supongamos que estamos recopilando datos de un encuestador y suponemos que no hay sesgo general. El encuestador recoge varias encuestas con un tamaño de muestra de $N$, por lo que observamos varias mediciones de la variabilidad $X_1, \dots, X_J$. La teoría nos dice que estas variables aleatorias tienen un valor esperado $d$ y un error estándar $2 \sqrt{p(1-p)/N}$. Comencemos usando el siguiente modelo para describir la variabilidad observada:
+Imagínese que estamos recopilando datos de un encuestador y suponemos que no hay sesgo general. El encuestador recoge varias encuestas con un tamaño de muestra de $N$, por lo que observamos varias mediciones de la variabilidad $X_1, \dots, X_J$. La teoría nos dice que estas variables aleatorias tienen un valor esperado $d$ y un error estándar $2 \sqrt{p(1-p)/N}$. Comencemos usando el siguiente modelo para describir la variabilidad observada:
 
 $$
 X_j = d + \varepsilon_j.
@@ -124,13 +124,13 @@ coord_flip() +
 facet_wrap( ~ type, scales = "free_y")
 ```
 
-El modelo anterior no toma en cuenta la variabilidad entre encuestadores. Para arreglar esto, agregamos un nuevo término para el efecto de los encuestadores. Usaremos $h_i$ para representar el sesgo del encuestador número $i$. Le añadimos este nuevo término al modelo:
+El modelo anterior no toma en cuenta la variabilidad entre encuestadores. Para arreglar esto, añadimos un nuevo término para el efecto de los encuestadores. Usaremos $h_i$ para representar el sesgo del encuestador número $i$. Le añadimos este nuevo término al modelo:
 
 $$
 X_{i,j} = d + h_i + \varepsilon_{i,j}
 $$
 
-Para simular datos de un encuestador específico, ahora necesitamos escojer un $h_i$ y luego agregar el $\varepsilon$s. Entonces, para un encuestador específico, suponemos que $\sigma_h$ es 0.025:
+Para simular datos de un encuestador específico, ahora necesitamos escojer un $h_i$ y luego añadir los $\varepsilon$s. Entonces, para un encuestador específico, suponemos que $\sigma_h$ es 0.025:
 
 ```{r}
 I <- 5
@@ -156,7 +156,7 @@ coord_flip()
 
 Noten que $h_i$ es común a todas las variabilidades observadas de un encuestador específico. Diferentes encuestadores tienen una $h_i$ diferente, lo que explica por qué cuando vemos los datos de los distintos encuestadores, podemos ver los diferentes grupos de puntos desplazarse hacia arriba y hacia abajo.
 
-Ahora, en el modelo anterior, suponemos que el promedio de los sesgos de los encuestadores es 0. Creemos que para cada encuestador sesgado a favor de nuestro partido, hay otro a favor del otro partido y suponemos que la desviación estándar es $\sigma_h$. Pero históricamente vemos que cada elección tiene un sesgo general que afecta a todas las encuestas. Podemos observar esto con los datos del 2016, pero si recopilamos datos históricos, vemos que el promedio de las encuestas falla por más de lo que predicen modelos como el anterior. Para ver esto, tomaríamos el promedio de las encuestas para cada año electoral y lo compararíamos con el valor real. Si hiciéramos esto, veríamos una diferencia con una desviación estándar de entre 2-3%. Para incorporar esto en el modelo, podemos agregar otro término para explicar esta variabilidad:
+Ahora, en el modelo anterior, suponemos que el promedio de los sesgos de los encuestadores es 0. Creemos que para cada encuestador sesgado a favor de nuestro partido, hay otro a favor del otro partido y suponemos que la desviación estándar es $\sigma_h$. Pero históricamente vemos que cada elección tiene un sesgo general que afecta a todas las encuestas. Podemos observar esto con los datos del 2016, pero si recopilamos datos históricos, vemos que el promedio de las encuestas falla por más de lo que predicen modelos como el anterior. Para ver esto, tomaríamos el promedio de las encuestas para cada año electoral y lo compararíamos con el valor real. Si hiciéramos esto, veríamos una diferencia con una desviación estándar de entre 2-3%. Para incorporar esto en el modelo, podemos añadir otro término para explicar esta variabilidad:
 $$
 X_{i,j} = d + b + h_i + \varepsilon_{i,j}.
 $$
@@ -165,7 +165,7 @@ Aquí $b$ es una variable aleatoria que explica la variabilidad de elección a e
 
 Una forma de interpretar $b$ es como la diferencia entre el promedio de todas las encuestas de todos los encuestadores y el resultado real de la elección. Como no conocemos el resultado real hasta después de las elecciones, no podemos estimar $b$ hasta entonces. Sin embargo, podemos estimar $b$ de las elecciones anteriores y estudiar la distribución de estos valores. Conforme a este enfoque, suponemos que, a lo largo de los años electorales, $b$ tiene el valor esperado 0 y el error estándar es aproximadamente $\sigma_b = 0.025$.
 
-Una implicación de agregar este término al modelo es que la desviación estándar de $X_{i,j}$ es mayor que lo que llamamos anteriormente $\sigma$, que combina la variabilidad del encuestador y la variabilidad de la muestra, y que se estimó con:
+Una implicación de añadir este término al modelo es que la desviación estándar de $X_{i,j}$ es mayor que lo que llamamos anteriormente $\sigma$, que combina la variabilidad del encuestador y la variabilidad de la muestra, y que se estimó con:
 
 ```{r}
 sd(one_poll_per_pollster$spread)
@@ -208,7 +208,7 @@ Hasta ahora nos hemos enfocado en el voto popular. Pero en Estados Unidos, las e
 results_us_election_2016 %>% top_n(5, electoral_votes)
 ```
 
-Con algunas excepciones menores que no discutimos, los votos electorales se ganan todo o nada. Por ejemplo, si un candidato gana California con solo 1 voto, aún obtiene los 55 votos electorales. Esto significa que al ganar algunos estados grandes por un amplio margen, pero al perder muchos estados pequeños por pequeños márgenes, se puede ganar el voto popular, pero perder el colegio electoral que es lo que decide el ganador. Esto sucedió en 1876, 1888, 2000 y 2016. La idea detrás de esto es evitar que algunos estados grandes tengan el poder de dominar las elecciones presidenciales. Sin embargo, muchas personas en Estados Unidos consideran que el colegio electoral es injusto y les gustaría abolirlo.
+Con algunas excepciones que no discutimos, los votos electorales se ganan todo o nada. Por ejemplo, si un candidato gana California con solo 1 voto, aún obtiene los 55 votos electorales. Esto significa que al ganar algunos estados grandes por un amplio margen, pero al perder muchos estados pequeños por pequeños márgenes, se puede ganar el voto popular, pero perder el colegio electoral que es lo que decide el ganador. Esto sucedió en 1876, 1888, 2000 y 2016. La idea detrás de esto es evitar que algunos estados grandes tengan el poder de dominar las elecciones presidenciales. Sin embargo, muchas personas en Estados Unidos consideran que el colegio electoral es injusto y les gustaría abolirlo.
 
 Ahora estamos listos para predecir el resultado del colegio electoral para 2016. Comenzamos agregando los resultados de una encuesta realizada durante la última semana antes de las elecciones. Utilizamos `str_detect`, una función que discutiremos más adelante en la Sección \@ref(stringr), para eliminar encuestas que cubren solo parte de un estado. 
 
@@ -230,7 +230,7 @@ Aquí están los cinco estados con los resultados más cerrados según las encue
 results %>% arrange(abs(avg))
 ```
 
-Ahora utilizaremos el comando `left_join` que nos permitirá agregar fácilmente el número de votos electorales para cada estado del conjunto de datos `us_electoral_votes_2016`. Describiremos esta función en detalle en el capítulo sobre _data wrangling_. Aquí, simplemente diremos que la función combina los dos conjuntos de datos para que la información del segundo argumento se agregue a la información del primero:
+Ahora utilizaremos el comando `left_join` que nos permitirá añadir fácilmente el número de votos electorales para cada estado del conjunto de datos `us_electoral_votes_2016`. Describiremos esta función en detalle en el capítulo sobre _data wrangling_. Aquí, simplemente observaremos que la función combina los dos conjuntos de datos para que la información del segundo argumento se agregue a la información del primero:
 
 ```{r}
 results <- left_join(results, results_us_election_2016, by = "state")
@@ -274,7 +274,7 @@ ggplot(aes(avg, posterior_mean, size = n)) + geom_point() +
 geom_abline(slope = 1, intercept = 0)
 ```
 
-Ahora repetimos esto 10,000 veces y generamos un resultado de la probabilidad a posteriori. En cada iteración, hacemos un seguimiento del número total de votos electorales para Clinton. Recuerden que Trump obtiene 270 votos electorales menos los votos para Clinton. También noten que la razón por la que agregamos 7 en el código es para tomar en cuenta Rhode Island y DC:
+Ahora repetimos esto 10,000 veces y generamos un resultado de la probabilidad a posteriori. En cada iteración, hacemos un seguimiento del número total de votos electorales para Clinton. Recuerden que Trump obtiene 270 votos electorales menos los votos para Clinton. También noten que la razón por la que añadimos 7 en el código es para tomar en cuenta Rhode Island y DC:
 
 ```{r, cache=TRUE}
 B <- 10000
@@ -343,10 +343,10 @@ El modelo de FiveThirtyEight incluye muchas otras características que no descri
 
 ### Pronósticos
 
-A los pronosticadores les gusta hacer predicciones mucho antes de las elecciones. Las predicciones se adaptan a medida que salen nuevas encuestas. Sin embargo, una pregunta importante que deben hacer los pronosticadores es: ¿cuán informativas son las encuestas tomadas varias semanas antes de las elecciones sobre la elección real? Aquí estudiamos la variabilidad de los resultados de las encuestas a lo largo del tiempo.
+A los pronosticadores les gusta hacer predicciones mucho antes de las elecciones. Las predicciones se adaptan a medida que salen nuevas encuestas. Sin embargo, una pregunta importante que deben hacer los pronosticadores es: ¿cuán informativas son las encuestas que se hacen varias semanas antes de las elecciones sobre la elección real? Aquí estudiamos la variabilidad de los resultados de las encuestas a lo largo del tiempo.
 
 
-Para asegurarnos de que la variabilidad que observamos no se deba a efectos del encuestador, estudiemos los datos de un encuestador:
+Para asegurarnos de que la variabilidad que observamos no se debe a efectos del encuestador, estudiemos los datos de un encuestador:
 
 ```{r poplular-vote-time-trend}
 one_pollster <- polls_us_election_2016 %>%
@@ -443,7 +443,7 @@ mutate(spread = rawpoll_clinton/100 - rawpoll_trump/100)
 
 Ahora, para cada encuesta, use el CLT para crear un intervalo de confianza de 95% para la diferencia informada por cada encuesta. Llame al objeto resultante `cis` con columnas inferior y superior para los límites de los intervalos de confianza. Utilice la función `select` para mantener las columnas `state, startdate, end date, pollster, grade, spread, lower, upper`.
 
-2\. Puede agregar el resultado final a la tabla `cis` que acaba de crear utilizando la función `right_join` así:
+2\. Puede añadir el resultado final a la tabla `cis` que acaba de crear utilizando la función `right_join` así:
 
 ```{r, eval=FALSE}
 add <- results_us_election_2016 %>%
@@ -459,7 +459,7 @@ Ahora determine con qué frecuencia el intervalo de confianza de 95% incluye el 
 3\. Repita esto, pero muestre la proporción de veces que cada encuestador acierta. Muestre solo encuestadores con más de 5 encuestas y póngalos en orden de mejor a peor. Muestre el número de encuestas realizadas por cada encuestador y la calificación de FiveThirtyEight para cada encuestador. Sugerencia: use `n=n(), grade = grade[1]` en la llamada a `summarize`.
 
 
-4\. Repita el ejercicio 3, pero en lugar de estratificar por encuestador, estratifique por estado. Tenga en cuenta que aquí no podemos mostrar calificaciones.
+4\. Repita el ejercicio 3, pero en lugar de estratificar por encuestador, estratifique por estado. Recuerden que aquí no podemos mostrar calificaciones.
 
 
 5\. Haga un diagrama de barras basado en el resultado del ejercicio 4. Use `coord_flip`.
@@ -476,5 +476,5 @@ Ahora determine con qué frecuencia el intervalo de confianza de 95% incluye el 
 9\. Vemos que a nivel estatal, el error medio fue 3% a favor de Clinton. La distribución no está centrada en 0, sino en 0.03. Este es el sesgo general que describimos en la sección anterior. Cree un diagrama de caja para ver si el sesgo fue general para todos los estados o si afectó a algunos estados de manera diferente. Utilice `filter(grade %in% c("A+","A","A-","B+") | is.na(grade)))` para incluir solo encuestadores con altas calificaciones.
 
 
-10\. Algunos de estos estados solo tienen unas pocas encuestas. Repita el ejercicio 9, pero solo incluya estados con 5 o más encuestas buenas. Sugerencia: use `group_by`, `filter` y luego `ungroup`. Verá que el Oeste (Washington, Nuevo México, California) subestimó el desempeño de Hillary, mientras que el Medio Oeste (Michigan, Pennsylvania, Wisconsin, Ohio, Missouri) lo sobrestimó. En nuestra simulación, no modelamos este comportamiento ya que agregamos un sesgo general, en lugar de un sesgo regional. Tenga en cuenta que algunos encuestadores ahora pueden modelar la correlación entre estados similares y estimar esta correlación a partir de datos históricos. Para obtener más información sobre esto, puede aprender sobre efectos aleatorios y modelos mixtos.
+10\. Algunos de estos estados solo tienen unas pocas encuestas. Repita el ejercicio 9, pero solo incluya estados con 5 o más encuestas buenas. Sugerencia: use `group_by`, `filter` y luego `ungroup`. Verá que el Oeste (Washington, Nuevo México, California) subestimó el desempeño de Hillary, mientras que el Medio Oeste (Michigan, Pennsylvania, Wisconsin, Ohio, Missouri) lo sobrestimó. En nuestra simulación, no modelamos este comportamiento ya que añadimos un sesgo general, en lugar de un sesgo regional. Tenga en cuenta que algunos encuestadores ahora pueden modelar la correlación entre estados similares y estimar esta correlación a partir de datos históricos. Para obtener más información sobre esto, puede aprender sobre efectos aleatorios y modelos mixtos.
 
