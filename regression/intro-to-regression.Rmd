@@ -1,14 +1,14 @@
 # Regresión {#regression}
 
-Hasta este punto, este libro se ha centrado principalmente en variables individuales. Sin embargo, en aplicaciones de ciencia de datos, es muy común estar interesado en la relación entre dos o más variables. Por ejemplo, en el capítulo \@ref(linear-models) utilizaremos un enfoque basado en datos que examina la relación entre las estadísticas de los jugadores y el éxito para guiar la construcción de un equipo de béisbol con un presupuesto limitado. Antes de profundizar en este ejemplo más complejo, presentamos los conceptos necesarios para entender la regresión utilizando una ilustración más simple. De hecho, utilizamos el set de datos del que nació la regresión.
+Hasta este punto, este libro se ha centrado principalmente en variables individuales. Sin embargo, en aplicaciones de ciencia de datos, es muy común estar interesado en la relación entre dos o más variables. Por ejemplo, en el capítulo \@ref(linear-models) utilizaremos un enfoque basado en datos que examina la relación entre las estadísticas de los jugadores y el éxito para guiar la construcción de un equipo de béisbol con un presupuesto limitado. Antes de profundizar en este ejemplo más complejo, presentamos los conceptos necesarios para entender la regresión utilizando una ilustración más sencilla. De hecho, utilizamos el set de datos del que nació la regresión.
 
-El ejemplo es de la genética. Francis Galton^[https://en.wikipedia.org/wiki/Francis_Galton] estudió la variación y la herencia de los rasgos humanos. Entre muchos otros rasgos, Galton recopiló y estudió datos de estatura de familias para tratar de entender la herencia. Mientras hacía esto, desarrolló los conceptos de correlación y regresión, así como una conexión a pares de datos que siguen una distribución normal. Por supuesto, en el momento en que se recopilaron estos datos, nuestro conocimiento de la genética era bastante limitado en comparación con lo que sabemos hoy. Una pregunta muy específica que Galton intentó responder fue: ¿cuán bien podemos predecir la altura de un niño basándose en la altura de los padres? La técnica que desarrolló para responder a esta pregunta, la regresión, también se puede aplicar a nuestra pregunta de béisbol. La regresión puede aplicarse también en muchas otras circunstancias.
+El ejemplo es de la genética. Francis Galton^[https://en.wikipedia.org/wiki/Francis_Galton] estudió la variación y la herencia de los rasgos humanos. Entre muchos otros rasgos, Galton recopiló y estudió datos de estatura de familias para tratar de entender la herencia. Mientras hacía esto, desarrolló los conceptos de correlación y regresión, así como una conexión a pares de datos que siguen una distribución normal. Por supuesto, en el momento en que se recopilaron estos datos, nuestro conocimiento de la genética era bastante limitado en comparación con lo que sabemos hoy. Una pregunta muy específica que Galton intentó responder fue: ¿cuán bien podemos predecir la altura de un niño basándose en la altura de los padres? La técnica que desarrolló para responder a esta pregunta, la regresión, también se puede aplicar a nuestra pregunta de béisbol y a muchas otras circunstancias.
 
-__Nota histórica__: Galton hizo importantes contribuciones a las estadísticas y la genética, pero también fue uno de los primeros defensores de la eugenesia, un movimiento filosófico científicamente defectuoso favorecido por muchos biólogos de la época de Galton y con terribles consecuencias históricas. Puede leer más sobre esto aquí: [https://pged.org/history-eugenics-and-genetics/font](https://pged.org/history-eugenics-and-genetics/).
+__Nota histórica__: Galton hizo importantes contribuciones a las estadísticas y la genética, pero también fue uno de los primeros defensores de la eugenesia, un movimiento filosófico científicamente defectuoso favorecido por muchos biólogos de la época de Galton, pero con terribles consecuencias históricas. Puede leer más sobre el tema aquí: [https://pged.org/history-eugenics-and-genetics/font](https://pged.org/history-eugenics-and-genetics/).
 
 ## Estudio de caso: ¿la altura es hereditaria?
 
-Tenemos acceso a los datos de altura familiar de Galton a través del paquete __HistData__. Estos datos contienen alturas en varias docenas de familias: madres, padres, hijas e hijos. Para imitar el análisis de Galton, crearemos un set de datos con las alturas de los padres y un hijo de cada familia seleccionado al azar:
+Tenemos acceso a los datos de altura familiar de Galton a través del paquete __HistData__. Estos datos contienen alturas de varias docenas de familias: madres, padres, hijas e hijos. Para imitar el análisis de Galton, crearemos un set de datos con las alturas de los padres y un hijo de cada familia seleccionado al azar:
 
 ```{r, message=FALSE, warning=FALSE}
 library(tidyverse)
@@ -34,14 +34,14 @@ galton_heights %>%
 summarize(mean(father), sd(father), mean(son), sd(son))
 ```
 
-Sin embargo, este resumen no describe una característica importante de los datos: [fix check] la tendencia de que cuanto más alto es el padre, más alto es el hijo.
+Sin embargo, este resumen no describe una característica importante de los datos: [fix check] la tendencia de que cuanto/entre más alto es el padre, más alto es el hijo.
 
 ```{r scatterplot, fig.height = 3, fig.width = 3, out.width="40%"}
 galton_heights %>% ggplot(aes(father, son)) +
 geom_point(alpha = 0.5)
 ```
 
-Aprenderemos que el coeficiente de correlación es un resumen informativo de cómo dos variables se mueven juntas y luego veremos cómo se puede usar para predecir una variable usando la otra.
+Aprenderemos que el coeficiente de correlación es un resumen informativo de cómo dos variables se mueven juntas y luego veremos cómo esto se puede usar para predecir una variable usando la otra.
 
 
 ## El coeficiente de correlación {#corr-coef}
@@ -51,13 +51,13 @@ El coeficiente de correlación se define para una lista de pares $(x_1, y_1), \d
 $$
 \rho = \frac{1}{n} \sum_{i=1}^n \left( \frac{x_i-\mu_x}{\sigma_x} \right)\left( \frac{y_i-\mu_y}{\sigma_y} \right)
 $$
-con $\mu_x, \mu_y$ los promedios de $x_1,\dots, x_n$ y $y_1, \dots, y_n$, respectivamente, y $\sigma_x, \sigma_y$ las desviaciones estándar. [fix eng too combine two sentences] La letra griega para $r$, $\rho$, se usa comúnmente en libros de estadística para denotar la correlación porque es la primera letra de regresión. Pronto aprendemos sobre la conexión entre correlación y regresión. Podemos representar la fórmula anterior con código R usando:
+con $\mu_x, \mu_y$ los promedios de $x_1,\dots, x_n$ y $y_1, \dots, y_n$, respectivamente, y $\sigma_x, \sigma_y$ las desviaciones estándar. [fix eng too combine two sentences] La letra griega para $r$, $\rho$, se usa comúnmente en libros de estadística para denotar la correlación porque es la primera letra de la palabra regresión. Pronto aprendemos sobre la conexión entre correlación y regresión. Podemos representar la fórmula anterior con código R usando:
 
 ```{r, eval=FALSE}
 rho <- mean(scale(x) * scale(y))
 ```
 
-[fix check entire para] Para entender por qué esta ecuación resume cómo se mueven juntas dos variables, consideren que la $i$-th entrada de $x$ está $\left( \frac{x_i-\mu_x}{\sigma_x} \right)$ SDs lejos del promedio. Del mismo modo, el $y_i$ que se combina con $x_i$, es $\left( \frac{y_1-\mu_y}{\sigma_y} \right)$ SD lejos del promedio $y$. Si $x$ y $y$ no están relacionadas, el producto $\left( \frac{x_i-\mu_x}{\sigma_x} \right)\left( \frac{y_i-\mu_y}{\sigma_y} \right)$ será positivo ( $+ \times +$ y $- \times -$ ) tan a menudo como negativo ( $+ \times -$ y $- \times +$) y tendrá un promedio de alrededor de 0. Esta correlación es el promedio y, por lo tanto, las variables no relacionadas tendrán 0 correlaciones. Si, en cambio, las cantidades varían juntas, entonces estamos promediando productos mayormente positivos ( $+ \times +$ y $- \times -$) y obtenemos una correlación positiva. Si varían en direcciones opuestas, obtenemos una correlación negativa.
+[fix check entire para] Para entender por qué esta ecuación resume cómo se mueven juntas dos variables, consideren que la $i$-th entrada de $x$ está $\left( \frac{x_i-\mu_x}{\sigma_x} \right)$ SDs lejos del promedio. Del mismo modo, el $y_i$ que se combina con $x_i$, está $\left( \frac{y_1-\mu_y}{\sigma_y} \right)$ SDs lejos del promedio $y$. Si $x$ y $y$ no están relacionadas, el producto $\left( \frac{x_i-\mu_x}{\sigma_x} \right)\left( \frac{y_i-\mu_y}{\sigma_y} \right)$ será positivo ($+ \times +$ y $- \times -$) tan frecuentemente como negativo ($+ \times -$ y $- \times +$) y tendrá un promedio de alrededor de 0. Esta correlación es el promedio y, por lo tanto, las variables no relacionadas tendrán 0 correlaciones. Si, en cambio, las cantidades varían juntas, entonces estamos promediando productos mayormente positivos ($+ \times +$ y $- \times -$) y obtenemos una correlación positiva. Si varían en direcciones opuestas, obtenemos una correlación negativa.
 
 El coeficiente de correlación siempre está entre -1 y 1. Podemos mostrar esto matemáticamente: consideren que no podemos tener una correlación más alta que cuando comparamos una lista consigo misma (correlación perfecta) y en este caso la correlación es:
 
@@ -393,11 +393,11 @@ $$
 \mbox{SD}(Y \mid X=x ) = \sigma_Y \sqrt{1-\rho^2}
 $$
 
-Para ver por qué esto es intuitivo, observen que sin condicionamiento, $\mbox{SD}(Y) = \sigma_Y$, estamos viendo la variabilidad de todos los hijos. Pero una vez que condicionamos, solo observamos la variabilidad de los hijos con un padre alto que mide 72 pulgadas. Este grupo tenderá a ser algo alto, por lo que se reduce la desviación estándar.
+[fix check span] Para ver por qué esto es intuitivo, observen que sin condicionamiento, $\mbox{SD}(Y) = \sigma_Y$, estamos viendo la variabilidad de todos los hijos. Pero una vez que condicionamos, solo observamos la variabilidad de los hijos con un padre alto que mide 72 pulgadas. Este grupo tenderá a ser algo alto, por lo que se reduce la desviación estándar.
 
 Específicamente, se reduce a $\sqrt{1-\rho^2} = \sqrt{1 - 0.25}$ = 0.87 de lo que era originalmente. Podríamos decir que las alturas del padre "explican" el 13% de la variabilidad observada en las alturas del hijo.
 
-La declaración " $X$ explica tal y cual porcentaje de la variabilidad "se usa comúnmente en los trabajos académicos. En este caso, este porcentaje realmente se refiere a la varianza (el SD al cuadrado). Entonces, si los datos siguen una distribución normal de dos variables, la varianza se reduce en $1-\rho^2$ entonces decimos que $X$ explica $1- (1-\rho^2)=\rho^2$ (la correlación al cuadrado) de la varianza.
+La declaración "$X$ explica tal y cual porcentaje de la variabilidad" se usa comúnmente en los trabajos académicos. En este caso, este porcentaje realmente se refiere a la varianza [fix check] (la desiviación estaddar al cuadrado). Entonces, si los datos siguen una distribución normal de dos variables, la varianza se reduce por $1-\rho^2$ y entonces decimos que $X$ explica $1- (1-\rho^2)=\rho^2$ (la correlación al cuadrado) de la varianza.
 
 Pero es importante recordar que la declaración de "varianza explicada" solo tiene sentido cuando los datos se aproximan mediante una distribución normal de dos variables.
 
@@ -417,19 +417,19 @@ b_1 <- mu_y - m_1*mu_x
 
 que nos da la función $\mbox{E}(Y\mid X=x) =$ `r round(b_1, 1)` + `r round(m_1, 2)` $x$.
 
-¿Qué pasa si queremos predecir la altura del padre en función de la del hijo? Es importante saber que esto no se determina calculando la función inversa:
-$x = \{ \mbox{E}(Y\mid X=x) -$ `r round(b_1, 1)` $\}/$ NA.
+¿Qué pasa si queremos predecir la altura del padre basada en la del hijo? Es importante saber que esto no se determina calculando la función inversa: [Fix code does not match english]
+$x = \{ \mbox{E}(Y\mid X=x) -$ `r round(b_1, 1)` $\}/$.
 
-Necesitamos calcular $\mbox{E}(X \mid Y=y)$. Dado que los datos son aproximadamente bivariados normales, la teoría descrita anteriormente nos dice que esta esperanza condicional seguirá una línea con pendiente e intercepto:
+Necesitamos calcular $\mbox{E}(X \mid Y=y)$. [fix check] Dado que los datos se aproximan mediante una distribución normal de dos variables, la teoría descrita anteriormente nos dice que esta esperanza condicional seguirá una línea con pendiente e intercepto:
 
 ```{r}
 m_2 <- r * s_x/ s_y
 b_2 <- mu_x - m_2 * mu_y
 ```
 
-Entonces obtenemos $\mbox{E}(X \mid Y=y) =$ `r round(b_2, 1)` + `r round(m_2, 2)` y. Nuevamente vemos una regresión al promedio: la predicción para el padre está más cerca del promedio del padre que las alturas del hijo $y$ es para el hijo promedio.
+Entonces obtenemos [fix code] $\mbox{E}(X \mid Y=y) =`r round(b_2, 1)` + `r round(m_2, 2)`y$. [fix check eng think its wrong] Nuevamente vemos una regresión al promedio: la predicción para el padre está más cerca del promedio del padre que las alturas de los hijos $y$ es para el hijo promedio.
 
-Aquí hay una gráfica que muestra las dos líneas de regresión, con azul para predecir las alturas del hijo con las alturas del padre y rojo para predecir las alturas del padre con las alturas del hijo:
+[fix check] Aquí hay un gráfico que muestra las dos líneas de regresión, con azul para predecir las alturas del hijo con las alturas del padre y rojo para predecir las alturas del padre con las alturas del hijo:
 
 ```{r two-regression-lines, fig.height = 3, fig.width = 3, out.width="40%"}
 galton_heights %>%
@@ -444,7 +444,7 @@ geom_abline(intercept = -b_2/m_2, slope = 1/m_2, col = "red")
 ## Ejercicios
 
 
-1\. Carga el `GaltonFamilies` datos de __HistData__. Los niños de cada familia se enumeran por género y luego por estatura. Crear un set de datos llamado `galton_heights` eligiendo un hombre y una mujer al azar.
+1\. Cargue los datos `GaltonFamilies` de __HistData__. Los niños de cada familia se enumeran por género y luego por estatura. Cree un set de datos llamado `galton_heights` eligiendo un hombre y una mujer al azar.
 
 2\. Haga un diagrama de dispersión para las alturas entre madres e hijas, madres e hijos, padres e hijas, y padres e hijos.
 
