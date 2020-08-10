@@ -143,6 +143,7 @@
 | standard normal variable | variable normal unitaria | | | |
 | standard normal random variable | variable aleatoria con distribution normal unitaria | | | |
 | string | cadenas | | | |
+| summary statistics | resumen estadístico | | | |
 | __T__ | | | | |
 | t statistic | estadística t o prueba t |  |  |  |
 | tabs | pestañas | RStudio has a Viewer tab | pestañas | pestañas |
