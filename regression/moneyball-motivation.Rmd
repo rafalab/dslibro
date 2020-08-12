@@ -125,7 +125,7 @@ geom_point(alpha = 0.5)
 
 Aquí nuevamente vemos una asociación clara. Pero, ¿esto significa que aumentar las BB de un equipo **causa** un aumento en las carreras? Una de las lecciones más importantes que aprenderemos en este libro es que **la asociación no implica causalidad.**
 
-De hecho, parece que los BB y los HR también están asociados:
+De hecho, parece que los BB y HR también están asociados:
 
 ```{r bb-vs-hrs}
 Teams %>% filter(yearID %in% 1961:2001 ) %>%
@@ -134,14 +134,14 @@ ggplot(aes(HR_per_game, BB_per_game)) +
 geom_point(alpha = 0.5)
 ```
 
-Sabemos que los HR causan carreras porque, como su nombre sugiere, cuando un jugador logra un jonrón, se le garantiza al menos una carrera. ¿Podría ser que los HR también causen BB y esto hace que parezca que la causa BB se ejecuta? Cuando esto sucede, decimos que hay _confusión_, un concepto importante sobre el que aprenderemos más a lo largo de este capítulo.
+Sabemos que los HR causan carreras porque, como su nombre sugiere, cuando un jugador logra un "home run", se le garantiza al menos una carrera. ¿Podría ser que los HR también causen BB y esto hace que parezca que los BB también causen carreras? [fix] Cuando esto sucede, decimos que hay _confundidos_ (_confounding_ en inglés), un concepto importante sobre el que aprenderemos más a lo largo de este capítulo.
 
-La regresión lineal nos ayudará a analizar todo esto y cuantificar las asociaciones. Esto nos ayudará a determinar qué jugadores reclutar. Específicamente, trataremos de predecir cosas como cuántas carreras más anotará un equipo si aumentamos el número de BB, pero mantenemos los HR fijos. La regresión nos ayudará a responder preguntas como esta.
+La regresión lineal nos ayudará a analizar todo esto y cuantificar las asociaciones para determinar qué jugadores reclutar. Específicamente, trataremos de predecir cosas como cuántas carreras más anotará un equipo si aumentamos el número de BB, pero mantenemos los HR fijos. [fix delete this last sent?] La regresión nos ayudará a responder preguntas como esta.
 
 
 ### Regresión aplicada a las estadísticas de béisbol
 
-¿Podemos usar la regresión con estos datos? Primero, observe que los datos de HR y Run parecen ser bivariados normales. Guardamos la trama en el objeto. `p` ya que lo usaremos más tarde.
+¿Podemos usar la regresión con estos datos? Primero, observen que los datos de HR y _Run_ parecen ser bivariados normales. Guardamos el gráfico en el objeto `p` ya que lo usaremos más tarde.
 
 ```{r hr-runs-bivariate}
 library(Lahman)
@@ -153,7 +153,7 @@ p
 ```
 
 
-Las parcelas qq confirman que la aproximación normal es útil aquí:
+Los gráficos Q-Q confirman que la aproximación normal es útil aquí:
 
 ```{r hr-by-runs-qq}
 Teams %>% filter(yearID %in% 1961:2001 ) %>%
@@ -165,7 +165,7 @@ stat_qq(aes(sample=R_per_game)) +
 facet_wrap(~z_HR)
 ```
 
-Ahora estamos listos para usar la regresión lineal para predecir el número de carreras que anotará un equipo si sabemos cuántos jonrones pega el equipo. Todo lo que necesitamos hacer es calcular las cinco estadísticas de resumen:
+Ahora estamos listos para usar la regresión lineal para predecir el número de carreras que anotará un equipo si sabemos cuántos jonrones logrará el equipo. Lo único que necesitamos hacer es calcular los cinco resúmenes estadísticos:
 
 ```{r}
 summary_stats <- Teams %>%
@@ -179,7 +179,7 @@ r = cor(HR_per_game, R_per_game))
 summary_stats
 ```
 
-y use las fórmulas dadas arriba para crear las líneas de regresión:
+y usar las fórmulas dadas arriba para crear las líneas de regresión:
 
 ```{r hr-versus-runs-regression}
 reg_line <- summary_stats %>% summarize(slope = r*s_R/s_HR,
@@ -188,12 +188,12 @@ intercept = avg_R - slope*avg_HR)
 p + geom_abline(intercept = reg_line$intercept, slope = reg_line$slope)
 ```
 
-Pronto aprenderemos las funciones R, como `lm`, que facilitan el ajuste de las líneas de regresión. Otro ejemplo es la función __ggplot2__ `geom_smooth` que calcula y agrega una línea de regresión para trazar junto con intervalos de confianza, de los cuales también nos enteramos más adelante. Usamos el argumento `method = "lm"` que significa _linear model_, el título de una próxima sección. Entonces podemos simplificar el código anterior así:
+Pronto aprenderemos las funciones de R, como `lm`, que facilitan el [fix] ajuste de las líneas de regresión. Otro ejemplo es la función `geom_smooth` de __ggplot2__ que calcula y agrega una línea de regresión para graficar junto con intervalos de confianza, de los cuales también aprenderemos más adelante. Usamos el argumento `method = "lm"` que [fix] significa _linear model_, el título de una próxima sección. Entonces podemos simplificar el código anterior así:
 
 ```{r hr-versus-runs-regression-easy}
 p + geom_smooth(method = "lm")
 ```
 
-En el ejemplo anterior, la pendiente es `r reg_line $slope`. So this tells us that teams that hit 1 more HR per game than the average team, score `r reg_line$ pendiente` más carreras por juego que el equipo promedio. Dado que el puntaje final más común es la diferencia de una carrera, esto ciertamente puede conducir a un gran aumento en las victorias. No es sorprendente que los bateadores de recursos humanos sean muy caros. Debido a que estamos trabajando en un presupuesto, necesitaremos encontrar otra forma de aumentar las ganancias. Entonces, en la siguiente sección, trasladamos nuestra atención a BB.
+En el ejemplo anterior, la pendiente es `r reg_line $slope`. Esto nos dice que los equipos que logran 1 HR más por juego que el equipo promedio, anotan `r reg_line$ pendiente` más carreras por juego que el equipo promedio. Dado que el puntaje final más común es la diferencia de una carrera, esto ciertamente puede conducir a un gran aumento en [fix] victorias. No es sorprendente que los jugadores con muchos HR sean muy caros. Debido a que estamos trabajando con un presupuesto ajustado, necesitaremos encontrar otra forma de aumentar las victorias. Entonces, en la siguiente sección, trasladamos nuestra atención a BB.
 
 
