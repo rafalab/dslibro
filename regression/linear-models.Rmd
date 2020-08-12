@@ -1,6 +1,6 @@
-## Confusión
+## [fix] Confusión/Variables confundidas/de confusión/Factor de confusión
 
-Anteriormente, notamos una fuerte relación entre Runs y BB. Si encontramos la línea de regresión para predecir carreras desde bases en bolas, obtendremos una pendiente de:
+Anteriormente, notamos una fuerte relación entre _Runs_ y BB. Si encontramos la línea de regresión para predecir carreras desde bases por bolas, obtendremos una pendiente de:
 
 ```{r, warning=FALSE, message=FALSE}
 library(tidyverse)
@@ -14,11 +14,11 @@ summarize(slope = get_slope(BB_per_game, R_per_game))
 
 bb_slope
 ```
-Entonces, ¿esto significa que si vamos y contratamos jugadores de bajo salario con muchos BB, y que, por lo tanto, aumentan el número de caminatas por juego en 2, nuestro equipo marcará `r round(bb_slope*2, 1)` ¿más carreras por juego?
+Entonces, ¿esto significa que si contratamos jugadores de bajo salario con muchos BB y así aumentamos por 2 el número de _walks_ por juego, nuestro equipo marcará `r round(bb_slope*2, 1)` más carreras por juego?
 
-Nuevamente se nos recuerda que la asociación no es causalidad. Los datos proporcionan evidencia sólida de que un equipo con dos BB más por juego que el equipo promedio, anota `r round(bb_slope*2, 1)` corre por juego. Pero esto no significa que BB sea la causa.
+Nuevamente debemos recordar que la asociación no implica la causalidad. Los datos ofrecen evidencia sólida de que un equipo con dos BB más por juego que el equipo promedio, anota `r round(bb_slope*2, 1)` carreras por juego. Pero esto no significa que los BB sean la causa.
 
-Tenga en cuenta que si calculamos la pendiente de la línea de regresión para solteros obtenemos:
+Tengan en cuenta que si calculamos la pendiente de la línea de regresión para sencillos obtenemos:
 
 ```{r}
 singles_slope <- Teams %>%
@@ -31,7 +31,7 @@ singles_slope
 
 que es un valor más bajo que el que obtenemos para BB.
 
-Además, observe que un solo lo lleva a la primera base como un BB. Aquellos que saben de béisbol le dirán que con un solo jugador, los corredores en la base tienen una mejor oportunidad de anotar que con un BB. Entonces, ¿cómo puede BB ser más predictivo de las carreras? La razón por la que esto sucede es por confusión. Aquí mostramos la correlación entre HR, BB y singles:
+Además, observen que un sencillo lo lleva a primera base igual que un BB. Aquellos que saben de béisbol señalarán que con un sencillo, [fix] los corredores en base tienen una mejor oportunidad de anotar que con un BB. Entonces, ¿cómo puede un BB ser más predictivo de las carreras? La razón por la que esto sucede es por [fix]confunding/el factor de confusión. Aquí mostramos la correlación entre HR, BB y sencillos:
 
 ```{r}
 Teams %>%
@@ -40,11 +40,11 @@ mutate(Singles = (H-HR-X2B-X3B)/G, BB = BB/G, HR = HR/G) %>%
 summarize(cor(BB, HR), cor(Singles, HR), cor(BB, Singles))
 ```
 
-Resulta que los lanzadores, temerosos de los recursos humanos, a veces evitarán lanzar ataques a los bateadores de recursos humanos. Como resultado, los bateadores de recursos humanos tienden a tener más BB y un equipo con muchos recursos humanos también tendrá más BB. Aunque puede parecer que las BB causan corridas, en realidad son los recursos humanos los que causan la mayoría de estas corridas. Decimos que los BB están _confundidos_ con los HR. Sin embargo, ¿podría ser que las BB todavía ayuden? Para descubrirlo, de alguna manera tenemos que ajustarnos para el efecto HR. La regresión también puede ayudar con esto.
+Resulta que los lanzadores, temerosos de los HR, a veces evitarán lanzar _strikes_ a los bateadores de HR. Como resultado, los bateadores de HR tienden a tener más BB y un equipo con muchos bateadores de HR también tendrá más BB. Aunque puede parecer que las BB causan carreras, en realidad son los HR los que causan la mayoría de estas carreras. [fix] Decimos que los BB están _confundidos_ con los HR. Sin embargo, ¿es posible que las BB todavía ayuden? Para averiguar, tenemos que [fix "adjust"] corregir.modificar/rectificar/ajustar para el efecto HR. La regresión también puede ayudar con esto.
 
 ### Comprender la confusión a través de la estratificación
 
-Un primer enfoque es mantener los recursos humanos fijos en un cierto valor y luego examinar la relación entre BB y las corridas. Como lo hicimos cuando estratificamos a los padres redondeando a la pulgada más cercana, aquí podemos estratificar la FC por juego a las diez más cercanas. Filtramos los estratos con pocos puntos para evitar estimaciones altamente variables:
+Un primer enfoque es mantener los HR fijos en un cierto valor y luego examinar la relación entre BB y las carreras. Como lo hicimos cuando estratificamos a los padres redondeando a la pulgada más cercana, aquí podemos estratificar HR por juego a las diez más cercanas. Filtramos los estratos con pocos puntos para evitar estimaciones altamente variables:
 
 ```{r}
 dat <- Teams %>% filter(yearID %in% 1961:2001) %>%
@@ -54,7 +54,7 @@ R_per_game = R/ G) %>%
 filter(HR_strata >= 0.4 & HR_strata <=1.2)
 ```
 
-y luego haz un diagrama de dispersión para cada estrato:
+y luego hacemos un diagrama de dispersión para cada estrato:
 
 ```{r runs-vs-bb-by-hr-strata, out.width="80%", fig.height=5}
 dat %>%
@@ -64,7 +64,7 @@ geom_smooth(method = "lm") +
 facet_wrap( ~ HR_strata)
 ```
 
-Recuerde que la pendiente de regresión para predecir carreras con BB fue `r round(bb_slope, 1)`. Una vez que estratificamos por HR, estas pendientes se reducen sustancialmente:
+Recuerden que la pendiente de regresión para predecir carreras con BB era`r round(bb_slope, 1)`. Una vez que estratificamos por HR, estas pendientes se reducen sustancialmente:
 
 ```{r}
 dat %>%
@@ -72,10 +72,9 @@ group_by(HR_strata) %>%
 summarize(slope = get_slope(BB_per_game, R_per_game))
 ```
 
-Las pendientes se reducen, pero no son 0, lo que indica que las BB son útiles para producir carreras, pero no tanto como se pensaba anteriormente.
-De hecho, los valores anteriores están más cerca de la pendiente que obtuvimos de los solteros, `r round(singles_slope, 2)`, que es más consistente con nuestra intuición. Dado que tanto los singles como los BB nos llevan a la primera base, deberían tener aproximadamente el mismo poder predictivo.
+Las pendientes se reducen, pero no son 0, lo que indica que las BB son útiles para producir carreras, pero no tanto como se pensaba anteriormente. De hecho, los valores anteriores están más cerca de la pendiente que obtuvimos de sencillos, `r round(singles_slope, 2)`, que es más consistente con nuestra intuición. Dado que tanto los sencillos como los BB nos llevan a primera base, deberían tener aproximadamente el mismo poder predictivo.
 
-Aunque nuestra comprensión de la aplicación nos dice que los recursos humanos causan BB pero no al revés, aún podemos verificar si la estratificación por BB hace que el efecto de BB disminuya. Para hacer esto, usamos el mismo código, excepto que intercambiamos HR y BB para obtener este gráfico:
+Aunque nuestra comprensión de la aplicación nos dice que los HR causan BB pero no al revés, aún podemos verificar si la estratificación por BB hace que el efecto de BB disminuya. Para hacer esto, usamos el mismo código, excepto que intercambiamos HR y BB para obtener este gráfico:
 
 ```{r runs-vs-hr-by-bb-strata, out.width="100%",echo=FALSE}
 dat <- Teams %>% filter(yearID %in% 1961:2001) %>%
@@ -98,7 +97,7 @@ dat %>% group_by(BB_strata) %>%
 summarize(slope = get_slope(HR_per_game, R_per_game))
 ```
 
-Se reducen un poco, lo que es consistente con el hecho de que BB de hecho causa algunas corridas.
+Se reducen un poco, lo que es consistente con el hecho de que BB sí causan algunas carreras.
 
 
 ```{r}
@@ -110,27 +109,27 @@ summarize(slope = get_slope(HR_per_game, R_per_game))
 hr_slope
 ```
 
-De todos modos, parece que si estratificamos por HR, tenemos distribuciones bivariadas para corridas versus BB. Del mismo modo, si estratificamos por BB, tenemos distribuciones normales bivariadas aproximadas para HR versus carreras.
+[fix check ok] De todos modos, parece que si estratificamos por HR, tenemos una distribución normal de dos variables para carreras versus BB. Del mismo modo, si estratificamos por BB, tenemos una distribución normal de dos variable aproximada para HR versus carreras.
 
-### Regresión multivariante
+### Regresión con múltiples variables/regresión lineal múltiple/regresión múltiple [fix]
 
-Es algo complejo calcular líneas de regresión para cada estrato. Básicamente, estamos ajustando modelos como este:
+Es un poco complejo calcular líneas de regresión para cada estrato. [fix "fitting" ok?] Básicamente, estamos ajustando modelos como este:
 
 $$
 \mbox{E}[R \mid BB = x_1, \, HR = x_2] = \beta_0 + \beta_1(x_2) x_1 + \beta_2(x_1) x_2
 $$
 
-con las pistas para $x_1$ cambiando por diferentes valores de $x_2$ y viceversa. ¿Pero hay un enfoque más fácil?
+con las pendientes para $x_1$ cambiando por diferentes valores de $x_2$ y viceversa. ¿Pero hay un acercamiento más fácil?
 
-Si tomamos en cuenta la variabilidad aleatoria, las pendientes en los estratos no parecen cambiar mucho. Si estas pendientes son de hecho iguales, esto implica que $\beta_1(x_2)$ y $\beta_2(x_1)$ son constantes Esto a su vez implica que la expectativa de ejecuciones condicionadas a HR y BB puede escribirse así:
+Si tomamos en cuenta la variabilidad aleatoria, las pendientes en los estratos no parecen cambiar mucho. Si estas pendientes son iguales, esto implica que $\beta_1(x_2)$ y $\beta_2(x_1)$ son constantes. [fix check] Esto a su vez implica que la expectativa de carreras condicionadas en HR y BB se puede escribir así:
 
 $$
 \mbox{E}[R \mid BB = x_1, \, HR = x_2] = \beta_0 + \beta_1 x_1 + \beta_2 x_2
 $$
 
-Este modelo sugiere que si el número de FC se fija en $x_2$, observamos una relación lineal entre carreras y BB con una intersección de $\beta_0 + \beta_2 x_2$. Nuestro análisis exploratorio de datos sugirió esto. El modelo también sugiere que a medida que aumenta el número de FC, el crecimiento de la intersección también es lineal y está determinado por $\beta_1 x_1$.
+Este modelo sugiere que si el número de HR se fija en $x_2$, observamos una relación lineal entre carreras y BB con un intercepto de $\beta_0 + \beta_2 x_2$. Nuestro análisis exploratorio de datos sugirió esto. El modelo también sugiere que a medida que aumenta el número de HR, el crecimiento del intercepto también es lineal y está determinado por $\beta_1 x_1$.
 
-En este análisis, denominado _regresión multivariada_, a menudo escuchará a la gente decir que la pendiente BB $\beta_1$ está _ajustado_ para el efecto HR. Si el modelo es correcto, entonces se ha tenido en cuenta la confusión. ¿Pero cómo estimamos $\beta_1$ y $\beta_2$ de los datos? Para esto, aprendemos sobre modelos lineales y estimaciones de mínimos cuadrados.
+En este análisis, denominado [fix]  _regresión multivariada_, a menudo escuchará a la gente decir que la pendiente BB $\beta_1$ está _ajustado_ para el efecto HR. Si el modelo es correcto, entonces se ha tenido en cuenta la confusión. ¿Pero cómo estimamos $\beta_1$ y $\beta_2$ de los datos? Para esto, aprendemos sobre modelos lineales y estimaciones de mínimos cuadrados.
 
 ## Estimaciones de mínimos cuadrados {#lse}
 
@@ -312,7 +311,7 @@ names(y_hat)
 ## Ejercicios
 
 
-Hemos demostrado cómo BB y los solteros tienen un poder predictivo similar para anotar carreras. Otra forma de comparar la utilidad de estas métricas de béisbol es evaluando qué tan estables son a lo largo de los años. Dado que tenemos que elegir jugadores en función de sus actuaciones anteriores, preferiremos métricas que sean más estables. En estos ejercicios, compararemos la estabilidad de solteros y BBs.
+Hemos demostrado cómo BB y sencillos tienen un poder predictivo similar para anotar carreras. Otra forma de comparar la utilidad de estas métricas de béisbol es evaluando qué tan estables son a lo largo de los años. Dado que tenemos que elegir jugadores en función de sus actuaciones anteriores, preferiremos métricas que sean más estables. En estos ejercicios, compararemos la estabilidad de solteros y BBs.
 
 1\. Antes de comenzar, queremos generar dos tablas. Uno para 2002 y otro para el promedio de las temporadas 1999-2001. Queremos definir estadísticas de apariencia por placa. Así es como creamos la tabla 2017. Mantener solo jugadores con más de 100 apariciones en el plato.
 
@@ -344,7 +343,7 @@ Calcule la correlación entre 2002 y las temporadas anteriores para solteros y B
 
 ## Regresión lineal en el tidyverse
 
-Para ver cómo usamos el `lm` en un análisis más complejo, volvamos al ejemplo del béisbol. En un ejemplo anterior, estimamos líneas de regresión para predecir corridas para BB en diferentes estratos de FC. Primero construimos un marco de datos similar a este:
+Para ver cómo usamos el `lm` en un análisis más complejo, volvamos al ejemplo del béisbol. En un ejemplo anterior, estimamos líneas de regresión para predecir carreras para BB en diferentes estratos de HR. Primero construimos un marco de datos similar a este:
 
 ```{r}
 dat <- Teams %>% filter(yearID %in% 1961:2001) %>%
@@ -379,7 +378,7 @@ no obtenemos el resultado que queremos. los `lm` la función ignora el `group_by
 Las funciones __tidyverse__ saben cómo interpretar los tibbles agrupados. Además, para facilitar la secuencia de comandos a través de la tubería `%>%`, las funciones __tidyverse__ devuelven constantemente marcos de datos, ya que esto asegura que la salida de una función sea aceptada como la entrada de otra.
 Pero la mayoría de las funciones R no reconocen los tibbles agrupados ni devuelven marcos de datos. los `lm` la función es un ejemplo. los `do` funciones sirve como un puente entre las funciones R, como `lm` y el __tidyverse__. los `do` la función comprende tibbles agrupados y siempre devuelve un marco de datos.
 
-Entonces, intentemos usar el `do` función para ajustar una línea de regresión a cada estrato de recursos humanos:
+Entonces, intentemos usar el `do` función para ajustar una línea de regresión a cada estrato de HR:
 
 ```{r}
 dat %>%
@@ -533,7 +532,7 @@ summarize(cor = cor(parentHeight, childHeight))
 
 ## Estudio de caso: Moneyball (continuación)
 
-Al tratar de responder qué tan bien las BB predicen las corridas, la exploración de datos nos llevó a un modelo:
+Al tratar de responder qué tan bien las BB predicen las carreras, la exploración de datos nos llevó a un modelo:
 
 $$
 \mbox{E}[R \mid BB = x_1, HR = x_2] = \beta_0 + \beta_1 x_1 + \beta_2 x_2
@@ -572,7 +571,7 @@ $$
 Y_i = \beta_0 + \beta_1 x_{i,1} + \beta_2 x_{i,2} + \beta_3 x_{i,3}+ \beta_4 x_{i,4} + \beta_5 x_{i,5} + \varepsilon_i
 $$
 
-con $x_{i,1}, x_{i,2}, x_{i,3}, x_{i,4}, x_{i,5}$ representando BB, singles, dobles, triples y HR respectivamente.
+con $x_{i,1}, x_{i,2}, x_{i,3}, x_{i,4}, x_{i,5}$ representando BB, sencillos, dobles, triples y HR respectivamente.
 
 Utilizando `lm`, podemos encontrar rápidamente el LSE para los parámetros usando:
 
@@ -616,7 +615,7 @@ geom_abline()
 
 Nuestro modelo hace un buen trabajo, como lo demuestra el hecho de que los puntos de la trama observada frente a la predicción caen cerca de la línea de identidad.
 
-Entonces, en lugar de usar el promedio de bateo, o solo el número de FC, como una medida de selección de jugadores, podemos usar nuestro modelo ajustado para formar una métrica que se relacione más directamente con la producción. Específicamente, para definir una métrica para el jugador A, imaginamos un equipo compuesto por jugadores como el jugador A y usamos nuestro modelo de regresión ajustado para predecir cuántas carreras produciría este equipo. La fórmula se vería así:
+Entonces, en lugar de usar el promedio de bateo, o solo el número de HR, como una medida de selección de jugadores, podemos usar nuestro modelo ajustado para formar una métrica que se relacione más directamente con la producción. Específicamente, para definir una métrica para el jugador A, imaginamos un equipo compuesto por jugadores como el jugador A y usamos nuestro modelo de regresión ajustado para predecir cuántas carreras produciría este equipo. La fórmula se vería así:
 `r coefs$estimate[1]` +
 `r coefs $estimate[2]` $\veces $ BB +
 `r coefs $estimate[3]` $\times $ singles +
@@ -765,7 +764,7 @@ kableExtra::kable_styling(font_size = 8)
 
 ```
 
-Vemos que todos estos jugadores tienen BB por encima del promedio y la mayoría tienen tasas de FC por encima del promedio, mientras que lo mismo no es cierto para los solteros. Aquí hay una tabla con estadísticas estandarizadas para todos los jugadores, de modo que, por ejemplo, los bateadores de FC por encima del promedio tienen valores superiores a 0.
+Vemos que todos estos jugadores tienen BB por encima del promedio y la mayoría tienen tasas de HR por encima del promedio, mientras que lo mismo no es cierto para sencillos. Aquí hay una tabla con estadísticas estandarizadas para todos los jugadores, de modo que, por ejemplo, los bateadores de HR por encima del promedio tienen valores superiores a 0.
 
 ```{r, echo=FALSE}
 my_scale <- function(x) (x - median(x))/mad(x)
@@ -938,7 +937,7 @@ ylab("Distance in meters") +
 xlab("Time in seconds")
 ```
 
-Galileo no conoce la ecuación exacta, pero al observar la gráfica anterior, deduce que la posición debe seguir una parábola, que podemos escribir así:
+Galileo no conoce la ecuación exacta, pero al observar el gráfico anterior, deduce que la posición debe seguir una parábola, que podemos escribir así:
 
 $$ f(x) = \beta_0 + \beta_1 x + \beta_2 x^2$$
 
@@ -987,7 +986,7 @@ La altura de la Torre de Pisa está dentro del intervalo de confianza para $\bet
 
 ## Ejercicios
 
-Desde la década de 1980, los expertos en sable han utilizado una estadística resumida diferente del promedio de bateo para evaluar a los jugadores. Se dieron cuenta de que las caminatas eran importantes y que los dobles, los triples y los recursos humanos deberían pesarse más que los individuales. Como resultado, propusieron la siguiente métrica:
+Desde la década de 1980, los expertos en sable han utilizado una estadística resumida diferente del promedio de bateo para evaluar a los jugadores. Se dieron cuenta de que las caminatas eran importantes y que los dobles, los triples y los HR deberían pesarse más que los individuales. Como resultado, propusieron la siguiente métrica:
 
 $$
 \frac{\mbox{BB}}{\mbox{PA}} + \frac{\mbox{Singles} + 2 \mbox{Doubles} + 3 \mbox{Triples} + 4\mbox{HR}}{\mbox{AB}}
@@ -1002,7 +1001,7 @@ Llamaron a esto porcentaje en base más porcentaje de slugging (OPS). Aunque los
 
 
 
-3\. Tenga en cuenta que podemos reescribir OPS como un promedio ponderado de BB, singles, dobles, triples y HR. Sabemos que los pesos para dobles, triples y HR son 2, 3 y 4 veces mayores que los individuales. ¿Pero qué hay de BB? ¿Cuál es el peso para BB en relación con los solteros? Sugerencia: el peso de BB en relación con los solteros será una función de AB y PA.
+3\. Tenga en cuenta que podemos reescribir OPS como un promedio ponderado de BB, sencillos, dobles, triples y HR. Sabemos que los pesos para dobles, triples y HR son 2, 3 y 4 veces mayores que los individuales. ¿Pero qué hay de BB? ¿Cuál es el peso para BB en relación con sencillos? Sugerencia: el peso de BB en relación con sencillos será una función de AB y PA.
 
 
 4\. Tenga en cuenta que el peso para BB, $\frac{\mbox{AB}}{\mbox{PA}}$, cambiará de un equipo a otro. Para ver qué tan variable es, calcule y trace esta cantidad para cada equipo para cada año desde 1961. Luego, vuelva a representarla, pero en lugar de calcularla para cada equipo, calcule y trace la relación para todo el año. Luego, una vez que esté convencido de que no hay mucho tiempo o tendencia de equipo, informe el promedio general.
