@@ -1,10 +1,10 @@
 # Regresión {#regression}
 
-Hasta ahora, este libro se ha enfocado principalmente en variables individuales. Sin embargo, en aplicaciones de ciencia de datos, es muy común estar interesado en la relación entre dos o más variables. Por ejemplo, en el capítulo \@ref(linear-models) utilizaremos un enfoque basado en datos que examina la relación entre las estadísticas de los jugadores y el éxito para guiar la construcción de un equipo de béisbol con un presupuesto limitado. Antes de profundizar en este ejemplo más complejo, presentamos los conceptos necesarios para entender la regresión utilizando una ilustración más sencilla. De hecho, utilizamos el set de datos del que nació la regresión.
+Hasta ahora, este libro se ha enfocado principalmente en variables individuales. Sin embargo, en aplicaciones de ciencia de datos, es muy común estar interesado en la relación entre dos o más variables. Por ejemplo, en el capítulo \@ref(linear-models) utilizaremos un enfoque basado en datos que examina la relación entre las estadísticas de los jugadores y el éxito para guiar la construcción de un equipo de béisbol con un presupuesto limitado. Antes de profundizar en este ejemplo más complejo, presentamos los conceptos necesarios para entender la regresión utilizando una ilustración más sencilla. De hecho, utilizamos el set de datos con el cual se inventó la regresión.
 
 El ejemplo es de la genética. Francis Galton^[https://en.wikipedia.org/wiki/Francis_Galton] estudió la variación y la herencia de los rasgos humanos. Entre muchos otros rasgos, Galton recopiló y estudió datos de estatura de familias para tratar de entender la herencia. Mientras hacía eso, desarrolló los conceptos de correlación y regresión, así como una conexión a pares de datos que siguen una distribución normal. Por supuesto, en el momento en que se recopilaron estos datos, nuestro conocimiento de la genética era bastante limitado en comparación con lo que sabemos hoy. Una pregunta muy específica que Galton intentó responder fue: ¿cuán bien podemos predecir la altura de un niño basándose en la altura de los padres? La técnica que desarrolló para responder a esta pregunta, la regresión, también se puede aplicar a nuestra pregunta de béisbol y a muchas otras circunstancias.
 
-__Nota histórica__: Galton hizo importantes contribuciones a las estadísticas y la genética, pero también fue uno de los primeros defensores de la eugenesia, un movimiento filosófico científicamente defectuoso favorecido por muchos biólogos de la época de Galton, pero con terribles consecuencias históricas. Puede leer más sobre el tema aquí: [https://pged.org/history-eugenics-and-genetics/font](https://pged.org/history-eugenics-and-genetics/).
+__Nota histórica__: Galton hizo importantes contribuciones a las estadísticas y la genética, pero también fue uno de los primeros defensores de la eugenesia, un movimiento filosófico científicamente defectuoso favorecido por muchos biólogos de la época de Galton, pero con terribles consecuencias históricas. Pueden leer más sobre el tema aquí: [https://pged.org/history-eugenics-and-genetics/font](https://pged.org/history-eugenics-and-genetics/).
 
 ## Estudio de caso: ¿la altura es hereditaria?
 
@@ -57,7 +57,7 @@ con $\mu_x, \mu_y$ los promedios de $x_1,\dots, x_n$ y $y_1, \dots, y_n$, respec
 rho <- mean(scale(x) * scale(y))
 ```
 
-Para entender por qué esta ecuación resume cómo se mueven juntas dos variables, consideren que la entrada número $i$ de $x$ está $\left( \frac{x_i-\mu_x}{\sigma_x} \right)$ desviaciones estándar del promedio $\mu_x$. Del mismo modo, el $y_i$ que se combina con $x_i$, está $\left( \frac{y_1-\mu_y}{\sigma_y} \right)$ desviaciones estándar del promedio $\mu_y$. Si $x$ y $y$ no están relacionadas, el producto $\left( \frac{x_i-\mu_x}{\sigma_x} \right)\left( \frac{y_i-\mu_y}{\sigma_y} \right)$ será positivo ($+ \times +$ y $- \times -$) tan frecuentemente como negativo ($+ \times -$ y $- \times +$) y tendrá un promedio de alrededor de 0. La correlación es el promedio de estos productos y, por lo tanto, las variables no relacionadas tendrán  correlación 0. Si, en cambio, las cantidades varían juntas, entonces estamos promediando productos mayormente positivos ($+ \times +$ y $- \times -$) y obtenemos una correlación positiva. Si varían en direcciones opuestas, obtenemos una correlación negativa.
+Para entender por qué esta ecuación resume cómo se mueven juntas dos variables, consideren que la entrada número $i$ de $x$ está $\left( \frac{x_i-\mu_x}{\sigma_x} \right)$ desviaciones estándar del promedio $\mu_x$. Del mismo modo, el $y_i$ que se combina con $x_i$, está $\left( \frac{y_1-\mu_y}{\sigma_y} \right)$ desviaciones estándar del promedio $\mu_y$. Si $x$ e $y$ no están relacionadas, el producto $\left( \frac{x_i-\mu_x}{\sigma_x} \right)\left( \frac{y_i-\mu_y}{\sigma_y} \right)$ será positivo ($+ \times +$ y $- \times -$) tan frecuentemente como negativo ($+ \times -$ y $- \times +$) y tendrá un promedio de alrededor de 0. La correlación es el promedio de estos productos y, por lo tanto, las variables no relacionadas tendrán  correlación 0. Si, en cambio, las cantidades varían juntas, entonces estamos promediando productos mayormente positivos ($+ \times +$ y $- \times -$) y obtenemos una correlación positiva. Si varían en direcciones opuestas, obtenemos una correlación negativa.
 
 El coeficiente de correlación siempre está entre -1 y 1. Podemos mostrar esto matemáticamente: consideren que no podemos tener una correlación más alta que cuando comparamos una lista consigo misma (correlación perfecta) y en este caso la correlación es:
 
@@ -120,7 +120,7 @@ pull(r)
 qplot(R, geom = "histogram", binwidth = 0.05, color = I("black"))
 ```
 
-Vemos que el valor esperado de `R` es la correlación poblacional:
+Vemos que el valor esperado de `R` es la correlación de la población:
 
 ```{r}
 mean(R)
@@ -134,7 +134,7 @@ sd(R)
 
 Entonces, al interpretar las correlaciones, recuerden que las correlaciones derivadas de las muestras son estimaciones que contienen incertidumbre.
 
-Además, tengan en cuenta que debido a que la correlación de la muestra es un promedio de sorteos independientes, [fix 2 sent] el límite central aplica. Por lo tanto, para $N$ suficientemente grande, la distribución de `R` es aproximadamente normal con valor esperado $\rho$. La desviación estándar, que es algo compleja para derivar, es $\sqrt{\frac{1-r^2}{N-2}}$.
+Además, tengan en cuenta que debido a que la correlación de la muestra es un promedio de sorteos independientes, el límite central aplica. Por lo tanto, para $N$ suficientemente grande, la distribución de `R` es aproximadamente normal con valor esperado $\rho$. La desviación estándar, que es algo compleja para derivar, es $\sqrt{\frac{1-r^2}{N-2}}$.
 
 En nuestro ejemplo, $N=25$ no parece ser lo suficientemente grande como para que la aproximación sea buena:
 
@@ -170,7 +170,7 @@ Supongamos que se nos pide que adivinemos la altura de un hijo, seleccionado al 
 
 Resulta que si pudiéramos recopilar datos de un gran número de padres que miden 72 pulgadas, la distribución de las alturas de sus hijos sigue una distribución normal. Esto implica que el promedio de la distribución calculada en este subconjunto sería nuestra mejor predicción.
 
-En general, llamamos a este enfoque _condicionar_ (_conditioning_ en inglés). La idea general es que estratificamos una población en grupos y calculamos resúmenes en cada grupo. Por lo tanto, el condicionamiento está relacionado con el concepto de estratificación descrito en la Sección \@ref(stratification). Para proveer una descripción matemática del condicionamiento, consideren que tenemos una población de pares de valores $(x_1,y_1),\dots,(x_n,y_n)$, por ejemplo, todas las alturas de padres e hijos en Inglaterra. [fix eng too] En el capítulo anterior, aprendimos que si tomamos un par aleatorio $(X,Y)$, el valor esperado y el mejor predictor de $Y$ es $\mbox{E}(Y) = \mu_y$, el promedio de la población $1/n\sum_{i=1}^n y_i$. Sin embargo, ya no estamos interesados en la población general, sino en el subconjunto de la población con un valor específico de $x_i$, 72 pulgadas en nuestro ejemplo. Este subconjunto de la población también es una población y, por lo tanto, los mismos principios y propiedades que hemos aprendido aplican. Los $y_i$ en la subpoblación tienen una distribución, denominada _distribución condicional_, y esta distribución tiene un valor esperado denominado _valor esperado condicional_ (_conditional expectation_ en inglés). En nuestro ejemplo, el valor esperado condicional es la altura promedio de todos los hijos en Inglaterra con padres que miden 72 pulgadas. La notación estadística para el valor esperado condicional es:
+En general, llamamos a este enfoque _condicionar_ (_conditioning_ en inglés). La idea general es que estratificamos una población en grupos y calculamos resúmenes para cada grupo. Por lo tanto, condicionar está relacionado con el concepto de estratificación descrito en la Sección \@ref(stratification). Para proveer una descripción matemática del condicionamiento, consideren que tenemos una población de pares de valores $(x_1,y_1),\dots,(x_n,y_n)$, por ejemplo, todas las alturas de padres e hijos en Inglaterra. En el capítulo anterior, aprendimos que si tomamos un par aleatorio $(X,Y)$, el valor esperado y el mejor predictor de $Y$ es $\mbox{E}(Y) = \mu_y$, el promedio de la población $1/n\sum_{i=1}^n y_i$. Sin embargo, ya no estamos interesados en la población general, sino en el subconjunto de la población con un valor específico de $x_i$, 72 pulgadas en nuestro ejemplo. Este subconjunto de la población también es una población y, por lo tanto, los mismos principios y propiedades que hemos aprendido aplican. Los $y_i$ en la subpoblación tienen una distribución, denominada _distribución condicional_, y esta distribución tiene un valor esperado denominado _valor esperado condicional_ (_conditional expectation_ en inglés). En nuestro ejemplo, el valor esperado condicional es la altura promedio de todos los hijos en Inglaterra con padres que miden 72 pulgadas. La notación estadística para el valor esperado condicional es:
 
 $$
 \mbox{E}(Y \mid X = x)
@@ -184,7 +184,7 @@ $$
 
 Como el valor esperado condicional $E(Y\mid X=x)$ es el mejor predictor para la variable aleatoria $Y$ para un individuo en los estratos definidos por $X=x$, muchos retos de la ciencia de datos se reducen a la estimación de esta cantidad. La desviación estándar condicional cuantifica la precisión de la predicción.
 
-En el ejemplo que hemos estado considerando, queremos calcular la altura promedio del hijo _condicionado en_ que el padre mida 72 pulgadas. Queremos estimar $E(Y|X=72)$ utilizando la muestra recopilada por Galton. Anteriormente aprendimos que el promedio de la muestra es el enfoque preferido para estimar el promedio de la población. Sin embargo, un desafío al usar este enfoque para estimar los valores esperados condicionales es que para los datos continuos no tenemos muchos puntos de datos que coincidan exactamente con un valor en nuestra muestra. Por ejemplo, solo tenemos:
+En el ejemplo que hemos estado considerando, queremos calcular la altura promedio del hijo _condicionado en_ que el padre mida 72 pulgadas. Queremos estimar $E(Y|X=72)$ utilizando la muestra recopilada por Galton. Anteriormente aprendimos que el promedio de la muestra es el enfoque preferido para estimar el promedio de la población. Sin embargo, un reto al usar este enfoque para estimar los valores esperados condicionales es que para los datos continuos no tenemos muchos puntos de datos que coincidan exactamente con un valor en nuestra muestra. Por ejemplo, solo tenemos:
 
 ```{r}
 sum(galton_heights$father == 72)
@@ -208,9 +208,9 @@ conditional_avg
 
 
 Noten que un padre que mide 72 pulgadas es más alto que el promedio, específicamente 72 - `r round(mean(galton_heights$father), 1)`/`r round(sd(galton_heights$father), 1)` =
-`r round((72-mean(galton_heights$father))/sd(galton_heights$father), 1)` desviaciones estándar más alto que el padre promedio. [fix check] Nuestra predicción `r conditional_avg` también es más alta que el promedio, pero solo `r round((conditional_avg - mean(galton_heights$son))/sd(galton_heights$son), 2)` desviaciones estándar más que el hijo promedio. Los hijos de padres que miden 72 pulgadas han _retrocedido_ (_regressed_ en inglés) un poco hacia la altura promedio. Observamos que la reducción en la cantidad de desviaciones estandár es de aproximadamente 0.5, que es la correlación. Como veremos en una sección posterior, esto no es una coincidencia.
+`r round((72-mean(galton_heights$father))/sd(galton_heights$father), 1)` desviaciones estándar más alto que el padre promedio. Nuestra predicción `r conditional_avg` también es más alta que el promedio, pero solo `r round((conditional_avg - mean(galton_heights$son))/sd(galton_heights$son), 2)` desviaciones estándar más que el hijo promedio. Los hijos de padres que miden 72 pulgadas han _retrocedido_ (_regressed_ en inglés) un poco hacia la altura promedio. Observamos que la reducción en la cantidad de desviaciones estandár es de aproximadamente 0.5, que es la correlación. Como veremos en una sección posterior, esto no es una coincidencia.
 
-Si queremos hacer una predicción de cualquier altura, no solo 72 pulgadas, podríamos aplicar el mismo enfoque a cada estrato. La estratificación seguida de diagramas de caja nos permite ver la distribución de cada grupo:
+Si queremos hacer una predicción de cualquier altura, no solo 72 pulgadas, podríamos aplicar el mismo enfoque a cada estrato. La estratificación seguida por diagramas de caja nos permite ver la distribución de cada grupo:
 
 ```{r boxplot-1, fig.height = 3, fig.width = 3, out.width="40%"}
 galton_heights %>% mutate(father_strata = factor(round(father))) %>%
@@ -234,7 +234,7 @@ El hecho de que estos promedios condicionales sigan una línea no es una coincid
 
 ## La línea de regresión
 
-[fix check para] Si estamos prediciendo una variable aleatoria $Y$ sabiendo el valor de otra variable $X=x$ y usando una línea de regresión, entonces predecimos que para cada desviación estándar, $\sigma_X$, esa $x$ aumenta por encima del promedio $\mu_X$, $Y$ aumenta $\rho$ desviaciones estandar $\sigma_Y$ por encima del promedio $\mu_Y$ con $\rho$ la correlación entre $X$ y $Y$. Por lo tanto, la fórmula para la regresión es:
+[fix check ok] Si estamos prediciendo una variable aleatoria $Y$ sabiendo el valor de otra variable $X=x$ y usando una línea de regresión, entonces predecimos que por cada desviación estándar $\sigma_X$ que $x$ aumenta por encima del promedio $\mu_X$, $Y$ aumenta $\rho$ desviaciones estándar $\sigma_Y$ por encima del promedio $\mu_Y$ con $\rho$ la correlación entre $X$ y $Y$. Por lo tanto, la fórmula para la regresión es:
 
 $$
 \left( \frac{Y-\mu_Y}{\sigma_Y} \right) = \rho \left( \frac{x-\mu_X}{\sigma_X} \right)
@@ -249,7 +249,7 @@ $$
 Si hay una correlación perfecta, la línea de regresión predice un aumento que es el mismo número de desviaciones estandár. Si hay 0 correlación, entonces no usamos $x$ para la predicción y simplemente predecimos el promedio $\mu_Y$. Para valores entre 0 y 1, la predicción está en algún punto intermedio. Si la correlación es negativa, predecimos una reducción en vez de un aumento.
 
 
-Tengan en cuenta que si la correlación es positiva e inferior a 1, nuestra predicción está más cerca, en unidades estándar, de la altura promedio que el valor utilizado para predecir, $x$, está del promedio de las $x$s. Es por eso que lo llamamos _regresión_: el hijo retrocede a la altura promedio. De hecho, el título del artículo de Galton era: _Regression toward mediocrity in hereditary stature_. Para añadir líneas de regresión a los gráficos, necesitaremos la siguiente versión de la fórmula anterior:
+Tengan en cuenta que si la correlación es positiva e inferior a 1, nuestra predicción está más cerca, en unidades estándar, de la altura promedio que el valor utilizado para predecir, $x$, está del promedio de las $x$s. Es por eso que lo llamamos _regresión_: el hijo retrocede a la altura promedio. De hecho, el título del artículo de Galton era: _Regression towards mediocrity in hereditary stature_. Para añadir líneas de regresión a los gráficos, necesitaremos la siguiente versión de la fórmula anterior:
 
 $$
 y= b + mx \mbox{ with slope } m = \rho \frac{\sigma_y}{\sigma_x} \mbox{ and intercept } b=\mu_y - m \mu_x
@@ -280,7 +280,7 @@ geom_abline(intercept = 0, slope = r)
 ```
 
 
-### La regresión mejora la precisión
+### Regresión mejora precisión
 
 Comparemos los dos enfoques de predicción que hemos presentado:
 
@@ -319,7 +319,7 @@ mean(conditional_avg, na.rm = TRUE)
 mean(regression_prediction)
 ```
 
-[fix] El error estándar para la predicción de/usando regresión es sustancialmente más pequeño:
+El error estándar para la predicción usando regresión es sustancialmente más pequeño:
 
 
 ```{r}
@@ -329,13 +329,13 @@ sd(regression_prediction)
 
 La línea de regresión es, por lo tanto, mucho más estable que la media condicional. Hay una razón intuitiva para esto. El promedio condicional se basa en un subconjunto relativamente pequeño: los padres que miden aproximadamente 72 pulgadas. De hecho, en algunas de las permutaciones no tenemos datos, por eso utilizamos `na.rm=TRUE`. La regresión siempre usa todos los datos.
 
-E[fix check para] ntonces, ¿por qué no usar siempre la regresión para predecir? Porque no siempre es apropiado. Por ejemplo, Anscombe ofreció casos para los cuales los datos no tienen una relación lineal. Entonces, ¿tiene sentido usar la línea de regresión para predecir en nuestro ejemplo? Galton encontró que sí en el caso de los datos de altura. La justificación, que incluimos en la siguiente sección, es algo más avanzada que el resto del capítulo.
+Entonces, ¿por qué no siempre usar regresión para predecir? Porque no siempre es apropiado. Por ejemplo, Anscombe constuyó casos para los cuales los datos no tienen una relación lineal. Entonces, ¿tiene sentido usar la línea de regresión para predecir en nuestro ejemplo? Galton encontró que sí, en el caso de los datos de altura. La justificación, que incluimos en la siguiente sección, es algo más avanzada que el resto del capítulo.
 
 ### Distribución normal de dos variables (avanzada)
 
-La correlación y la pendiente de regresión son resumenes estadísticos ampliamente utilizadas, pero que a menudo se malinterpretan o usan mal. Los ejemplos de Anscombe ofrecen casos simplificados de sets de datos en los que resumir con correlación sería un error. [fix sent incomplete? ] Pero hay muchos más ejemplos de la vida real.
+La correlación y la pendiente de regresión son resumenes estadísticos ampliamente utilizados, pero que a menudo se malinterpretan o se usan mal. Los ejemplos de Anscombe ofrecen casos simplificados de sets de datos en los que resumir con correlación sería un error. Sin embargo, hay muchos más ejemplos de la vida real.
 
-La principal manera en que motivamos el uso de la correlación involucra lo que se llama la _distribución normal de dos variables_ (_bivariate normal distribution_ en inglés).
+La manera principal en que motivamos el uso de la correlación involucra lo que se llama la _distribución normal de dos variables_ (_bivariate normal distribution_ en inglés).
 
 Cuando un par de variables aleatorias se aproxima por la distribución normal de dos variables, los diagramas de dispersión parecen óvalos. Como vimos en la Sección \@ref(corr-coef), pueden ser delgados (alta correlación) o en forma de círculo (sin correlación).
 
@@ -383,7 +383,7 @@ $$
 
 Esto implica que, si la distribución de nuestros datos se puede aproximar con una distribución normal de dos variables, la línea de regresión da el valor esperado condicional. Por lo tanto, podemos obtener una estimación mucho más estable del valor esperado condicional al encontrar la línea de regresión y usarla para predecir.
 
-[fix check clunky] En resumen, si nuestros datos se pueden aproximar con una distribución normal de dos variables, entonces el valor esperado condicional, la mejor predicción de $Y$ dado que sabemos el valor de $X$, lo da la línea de regresión.
+En resumen, si nuestros datos se pueden aproximar con una distribución normal de dos variables, entonces el valor esperado condicional, la mejor predicción de $Y$ cuando sabemos el valor de $X$, lo da la línea de regresión.
 
 ### Varianza explicada
 
@@ -403,7 +403,7 @@ Pero es importante recordar que la declaración de "varianza explicada" solo tie
 
 ### Advertencia: hay dos líneas de regresión
 
-Calculamos una línea de regresión para predecir la altura del hijo según la altura del padre. Utilizamos estos cálculos:
+Calculamos una línea de regresión para predecir la altura del hijo basado en la altura del padre. Utilizamos estos cálculos:
 
 ```{r}
 mu_x <- mean(galton_heights$father)
@@ -417,8 +417,8 @@ b_1 <- mu_y - m_1*mu_x
 
 que nos da la función $\mbox{E}(Y\mid X=x) =$ `r round(b_1, 1)` + `r round(m_1, 2)` $x$.
 
-¿Qué pasa si queremos predecir la altura del padre basada en la del hijo? Es importante saber que esto no se determina calculando la función inversa: [Fix code missing end bit]
-$x = \{ \mbox{E}(Y\mid X=x) -$ `r round(b_1, 1)` $\}$.
+¿Qué pasa si queremos predecir la altura del padre basada en la del hijo? Es importante saber que esto no se determina calculando la función inversa: [Fix check code]
+$x = \{ \mbox{E}(Y\mid X=x) -$ `r round(b_1, 1)` $\}/0.5$.
 
 Necesitamos calcular $\mbox{E}(X \mid Y=y)$. Dado que los datos se aproximan mediante una distribución normal de dos variables, la teoría descrita anteriormente nos dice que este valor esperado condicional seguirá una línea con pendiente e intercepto:
 
@@ -427,9 +427,9 @@ m_2 <- r * s_x/ s_y
 b_2 <- mu_x - m_2 * mu_y
 ```
 
-Entonces obtenemos $\mbox{E}(X \mid Y=y) =`r round(b_2, 1)` + `r round(m_2, 2)`y$. [fix check eng think its wrong] Nuevamente vemos una regresión al promedio: la predicción para la altura del padre está más cerca del promedio del padre que la altura del hijo $y$ es a la altura del hijo promedio.
+Entonces obtenemos $\mbox{E}(X \mid Y=y) =`r round(b_2, 1)` + `r round(m_2, 2)`y$. Nuevamente vemos una regresión al promedio: la predicción para la altura del padre está más cerca del promedio del padre que la altura del hijo $y$ está a la altura del hijo promedio.
 
-[fix check compare eng] Aquí tenemos un gráfico que muestra las dos líneas de regresión, con azul para predecir las alturas de los hijos según las alturas de los padres y rojo para predecir las alturas de los padres según las alturas de los hijos:
+Aquí tenemos un gráfico que muestra las dos líneas de regresión. La azul predice las alturas de los hijos según las alturas de los padres y la roja predice las alturas de los padres según las alturas de los hijos:
 
 ```{r two-regression-lines, fig.height = 3, fig.width = 3, out.width="40%"}
 galton_heights %>%
