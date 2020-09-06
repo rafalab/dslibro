@@ -17,12 +17,12 @@ data("GaltonFamilies")
 
 set.seed(1983)
 galton_heights <- GaltonFamilies %>%
-filter(gender == "male") %>%
-group_by(family) %>%
-sample_n(1) %>%
-ungroup() %>%
-select(father, childHeight) %>%
-rename(son = childHeight)
+  filter(gender == "male") %>%
+  group_by(family) %>%
+  sample_n(1) %>%
+  ungroup() %>%
+  select(father, childHeight) %>%
+  rename(son = childHeight)
 ```
 
 En los ejercicios, veremos otras relaciones, incluyendo la de madres e hijas.
@@ -31,14 +31,14 @@ Supongamos que nos piden que resumamos los datos de padre e hijo. Dado que ambas
 
 ```{r, message=FALSE, warning=FALSE}
 galton_heights %>%
-summarize(mean(father), sd(father), mean(son), sd(son))
+  summarize(mean(father), sd(father), mean(son), sd(son))
 ```
 
 Sin embargo, este resumen no describe una característica importante de los datos: la tendencia de que entre más alto es el padre, más alto es el hijo.
 
 ```{r scatterplot, fig.height = 3, fig.width = 3, out.width="40%"}
 galton_heights %>% ggplot(aes(father, son)) +
-geom_point(alpha = 0.5)
+  geom_point(alpha = 0.5)
 ```
 
 Aprenderemos que el coeficiente de correlación es un resumen informativo de cómo dos variables se mueven juntas y luego veremos cómo esto se puede usar para predecir una variable usando la otra.
@@ -86,11 +86,11 @@ sim_data <- Reduce(rbind, sim_data)
 sim_data <- cbind( rep(cors, each=n), sim_data)
 colnames(sim_data) <- c("r","x","y")
 as.data.frame(sim_data) %>%
-ggplot(aes(x,y)) +
-facet_wrap(~r) +
-geom_point(alpha = 0.5) +
-geom_vline(xintercept = 0,lty=2) +
-geom_hline(yintercept = 0,lty=2)
+  ggplot(aes(x,y)) +
+  facet_wrap(~r) +
+  geom_point(alpha = 0.5) +
+  geom_vline(xintercept = 0,lty=2) +
+  geom_hline(yintercept = 0,lty=2)
 ```
 
 
@@ -104,7 +104,7 @@ A modo de ilustración, supongamos que los `r nrow(galton_heights)` pares de pad
 
 ```{r}
 R <- sample_n(galton_heights, 25, replace = TRUE) %>%
-summarize(r = cor(father, son)) %>% pull(r)
+  summarize(r = cor(father, son)) %>% pull(r)
 ```
 
 `R` es una variable aleatoria. Podemos ejecutar una simulación Monte Carlo para ver su distribución:
@@ -113,9 +113,9 @@ summarize(r = cor(father, son)) %>% pull(r)
 B <- 1000
 N <- 25
 R <- replicate(B, {
-sample_n(galton_heights, N, replace = TRUE) %>%
-summarize(r=cor(father, son)) %>%
-pull(r)
+  sample_n(galton_heights, N, replace = TRUE) %>%
+    summarize(r=cor(father, son)) %>%
+    pull(r)
 })
 qplot(R, geom = "histogram", binwidth = 0.05, color = I("black"))
 ```
@@ -140,8 +140,8 @@ En nuestro ejemplo, $N=25$ no parece ser lo suficientemente grande como para que
 
 ```{r small-sample-correlation-not-normal, out.width="40%"}
 ggplot(aes(sample=R), data = data.frame(R)) +
-stat_qq() +
-geom_abline(intercept = mean(R), slope = sqrt((1-mean(R)^2)/(N-2)))
+  stat_qq() +
+  geom_abline(intercept = mean(R), slope = sqrt((1-mean(R)^2)/(N-2)))
 ```
 
 Si aumentan $N$, verán que la distribución converge a la normalidad.
@@ -152,13 +152,13 @@ La correlación no siempre es un buen resumen de la relación entre dos variable
 
 ```{r ascombe-quartet,echo=FALSE}
 anscombe %>% mutate(row = seq_len(n())) %>%
-gather(name, value, -row) %>%
-separate(name, c("axis", "group"), sep=1) %>%
-spread(axis, value) %>% select(-row) %>%
-ggplot(aes(x,y)) +
-facet_wrap(~group) +
-geom_smooth(method="lm", fill=NA, fullrange=TRUE) +
-geom_point()
+  gather(name, value, -row) %>%
+  separate(name, c("axis", "group"), sep=1) %>%
+  spread(axis, value) %>% select(-row) %>%
+  ggplot(aes(x,y)) +
+  facet_wrap(~group) +
+  geom_smooth(method="lm", fill=NA, fullrange=TRUE) +
+  geom_point()
 #+ geom_point(bg="orange", color="red", cex=3, pch=21)
 ```
 
@@ -200,9 +200,9 @@ Una forma práctica de mejorar estas estimaciones de los valores esperados condi
 
 ```{r}
 conditional_avg <- galton_heights %>%
-filter(round(father) == 72) %>%
-summarize(avg = mean(son)) %>%
-pull(avg)
+  filter(round(father) == 72) %>%
+  summarize(avg = mean(son)) %>%
+  pull(avg)
 conditional_avg
 ```
 
@@ -214,27 +214,27 @@ Si queremos hacer una predicción de cualquier altura, no solo 72 pulgadas, podr
 
 ```{r boxplot-1, fig.height = 3, fig.width = 3, out.width="40%"}
 galton_heights %>% mutate(father_strata = factor(round(father))) %>%
-ggplot(aes(father_strata, son)) +
-geom_boxplot() +
-geom_point()
+  ggplot(aes(father_strata, son)) +
+  geom_boxplot() +
+  geom_point()
 ```
 
 No es sorprendente que los centros de los grupos estén aumentando con la altura. Además, estos centros parecen seguir una relación lineal. A continuación graficamos los promedios de cada grupo. Si tomamos en cuenta que estos promedios son variables aleatorias con errores estándar, los datos son consistentes con estos puntos siguiendo una línea recta:
 
 ```{r conditional-averages-follow-line, echo=FALSE, fig.height = 3, fig.width = 3, out.width="40%"}
 galton_heights %>%
-mutate(father = round(father)) %>%
-group_by(father) %>%
-summarize(son_conditional_avg = mean(son)) %>%
-ggplot(aes(father, son_conditional_avg)) +
-geom_point()
+  mutate(father = round(father)) %>%
+  group_by(father) %>%
+  summarize(son_conditional_avg = mean(son)) %>%
+  ggplot(aes(father, son_conditional_avg)) +
+  geom_point()
 ```
 
 El hecho de que estos promedios condicionales sigan una línea no es una coincidencia. En la siguiente sección, explicamos que la línea que siguen estos promedios es lo que llamamos la _línea de regresión_, que mejora la precisión de nuestras estimaciones. Sin embargo, no siempre es apropiado estimar los valores esperados condicionales con la línea de regresión, por lo que también describimos la justificación teórica de Galton para usar la línea de regresión.
 
 ## La línea de regresión
 
-[fix check ok] Si estamos prediciendo una variable aleatoria $Y$ sabiendo el valor de otra variable $X=x$ y usando una línea de regresión, entonces predecimos que por cada desviación estándar $\sigma_X$ que $x$ aumenta por encima del promedio $\mu_X$, $Y$ aumenta $\rho$ desviaciones estándar $\sigma_Y$ por encima del promedio $\mu_Y$ con $\rho$ la correlación entre $X$ y $Y$. Por lo tanto, la fórmula para la regresión es:
+Si estamos prediciendo una variable aleatoria $Y$ sabiendo el valor de otra variable $X=x$ y usando una línea de regresión, entonces predecimos que por cada desviación estándar $\sigma_X$ que $x$ aumenta por encima del promedio $\mu_X$, $Y$ aumenta $\rho$ desviaciones estándar $\sigma_Y$ por encima del promedio $\mu_Y$ con $\rho$ la correlación entre $X$ y $Y$. Por lo tanto, la fórmula para la regresión es:
 
 $$
 \left( \frac{Y-\mu_Y}{\sigma_Y} \right) = \rho \left( \frac{x-\mu_X}{\sigma_X} \right)
@@ -265,18 +265,18 @@ s_y <- sd(galton_heights$son)
 r <- cor(galton_heights$father, galton_heights$son)
 
 galton_heights %>%
-ggplot(aes(father, son)) +
-geom_point(alpha = 0.5) +
-geom_abline(slope = r * s_y/s_x, intercept = mu_y - r * s_y/s_x * mu_x)
+  ggplot(aes(father, son)) +
+  geom_point(alpha = 0.5) +
+  geom_abline(slope = r * s_y/s_x, intercept = mu_y - r * s_y/s_x * mu_x)
 ```
 
 La fórmula de regresión implica que si primero estandarizamos las variables, es decir, restamos el promedio y dividimos por la desviación estándar, entonces la línea de regresión tiene un intercepto 0 y una pendiente igual a la correlación $\rho$. Pueden hacer el mismo gráfico, pero usando unidades estándar así:
 
 ```{r regression-line-standard-units, fig.height = 3, fig.width = 3, out.width="40%", eval=FALSE}
 galton_heights %>%
-ggplot(aes(scale(father), scale(son))) +
-geom_point(alpha = 0.5) +
-geom_abline(intercept = 0, slope = r)
+  ggplot(aes(scale(father), scale(son))) +
+  geom_point(alpha = 0.5) +
+  geom_abline(intercept = 0, slope = r)
 ```
 
 
@@ -295,20 +295,20 @@ N <- 50
 
 set.seed(1983)
 conditional_avg <- replicate(B, {
-dat <- sample_n(galton_heights, N)
-dat %>% filter(round(father) == 72) %>%
-summarize(avg = mean(son)) %>%
-pull(avg)
+  dat <- sample_n(galton_heights, N)
+  dat %>% filter(round(father) == 72) %>%
+    summarize(avg = mean(son)) %>%
+    pull(avg)
 })
 
 regression_prediction <- replicate(B, {
-dat <- sample_n(galton_heights, N)
-mu_x <- mean(dat$father)
-mu_y <- mean(dat$son)
-s_x <- sd(dat$father)
-s_y <- sd(dat$son)
-r <- cor(dat$father, dat$son)
-mu_y + r*(72 - mu_x)/s_x*s_y
+  dat <- sample_n(galton_heights, N)
+  mu_x <- mean(dat$father)
+  mu_y <- mean(dat$son)
+  s_x <- sd(dat$father)
+  s_y <- sd(dat$son)
+  r <- cor(dat$father, dat$son)
+  mu_y + r*(72 - mu_x)/s_x*s_y
 })
 ```
 
@@ -357,11 +357,11 @@ Si creemos que los datos de altura están bien aproximados por la distribución 
 
 ```{r qqnorm-of-strata}
 galton_heights %>%
-mutate(z_father = round((father - mean(father))/ sd(father))) %>%
-filter(z_father %in% -2:2) %>%
-ggplot() +
-stat_qq(aes(sample = son)) +
-facet_wrap( ~ z_father)
+  mutate(z_father = round((father - mean(father))/ sd(father))) %>%
+  filter(z_father %in% -2:2) %>%
+  ggplot() +
+  stat_qq(aes(sample = son)) +
+  facet_wrap( ~ z_father)
 ```
 
 Ahora volvemos a tratar de definir correlación. Galton utilizó estadísticas matemáticas para demostrar que, cuando dos variables siguen una distribución normal de dos variables, calcular la línea de regresión es equivalente a calcular los valores esperados condicionales. No mostramos la derivación aquí, pero podemos mostrar que bajo este supuesto, para cualquier valor dado de $x$, el valor esperado de $Y$ en pares para los cuales $X=x$ es:
@@ -370,9 +370,7 @@ $$
 \mbox{E}(Y | X=x) = \mu_Y + \rho \frac{X-\mu_X}{\sigma_X}\sigma_Y
 $$
 
-Esta es la línea de regresión, con pendiente: $$
-\rho \frac {\sigma_Y} {\sigma_X}
-$$
+Esta es la línea de regresión, con pendiente: $$\rho \frac {\sigma_Y} {\sigma_X}$$
 
 e intercepto $\mu_y - m\mu_X$. Es equivalente a la ecuación de regresión que mostramos anteriormente que se puede escribir así: 
 
@@ -417,7 +415,7 @@ b_1 <- mu_y - m_1*mu_x
 
 que nos da la función $\mbox{E}(Y\mid X=x) =$ `r round(b_1, 1)` + `r round(m_1, 2)` $x$.
 
-¿Qué pasa si queremos predecir la altura del padre basada en la del hijo? Es importante saber que esto no se determina calculando la función inversa: [Fix check code]
+¿Qué pasa si queremos predecir la altura del padre basada en la del hijo? Es importante saber que esto no se determina calculando la función inversa: 
 $x = \{ \mbox{E}(Y\mid X=x) -$ `r round(b_1, 1)` $\}/0.5$.
 
 Necesitamos calcular $\mbox{E}(X \mid Y=y)$. Dado que los datos se aproximan mediante una distribución normal de dos variables, la teoría descrita anteriormente nos dice que este valor esperado condicional seguirá una línea con pendiente e intercepto:
@@ -433,10 +431,10 @@ Aquí tenemos un gráfico que muestra las dos líneas de regresión. La azul pre
 
 ```{r two-regression-lines, fig.height = 3, fig.width = 3, out.width="40%"}
 galton_heights %>%
-ggplot(aes(father, son)) +
-geom_point(alpha = 0.5) +
-geom_abline(intercept = b_1, slope = m_1, col = "blue") +
-geom_abline(intercept = -b_2/m_2, slope = 1/m_2, col = "red")
+  ggplot(aes(father, son)) +
+  geom_point(alpha = 0.5) +
+  geom_abline(intercept = b_1, slope = m_1, col = "blue") +
+  geom_abline(intercept = -b_2/m_2, slope = 1/m_2, col = "red")
 ```
 
 

@@ -8,9 +8,9 @@ library(Lahman)
 get_slope <- function(x, y) cor(x, y) * sd(y)/ sd(x)
 
 bb_slope <- Teams %>%
-filter(yearID %in% 1961:2001 ) %>%
-mutate(BB_per_game = BB/G, R_per_game = R/G) %>%
-summarize(slope = get_slope(BB_per_game, R_per_game))
+  filter(yearID %in% 1961:2001 ) %>%
+  mutate(BB_per_game = BB/G, R_per_game = R/G) %>%
+  summarize(slope = get_slope(BB_per_game, R_per_game))
 
 bb_slope
 ```
@@ -18,58 +18,58 @@ Entonces, ¿esto significa que si contratamos jugadores de bajo salario con much
 
 Nuevamente debemos recordar que la asociación no implica la causalidad. Los datos ofrecen evidencia sólida de que un equipo con dos BB más por juego que el equipo promedio, anota `r round(bb_slope*2, 1)` carreras por juego. Pero esto no significa que los BB sean la causa.
 
-Tengan en cuenta que si calculamos la pendiente de la línea de regresión para sencillos obtenemos:
+Noten que si calculamos la pendiente de la línea de regresión para sencillos obtenemos:
 
 ```{r}
 singles_slope <- Teams %>%
-filter(yearID %in% 1961:2001 ) %>%
-mutate(Singles_per_game = (H-HR-X2B-X3B)/G, R_per_game = R/G) %>%
-summarize(slope = get_slope(Singles_per_game, R_per_game))
+  filter(yearID %in% 1961:2001 ) %>%
+  mutate(Singles_per_game = (H-HR-X2B-X3B)/G, R_per_game = R/G) %>%
+  summarize(slope = get_slope(Singles_per_game, R_per_game))
 
 singles_slope
 ```
 
 que es un valor más bajo que el que obtenemos para BB.
 
-Además, observen que un sencillo lo lleva a primera base igual que un BB. Aquellos que saben de béisbol señalarán que con un sencillo, los corredores en base tienen una mejor oportunidad de anotar que con un BB. Entonces, ¿cómo puede un BB ser más predictivo de las carreras? La razón por la que esto sucede es por _confusión_ (_confounding_ en inglés). Aquí mostramos la correlación entre HR, BB y sencillos:
+Además, observen que un sencillo lleva a un jugador a primera base igual que un BB. Aquellos que saben de béisbol señalarán que con un sencillo, los corredores en base tienen una mejor oportunidad de anotar que con un BB. Entonces, ¿cómo puede un BB ser más predictivo de las carreras? La razón por la que esto sucede es por _confusión_ (_counfounding_ en inglés). Aquí mostramos la correlación entre HR, BB y sencillos:
 
 ```{r}
 Teams %>%
-filter(yearID %in% 1961:2001 ) %>%
-mutate(Singles = (H-HR-X2B-X3B)/G, BB = BB/G, HR = HR/G) %>%
-summarize(cor(BB, HR), cor(Singles, HR), cor(BB, Singles))
+  filter(yearID %in% 1961:2001 ) %>%
+  mutate(Singles = (H-HR-X2B-X3B)/G, BB = BB/G, HR = HR/G) %>%
+  summarize(cor(BB, HR), cor(Singles, HR), cor(BB, Singles))
 ```
 
 Resulta que los lanzadores, temerosos de los HR, a veces evitarán lanzar _strikes_ a los bateadores de HR. Como resultado, los bateadores de HR tienden a tener más BB y un equipo con muchos bateadores de HR también tendrá más BB. Aunque puede parecer que BB causan carreras, en realidad son HR los que causan la mayoría de estas carreras. Decimos que BB están _confundidos_ (_confounded_ en inglés) con HR. Sin embargo, ¿es posible que las BB todavía ayuden? Para averiguar, tenemos que ajustar para el efecto de HR. La regresión también puede ayudar con esto.
 
 ### Entender confusión a través de estratificación
 
-Un primer acercamiento es mantener los HR fijos a un valor determinado y luego examinar la relación entre BB y las carreras. Como lo hicimos cuando estratificamos a los padres redondeando a la pulgada más cercana, aquí podemos estratificar HR por juego a los diez más cercanos. Filtramos los estratos con pocos puntos para evitar estimaciones altamente variables:
+Un primer acercamiento es mantener los HR fijos a un valor determinado y luego examinar la relación entre BB y las carreras. Como lo hicimos cuando estratificamos a los padres redondeando a la pulgada más cercana, aquí podemos estratificar HR por juego a los diez más cercanos. Filtramos los estratos con pocos puntos para evitar estimaciones muy variables:
 
 ```{r}
 dat <- Teams %>% filter(yearID %in% 1961:2001) %>%
-mutate(HR_strata = round(HR/G, 1),
-BB_per_game = BB/ G,
-R_per_game = R/ G) %>%
-filter(HR_strata >= 0.4 & HR_strata <=1.2)
+  mutate(HR_strata = round(HR/G, 1),
+         BB_per_game = BB/ G,
+         R_per_game = R/ G) %>%
+  filter(HR_strata >= 0.4 & HR_strata <=1.2)
 ```
 
 y luego hacemos un diagrama de dispersión para cada estrato:
 
 ```{r runs-vs-bb-by-hr-strata, out.width="80%", fig.height=5}
 dat %>%
-ggplot(aes(BB_per_game, R_per_game)) +
-geom_point(alpha = 0.5) +
-geom_smooth(method = "lm") +
-facet_wrap( ~ HR_strata)
+  ggplot(aes(BB_per_game, R_per_game)) +
+  geom_point(alpha = 0.5) +
+  geom_smooth(method = "lm") +
+  facet_wrap( ~ HR_strata)
 ```
 
-Recuerden que la pendiente de regresión para predecir carreras con BB era`r round(bb_slope, 1)`. Una vez que estratificamos por HR, estas pendientes se reducen sustancialmente:
+Recuerden que la pendiente de regresión para predecir carreras con BB era `r round(bb_slope, 1)`. Una vez que estratificamos por HR, estas pendientes se reducen sustancialmente:
 
 ```{r}
 dat %>%
-group_by(HR_strata) %>%
-summarize(slope = get_slope(BB_per_game, R_per_game))
+  group_by(HR_strata) %>%
+  summarize(slope = get_slope(BB_per_game, R_per_game))
 ```
 
 Las pendientes se reducen, pero no son 0, lo que indica que las BB son útiles para producir carreras, pero no tanto como se pensaba anteriormente. De hecho, los valores anteriores están más cerca de la pendiente que obtuvimos de sencillos, `r round(singles_slope, 2)`, que es más consistente con nuestra intuición. Dado que tanto los sencillos como los BB nos llevan a primera base, deberían tener aproximadamente el mismo poder predictivo.
@@ -78,23 +78,23 @@ Aunque nuestra comprensión de la aplicación nos dice que los HR causan BB pero
 
 ```{r runs-vs-hr-by-bb-strata, out.width="100%",echo=FALSE}
 dat <- Teams %>% filter(yearID %in% 1961:2001) %>%
-mutate(BB_strata = round(BB/G,1),
-HR_per_game = HR/G,
-R_per_game = R/G) %>%
-filter(BB_strata >= 2.8 & BB_strata <= 3.9)
+  mutate(BB_strata = round(BB/G,1),
+         HR_per_game = HR/G,
+         R_per_game = R/G) %>%
+  filter(BB_strata >= 2.8 & BB_strata <= 3.9)
 
 dat %>%
-ggplot(aes(HR_per_game, R_per_game)) +
-geom_point(alpha = 0.5) +
-geom_smooth(method = "lm") +
-facet_wrap( ~ BB_strata)
+  ggplot(aes(HR_per_game, R_per_game)) +
+  geom_point(alpha = 0.5) +
+  geom_smooth(method = "lm") +
+  facet_wrap( ~ BB_strata)
 ```
 
 En este caso, las pendientes no cambian mucho del original:
 
 ```{r}
 dat %>% group_by(BB_strata) %>%
-summarize(slope = get_slope(HR_per_game, R_per_game))
+  summarize(slope = get_slope(HR_per_game, R_per_game))
 ```
 
 Se reducen un poco, lo que es consistente con el hecho de que BB sí conducen a algunas carreras.
@@ -102,16 +102,16 @@ Se reducen un poco, lo que es consistente con el hecho de que BB sí conducen a 
 
 ```{r}
 hr_slope <- Teams %>%
-filter(yearID %in% 1961:2001 ) %>%
-mutate(HR_per_game = HR/G, R_per_game = R/G) %>%
-summarize(slope = get_slope(HR_per_game, R_per_game))
+  filter(yearID %in% 1961:2001 ) %>%
+  mutate(HR_per_game = HR/G, R_per_game = R/G) %>%
+  summarize(slope = get_slope(HR_per_game, R_per_game))
 
 hr_slope
 ```
 
 De todos modos, parece que si estratificamos por HR, tenemos una distribución normal de dos variables para carreras versus BB. Del mismo modo, si estratificamos por BB, tenemos una distribución normal de dos variables aproximada para HR versus carreras.
 
-### Regresión con múltiples variables
+### Regresión lineal múltiple
 
 Es un poco complejo calcular líneas de regresión para cada estrato. Básicamente, estamos ajustando modelos como este:
 
@@ -119,7 +119,7 @@ $$
 \mbox{E}[R \mid BB = x_1, \, HR = x_2] = \beta_0 + \beta_1(x_2) x_1 + \beta_2(x_1) x_2
 $$
 
-con las pendientes para $x_1$ cambiando por diferentes valores de $x_2$ y viceversa. ¿Pero hay un acercamiento más fácil?
+con las pendientes para $x_1$ cambiando para diferentes valores de $x_2$ y viceversa. ¿Pero hay un acercamiento más fácil?
 
 Si tomamos en cuenta la variabilidad aleatoria, las pendientes en los estratos no parecen cambiar mucho. Si estas pendientes son iguales, esto implica que $\beta_1(x_2)$ y $\beta_2(x_1)$ son constantes. Esto a su vez implica que la expectativa de carreras condicionadas en HR y BB se puede escribir así:
 
@@ -129,13 +129,13 @@ $$
 
 Este modelo sugiere que si el número de HR se fija en $x_2$, observamos una relación lineal entre carreras y BB con un intercepto de $\beta_0 + \beta_2 x_2$. Nuestro análisis exploratorio de datos sugirió esto. El modelo también sugiere que a medida que aumenta el número de HR, el crecimiento del intercepto también es lineal y está determinado por $\beta_1 x_1$.
 
-En este análisis, denominado _regresión con múltiples variables_, a menudo escucharán a la gente decir que la pendiente BB $\beta_1$ está _ajustada_ (_adjusted_ en inglés) para el efecto HR. Si el modelo es correcto, entonces se ha tomado en cuenta la confusión. ¿Pero cómo estimamos $\beta_1$ y $\beta_2$ de los datos? Para esto, aprendemos sobre modelos lineales y estimaciones de mínimos cuadrados.
+En este análisis, denominado _regresión lineal múltiple_, a menudo escucharán a la gente decir que la pendiente BB $\beta_1$ está _ajustada_ (_adjusted_ en inglés) para el efecto HR. Si el modelo es correcto, entonces se ha tomado en cuenta la confusión. ¿Pero cómo estimamos $\beta_1$ y $\beta_2$ de los datos? Para esto, aprendemos sobre modelos lineales y estimaciones de mínimos cuadrados.
 
 ## Estimaciones de mínimos cuadrados {#lse}
 
-Hemos explicado cómo cuando los datos tienen una distribución normal de dos variables, entonces los valores esperados condicionales siguen la línea de regresión. El hecho de que el valor esperado condicional es una línea no es una suposición adicional, sino más bien un resultado derivado. Sin embargo, en la práctica es común escribir un modelo que describa la relación entre dos o más variables utilizando un _modelo lineal_.
+Hemos explicado cómo cuando los datos tienen una distribución normal de dos variables, entonces los valores esperados condicionales siguen la línea de regresión. El hecho de que el valor esperado condicional es una línea no es una suposición adicional, sino más bien un resultado derivado. Sin embargo, en la práctica es común escribir un modelo que describa la relación entre dos o más variables utilizando un _modelo lineal_ (_linear model_ en inglés).
 
-Notamos que "lineal" aquí no se refiere exclusivamente a líneas, sino al hecho de que el valor esperado condicional es una combinación lineal de cantidades conocidas. En matemáticas, cuando multiplicamos cada variable por una constante y luego las sumamos, decimos que formamos una combinación lineal de las variables. Por ejemplo, $3x - 4y + 5z$ es una combinación lineal de $x$, $y$ y $z$. También podemos añadir una constante y por ende $2 + 3x - 4y + 5z$ también es una combinación lineal de $x$, $y$ y $z$.
+Notamos que "lineal" aquí no se refiere exclusivamente a líneas, sino al hecho de que el valor esperado condicional es una combinación lineal de cantidades conocidas. En matemáticas, cuando multiplicamos cada variable por una constante y luego las sumamos, decimos que formamos una combinación lineal de las variables. Por ejemplo, $3x - 4y + 5z$ es una combinación lineal de $x$, $y$ y $z$. También podemos añadir una constante y por eso $2 + 3x - 4y + 5z$ también es una combinación lineal de $x$, $y$ y $z$.
 
 Entonces $\beta_0 + \beta_1 x_1 + \beta_2 x_2$ es una combinación lineal de $x_1$ y $x_2$. El modelo lineal más sencillo es una constante $\beta_0$; el segundo más sencillo es una línea $\beta_0 + \beta_1 x$. Si tuviéramos que especificar un modelo lineal para los datos de Galton, denotaríamos la $N$ alturas de padres observadas con $x_1, \dots, x_n$, entonces modelamos las $N$ alturas de hijos que estamos tratando de predecir con:
 
@@ -143,15 +143,15 @@ $$
 Y_i = \beta_0 + \beta_1 x_i + \varepsilon_i, \, i=1,\dots,N.
 $$
 
-Aquí $x_i$ es la altura del padre, que es fija (no aleatoria) debido al condicionamiento, y $Y_i$ es la altura aleatoria del hijo que queremos predecir. Suponemos además que $\varepsilon_i$ son independientes entre sí, tienen valor esperado 0 y la desviación estándar, llámela $\sigma$, no depende de $i$.
+Aquí $x_i$ es la altura del padre, que es fija (no aleatoria) debido al condicionamiento, y $Y_i$ es la altura aleatoria del hijo que queremos predecir. Suponemos además que $\varepsilon_i$ son independientes entre sí, tienen valor esperado 0 y la desviación estándar, llámenla $\sigma$, no depende de $i$.
 
 En el modelo anterior, sabemos el $x_i$, pero para tener un modelo útil para la predicción, necesitamos $\beta_0$ y $\beta_1$. Los estimamos a partir de los datos. Una vez que hagamos esto, podemos predecir alturas de hijos para cualquier altura de padre $x$. Mostramos cómo hacer esto en la siguiente sección.
 
-Tengan en cuenta que si suponemos además que el $\varepsilon$ tiene una distribución normal, entonces este modelo es exactamente el mismo que obtuvimos anteriormente suponiendo que los datos siguen una distribución normal de dos variables. Una diferencia algo matizada es que en el primer enfoque suponemos que los datos siguen una distribución normal de dos variables y que no suponemos un modelo lineal, sino que lo derivamos. En la práctica, los modelos lineales son simplemente supuestos y no necesariamente asumimos normalidad: la distribución de $\varepsilon$s no se especifica. Sin embargo, si sus datos siguen una distribución normal de dos variables, se cumple el modelo lineal anterior. Si sus datos no siguen una distribución normal de dos variables, necesitarán justificar el modelo de otra forma.
+Noten que si suponemos además que el $\varepsilon$ tiene una distribución normal, entonces este modelo es exactamente el mismo que obtuvimos anteriormente suponiendo que los datos siguen una distribución normal de dos variables. Una diferencia algo matizada es que en el primer acercamiento suponemos que los datos siguen una distribución normal de dos variables y que no suponemos un modelo lineal, sino que lo derivamos. En la práctica, los modelos lineales son simplemente supuestos y no necesariamente suponemos normalidad: la distribución de $\varepsilon$s no se especifica. Sin embargo, si sus datos siguen una distribución normal de dos variables, se cumple el modelo lineal anterior. Si sus datos no siguen una distribución normal de dos variables, necesitarán justificar el modelo de otra forma.
 
 ### Interpretando modelos lineales
 
-Una razón por la que los modelos lineales son populares es porque son interpretables. En el caso de los datos de Galton, podemos interpretar los datos de esta manera: debido a los genes heredados, la predicción de la altura del hijo crece por $\beta_1$ para cada pulgada que aumentamos la altura del padre $x$. Porque no todos los hijos con padres de estatura $x$ son de la misma altura, necesitamos el término $\varepsilon$, lo que explica la variabilidad restante. Esta variabilidad restante incluye el efecto genético de la madre, los factores ambientales y otras aleatorias biológicas.
+Una razón por la que los modelos lineales son populares es porque son interpretables. En el caso de los datos de Galton, podemos interpretar los datos de esta manera: debido a los genes heredados, la predicción de la altura del hijo crece por $\beta_1$ para cada pulgada que aumentamos la altura del padre $x$. Porque no todos los hijos con padres de estatura $x$ son de la misma altura, necesitamos el término $\varepsilon$, lo que explica la variabilidad restante. Esta variabilidad restante incluye el efecto genético de la madre, los factores ambientales y otros factores biológicos aleatorios.
 
 Dada la forma en que escribimos el modelo anterior, el intercepto $\beta_0$ no es muy interpretable, ya que es la altura pronosticada de un hijo con un padre que mide 0 pulgadas. Debido a la regresión a la media, la predicción generalmente será un poco más grande que 0. Para hacer que el parámetro de pendiente sea más interpretable, podemos reescribir el modelo como:
 
@@ -177,20 +177,20 @@ library(HistData)
 data("GaltonFamilies")
 set.seed(1983)
 galton_heights <- GaltonFamilies %>%
-filter(gender == "male") %>%
-group_by(family) %>%
-sample_n(1) %>%
-ungroup() %>%
-select(father, childHeight) %>%
-rename(son = childHeight)
+  filter(gender == "male") %>%
+  group_by(family) %>%
+  sample_n(1) %>%
+  ungroup() %>%
+  select(father, childHeight) %>%
+  rename(son = childHeight)
 ```
 
 Escribamos una función que calcule el RSS para cualquier par de valores $\beta_0$ y $\beta_1$.
 
 ```{r}
 rss <- function(beta0, beta1, data){
-resid <- galton_heights$son - (beta0+beta1*galton_heights$father)
-return(sum(resid^2))
+  resid <- galton_heights$son - (beta0+beta1*galton_heights$father)
+  return(sum(resid^2))
 }
 ```
 
@@ -199,9 +199,9 @@ Entonces, para cualquier par de valores, obtenemos un RSS. Aquí hay un gráfico
 ```{r rss-versus-estimate}
 beta1 = seq(0, 1, len=nrow(galton_heights))
 results <- data.frame(beta1 = beta1,
-rss = sapply(beta1, rss, beta0 = 25))
+                      rss = sapply(beta1, rss, beta0 = 25))
 results %>% ggplot(aes(beta1, rss)) + geom_line() +
-geom_line(aes(beta1, rss))
+  geom_line(aes(beta1, rss))
 ```
 
 Podemos ver un mínimo claro para $\beta_1$ alrededor de 0.65. Sin embargo, este mínimo para $\beta_1$ es para cuando $\beta_0 = 25$, un valor que elegimos arbitrariamente. No sabemos si (25, 0.65) es el par que minimiza la ecuación en todos los pares posibles.
@@ -223,7 +223,7 @@ fit <- lm(son ~ father, data = galton_heights)
 fit$coef
 ```
 
-La forma más común que usamos `lm` es mediante el uso del cáracter `~` para dejar `lm` saber cuál es la variable que estamos prediciendo (izquierda de `~`) y que estamos utilizando para predecir (derecho de `~`). El intercepto se agrega automáticamente al modelo que se ajustará.
+La forma más común que usamos `lm` es mediante el uso del cáracter `~` para dejar `lm` saber cuál es la variable que estamos prediciendo (a la izquierda de `~`) y que estamos utilizando para predecir (a la derecha de `~`). El intercepto se agrega automáticamente al modelo que se ajustará.
 
 El objeto `fit` incluye más información sobre el ajuste. Podemos usar la función `summary` para extraer más de esta información (que no mostramos):
 
@@ -231,7 +231,7 @@ El objeto `fit` incluye más información sobre el ajuste. Podemos usar la funci
 summary(fit)
 ```
 
-Para comprender parte de la información incluida en este resumen, debemos recordar que las LSE son variables aleatorias. La estadística matemática nos da algunas ideas sobre la distribución de estas variables aleatorias.
+Para entender parte de la información incluida en este resumen, debemos recordar que las LSE son variables aleatorias. La estadística matemática nos da algunas ideas sobre la distribución de estas variables aleatorias.
 
 
 ### LSE son variables aleatorias
@@ -242,9 +242,9 @@ El LSE se deriva de los datos $y_1,\dots,y_N$, que son una realización de varia
 B <- 1000
 N <- 50
 lse <- replicate(B, {
-sample_n(galton_heights, N, replace = TRUE) %>%
-lm(son ~ father, data = .) %>%
-.$coef
+  sample_n(galton_heights, N, replace = TRUE) %>%
+    lm(son ~ father, data = .) %>%
+    .$coef
 })
 lse <- data.frame(beta_0 = lse[1,], beta_1 = lse[2,])
 ```
@@ -254,9 +254,9 @@ Podemos ver la variabilidad de las estimaciones graficando sus distribuciones:
 ```{r lse-distributions, out.width="100%", fig.width=6, fig.height=3, echo=FALSE}
 library(gridExtra)
 p1 <- lse %>% ggplot(aes(beta_0)) +
-geom_histogram(binwidth = 5, color = "black")
+  geom_histogram(binwidth = 5, color = "black")
 p2 <- lse %>% ggplot(aes(beta_1)) +
-geom_histogram(binwidth = 0.1, color = "black")
+  geom_histogram(binwidth = 0.1, color = "black")
 grid.arrange(p1, p2, ncol = 2)
 ```
 
@@ -264,8 +264,8 @@ La razón por la que se ven normales es porque el teorema del límite central ta
 
 ```{r}
 sample_n(galton_heights, N, replace = TRUE) %>%
-lm(son ~ father, data = .) %>%
-summary %>% .$coef
+  lm(son ~ father, data = .) %>%
+  summary %>% .$coef
 ```
 
 Pueden ver que las estimaciones de errores estándar informadas por la función `summary` están cerca de los errores estándar de la simulación:
@@ -293,8 +293,8 @@ Tengan en cuenta que la predicción $\hat{Y}$ también es una variable aleatoria
 
 ```{r father-son-regression}
 galton_heights %>% ggplot(aes(son, father)) +
-geom_point() +
-geom_smooth(method = "lm")
+  geom_point() +
+  geom_smooth(method = "lm")
 ```
 
 La función `predict` de R toma un objeto `lm` como entrada y devuelve la predicción. Si se piden, se proveen los errores estándar y otra información a partir de la cual podemos construir intervalos de confianza:
@@ -317,15 +317,15 @@ Hemos demostrado cómo BB y sencillos tienen un poder predictivo similar para an
 ```{r, eval=FALSE}
 library(Lahman)
 dat <- Batting %>% filter(yearID == 2002) %>%
-mutate(pa = AB + BB,
-singles = (H - X2B - X3B - HR)/ pa, bb = BB/ pa) %>%
-filter(pa >= 100) %>%
-select(playerID, singles, bb)
+  mutate(pa = AB + BB,
+         singles = (H - X2B - X3B - HR)/ pa, bb = BB/ pa) %>%
+  filter(pa >= 100) %>%
+  select(playerID, singles, bb)
 ```
 
 Ahora calcule una tabla similar pero con tasas calculadas durante 1999-2001.
 
-2\. En la sección \@ref(joins) aprenderemmos sobre el `inner_join`, que puede usar para poner los datos y promedios de 2001 en la misma tabla:
+2\. En la sección \@ref(joins) aprenderemmos sobre `inner_join`, que puede usar para poner los datos y promedios de 2001 en la misma tabla:
 
 ```{r, eval = FALSE}
 dat <- inner_join(dat, avg, by = "playerID")
@@ -346,30 +346,30 @@ Para ver cómo usamos la función `lm` en un análisis más complejo, volvamos a
 
 ```{r}
 dat <- Teams %>% filter(yearID %in% 1961:2001) %>%
-mutate(HR = round(HR/G, 1),
-BB = BB/G,
-R = R/G) %>%
-select(HR, BB, R) %>%
-filter(HR >= 0.4 & HR<=1.2)
+  mutate(HR = round(HR/G, 1),
+         BB = BB/G,
+         R = R/G) %>%
+  select(HR, BB, R) %>%
+  filter(HR >= 0.4 & HR<=1.2)
 ```
 
-Como no sabíamos la función `lm` para calcular la línea de regresión en cada estrato, utilizamos la fórmula así:
+Como todavía no sabíamos de la función `lm` para calcular la línea de regresión en cada estrato, utilizamos la fórmula así:
 
 ```{r, eval=FALSE}
 get_slope <- function(x, y) cor(x, y) * sd(y)/ sd(x)
 dat %>%
-group_by(HR) %>%
-summarize(slope = get_slope(BB, R))
+  group_by(HR) %>%
+  summarize(slope = get_slope(BB, R))
 ```
 
-Argumentamos que las pendientes son similares y que las diferencias quizás se debieron a una variación aleatoria. Para ofrecer una defensa más rigurosa de que las pendientes eran las mismas, lo que condujo a nuestro modelo multivariante, pudimos calcular los intervalos de confianza para cada pendiente. No hemos aprendido la fórmula para esto, pero la función `lm`  provee suficiente información para construirlos.
+Argumentamos que las pendientes son similares y que las diferencias quizás se debieron a una variación aleatoria. Para ofrecer una defensa más rigurosa de que las pendientes eran las mismas, lo que condujo a nuestro modelo de múltiples variables, pudimos calcular los intervalos de confianza para cada pendiente. No hemos aprendido la fórmula para esto, pero la función `lm` provee suficiente información para construirlos.
 
 Primero, noten que si intentamos usar la función `lm` para obtener la pendiente estimada de esta manera:
 
 ```{r}
 dat %>%
-group_by(HR) %>%
-lm(R ~ BB, data = .) %>% .$coef
+  group_by(HR) %>%
+  lm(R ~ BB, data = .) %>% .$coef
 ```
 
 no obtenemos el resultado que queremos. La función `lm` ignora el `group_by` ya que `lm` no es parte del __tidyverse__ y no sabe cómo manejar el resultado de un tibble agrupado.
@@ -380,8 +380,8 @@ Entonces, intentemos usar la función `do` para ajustar una línea de regresión
 
 ```{r}
 dat %>%
-group_by(HR) %>%
-do(fit = lm(R ~ BB, data = .))
+  group_by(HR) %>%
+  do(fit = lm(R ~ BB, data = .))
 ```
 
 Observen que ajustamos una línea de regresión a cada estrato. La función `do` creará un _data frame_ con la primera columna como el valor de los estratos y una columna denominada `fit` (escogimos el nombre, pero puede ser cualquier cosa). La columna contendrá el resultado de la llamada `lm`. Por lo tanto, el tibble resultante tiene una columna con objetos `lm`, que no es muy útil.
@@ -390,20 +390,20 @@ Además, si no nombramos una columna (noten que arriba la nombramos `fit`), ento
 
 ```{r, eval=FALSE}
 dat %>%
-group_by(HR) %>%
-do(lm(R ~ BB, data = .))
+  group_by(HR) %>%
+  do(lm(R ~ BB, data = .))
 ```
 
 `Error: Results 1, 2, 3, 4, 5, ... must be data frames, not lm`
 
 
-Para construir un _data frame_ útil, la salida de la función también debe ser un _data frame_. Podríamos construir una función que devuelva solo lo que queremos en forma de un _data frame_:
+Para construir un _data frame_ útil, el _output_ de la función también debe ser un _data frame_. Podríamos construir una función que devuelva solo lo que queremos en forma de un _data frame_:
 
 ```{r}
 get_slope <- function(data){
-fit <- lm(R ~ BB, data = data)
-data.frame(slope = fit$coefficients[2],
-se = summary(fit)$coefficient[2,2])
+  fit <- lm(R ~ BB, data = data)
+  data.frame(slope = fit$coefficients[2],
+             se = summary(fit)$coefficient[2,2])
 }
 ```
 
@@ -411,40 +411,40 @@ Y luego usar `do` **sin** nombrar el _output_, puesto que ya estamos obteniendo 
 
 ```{r}
 dat %>%
-group_by(HR) %>%
-do(get_slope(.))
+  group_by(HR) %>%
+  do(get_slope(.))
 ```
 
 Si nombramos el _output_, obtenemos algo que no queremos, una columna que contiene _data frames_:
 
 ```{r}
 dat %>%
-group_by(HR) %>%
-do(slope = get_slope(.))
+  group_by(HR) %>%
+  do(slope = get_slope(.))
 ```
 
-Esto no es muy útil, así que cubramos una última característica de `do`. Si el _data frame_ que se devuelve tiene más de una fila, se concatenarán adecuadamente. Aquí hay un ejemplo en el que devolvemos ambos parámetros estimados:
+Esto no es muy útil, así que discutamos una última característica de `do`. Si el _data frame_ que se devuelve tiene más de una fila, se concatenarán adecuadamente. Aquí hay un ejemplo en el que devolvemos los estimados de ambos parámetros:
 
 ```{r}
 get_lse <- function(data){
-fit <- lm(R ~ BB, data = data)
-data.frame(term = names(fit$coefficients),
-slope = fit$coefficients,
-se = summary(fit)$coefficient[,2])
+  fit <- lm(R ~ BB, data = data)
+  data.frame(term = names(fit$coefficients),
+             slope = fit$coefficients,
+             se = summary(fit)$coefficient[,2])
 }
 
 dat %>%
-group_by(HR) %>%
-do(get_lse(.))
+  group_by(HR) %>%
+  do(get_lse(.))
 ```
 
 Si creen que todo esto es demasiado complicado, no están solos. Para simplificar las cosas, presentamos el paquete __broom__ que fue diseñado para facilitar el uso de funciones que ajustan modelos, como `lm`, con el __tidyverse__.
 
-### El paquete de escoba
+### El paquete broom
 
 Nuestra tarea original era proveer una estimación y un intervalo de confianza para las estimaciones de pendiente de cada estrato. El paquete __broom__ hará esto bastante fácil.
 
-El paquete __broom__ tiene tres funciones principales, todas las cuales extraen información del objeto devuelto por `lm` y lo devuelven en un _data frame_ comprensible para  __tidyverse__. Estas funciones son `tidy`, `glance` y `augment`. La función `tidy` devuelve estimaciones e información relacionada como un _data frame_:
+El paquete __broom__ tiene tres funciones principales, todas las cuales extraen información del objeto devuelto por `lm` y lo devuelve en un _data frame_ que __tidyverse__ entiende. Estas funciones son `tidy`, `glance` y `augment`. La función `tidy` devuelve estimaciones e información relacionada como un _data frame_:
 
 ```{r}
 library(broom)
@@ -462,13 +462,13 @@ Debido a que el resultado es un _data frame_, podemos usarlo inmediatamente con 
 
 ```{r do-tidy-example}
 dat %>%
-group_by(HR) %>%
-do(tidy(lm(R ~ BB, data = .), conf.int = TRUE)) %>%
-filter(term == "BB") %>%
-select(HR, estimate, conf.low, conf.high) %>%
-ggplot(aes(HR, y = estimate, ymin = conf.low, ymax = conf.high)) +
-geom_errorbar() +
-geom_point()
+  group_by(HR) %>%
+  do(tidy(lm(R ~ BB, data = .), conf.int = TRUE)) %>%
+  filter(term == "BB") %>%
+  select(HR, estimate, conf.low, conf.high) %>%
+  ggplot(aes(HR, y = estimate, ymin = conf.low, ymax = conf.high)) +
+  geom_errorbar() +
+  geom_point()
 ```
 
 Ahora volvemos a discutir nuestra tarea original de determinar si las pendientes cambiaron. El gráfico que acabamos de hacer, usando `do` y `tidy`, muestra que los intervalos de confianza se superponen, que provee una buena confirmación visual de que nuestra suposición de que la pendiente no cambia es cierta.
@@ -493,16 +493,16 @@ Veremos un ejemplo de `augment` en la siguiente sección.
 data("GaltonFamilies")
 set.seed(1)
 galton_heights <- GaltonFamilies %>%
-group_by(family, gender) %>%
-sample_n(1) %>%
-ungroup()
+  group_by(family, gender) %>%
+  sample_n(1) %>%
+  ungroup()
 
 cors <- galton_heights %>%
-gather(parent, parentHeight, father:mother) %>%
-mutate(child = ifelse(gender == "female", "daughter", "son")) %>%
-unite(pair, c("parent", "child")) %>%
-group_by(pair) %>%
-summarize(cor = cor(parentHeight, childHeight))
+  gather(parent, parentHeight, father:mother) %>%
+  mutate(child = ifelse(gender == "female", "daughter", "son")) %>%
+  unite(pair, c("parent", "child")) %>%
+  group_by(pair) %>%
+  summarize(cor = cor(parentHeight, childHeight))
 ```
 
 ¿Son estas diferencias estadísticamente significativas? Para responder, calcularemos las pendientes de la línea de regresión junto con sus errores estándar. Comience usando `lm` y el paquete __broom__ para calcular las pendientes LSE y los errores estándar.
@@ -547,9 +547,9 @@ con $Y_i$ representando carreras por juego para el equipo $i$, $x_{i,1}$ represe
 
 ```{r}
 fit <- Teams %>%
-filter(yearID %in% 1961:2001) %>%
-mutate(BB = BB/G, HR = HR/G, R = R/G) %>%
-lm(R ~ BB + HR, data = .)
+  filter(yearID %in% 1961:2001) %>%
+  mutate(BB = BB/G, HR = HR/G, R = R/G) %>%
+  lm(R ~ BB + HR, data = .)
 ```
 
 Nosotros podemos usar `tidy` para ver un buen resumen:
@@ -559,7 +559,7 @@ tidy(fit, conf.int = TRUE)
 ```
 
 
-Cuando ajustamos el modelo con una sola variable, las pendientes estimadas fueron `r bb_slope` y `r hr_slope` para BB y HR, respectivamente. Tengan en cuenta que cuando se ajusta el modelo multivariante, ambos disminuyen, con el efecto BB disminuye mucho más.
+Cuando ajustamos el modelo con una sola variable, las pendientes estimadas fueron `r bb_slope` y `r hr_slope` para BB y HR, respectivamente. Tengan en cuenta que cuando se ajusta el modelo de múltiples variables, ambos disminuyen, con el efecto BB disminuyendo mucho más.
 
 Ahora queremos construir una métrica para elegir jugadores. Tenemos que considerar sencillos, dobles y triples. ¿Podemos construir un modelo que prediga carreras basado en todos estos resultados?
 
@@ -575,14 +575,14 @@ Utilizando `lm`, podemos encontrar rápidamente el LSE para los parámetros usan
 
 ```{r}
 fit <- Teams %>%
-filter(yearID %in% 1961:2001) %>%
-mutate(BB = BB/ G,
-singles = (H - X2B - X3B - HR)/ G,
-doubles = X2B/ G,
-triples = X3B/ G,
-HR = HR/ G,
-R = R/ G) %>%
-lm(R ~ BB + singles + doubles + triples + HR, data = .)
+  filter(yearID %in% 1961:2001) %>%
+  mutate(BB = BB/ G,
+         singles = (H - X2B - X3B - HR)/ G,
+         doubles = X2B/ G,
+         triples = X3B/ G,
+         HR = HR/ G,
+         R = R/ G) %>%
+  lm(R ~ BB + singles + doubles + triples + HR, data = .)
 ```
 
 Podemos ver los coeficientes usando `tidy`:
@@ -597,18 +597,18 @@ Para ver cuán bien nuestra métrica predice carreras, podemos predecir el núme
 
 ```{r model-predicts-runs}
 Teams %>%
-filter(yearID %in% 2002) %>%
-mutate(BB = BB/G,
-singles = (H-X2B-X3B-HR)/G,
-doubles = X2B/G,
-triples =X3B/G,
-HR=HR/G,
-R=R/G) %>%
-mutate(R_hat = predict(fit, newdata = .)) %>%
-ggplot(aes(R_hat, R, label = teamID)) +
-geom_point() +
-geom_text(nudge_x=0.1, cex = 2) +
-geom_abline()
+  filter(yearID %in% 2002) %>%
+  mutate(BB = BB/G,
+         singles = (H-X2B-X3B-HR)/G,
+         doubles = X2B/G,
+         triples =X3B/G,
+         HR=HR/G,
+         R=R/G) %>%
+  mutate(R_hat = predict(fit, newdata = .)) %>%
+  ggplot(aes(R_hat, R, label = teamID)) +
+  geom_point() +
+  geom_text(nudge_x=0.1, cex = 2) +
+  geom_abline()
 ```
 
 Nuestro modelo hace un buen trabajo, como lo demuestra el hecho de que los puntos del gráfico observado versus los del gráfico previsto caen cerca de la línea de identidad.
@@ -627,99 +627,98 @@ Para hacer que la tasa de equipo por juego sea comparable a la tasa de jugador p
 
 ```{r}
 pa_per_game <- Batting %>% filter(yearID == 2002) %>%
-group_by(teamID) %>%
-summarize(pa_per_game = sum(AB+BB)/max(G)) %>%
-pull(pa_per_game) %>%
-mean
+  group_by(teamID) %>%
+  summarize(pa_per_game = sum(AB+BB)/max(G)) %>%
+  pull(pa_per_game) %>%
+  mean
 ```
 
 Calculamos las tasas de turnos al bate para jugadores disponibles en 2002 con datos de 1997-2001. Para evitar pequeños artefactos de muestra, filtramos jugadores con menos de 200 turnos al bate por año. Aquí está el cálculo completo en una línea:
 
 ```{r}
 players <- Batting %>% filter(yearID %in% 1997:2001) %>%
-group_by(playerID) %>%
-mutate(PA = BB + AB) %>%
-summarize(G = sum(PA)/pa_per_game,
-BB = sum(BB)/G,
-singles = sum(H-X2B-X3B-HR)/G,
-doubles = sum(X2B)/G,
-triples = sum(X3B)/G,
-HR = sum(HR)/G,
-AVG = sum(H)/sum(AB),
-PA = sum(PA)) %>%
-filter(PA >= 1000) %>%
-select(-G) %>%
-mutate(R_hat = predict(fit, newdata = .))
+  group_by(playerID) %>%
+  mutate(PA = BB + AB) %>%
+  summarize(G = sum(PA)/pa_per_game,
+            BB = sum(BB)/G,
+            singles = sum(H-X2B-X3B-HR)/G,
+            doubles = sum(X2B)/G,
+            triples = sum(X3B)/G,
+            HR = sum(HR)/G,
+            AVG = sum(H)/sum(AB),
+            PA = sum(PA)) %>%
+  filter(PA >= 1000) %>%
+  select(-G) %>%
+  mutate(R_hat = predict(fit, newdata = .))
 ```
 
-Las carreras predichas específicas al jugador calculadas aquí se pueden interpretar como el número de carreras que predecimos que un equipo marcará si todos los bateadores son exactamente como ese jugador. La distribución demuestra que existe una gran variabilidad entre los jugadores:
+Las carreras predichas específicas al jugador calculadas aquí se pueden interpretar como el número de carreras que predecimos que un equipo anotará si todos los bateadores son exactamente como ese jugador. La distribución demuestra que existe una gran variabilidad entre los jugadores:
 
 ```{r r-hat-hist}
 qplot(R_hat, data = players, binwidth = 0.5, color = I("black"))
 ```
 
-### Añadiendo información sobre el salario y la posición 
+### Añadiendo información sobre salario y posición 
 
-Para realmente construir el equipo, necesitaremos conocer sus salarios y su posición defensiva. Para hacer esto, unimos el `players` _data frame_ que acabamos de crear con el _data frame_ de información del jugador incluido en algunas de las otras tablas de datos de Lahman. Aprenderemos más sobre la función `join` que aprendimos en la Sección \@ref(joins).
+Para realmente construir el equipo, necesitaremos conocer sus salarios y su posición defensiva. Para hacer esto, unimos el _data frame_ `players` que acabamos de crear con el _data frame_ de información del jugador incluido en algunas de las otras tablas de datos de Lahman. Aprenderemos más sobre la función `join` que aprendimos en la Sección \@ref(joins).
 
 Comiencen añadiendo los salarios del 2002 para cada jugador:
 
 ```{r}
 players <- Salaries %>%
-filter(yearID == 2002) %>%
-select(playerID, salary) %>%
-right_join(players, by="playerID")
+  filter(yearID == 2002) %>%
+  select(playerID, salary) %>%
+  right_join(players, by="playerID")
 ```
 
-A continuación, agregamos su posición defensiva. Esta es una tarea algo complicada porque los jugadores juegan más de una posición cada año. La tabla de paquetes `Appearances` de __Lahman__ indica cuántos juegos jugó cada jugador en cada posición y podemos elegir la posición que más se jugó usando `which.max` en cada fila. Usamos `apply` para hacer esto. Sin embargo, debido a que algunos jugadores son intercambiados, aparecen más de una vez en la tabla, por lo que primero sumamos sus turnos al bate en los equipos. Aquí, escogemos la posición en la que más jugó el jugador usando la función `top_n`. Para asegurarnos de que solo elegimos una posición, en el caso de
-empates, elegimos la primera fila del _data frame_ resultante. También eliminamos la posición `OF` que significa _outfielder_, una generalización de tres posiciones: jardín izquierdo (LF o _left field_), jardín central (CF o _center field_) y campo derecho (RF o _right field_). También eliminamos los lanzadores, ya que no batean en la liga en la que juegan los Atléticos.
+A continuación, agregamos su posición defensiva. Esta es una tarea algo complicada porque los jugadores juegan más de una posición cada año. La tabla de paquetes `Appearances` de __Lahman__ indica cuántos juegos jugó cada jugador en cada posición y podemos elegir la posición que más se jugó usando `which.max` en cada fila. Usamos `apply` para hacer esto. Sin embargo, debido a que algunos jugadores son intercambiados, aparecen más de una vez en la tabla, por lo que primero sumamos sus turnos al bate en los equipos. Aquí, escogemos la posición en la que más jugó el jugador usando la función `top_n`. Para asegurarnos de que solo elegimos una posición, en el caso de empates, elegimos la primera fila del _data frame_ resultante. También eliminamos la posición `OF` que significa _outfielder_, una generalización de tres posiciones: jardín izquierdo (LF o _left field_ en inglés), jardín central (CF o _center field_ en inglés) y campo derecho (RF o _right field_ en inglés). También eliminamos los lanzadores, ya que no batean en la liga en la que juegan los Atléticos.
 
 ```{r}
 position_names <-
-paste0("G_", c("p","c","1b","2b","3b","ss","lf","cf","rf", "dh"))
+  paste0("G_", c("p","c","1b","2b","3b","ss","lf","cf","rf", "dh"))
 
 tmp <- Appearances %>%
-filter(yearID == 2002) %>%
-group_by(playerID) %>%
-summarize_at(position_names, sum) %>%
-ungroup()
+  filter(yearID == 2002) %>%
+  group_by(playerID) %>%
+  summarize_at(position_names, sum) %>%
+  ungroup()
 
 pos <- tmp %>%
-select(position_names) %>%
-apply(., 1, which.max)
+  select(position_names) %>%
+  apply(., 1, which.max)
 
 players <- tibble(playerID = tmp$playerID, POS = position_names[pos]) %>%
-mutate(POS = str_to_upper(str_remove(POS, "G_"))) %>%
-filter(POS != "P") %>%
-right_join(players, by="playerID") %>%
-filter(!is.na(POS) & !is.na(salary))
+  mutate(POS = str_to_upper(str_remove(POS, "G_"))) %>%
+  filter(POS != "P") %>%
+  right_join(players, by="playerID") %>%
+  filter(!is.na(POS) & !is.na(salary))
 ```
 
 Finalmente, agregamos su nombre y apellido:
 
 ```{r}
 players <- Master %>%
-select(playerID, nameFirst, nameLast, debut) %>%
-mutate(debut = as.Date(debut)) %>%
-right_join(players, by="playerID")
+  select(playerID, nameFirst, nameLast, debut) %>%
+  mutate(debut = as.Date(debut)) %>%
+  right_join(players, by="playerID")
 ```
 
-Si eres fanático del béisbol, reconocerás a los 10 mejores jugadores:
+Si son fanáticos del béisbol, reconocerán a los 10 mejores jugadores:
 
 ```{r}
 players %>% select(nameFirst, nameLast, POS, salary, R_hat) %>%
-arrange(desc(R_hat)) %>% top_n(10)
+  arrange(desc(R_hat)) %>% top_n(10)
 ```
 
 
-### Escogiendo nueve jugadores
+### Escoger nueve jugadores
 
 En promedio, los jugadores con una métrica más alta tienen salarios más altos:
 
 ```{r predicted-runs-vs-salary}
 players %>% ggplot(aes(salary, R_hat, color = POS)) +
-geom_point() +
-scale_x_log10()
+  geom_point() +
+  scale_x_log10()
 ```
 
 <!--Notice the very high salaries for most players. We do see some low-cost players with very high metrics. These will be great for our team. Some of these are likely young players that have not yet been able to negotiate a salary and are unavailable.
@@ -733,7 +732,7 @@ geom_point() +
 scale_x_log10()
 ```
 -->
-Podemos buscar buenas ofertas mirando a los jugadores que producen muchas más carreras que otros con salarios similares. Podemos usar esta tabla para decidir qué jugadores escoger y mantener nuestro salario total por debajo de los 40 millones de dólares con los que tuvo que trabajar Billy Beane. Esto se puede hacer usando lo que los informáticos llaman programación lineal. Esto no es algo que enseñamos, pero aquí están los jugadores seleccionados con este acercamiento:
+Podemos buscar buenas ofertas mirando a los jugadores que producen muchas más carreras que otros con salarios similares. Podemos usar esta tabla para decidir qué jugadores escoger y mantener nuestro salario total por debajo de los 40 millones de dólares con los que tuvo que trabajar Billy Beane. Esto se puede hacer usando lo que los científicos de computación llaman programación lineal. Esto no es algo que enseñamos, pero aquí están los jugadores seleccionados con este acercamiento:
 
 ```{r, message=FALSE, warning=FALSE, echo=FALSE}
 library(reshape2)
@@ -746,18 +745,18 @@ constraint_matrix <- rbind(constraint_matrix, salary = players$salary)
 constraint_dir <- c(rep("==", npos), "<=")
 constraint_limit <- c(rep(1, npos), 40*10^6)
 lp_solution <- lp("max", players$R_hat,
-constraint_matrix, constraint_dir, constraint_limit,
-all.int = TRUE)
+                  constraint_matrix, constraint_dir, constraint_limit,
+                  all.int = TRUE)
 our_team <- players %>%
-filter(lp_solution$solution == 1) %>%
-arrange(desc(R_hat))
+  filter(lp_solution$solution == 1) %>%
+  arrange(desc(R_hat))
 tmp <- our_team %>% select(nameFirst, nameLast, POS, salary, R_hat)
 if(knitr::is_html_output()){
-knitr::kable(tmp, "html") %>%
-kableExtra::kable_styling(bootstrap_options = "striped", full_width = FALSE)
+  knitr::kable(tmp, "html") %>%
+    kableExtra::kable_styling(bootstrap_options = "striped", full_width = FALSE)
 } else{
-knitr::kable(tmp, "latex", booktabs = TRUE) %>%
-kableExtra::kable_styling(font_size = 8)
+  knitr::kable(tmp, "latex", booktabs = TRUE) %>%
+    kableExtra::kable_styling(font_size = 8)
 }
 
 ```
@@ -767,45 +766,45 @@ Vemos que todos estos jugadores tienen BB por encima del promedio y la mayoría 
 ```{r, echo=FALSE}
 my_scale <- function(x) (x - median(x))/mad(x)
 tmp <- players %>% mutate(BB = my_scale(BB),
-singles = my_scale(singles),
-doubles = my_scale(doubles),
-triples = my_scale(triples),
-HR = my_scale(HR),
-AVG = my_scale(AVG),
-R_hat = my_scale(R_hat)) %>%
-filter(playerID %in% our_team$playerID) %>%
-select(nameLast, BB, singles, doubles, triples, HR, AVG, R_hat) %>%
-arrange(desc(R_hat))
+                          singles = my_scale(singles),
+                          doubles = my_scale(doubles),
+                          triples = my_scale(triples),
+                          HR = my_scale(HR),
+                          AVG = my_scale(AVG),
+                          R_hat = my_scale(R_hat)) %>%
+  filter(playerID %in% our_team$playerID) %>%
+  select(nameLast, BB, singles, doubles, triples, HR, AVG, R_hat) %>%
+  arrange(desc(R_hat))
 if(knitr::is_html_output()){
-knitr::kable(tmp, "html") %>%
-kableExtra::kable_styling(bootstrap_options = "striped", full_width = FALSE)
+  knitr::kable(tmp, "html") %>%
+    kableExtra::kable_styling(bootstrap_options = "striped", full_width = FALSE)
 } else{
-knitr::kable(tmp, "latex", booktabs = TRUE) %>%
-kableExtra::kable_styling(font_size = 8)
+  knitr::kable(tmp, "latex", booktabs = TRUE) %>%
+    kableExtra::kable_styling(font_size = 8)
 }
 ```
 
 ## La falacia de la regresión
 
-Wikipedia define el _sophomore slump_ como:
+Wikipedia define la _maldición de segundo año_ (_sophomore slump_ en inglés) como:
 
 > Una caída de segundo año o maldición de segundo año se refiere a una instancia en la que un segundo esfuerzo, o segundo año, no cumple con los estándares del primer esfuerzo. Se usa comúnmente para referirse a la apatía de los estudiantes (segundo año de secundaria, colegio o universidad), el rendimiento de los atletas (segunda temporada de juego), cantantes/bandas (segundo álbum), programas de televisión (segunda temporada) y películas (secuelas/precuelas).
 
-En las Grandes Ligas de Béisbol, el premio al novato del año (ROY o _Rookie of the Year_) se otorga al jugador de primer año que se considera que ha tenido el mejor desempeño. La frase _sophmore slump_ se usa para describir la observación de que a los ganadores del premio ROY no les va tan bien durante su segundo año. Por ejemplo, este artículo de Fox Sports^[https://www.foxsports.com/stories/mlb/will-mlbs-tremendous-rookie-class-of-2015-suffer-a-sophomore-slump] pregunta "¿La impresionante clase de novatos del MLB de 2015 sufrirá una caída de segundo año?"
+En las Grandes Ligas de Béisbol, el premio al novato del año (ROY o _Rookie of the Year_) se otorga al jugador de primer año que se considera que ha tenido el mejor desempeño. La frase maldición de segundo año se usa para describir la observación de que a los ganadores del premio ROY no les va tan bien durante su segundo año. Por ejemplo, este artículo de Fox Sports^[https://www.foxsports.com/stories/mlb/will-mlbs-tremendous-rookie-class-of-2015-suffer-a-sophomore-slump] pregunta "¿La impresionante clase de novatos del MLB de 2015 sufrirá una caída de segundo año?"
 
-¿Los datos confirman la existencia de una caída de segundo año? Vamos a ver. Al examinar los datos para el promedio de bateo, vemos que esta observación es válida para los ROY de mayor rendimiento:
+¿Los datos confirman la existencia de una maldición de segundo año? Vamos a ver. Al examinar los datos para el promedio de bateo, vemos que esta observación es válida para los ROY de mayor rendimiento:
 
 <!--The data is available in the Lahman library, but we have to do some work to create a table with the statistics for all the ROY. First we create a table with player ID, their names, and their most played position.-->
 
 ```{r, echo=FALSE}
 library(Lahman)
 playerInfo <- Fielding %>%
-group_by(playerID) %>%
-arrange(desc(G)) %>%
-slice(1) %>%
-ungroup %>%
-left_join(Master, by="playerID") %>%
-select(playerID, nameFirst, nameLast, POS)
+  group_by(playerID) %>%
+  arrange(desc(G)) %>%
+  slice(1) %>%
+  ungroup %>%
+  left_join(Master, by="playerID") %>%
+  select(playerID, nameFirst, nameLast, POS)
 ```
 
 <!--
@@ -814,12 +813,12 @@ Ahora, crearemos una tabla con solo los ganadores del premio ROY y agregaremos s
 
 ```{r, echo=FALSE}
 ROY <- AwardsPlayers %>%
-filter(awardID == "Rookie of the Year") %>%
-left_join(playerInfo, by="playerID") %>%
-rename(rookie_year = yearID) %>%
-right_join(Batting, by="playerID") %>%
-mutate(AVG = H/AB) %>%
-filter(POS != "P")
+  filter(awardID == "Rookie of the Year") %>%
+  left_join(playerInfo, by="playerID") %>%
+  rename(rookie_year = yearID) %>%
+  right_join(Batting, by="playerID") %>%
+  mutate(AVG = H/AB) %>%
+  filter(POS != "P")
 ```
 
 <!--
@@ -827,12 +826,12 @@ También mantendremos solo las temporadas de novatos y de segundo año y elimina
 -->
 ```{r, echo=FALSE}
 ROY <- ROY %>%
-filter(yearID == rookie_year | yearID == rookie_year+1) %>%
-group_by(playerID) %>%
-mutate(rookie = ifelse(yearID == min(yearID), "rookie", "sophomore")) %>%
-filter(n() == 2) %>%
-ungroup %>%
-select(playerID, rookie_year, rookie, nameFirst, nameLast, AVG)
+  filter(yearID == rookie_year | yearID == rookie_year+1) %>%
+  group_by(playerID) %>%
+  mutate(rookie = ifelse(yearID == min(yearID), "rookie", "sophomore")) %>%
+  filter(n() == 2) %>%
+  ungroup %>%
+  select(playerID, rookie_year, rookie, nameFirst, nameLast, AVG)
 ```
 <!--
 Finalmente, usaremos la función `spread` para tener una columna para los promedios de bateo de novato y segundo año
@@ -841,18 +840,18 @@ Finalmente, usaremos la función `spread` para tener una columna para los promed
 ```{r, echo=FALSE}
 ROY <- ROY %>% spread(rookie, AVG) %>% arrange(desc(rookie))
 tmp <- ROY %>% slice(1:5) %>%
-select(nameFirst, nameLast, rookie_year, rookie, sophomore)
+  select(nameFirst, nameLast, rookie_year, rookie, sophomore)
 if(knitr::is_html_output()){
-knitr::kable(tmp, "html") %>%
-kableExtra::kable_styling(bootstrap_options = "striped",
-full_width = FALSE)
+  knitr::kable(tmp, "html") %>%
+    kableExtra::kable_styling(bootstrap_options = "striped",
+                              full_width = FALSE)
 } else{
-knitr::kable(tmp, "latex", booktabs = TRUE) %>%
-kableExtra::kable_styling(font_size = 8)
+  knitr::kable(tmp, "latex", booktabs = TRUE) %>%
+    kableExtra::kable_styling(font_size = 8)
 }
 ```
 
-De hecho, la proporción de jugadores que tienen un promedio de bateo más bajo en su segundo año es `r mean (ROY $sophomore - ROY$ novato <= 0) `.
+De hecho, la proporción de jugadores que tienen un promedio de bateo más bajo en su segundo año es `r mean (ROY $sophomore - ROY$ novato <= 0)`.
 
 Entonces, ¿es "nerviosismo" o "maldición"? Para responder a esta pregunta, volvamos nuestra atención a todos los jugadores que jugaron las temporadas 2013 y 2014 y batearon más de 130 veces (mínimo para ganar el ROY).
 
@@ -860,18 +859,18 @@ Entonces, ¿es "nerviosismo" o "maldición"? Para responder a esta pregunta, vol
 
 ```{r, echo=FALSE}
 two_years <- Batting %>%
-filter(yearID %in% 2013:2014) %>%
-group_by(playerID, yearID) %>%
-filter(sum(AB) >= 130) %>%
-summarize(AVG = sum(H)/sum(AB)) %>%
-ungroup %>%
-spread(yearID, AVG) %>%
-filter(!is.na(`2013`) & !is.na(`2014`)) %>%
-left_join(playerInfo, by="playerID") %>%
-filter(POS!="P") %>%
-select(-POS) %>%
-arrange(desc(`2013`)) %>%
-select(nameFirst, nameLast, `2013`, `2014`)
+  filter(yearID %in% 2013:2014) %>%
+  group_by(playerID, yearID) %>%
+  filter(sum(AB) >= 130) %>%
+  summarize(AVG = sum(H)/sum(AB)) %>%
+  ungroup %>%
+  spread(yearID, AVG) %>%
+  filter(!is.na(`2013`) & !is.na(`2014`)) %>%
+  left_join(playerInfo, by="playerID") %>%
+  filter(POS!="P") %>%
+  select(-POS) %>%
+  arrange(desc(`2013`)) %>%
+  select(nameFirst, nameLast, `2013`, `2014`)
 ```
 
 El mismo patrón surge cuando miramos a los jugadores con el mejor desempeño: los promedios de bateo disminuyen para la mayoría de los mejores jugadores.
@@ -879,11 +878,11 @@ El mismo patrón surge cuando miramos a los jugadores con el mejor desempeño: l
 ```{r, echo=FALSE}
 tmp <- two_years %>% slice(1:5)
 if(knitr::is_html_output()){
-knitr::kable(tmp, "html") %>%
-kableExtra::kable_styling(bootstrap_options = "striped", full_width = FALSE)
+  knitr::kable(tmp, "html") %>%
+    kableExtra::kable_styling(bootstrap_options = "striped", full_width = FALSE)
 } else{
-knitr::kable(tmp, "latex", booktabs = TRUE) %>%
-kableExtra::kable_styling(font_size = 8)
+  knitr::kable(tmp, "latex", booktabs = TRUE) %>%
+    kableExtra::kable_styling(font_size = 8)
 }
 ```
 
@@ -892,15 +891,15 @@ kableExtra::kable_styling(font_size = 8)
 ```{r, echo=FALSE}
 tmp <- arrange(two_years, `2013`) %>% slice(1:5)
 if(knitr::is_html_output()){
-knitr::kable(tmp, "html") %>%
-kableExtra::kable_styling(bootstrap_options = "striped", full_width = FALSE)
+  knitr::kable(tmp, "html") %>%
+    kableExtra::kable_styling(bootstrap_options = "striped", full_width = FALSE)
 } else{
-knitr::kable(tmp, "latex", booktabs = TRUE) %>%
-kableExtra::kable_styling(font_size = 8)
+  knitr::kable(tmp, "latex", booktabs = TRUE) %>%
+    kableExtra::kable_styling(font_size = 8)
 }
 ```
 
-¡Sus promedios de bateo en su mayoría suben! ¿Es esto una especie de caída inversa de segundo año? No lo es. No hay tal cosa como la caída de segundo año. Todo esto se explica con un simple hecho estadístico: la correlación para el rendimiento en dos años separados es alta, pero no perfecta:
+¡Sus promedios de bateo en su mayoría suben! ¿Es esto una especie de "bendición" de segundo año? No lo es. No hay tal cosa como una maldición de segundo año. Todo esto se explica con un simple hecho estadístico: la correlación para el rendimiento en dos años separados es alta, pero no perfecta:
 
 ```{r regression-fallacy, echo=FALSE, fig.height=3, fig.width=3, out.width="40%"}
 qplot(`2013`, `2014`, data = two_years)
@@ -918,7 +917,7 @@ Debido a que la correlación no es perfecta, la regresión nos dice que, en prom
 
 Hasta ahora, todos nuestros ejemplos de regresión lineal se han aplicado a dos o más variables aleatorias. Suponemos que los pares siguen una distribución normales de dos variables y lo usamos para motivar un modelo lineal. Este enfoque cubre la mayoría de los ejemplos reales de regresión lineal. La otra aplicación importante proviene de los modelos de errores de medición. En estas aplicaciones, es común tener una covariable no aleatoria, como el tiempo, y la aleatoriedad se introduce por error de medición en lugar de muestreo o variabilidad natural.
 
-Para entender estos modelos, imaginen que son Galileo en el siglo XVI tratando de describir la velocidad de un objeto que cae. Un asistente sube a la Torre de Pisa y deja caer una pelota, mientras que otros asistentes registran la posición en diferentes momentos. Simulemos algunos datos usando las ecuaciones que conocemos hoy y agregando algunos errores de medición. La función `rfalling_object` de __dslabs__  genera estas simulaciones:
+Para entender estos modelos, imaginen que son Galileo en el siglo XVI tratando de describir la velocidad de un objeto que cae. Un asistente sube a la torre de Pisa y deja caer una pelota, mientras que otros asistentes registran la posición en diferentes momentos. Simulemos algunos datos usando las ecuaciones que conocemos hoy y agregando algunos errores de medición. La función `rfalling_object` de __dslabs__ genera estas simulaciones:
 
 ```{r}
 library(dslabs)
@@ -929,10 +928,10 @@ Los asistentes le entregan los datos a Galileo y esto es lo que él ve:
 
 ```{r gravity}
 falling_object %>%
-ggplot(aes(time, observed_distance)) +
-geom_point() +
-ylab("Distance in meters") +
-xlab("Time in seconds")
+  ggplot(aes(time, observed_distance)) +
+  geom_point() +
+  ylab("Distance in meters") +
+  xlab("Time in seconds")
 ```
 
 Galileo no conoce la ecuación exacta, pero al observar el gráfico anterior, deduce que la posición debe seguir una parábola, que podemos escribir así:
@@ -943,7 +942,7 @@ Los datos no caen exactamente en una parábola. Galileo sabe que esto se debe a 
 
 $$ Y_i = \beta_0 + \beta_1 x_i + \beta_2 x_i^2 + \varepsilon_i, i=1,\dots,n $$
 
-con $Y_i$ representando la distancia en metros, $x_i$ representando el tiempo en segundos y $\varepsilon$ tomando en cuenta el error de medición. Se supone que el error de medición sea aleatorio, independiente el uno del otro y que con la misma distribución para cada $i$. También suponemos que no hay sesgo, que signfica que el valor esperado $\mbox{E}[\varepsilon] = 0$.
+con $Y_i$ representando la distancia en metros, $x_i$ representando el tiempo en segundos y $\varepsilon$ tomando en cuenta el error de medición. Se supone que el error de medición sea aleatorio, independiente el uno del otro y que con la misma distribución para cada $i$. También suponemos que no hay sesgo, que significa que el valor esperado $\mbox{E}[\varepsilon] = 0$.
 
 Noten que este es un modelo lineal porque es una combinación lineal de cantidades conocidas ($x$ y $x^2$ son conocidos) y parámetros desconocidos (los $\beta$s son parámetros desconocidos para Galileo). A diferencia de nuestros ejemplos anteriores, aquí $x$ es una cantidad fija; no estamos condicionando.
 
@@ -953,8 +952,8 @@ Los cálculos de LSE no requieren que los errores sean aproximadamente normales.
 
 ```{r}
 fit <- falling_object %>%
-mutate(time_sq = time^2) %>%
-lm(observed_distance~time+time_sq, data=.)
+  mutate(time_sq = time^2) %>%
+  lm(observed_distance~time+time_sq, data=.)
 tidy(fit)
 ```
 
@@ -962,13 +961,13 @@ Verifiquemos si la parábola estimada se ajusta a los datos. La función `augmen
 
 ```{r falling-object-fit}
 augment(fit) %>%
-ggplot() +
-geom_point(aes(time, observed_distance)) +
-geom_line(aes(time, .fitted), col = "blue")
+  ggplot() +
+  geom_point(aes(time, observed_distance)) +
+  geom_line(aes(time, .fitted), col = "blue")
 ```
 
 
-Gracias a mi profesor de física de escuela secundaria, sé que la ecuación para la trayectoria de un objeto que cae es:
+Gracias a nuestros maestros de física de escuela secundaria, sabemos que la ecuación para la trayectoria de un objeto que cae es:
 
 $$d = h_0 + v_0 t - 0.5 \times 9.8 t^2$$
 
@@ -984,7 +983,7 @@ La altura de la torre de Pisa está dentro del intervalo de confianza para $\bet
 
 ## Ejercicios
 
-Desde la década de 1980, los _sabermetricians_ han utilizado una estadística de resumen diferente del promedio de bateo para evaluar a los jugadores. Se dieron cuenta de que las BB eran importantes y que los dobles, los triples y los HR deberían pesarse más que los sencillos. Como resultado, propusieron la siguiente métrica:
+Desde la década de 1980, los _sabermetricians_ han utilizado una estadística de resumen diferente del promedio de bateo para evaluar a los jugadores. Se dieron cuenta de que las BB eran importantes y que los dobles, triples y HR deberían pesarse más que los sencillos. Como resultado, propusieron la siguiente métrica:
 
 $$
 \frac{\mbox{BB}}{\mbox{PA}} + \frac{\mbox{Singles} + 2 \mbox{Doubles} + 3 \mbox{Triples} + 4\mbox{HR}}{\mbox{AB}}
@@ -992,7 +991,7 @@ $$
 
 Denominaron a la métrica: _on-base-percentage plus slugging percentage_ o OPS. Aunque los _sabermetricians_ probablemente no usaron la regresión, aquí mostramos cómo OPS está cerca de lo que se obtiene con la regresión.
 
-1\. Calcule el OPS para cada equipo en la temporada 2001. Luego, grafica carreras por juego versus OPS.
+1\. Calcule el OPS para cada equipo en la temporada 2001. Luego, grafique carreras por juego versus OPS.
 
 
 2\. Para cada año desde 1961, calcule la correlación entre carreras por juego y OPS; luego, grafique estas correlaciones como función del año.

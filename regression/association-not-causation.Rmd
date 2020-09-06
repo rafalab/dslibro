@@ -1,8 +1,8 @@
-# La asociación no implica la causalidad
+# La asociación no implica causalidad
 
-La asociación no es causalidad es quizás la lección más importante que uno aprende en una clase de estadística. _La correlación no es causalidad_ es otra forma de decir esto. A lo largo de la parte de Estadísticas del libro, hemos descrito herramientas útiles para cuantificar asociaciones entre variables. Sin embargo, debemos tener cuidado de no interpretar en exceso estas asociaciones.
+La asociación no es causalidad es quizás la lección más importante que uno aprende en una clase de estadística. _La correlación no es causalidad_ es otra forma de decir esto. [fix eng too? why mayuscula?] A lo largo de la parte de Estadísticas del libro, hemos descrito herramientas útiles para cuantificar asociaciones entre variables. Sin embargo, debemos tener cuidado de no interpretar en exceso estas asociaciones.
 
-Hay muchas razones por las que una variable $X$ puede correlacionarse con una variable $Y$ sin tener ningún efecto directo sobre $Y$. Aquí examinamos cuatro formas comunes que pueden conducir a malinterpretar los datos.
+Hay muchas razones por las que una variable $X$ se puede correlacionar con una variable $Y$ sin tener ningún efecto directo sobre $Y$. A continuación examinaremos cuatro formas comunes que pueden conducir a una malinterpretación de los datos.
 
 ## Correlación espuria
 
@@ -24,13 +24,13 @@ xlab("Margarine Consumption per Capita (lbs)") +
 ylab("Divorce rate in Maine (per 1000)")
 ```
 
-¿Significa esto que la margarina causa divorcios? ¿O los divorcios hacen que las personas coman más margarina? Por supuesto, la respuesta a ambas preguntas es no. Esto es solo un ejemplo de lo que llamamos una correlación espuria.
+¿Significa esto que la margarina causa divorcios? ¿O los divorcios hacen que las personas coman más margarina? Por supuesto, la respuesta a ambas preguntas es "no". Esto es solo un ejemplo de lo que llamamos una correlación espuria.
 
-Puedes ver muchos más ejemplos absurdos en el sitio web de Correlaciones espurias^[http://tylervigen.com/spurious-correlations].
+Pueden ver muchos más ejemplos absurdos en el sitio web de Correlaciones espurias^[http://tylervigen.com/spurious-correlations].
 
-Los casos presentados en el sitio de correlación espuria son todas instancias de lo que generalmente se llama _data dragado_, _data fishing_o_data snooping_. Básicamente es una forma de lo que en los EE. UU. Llaman _cerry picking_. Un ejemplo de dragado de datos sería si observa muchos resultados producidos por un proceso aleatorio y elige el que muestra una relación que respalda una teoría que desea defender.
+[fix check para] Los casos que se presentan en el sitio de correlación espuria son todas instancias de lo que generalmente se llama _data dredging_ [fix: add _dragado de datos_?] , _data fishing_ o _data snooping_. Básicamente es una forma de lo que en EE.UU. llaman _cherry picking_ o supresión de pruebas; es decir, seleccionar solo los datos que confirman cierta posición. Un ejemplo de _data dredging_, o filtración de información, sería si observan muchos resultados producidos por un proceso aleatorio y eligen solo los que muestran una relación que respalda una teoría que desean defender.
 
-Se puede usar una simulación de Monte Carlo para mostrar cómo el dragado de datos puede dar como resultado encontrar altas correlaciones entre variables no correlacionadas. Guardaremos los resultados de nuestra simulación en un tibble:
+Se puede usar una simulación Monte Carlo para mostrar cómo _data dredging_ puede resultar en altas correlaciones entre variables no correlacionadas. Guardaremos los resultados de nuestra simulación en un tibble:
 
 ```{r, cache=TRUE}
 N <- 25
@@ -40,9 +40,9 @@ x = rnorm(N * g),
 y = rnorm(N * g))
 ```
 
-La primera columna denota grupo. Creamos `r cat(prettyNum(g, big.mark=",",scientific=FALSE))` grupos y para cada uno generamos un par de vectores independientes, $X$ y $Y$, con `r N` observaciones cada una, almacenadas en la segunda y tercera columnas. Debido a que construimos la simulación, sabemos que $X$ y $Y$ no están correlacionados
+La primera columna denota grupo. Creamos `r cat(prettyNum(g, big.mark=",",scientific=FALSE))` grupos y para cada uno generamos un par de vectores independientes, $X$ y $Y$, cada una con `r N` observaciones, almacenadas en la segunda y tercera columnas. Debido a que construimos la simulación, sabemos que $X$ y $Y$ no están correlacionadas.
 
-A continuación, calculamos la correlación entre `X` y `Y` para cada grupo y mira el máximo:
+A continuación, calculamos la correlación entre `X` y `Y` para cada grupo y miramos el máximo:
 
 ```{r}
 res <- sim_data %>%
@@ -52,7 +52,7 @@ arrange(desc(r))
 res
 ```
 
-Vemos una correlación máxima de `r max (res $r)` and if you just plot the data from the group achieving this correlation, it shows a convincing plot that $ X $ and $ Y $ de hecho están correlacionados:
+Vemos una correlación máxima de `r max (res $r)` y si solo graficamos los datos del grupo con esta correlación, vemos un gráfico convincente que $X$ and $Y$ sí están correlacionados:
 
 ```{r dredging}
 sim_data %>% filter(group == res$group[which.max(res$r)]) %>%
@@ -61,13 +61,13 @@ geom_point() +
 geom_smooth(method = "lm")
 ```
 
-Recuerde que el resumen de correlación es una variable aleatoria. Aquí está la distribución generada por la simulación de Monte Carlo:
+Recuerden que el resumen de correlación es una variable aleatoria. Aquí está la distribución generada por la simulación Monte Carlo:
 
 ```{r null-corr-hist}
 res %>% ggplot(aes(x=r)) + geom_histogram(binwidth = 0.1, color = "black")
 ```
 
-Es solo un hecho matemático que si observamos `r cat(prettyNum(g, big.mark=",",scientific=FALSE))` correlaciones aleatorias que se espera que sean 0, pero tienen un error estándar de `r sd(res$r)`, el más grande estará cerca de 1.
+Es solo un hecho matemático que si observamos `r cat(prettyNum(g, big.mark=",",scientific=FALSE))` correlaciones aleatorias que se esperan que sean 0, pero tienen un error estándar de `r sd(res$r)`, [fix el? la] el más grande estará cerca de 1.
 
 Si realizamos una regresión en este grupo e interpretemos el valor p, afirmaríamos incorrectamente que esta es una relación estadísticamente significativa:
 
@@ -79,12 +79,12 @@ do(tidy(lm(y ~ x, data = .))) %>%
 filter(term == "x")
 ```
 
-Esta forma particular de dragado de datos se conoce como _p-hacking_. El hackeo P es un tema de mucha discusión porque es un problema en publicaciones científicas. Debido a que los editores tienden a recompensar los resultados estadísticamente significativos sobre los resultados negativos, existe un incentivo para informar resultados significativos. En epidemiología y ciencias sociales, por ejemplo, los investigadores pueden buscar asociaciones entre un resultado adverso y varias exposiciones e informar solo la exposición que resultó en un valor p pequeño. Además, podrían intentar ajustar varios modelos diferentes para tener en cuenta la confusión y elegir el que arroje el valor p más pequeño. En disciplinas experimentales, un experimento puede repetirse más de una vez, pero solo se informan los resultados del experimento con un valor p pequeño. Esto no sucede necesariamente debido a un comportamiento poco ético, sino más bien como resultado de la ignorancia estadística o la ilusión. En los cursos de estadística avanzada, puede aprender métodos para ajustarse a estas comparaciones múltiples.
+Esta forma particular de dragado de datos se conoce como _p-hacking_. El _hackeo P_ es un tema de mucha discusión porque es un problema en publicaciones científicas. Debido a que los editores tienden a recompensar resultados estadísticamente significativos sobre resultados negativos, existe un incentivo para informar resultados significativos. En epidemiología y ciencias sociales, por ejemplo, los investigadores pueden buscar asociaciones entre un resultado adverso y [fix] varias exposiciones e informar solo la exposición que resultó en un valor p pequeño. Además, podrían intentar ajustar varios modelos diferentes para tomar en cuenta la confusión y elegir el que da el valor p más pequeño. En disciplinas experimentales, un experimento puede repetirse más de una vez, pero solo informar los resultados del experimento con un valor p pequeño. Esto no sucede necesariamente debido a comportamientos poco éticos, sino más bien como resultado de la ignorancia estadística [fix "wishful thinking"] o la ilusión. En los cursos de estadística avanzada, pueden aprender métodos para ajustar/tomar en cuenta estas comparaciones múltiples.
 
 
 ## Valores atípicos
 
-Supongamos que tomamos medidas de dos resultados independientes, $X$ y $Y$, y estandarizamos las medidas. Sin embargo, imagine que cometemos un error y olvidamos estandarizar la entrada 23. Podemos simular dichos datos usando:
+Supongamos que tomamos medidas de dos resultados independientes, $X$ y $Y$, y estandarizamos las medidas. Sin embargo, imaginen que cometemos un error y olvidamos estandarizar la entrada 23. Podemos simular dichos datos usando:
 
 ```{r}
 set.seed(1985)
@@ -112,7 +112,7 @@ Pero esto es impulsado por el caso atípico. Si eliminamos este valor atípico, 
 cor(x[-23], y[-23])
 ```
 
-En la sección \@ref(robust-summaries) describimos alternativas a la desviación promedio y estándar que son robustas para los valores atípicos. También hay una alternativa a la correlación muestral para estimar la correlación poblacional que es robusta para los valores atípicos. Se llama _Spearman correlation_. La idea es simple: calcular la correlación en los rangos de los valores. Aquí hay un diagrama de los rangos trazados uno contra el otro:
+En la sección \@ref(robust-summaries) describimos alternativas al promedio y la desviación estándar que son robustas para valores atípicos. También hay una alternativa a la correlación muestral para estimar la correlación de población que es robusta para valores atípicos. Se llama _la correlación de Spearman_. La idea es sencilla: calcular la correlación en los rangos de los valores. Aquí tenemos un gráfico de los rangos graficados uno contra el otro:
 
 ```{r scatter-plot-of-ranks}
 qplot(rank(x), rank(y))
@@ -130,16 +130,16 @@ La correlación de Spearman también se puede calcular así:
 cor(x, y, method = "spearman")
 ```
 
-También hay métodos para el ajuste robusto de modelos lineales que puede aprender, por ejemplo, en este libro: Robust Statistics: Edition 2 por Peter J. Huber y Elvezio M. Ronchetti.
+También hay métodos [fix] para el ajustamiento robusto de modelos lineales que pueden aprender, por ejemplo, en este libro: Robust Statistics: Edition 2 por Peter J. Huber y Elvezio M. Ronchetti.
 
 
-## Inversión de causa y efecto
+## [fix] Inversión de causa y efecto
 
-Otra forma en que la asociación se confunde con la causalidad es cuando la causa y el efecto se invierten. Un ejemplo de esto es afirmar que la tutoría hace que los estudiantes rindan peor porque evalúan más bajo que sus compañeros que no reciben tutoría. En este caso, la tutoría no está causando los bajos puntajes de las pruebas, sino al revés.
+Otra forma en que la asociación se confunde con la causalidad es cuando la causa y el efecto se invierten. Un ejemplo de esto es afirmar que la tutoría hace que los estudiantes salgan peor porque evalúan más bajo que sus compañeros que no reciben tutoría. En este caso, la tutoría no está causando los bajos puntajes de las pruebas, sino al revés.
 
-Una forma de este reclamo en realidad se convirtió en un artículo de opinión en el New York Times titulado La participación de los padres está sobrevalorada^[https://opinionator.blogs.nytimes.com/2014/04/12/parental-involvement-is-overrated ] Considere esta cita del artículo:
+Una forma de este reclamo se convirtió en un artículo de opinión en el New York Times titulado _Parental Involvement Is Overrated_^[https://opinionator.blogs.nytimes.com/2014/04/12/parental-involvement-is-overrated ] Consideren esta cita del artículo:
 
->> Cuando examinamos si la ayuda regular con la tarea tuvo un impacto positivo en el rendimiento académico de los niños, nos sorprendió lo que encontramos. Independientemente de la clase social de la familia, el origen racial o étnico, o el nivel de grado de un niño, la tarea consistente casi nunca mejoró los puntajes de las pruebas o las calificaciones ... Incluso más sorprendente para nosotros fue que cuando los padres ayudaban regularmente con la tarea, los niños generalmente se desempeñaban peor.
+>> [fix] Cuando examinamos si la ayuda regular con la tarea tuvo un impacto positivo en el rendimiento académico de los niños, nos sorprendió lo que encontramos. Independientemente de la clase social de la familia, del origen racial o étnico, o del grado de un niño, la tarea consistente casi nunca mejoró los puntajes de las pruebas o las notas ... Incluso más sorprendente para nosotros fue que cuando los padres ayudaban regularmentecon la tarea, los niños generalmente se desempeñaban peor.
 
 Una posibilidad muy probable es que los niños que necesitan ayuda regular de sus padres reciban esta ayuda porque no se desempeñan bien en la escuela.
 
@@ -160,20 +160,20 @@ rename(son = childHeight) %>%
 do(tidy(lm(father ~ son, data = .)))
 ```
 
-El modelo se ajusta muy bien a los datos. Si observamos la formulación matemática del modelo anterior, podría interpretarse fácilmente de manera incorrecta para sugerir que el hijo que es alto hace que el padre sea alto. Pero dado lo que sabemos sobre genética y biología, sabemos que es al revés. El modelo es técnicamente correcto. Las estimaciones y los valores p también se obtuvieron correctamente. Lo que está mal aquí es la interpretación.
+El modelo se ajusta muy bien a los datos. Si observamos la formulación matemática del modelo anterior, podría interpretarse fácilmente de manera incorrecta para sugerir que el hijo siendo alto hace que el padre sea alto. Pero dado lo que sabemos sobre genética y biología, sabemos que es al revés. El modelo es técnicamente correcto. Las estimaciones y los valores p también se obtuvieron correctamente. Lo que está mal aquí es la interpretación.
 
 
-## Confusores
+## Factores de confusión
 
-Los factores de confusión son quizás la razón más común que lleva a que las asociaciones comiencen a malinterpretarse.
+Los factores de confusión son quizás la razón más común que lleva a que las asociaciones se malinterpreten.
 
-Si $X$ y $Y$ están correlacionados, llamamos $Z$ un _conforador_ si hay cambios en $Z$ provoca cambios en ambos $X$ y $Y$. Anteriormente, al estudiar los datos del béisbol, vimos cómo Home Runs fue un factor de confusión que resultó en una correlación más alta de lo esperado al estudiar la relación entre Bases on Balls y Runs. En algunos casos, podemos usar modelos lineales para dar cuenta de los factores de confusión. Sin embargo, este no es siempre el caso.
+Si $X$ y $Y$ están correlacionados, llamamos $Z$ un _factor de confusión_ (_confounder_ en inglés) si cambios en $Z$ provocan cambios en ambos $X$ y $Y$. Anteriormente, al estudiar los datos del béisbol, vimos cómo los cuadrangulares erab un factor de confusión que resultaban en una correlación más alta de lo esperado al estudiar la relación entre BB y HR. En algunos casos, podemos usar modelos lineales para tomar en cuenta los factores de confusión. Sin embargo, este no siempre es el caso.
 
 La interpretación incorrecta debido a los factores de confusión es omnipresente en la prensa laica y, a menudo, son difíciles de detectar. Aquí, presentamos un ejemplo ampliamente utilizado relacionado con las admisiones a la universidad.
 
-### Ejemplo: admisiones UC Berkeley
+### Ejemplo: admisiones a la Universidad de California, Berkeley
 
-Los datos de admisión de seis carreras de UC Berkeley, de 1973, mostraron que se admitía a más hombres que mujeres: el 44% de los hombres ingresaron en comparación con el 30% de las mujeres. PJ Bickel, EA Hammel y JW O&#39;Connell. Ciencia (1975). Podemos cargar los datos y
+Los datos de admisión de seis concentraciones son de U.C. Berkeley, de 1973, mostraron que se admitían a más hombres que mujeres: el 44% de los hombres ingresaron en comparación con el 30% de las mujeres. PJ Bickel, EA Hammel & JW O'Connell. Science (1975). Podemos cargar los datos y 
 <!--compute the percent of men and women that were accepted like this:
 
 ```{r}
@@ -183,7 +183,7 @@ summarize(percentage =
 round(sum(admitted*applicants)/sum(applicants),1))
 ```
 -->
-una prueba estadística, que rechaza claramente la hipótesis de que el género y la admisión son independientes:
+[fix 'run a test' ok?] ejecutar/hacer una prueba estadística, que rechaza claramente la hipótesis de que el género y la admisión son independientes:
 
 ```{r}
 data(admissions)
@@ -194,7 +194,7 @@ select(-gender) %>%
 do(tidy(chisq.test(.))) %>% .$p.value
 ```
 
-Pero una inspección más cercana muestra un resultado paradójico. Aquí están los porcentajes de admisión por especialidad:
+Pero una inspección más cercana muestra un resultado paradójico. Aquí están los porcentajes de admisión por concentración :
 
 ```{r}
 admissions %>% select(major, gender, admitted) %>%
@@ -202,13 +202,13 @@ spread(gender, admitted) %>%
 mutate(women_minus_men = women - men)
 ```
 
-Cuatro de los seis mayores favorecen a las mujeres. Más importante aún, todas las diferencias son mucho más pequeñas que la diferencia de 14.2 que vemos al examinar los totales.
+Cuatro de los seis concentraciones favorecen a las mujeres. Más importante aún, todas las diferencias son mucho más pequeñas que la diferencia de 14.2 que vemos al examinar los totales.
 
-La paradoja es que analizar los totales sugiere una dependencia entre admisión y género, pero cuando los datos se agrupan por mayor, esta dependencia parece desaparecer. ¿Que esta pasando? En realidad, esto puede suceder si un factor de confusión incontable está impulsando la mayor parte de la variabilidad.
+La paradoja es que analizar los totales sugiere una dependencia entre admisión y género, pero cuando los datos se agrupan por concentración, esta dependencia parece desaparecer. ¿Qué esta pasando? En realidad, esto puede suceder si un factor de confusión no detectado está impulsando la mayor parte de la variabilidad.
 
-Así que definamos tres variables: $X$ es 1 para hombres y 0 para mujeres, $Y$ es 1 para los admitidos y 0 en caso contrario, y $Z$ cuantifica la selectividad del mayor. Una afirmación de sesgo de género se basaría en el hecho de que $\mbox{Pr}(Y=1 | X = x)$ es mayor para $x=1$ que $x=0$. Sin embargo, $Z$ es un factor de confusión importante a tener en cuenta. Claramente $Z$ está asociado con $Y$, cuanto más selectivo sea un mayor, menor $\mbox{Pr}(Y=1 | Z = z)$. Pero es mayor selectividad $Z$ asociado con el género $X$?
+Así que definamos tres variables: $X$ es 1 para hombres y 0 para mujeres, $Y$ es 1 para los admitidos y 0 en caso contrario, y $Z$ cuantifica la selectividad de la concentración. Una afirmación de sesgo de género se basaría en el hecho de que $\mbox{Pr}(Y=1 | X = x)$ es mayor para $x=1$ que $x=0$. Sin embargo, $Z$ es un factor de confusión importante para tomar en cuenta.[fix check] Claramente $Z$ está asociado con $Y$, ya que entre más selectivo sea la concentración, $\mbox{Pr}(Y=1 | Z = z)$ será menor. Pero la selección de concentración $Z$ está asociado con el género $X$?
 
-Una forma de ver esto es trazar el porcentaje total admitido en una especialización versus el porcentaje de mujeres que componen los solicitantes:
+Una forma de ver esto es graficar el porcentaje total admitido a una concentración versus el porcentaje de mujeres que componen los solicitantes:
 
 ```{r uc-berkeley-majors}
 admissions %>%
@@ -220,12 +220,12 @@ ggplot(aes(major_selectivity, percent_women_applicants, label = major)) +
 geom_text()
 ```
 
-Parece haber asociación. La trama sugiere que las mujeres eran mucho más propensas a postularse a las dos especializaciones "difíciles": el género y la selectividad de la especialidad están confundidos. Compare, por ejemplo, el B mayor y el E. mayor. El E mayor es mucho más difícil de ingresar que el B mayor y más del 60% de los solicitantes al E mayor eran mujeres, mientras que menos del 30% de los solicitantes del B mayor eran mujeres.
+Parece haber asociación. El gráfico sugiere que las mujeres eran mucho más propensas a solicitar a las dos concentraciones "difíciles": el género y la selectividad de la concentración están confundidos. Compare, por ejemplo, la concentración B y la E. La concentración B es mucho más difícil de ingresar que la B y más del 60% de los solicitantes a la concentración E  eran mujeres, mientras que menos del 30% de los solicitantes a la concentración B eran mujeres.
 
 
 ### Confusión explicada gráficamente
 
-La siguiente gráfica muestra el número de solicitantes que fueron admitidos y los que no lo fueron:
+El siguiente gráfico muestra el número de solicitantes que fueron admitidos [fix eng, missing "major" or "gender"] y los que no fueron según concentración/sexo:
 
 ```{r confounding, echo=FALSE}
 admissions %>%
@@ -245,12 +245,12 @@ ggplot(aes(gender, y = percent_admitted, fill = major)) +
 geom_bar(stat = "identity", position = "stack")
 ```
 -->
-También desglosa las aceptaciones por mayor. Este desglose nos permite ver que la mayoría de los hombres aceptados provenían de dos especialidades: A y B. También nos permite ver que pocas mujeres solicitaron estas especializaciones.
+[fix] También separa/desglosa las aceptaciones por concentración. Este gráfico nos permite ver que la mayoría de los hombres aceptados provenían de dos concentraciones: A y B. También nos permite ver que pocas mujeres solicitaron estas concentraciones.
 
 
 ### Promedio después de estratificar
 
-En esta gráfica, podemos ver que si condicionamos o estratificamos por mayor, y luego observamos las diferencias, controlamos el factor de confusión y este efecto desaparece:
+[fix something off] En este gráfico, podemos ver que si condicionamos o estratificamos por concentración, y entonces observamos las diferencias, controlamos el factor de confusión y este efecto desaparece:
 
 ```{r admission-by-major}
 admissions %>%
@@ -258,9 +258,9 @@ ggplot(aes(major, admitted, col = gender, size = applicants)) +
 geom_point()
 ```
 
-Ahora vemos que mayor por mayor, no hay mucha diferencia. El tamaño del punto representa el número de solicitantes y explica la paradoja: vemos grandes puntos rojos y pequeños puntos azules para las mayores más fáciles, A y B.
+Ahora vemos que concentración por concentración, no hay mucha diferencia. El tamaño del punto representa el número de solicitantes y explica la paradoja: vemos grandes puntos rojos y pequeños puntos azules para las concentraciones más fáciles/menos retantes, A y B.
 
-Si promediamos la diferencia por mayor, encontramos que el porcentaje es en realidad 3.5% más alto para las mujeres.
+Si promediamos la diferencia por concentración, encontramos que el porcentaje es en realidad 3.5% más alto para las mujeres.
 
 ```{r}
 admissions %>% group_by(gender) %>% summarize(average = mean(admitted))
@@ -269,7 +269,7 @@ admissions %>% group_by(gender) %>% summarize(average = mean(admitted))
 
 ## La paradoja de Simpson
 
-El caso que acabamos de cubrir es un ejemplo de la paradoja de Simpson. Se llama paradoja porque vemos el signo del cambio de correlación al comparar la publicación completa y estratos específicos. Como ejemplo ilustrativo, suponga que tiene tres variables aleatorias $X$, $Y$ y $Z$ y que observamos realizaciones de estos. Aquí hay una gráfica de observaciones simuladas para $X$ y $Y$ junto con la correlación de muestra:
+El caso que acabamos de cubrir es un ejemplo de la paradoja de Simpson. [fix check no entiendo] Se llama paradoja porque vemos el signo del cambio de correlación al comparar la publicación completa y estratos específicos. Como ejemplo ilustrativo, supongan que tienen tres variables aleatorias $X$, $Y$ y $Z$ y que observamos [fix "realizations"?] realizaciones de estos. Aquí hay un gráfico de observaciones simuladas para $X$ y $Y$ junto con la correlación de muestra:
 
 ```{r simpsons-paradox, echo=FALSE}
 N <- 100
@@ -293,7 +293,7 @@ dat %>% ggplot(aes(x, y)) + geom_point(alpha = .5) +
 ggtitle(paste("Correlation = ", round(cor(dat$x, dat$y), 2)))
 ```
 
-Puedes ver eso $X$ y $Y$ están correlacionados negativamente Sin embargo, una vez que nos estratifiquemos por $Z$ (se muestra en diferentes colores a continuación) surge otro patrón:
+Pueden ver que $X$ y $Y$ están correlacionados negativamente Sin embargo, una vez que nos estratifiquemos por $Z$ (se muestra en diferentes colores a continuación) surge otro patrón:
 
 
 ```{r simpsons-paradox-explained, echo=FALSE}
@@ -309,22 +309,22 @@ ggtitle(paste("Correlations =", paste(signif(corrs,2), collapse=" "))) +
 annotate("text", x = means$x, y = means$y, label = paste("z =", means$z), cex = 5)
 ```
 
-Es realmente $Z$ eso está negativamente correlacionado con $X$. Si nos estratificamos por $Z$, el $X$ y $Y$ en realidad están positivamente correlacionados como se ve en la gráfica anterior.
+Es realmente $Z$ que está negativamente correlacionada con $X$. [fix check ok] Si estratificamos por $Z$, el $X$ y $Y$ están positivamente correlacionadas como se ve en el gráfico anterior.
 
 ## Ejercicios
 
-Para el próximo conjunto de ejercicios, examinamos los datos de un documento PNAS 2014^[http://www.pnas.org/content/112/40/12349.abstract] que analizó las tasas de éxito de las agencias de financiación en los Países Bajos y concluyó :
+Para el próximo set de ejercicios, examinamos los datos de un artículo de PNAS del 2014^[http://www.pnas.org/content/112/40/12349.abstract] que analizó las tasas de éxito de agencias de financiación en los Países Bajos y concluyó que:
 
-> Nuestros resultados revelan un sesgo de género que favorece a los postulantes masculinos sobre los postulantes femeninos en la priorización de sus evaluaciones y tasas de éxito de "calidad de investigador" (pero no "calidad de propuesta"), así como en el lenguaje utilizado en los materiales de instrucción y evaluación.
+> [fix look for earlier translation; read through not sure if clear] Nuestros resultados revelan un sesgo de género que favorece a los solicitantes sobre las solicitantes en la priorización de sus evaluaciones y tasas de éxito con respecto a su "calidad de investigador" (pero no "calidad de propuesta"), así como en el lenguaje utilizado en los materiales de instrucción y evaluación.
 
 
-Unos meses después, se publicó una respuesta^[http://www.pnas.org/content/112/51/E7036.extract] titulada _No hay evidencia de que el género contribuya al éxito de la financiación de la investigación personal en los Países Bajos: una reacción a Van der Lee y Ellemers_ que concluyeron:
+Unos meses después, se publicó una respuesta^[http://www.pnas.org/content/112/51/E7036.extract] titulada _No evidence that gender contributes to personal research funding success in The Netherlands: A reaction to Van der Lee and Ellemers_ que concluyó:
 
-> Sin embargo, el efecto general de género limita con la significación estadística, a pesar de la gran muestra. Además, su conclusión podría ser un excelente ejemplo de la paradoja de Simpson; Si un mayor porcentaje de mujeres solicita subvenciones en disciplinas científicas más competitivas (es decir, con bajas tasas de éxito de solicitudes tanto para hombres como para mujeres), entonces un análisis en todas las disciplinas podría mostrar incorrectamente "evidencia" de desigualdad de género.
+> [fix] Sin embargo, el efecto general de género casi llega/limita/ con la significación estadística, a pesar de la gran muestra. Además, su conclusión podría ser un excelente ejemplo de la paradoja de Simpson; si un mayor porcentaje de mujeres solicita subvenciones/becas en disciplinas científicas más competitivas (es decir, con bajas tasas de éxito de solicitudes tanto para hombres como para mujeres), entonces un análisis en todas las disciplinas podría mostrar incorrectamente "evidencia" de desigualdad de género.
 
-¿Quién está aquí? ¿El artículo original o la respuesta? Aquí, examinará los datos y llegará a su propia conclusión.
+¿Quién tiene la razón aquí? ¿El artículo original o la respuesta? Aquí, examinará los datos y llegará a su propia conclusión.
 
-1\. La evidencia principal para la conclusión del artículo original se reduce a una comparación de los porcentajes. La Tabla S1 en el documento incluye la información que necesitamos:
+1\. La evidencia principal para la conclusión del artículo original se reduce a una comparación de los porcentajes. La Tabla S1 en el artículo incluye la información que necesitamos:
 
 ```{r,eval=FALSE}
 library(dslabs)
@@ -332,27 +332,26 @@ data("research_funding_rates")
 research_funding_rates
 ```
 
-Construya la tabla de dos por dos utilizada para la conclusión sobre las diferencias en los premios por género.
+Construya la tabla de 2 X 2 utilizada para la conclusión sobre las diferencias en los premios por género.
 
 
-2\. Calcule la diferencia en porcentaje de la tabla de dos por dos.
+2\. Calcule la diferencia en porcentaje de la tabla 2  X 2.
 
 
 3\. En el ejercicio anterior, notamos que la tasa de éxito es menor para las mujeres. ¿Pero es significativo? Calcule un valor p usando una prueba de Chi-cuadrado.
 
 
-4\. Vemos que el valor p es de aproximadamente 0.05. Entonces parece haber alguna evidencia de una asociación. ¿Pero podemos inferir causalidad aquí? ¿El sesgo de género está causando esta diferencia observada? La respuesta al documento original afirma que lo que vemos aquí es similar al ejemplo de admisiones de UC Berkeley. Específicamente, afirman que esto "podría ser un excelente ejemplo de la paradoja de Simpson; si un mayor porcentaje de mujeres solicita subvenciones en disciplinas científicas más competitivas, entonces un análisis en todas las disciplinas podría mostrar incorrectamente &#39;evidencia&#39; de desigualdad de género". Para resolver esta disputa, cree un conjunto de datos con varias solicitudes, premios y tasas de éxito para cada género. Reordenar las disciplinas por su tasa de éxito general. Sugerencia: use el `reorder` función para reordenar las disciplinas en un primer paso, luego use `gather`, `separate` y `spread` para crear la tabla deseada.
+4\. Vemos que el valor p es aproximadamente 0.05. Entonces parece haber alguna evidencia de una asociación. ¿Pero podemos inferir causalidad aquí? ¿El sesgo de género está causando esta diferencia observada? La respuesta al artículo original afirma que lo que vemos aquí es similar al ejemplo de ;a admisiones a U.C. Berkeley. Específicamente, afirman que esto "podría ser un excelente ejemplo de la paradoja de Simpson; si un mayor porcentaje de mujeres solicita subvenciones en disciplinas científicas más competitivas, entonces un análisis en todas las disciplinas podría mostrar incorrectamente 'evidencia' de desigualdad de género". Para resolver esta disputa, crea un set de datos con el número de solicitudes, premios y tasas de éxito para cada género. Reordene las disciplinas por su tasa de éxito general. Sugerencia: use la función `reorder` para reordenar las disciplinas como primer paso, luego use `gather`, `separate` y `spread` para crear la tabla deseada.
 
 
-5\. Para verificar si este es un caso de la paradoja de Simpson, trace las tasas de éxito versus las disciplinas, que han sido ordenadas por el éxito general, con colores para denotar los géneros y el tamaño para denotar el número de aplicaciones.
+5\. Para verificar si este es un caso de la paradoja de Simpson, grafique las tasas de éxito versus las disciplinas, que han sido ordenadas según éxito general, con colores para denotar los géneros y tamaño para denotar el número de solicitudes.
 
 
-6\. Definitivamente no vemos el mismo nivel de confusión que en el ejemplo de UC Berkeley. Es difícil decir que hay un factor de confusión aquí. Sin embargo, vemos que, en base a las tasas observadas, algunos campos favorecen a los hombres y otros favorecen a las mujeres y vemos que los dos campos con la mayor diferencia que favorecen a los hombres también son los campos con más aplicaciones. Pero, a diferencia del ejemplo de UC Berkeley, no es más probable que las mujeres soliciten los temas más difíciles. Entonces, quizás algunos de los comités de selección son parciales y otros no.
+6\. Definitivamente no vemos el mismo nivel de confusión que en el ejemplo de U.C. Berkeley. Es difícil decir que hay un factor de confusión aquí. Sin embargo, vemos que, según las tasas observadas, algunos campos favorecen a los hombres y otros favorecen a las mujeres y vemos que los dos campos con la mayor diferencia que favorecen a los hombres también son los campos con más solicitudes. Pero, a diferencia del ejemplo de U.C. Berkeley, no es más probable que las mujeres soliciten las concentraciones más difíciles. Entonces, quizás algunos de los comités de selección son parciales y otros no.
 
-Pero, antes de concluir esto, debemos verificar si estas diferencias son diferentes de lo que obtenemos por casualidad. ¿Alguna de las diferencias vistas anteriormente es estadísticamente significativa? Tenga en cuenta que incluso cuando no haya sesgo, veremos diferencias debido a la variabilidad aleatoria en el proceso de revisión, así como a la variabilidad aleatoria entre los candidatos. Realice una prueba de Chi-cuadrado para cada disciplina. Sugerencia: defina una función que reciba el total de una tabla de dos por dos y devuelva un marco de datos con el valor p. Usa la corrección 0.5. Luego usa la función do.
+Pero, antes de concluir esto, debemos verificar si estas diferencias son diferentes de lo que obtenemos por casualidad. ¿Alguna de las diferencias vistas anteriormente es estadísticamente significativa? Tenga en cuenta que incluso cuando no haya sesgo, veremos diferencias debido a la variabilidad aleatoria en el proceso de revisión, así como a la variabilidad aleatoria entre los candidatos. Realice una prueba de Chi-cuadrado para cada disciplina. Sugerencia: defina una función que reciba el total de una tabla2 X 2 y devuelva un _data frame_ con el valor p. Use la corrección 0.5. Luego use la función `do`.
 
 
-7\. Para las ciencias médicas, parece haber una diferencia estadísticamente significativa. ¿Pero es esto una correlación espuria? Realizamos 9 pruebas. Informar solo el caso con un valor p inferior a 0.05 podría considerarse un ejemplo de selección de cereza.
-Repita el ejercicio anterior, pero en lugar de un valor p, calcule una razón de probabilidad logarítmica dividida por su error estándar. Luego use qq-plot para ver cuánto se desvían estas razones de probabilidad logarítmica de la distribución normal que esperaríamos: una distribución normal estándar.
+7\. Para las ciencias médicas, parece haber una diferencia estadísticamente significativa. ¿Pero es esto una correlación espuria? Realizamos 9 pruebas. Informar solo el caso con un valor p inferior a 0.05 podría considerarse un [fix cherry picking] ejemplo de supresión de pruebas. Repita el ejercicio anterior, pero en lugar de un valor p, calcule una [fix log odds ration] razón de probabilidad logarítmica dividida por su error estándar. Luego use un gráfico Q-Q para ver cuánto se desvían estas razones de probabilidad logarítmica de la distribución normal que esperaríamos: una distribución normal estándar.
 
 

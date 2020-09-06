@@ -1,8 +1,8 @@
 # Modelos lineales
 
-Desde el desarrollo original de Galton, la regresión se ha convertido en una de las herramientas más utilizadas en la ciencia de datos. Una razón tiene que ver con el hecho de que la regresión nos permite encontrar relaciones entre dos variables tomando en cuenta los efectos de otras variables que afectan a ambas. Esto ha sido particularmente popular en campos donde los experimentos aleatorios son difíciles de ejecutar, como la economía y la epidemiología.
+Desde el desarrollo original de Galton, la regresión se ha convertido en una de las herramientas más utilizadas en la ciencia de datos. Una razón por esto es que la regresión nos permite encontrar relaciones entre dos variables tomando en cuenta los efectos de otras variables que afectan a ambas. Esto ha sido particularmente popular en campos donde los experimentos aleatorios son difíciles de ejecutar, como la economía y la epidemiología.
 
-Cuando no podemos asignar aleatoriamente a cada individuo a un grupo de tratamiento o control, la confusión (_confounding_ en inlgés) es particularmente frecuente. Por ejemplo, consideren estimar el efecto de comer comidas rápidas en la esperanza de vida utilizando datos recopilados de una muestra aleatoria de personas en una jurisdicción. Es más probable que los consumidores de comida rápida sean fumadores, bebedores y tengan ingresos más bajos. Por lo tanto, un modelo de regresión ingenuo puede conducir a una sobreestimación del efecto negativo de la comida rápida en la salud. Entonces, ¿cómo explicamos la confusión en la práctica? En este capítulo aprendemos cómo los modelos lineales pueden ayudar con tales situaciones y como se pueden usar para describir cómo una o más variables afectan la variable de resultado.
+Cuando no podemos asignar aleatoriamente a cada individuo a un grupo de tratamiento o control, la confusión (_confounding_ en inglés) es particularmente frecuente. Por ejemplo, consideren estimar el efecto de comer comidas rápidas en la esperanza de vida utilizando datos recopilados de una muestra aleatoria de personas en una jurisdicción. Es más probable que los consumidores de comida rápida sean fumadores, bebedores y tengan ingresos más bajos. Por lo tanto, un modelo de regresión simple puede sobrestimar el efecto negativo de la comida rápida en la salud. Entonces, ¿cómo explicamos la confusión en la práctica? En este capítulo aprendemos cómo los modelos lineales pueden ayudar con estas situaciones y cómo pueden usarse para describir cómo una o más variables afectan el resultado.
 
 ## Estudio de caso: Moneyball
 
@@ -10,11 +10,11 @@ Cuando no podemos asignar aleatoriamente a cada individuo a un grupo de tratamie
 img_path <- "regression/img/"
 ```
 
-El libro _Moneyball: El arte de ganar un juego injusto_ de Michael Lewis se trata del equipo de béisbol los Atléticos de Oakland, también conocidos como los A's, y [fix] su gerente general, la persona encargada de construir el equipo, Billy Beane.
+El libro _Moneyball: El arte de ganar un juego injusto_ de Michael Lewis se trata del equipo de béisbol los Atléticos de Oakland, también conocidos como los A's, y su gerente general, la persona encargada de construir el equipo, Billy Beane.
 
-[fix check ok] Tradicionalmente, los equipos de béisbol usan _scouts_, o buscadores de talento, para ayudarles a decidir qué jugadores contratar. Estos _scouts_ evalúan a los jugadores viéndolos jugar. Por esta razón, tienden a favorecer a los jugadores atléticos con habilidades físicas observables y, por lo general, hay consenso entre los _scouts_ sobre quiénes son los mejores jugadores. Como resultado, hay mucha demanda para estos jugadores lo cual aumenta sus salarios.
+Tradicionalmente, los equipos de béisbol usan _scouts_, o buscadores de talento, para ayudarlos a decidir qué jugadores contratar. Estos _scouts_ evalúan a los jugadores viéndolos jugar. Por esta razón, tienden a favorecer a los jugadores atléticos con habilidades físicas observables y, por lo general, hay consenso entre los _scouts_ sobre quiénes son los mejores jugadores. Como consecuencia, hay mucha demanda para estos jugadores lo cual aumenta sus salarios.
 
-De 1989 a 1991, los A's tuvieron una de las nóminas más altas del béisbol. Pudieron comprar los mejores jugadores y, durante ese tiempo, fueron uno de los mejores equipos. Sin embargo, en 1995 cambió el dueño del equipo y la nueva administración recortó drásticamente el presupuesto, dejando al entonces gerente general, Sandy Alderson, con una de las nóminas más bajas en el béisbol. Éste ya no podía permitirse el lujo de los jugadores más codiciados y, por lo tanto, comenzó a utilizar un enfoque estadístico para encontrar ineficiencias en el mercado. Alderson fue mentor de Billy Beane, quien lo sucedió en 1998 y aceptó por completo la ciencia de los datos, en vez de los _scouts_, como un método para encontrar jugadores de bajo costo que, según los datos, ayudarían al equipo a ganar. Hoy, esta estrategia ha sido adaptada por la mayoría de los equipos de béisbol. Como veremos, la regresión juega un papel importante en este enfoque.
+De 1989 a 1991, los A's tuvieron una de las nóminas más altas del béisbol. Pudieron comprar los mejores jugadores y, durante ese tiempo, fueron uno de los mejores equipos. Sin embargo, en 1995 el dueño del equipo cambió y la nueva administración recortó drásticamente el presupuesto, dejando al entonces gerente general, Sandy Alderson, con una de las nóminas más bajas en el béisbol. Éste ya no podía permitirse el lujo de los jugadores más codiciados y, por lo tanto, comenzó a utilizar un enfoque estadístico para encontrar ineficiencias en el mercado. Alderson fue mentor de Billy Beane, quien lo sucedió en 1998 y aceptó por completo la ciencia de los datos, en vez de los _scouts_, como un método para encontrar jugadores de bajo costo que, según los datos, ayudarían al equipo a ganar. Hoy, esta estrategia ha sido adaptada por la mayoría de los equipos de béisbol. Como veremos, la regresión juega un papel importante en este enfoque.
 
 Como motivación para este capítulo, fingiremos que es 2002 y trataremos de construir un equipo de béisbol con un presupuesto limitado, tal como lo hicieron los Atléticos. Para apreciar la dificultad del reto, tengan en cuenta que en 2002 la nómina de los Yankees de \$125,928,583 era más del triple de la de los Atléticos de Oakland de \$39,679,746.
 
@@ -25,32 +25,32 @@ url <- "http://www.stevetheump.com/Payrolls.htm"
 h <- read_html(url)
 i <- h %>% html_nodes(".style3") %>% html_text() %>% stringr::str_which("2002")
 h %>% html_nodes("table") %>% .[[i]] %>% html_table(header = TRUE) %>%
-mutate(Payroll = parse_number(Payroll)/10^6) %>%
-mutate(Team = reorder(Team, Payroll)) %>%
-ggplot(aes(Team, Payroll)) +
-geom_bar(stat = "identity") +
-ylab("Payroll in Millions") +
-coord_flip()
+  mutate(Payroll = parse_number(Payroll)/10^6) %>%
+  mutate(Team = reorder(Team, Payroll)) %>%
+  ggplot(aes(Team, Payroll)) +
+  geom_bar(stat = "identity") +
+  ylab("Payroll in Millions") +
+  coord_flip()
 ```
 
 
 
 ### Sabermetrics
 
-Las estadísticas se han utilizado en el béisbol desde sus inicios. El set de datos que usaremos, que se incluye en la biblioteca __Lahman__, se remonta al siglo XIX. Por ejemplo, un resumen estadístico que describiremos pronto, el _promedio de bateo_ (_batting average_ en inglés), se ha utilizado durante décadas para resumir el éxito de un bateador. Otras estadísticas^[http://mlb.mlb.com/stats/league_leaders.jsp] como cuadrangulares (_homeruns_ o HR en inglés), carreras impulsadas (_runs batted in_ o RBI en inglés) y bases robadas (_stolen bases_ o SB en inglés) se indican para cada jugador en los resúmenes del juego incluido en la sección de deportes de periódicos, con jugadores recompensados por números altos. Aunque resúmenes estadísticos como estos se utilizaron ampliamente en el béisbol, el análisis de datos en sí se ignoraba. Estas estadísticas se escogieron arbitrariamente sin pensar mucho en si realmente predecían algo o si estaban relacionadas con ayudar a un equipo a ganar.
+Las estadísticas se han utilizado en el béisbol desde sus inicios. El set de datos que usaremos, que se incluye en la biblioteca __Lahman__, se remonta al siglo XIX. Por ejemplo, un resumen estadístico que describiremos pronto, el _promedio de bateo_ (_batting average_ en inglés), se ha utilizado durante décadas para resumir el éxito de un bateador. Otras estadísticas^[http://mlb.mlb.com/stats/league_leaders.jsp] como cuadrangulares (HR o _homeruns_ en inglés), carreras impulsadas (RBI o _runs batted in_ en inglés) y bases robadas (SB o _stolen bases_ en inglés) se indican para cada jugador en los resúmenes del juego que se incluyen en la sección de deportes de periódicos, con jugadores recompensados por números altos. Aunque resúmenes estadísticos como estos se utilizaron ampliamente en el béisbol, el análisis de datos en sí se ignoraba. Estas estadísticas se escogieron arbitrariamente sin pensar mucho en si realmente predecían algo o si estaban relacionadas con ayudar a un equipo a ganar.
 
-Esto cambió con Bill James^[https://en.wikipedia.org/wiki/Bill_James]. A fines de la década de 1970, este aspirante a escritor y fanático del béisbol comenzó a publicar artículos que describían un análisis más profundo de los datos del béisbol. Denominó _sabermetrics_^[https://en.wikipedia.org/wiki/Sabermetrics] al enfoque de usar datos para pronosticar qué resultados mejor predicen si un equipo ganará. Hasta que Billy Beane convirtió a _sabermetrics_ en el centro de su operación de béisbol, el mundo del béisbol por lo general ignoró el trabajo de Bill James. Actualmente, la popularidad de sabermetrics ya no se limita solo al béisbol; varios otros deportes también han comenzado a usar este enfoque.
+Esto cambió con Bill James^[https://en.wikipedia.org/wiki/Bill_James]. A fines de la década de 1970, este fanático del béisbol y aspirante a escritor comenzó a publicar artículos que describían un análisis más profundo de los datos del béisbol. Denominó _sabermetrics_^[https://en.wikipedia.org/wiki/Sabermetrics] al enfoque de usar datos para pronosticar qué resultados mejor predicen si un equipo ganará. Hasta que Billy Beane convirtió a _sabermetrics_ en el centro de su operación de béisbol, el mundo del béisbol por lo general ignoró el trabajo de Bill James. Actualmente, la popularidad de _sabermetrics_ ya no se limita solo al béisbol; varios otros deportes también han comenzado a usar este enfoque.
 
 
-En este capítulo, para simplificar el ejercicio, nos enfocaremos en carreras anotadas e ignoraremos los otros dos aspectos importantes del juego: lanzar y fildear. Veremos cómo el análisis de regresión puede ayudar a desarrollar estrategias para construir un equipo de béisbol competitivo con un presupuesto limitado. El enfoque se puede dividir en dos análisis de datos separados. En el primero, determinamos qué estadísticas específicas del jugador predicen carreras. En el segundo, examinamos si los jugadores estaban infravalorados según lo que predice nuestro primer análisis.
+En este capítulo, para simplificar el ejercicio, nos enfocaremos en carreras (R o _runs_ en inglés) anotadas e ignoraremos los otros dos aspectos importantes del juego: lanzar y fildear. Veremos cómo el análisis de regresión puede ayudar a desarrollar estrategias para construir un equipo de béisbol competitivo con un presupuesto limitado. El acercamiento se puede dividir en dos análisis de datos separados. En el primero, determinamos qué estadísticas específicas del jugador predicen carreras. En el segundo, examinamos si los jugadores estaban infravalorados según lo que predice nuestro primer análisis.
 
 ### Conceptos básicos de béisbol
 
 Para ver cómo la regresión nos ayudará a encontrar jugadores infravalorados, no necesitamos comprender todos los detalles sobre el juego de béisbol, que tiene más de 100 reglas. Aquí, destilamos el deporte al conocimiento básico que uno necesita saber para atacar efectivamente el problema de la ciencia de datos.
 
-El objetivo de un juego de béisbol es anotar más carreras (puntos) que el otro equipo. Cada equipo tiene 9 bateadores que tienen la oportunidad de darle a una pelota con un bate en un orden predeterminado. Después de que el noveno bateador haya tenido su turno, el primer bateador vuelve a batear, luego el segundo, y así sucesivamente. Cada vez que un bateador tiene la oportunidad de batear, lo llamamos una _turno al bate_ (PA o _plate appearance_ en inglés). En cada PA, el _pitcher_, o lanzador, del otro equipo lanza la pelota y el bateador intenta darle. El PA termina con un resultado binario: el bateador hace un _out_ (falla) y regresa al banco o el bateador le da (éxito) y puede correr alrededor de las bases, y potencialmente anotar una carrera (llegar a las 4 bases). Cada equipo tiene nueve intentos, denominados _entradas_ (_innings_ en inglés), para anotar carreras y cada entrada termina después de tres _outs_ (tres fallas).
+El objetivo de un juego de béisbol es anotar más carreras (puntos) que el otro equipo. Cada equipo tiene 9 bateadores que tienen la oportunidad de darle a una pelota con un bate en un orden predeterminado. Después de que el noveno bateador haya tenido su turno, el primer bateador vuelve a batear, luego el segundo, y así sucesivamente. Cada vez que un bateador tiene la oportunidad de batear, lo llamamos una _turno al bate_ (PA o _plate appearance_ en inglés). En cada PA, el _pitcher_, o lanzador, del otro equipo lanza la pelota y el bateador intenta darle. El PA termina con un resultado binario: el bateador hace un _out_ (falla) y regresa al banco o el bateador le da a la bola (éxito) y puede correr alrededor de las bases, y potencialmente anotar una carrera (llegar a las 4 bases). Cada equipo tiene nueve intentos, denominados _entradas_ (_innings_ en inglés), para anotar carreras y cada entrada termina después de tres _outs_.
 
-Aquí pueden ver un video que muestra un éxito: [https://www.youtube.com/watch?v=HL-XjMCPfiofont](https://www.youtube.com/watch?v=HL-XjMCPfio). Y aquí hay uno que muestra una falla: [https://www.youtube.com/watch?v=NeloljCx-1gfont](https://www.youtube.com/watch?v=NeloljCx-1g). En estos videos, vemos cómo la suerte está involucrada en el proceso. Cuando está al bate, el bateador quiere darle a la pelota con fuerza. Si le da lo suficientemente fuerte, es un HR o jonrón, el mejor resultado posible ya que el bateador obtiene al menos una carrera automática. Pero a veces, debido al azar, el bateador le da a la pelota muy fuerte y un defensor la atrapa, lo que resulta en un _out_. Por el contrario, a veces el bateador le da a la pelota suavemente, pero cae justo en el lugar correcto. El hecho de que el azar afecta sugiere por qué los modelos de probabilidad estarán involucrados.
+Aquí pueden ver un video que muestra un éxito: [https://www.youtube.com/watch?v=HL-XjMCPfiofont](https://www.youtube.com/watch?v=HL-XjMCPfio). Y aquí hay uno que muestra una falla: [https://www.youtube.com/watch?v=NeloljCx-1gfont](https://www.youtube.com/watch?v=NeloljCx-1g). En estos videos, vemos cómo la suerte está involucrada en el proceso. Cuando está al bate, el bateador quiere darle a la pelota con fuerza. Si le da lo suficientemente fuerte, es un HR o cuadrangular, el mejor resultado posible ya que el bateador obtiene al menos una carrera automática. Pero a veces, debido al azar, el bateador le da a la pelota muy fuerte y un defensor la atrapa, lo que resulta en un _out_. Por el contrario, a veces el bateador le da a la pelota suavemente, pero cae justo en el lugar correcto. El hecho de que el azar afecta sugiere por qué los modelos de probabilidad son útiles.
 
 Ahora hay varias formas de tener éxito. Entender esta distinción será importante para nuestro análisis. Cuando el bateador le da a la pelota, él quiere pisar cuantas más bases sea posible. Hay cuatro bases y la cuarta se llama _home_ o _home plate_. Ahí es donde los bateadores comienzan bateando, por lo que las bases forman un ciclo.
 
@@ -63,24 +63,23 @@ knitr::include_graphics(file.path(img_path,"Baseball_Diamond1.png"))
 
 Un bateador que _llega a todas las bases_ y llega a _home_, anota una carrera.
 
-
 Estamos simplificando un poco, pero hay cinco formas en que un bateador puede tener éxito, es decir, no hacer un _out_:
 
 - Bases por bolas (BB): el lanzador no logra lanzar la pelota dentro de un área predefinida donde el bateador le puede dar (la zona de _strike_), por lo que el bateador puede ir a primera base.
 - Sencillo: el bateador le da a la bola y llega a primera base.
 - Doble (2B): el bateador le da a la bola y llega a segunda base.
 - Triple (3B): el bateador le da a la bola y llega a tercera base.
-- Cuadrangular (HR) - el bateador le da a la bola y llega a _home_ y anota una carrera.
+- Cuadrangular (HR): el bateador le da a la bola y llega a _home_ y anota una carrera.
 
 Aquí hay un ejemplo de un HR:
 [https://www.youtube.com/watch?v=xYxSZJ9GZ-wfont](https://www.youtube.com/watch?v=xYxSZJ9GZ-w).
-Si un bateador llega a una base, el bateador aún tiene la posibilidad de llegar a _home_ y anotar una carrera si el siguiente bateador batea con éxito. Mientras el bateador está _en base_, él también puede intentar robarse una base (SB o _stolen bases_ en inglés). Si un bateador corre lo suficientemente rápido, el bateador puede intentar ir de una base a la siguiente sin que el otro equipo toque o _tag_ al corredor. Aquí tenemos un ejemplo de una base robada: [https://www.youtube.com/watch?v=JSE5kfxkzfkfont](https://www.youtube.com/watch?v=JSE5kfxkzfk).
+Si un bateador llega a una base, ese bateador aún tiene la posibilidad de llegar a _home_ y anotar una carrera si el siguiente bateador batea con éxito. Mientras el bateador está _en base_, él también puede intentar robarse una base (SB o _stolen bases_ en inglés). Si un bateador corre lo suficientemente rápido, el bateador puede intentar ir de una base a la siguiente sin que el otro equipo lo toque (_tag_ en inglés). Aquí tenemos un ejemplo de una base robada: [https://www.youtube.com/watch?v=JSE5kfxkzfkfont](https://www.youtube.com/watch?v=JSE5kfxkzfk).
 
 Todos estos eventos se registran durante la temporada y están disponibles para nosotros a través del paquete __Lahman__. Ahora comenzaremos a discutir cómo el análisis de datos puede ayudarnos a decidir cómo usar estas estadísticas para evaluar a los jugadores.
 
 ### No hay premios para BB
 
-Históricamente, el _promedio de bateo_ se ha considerado la estadística ofensiva más importante. Para definir este promedio, definimos un _hit_ (H) y un _al bate_ (AB o _at bat_ en inglés). Sencillos, dobles, triples y jonrones son éxitos. La quinta forma de tener éxito, BB, no es un éxito. Un AB es la cantidad de veces que un bateador logra un _hit_ o un _out_; los BB se excluyen. El promedio de bateo es simplemente H/AB y se considera la medida principal de una tasa de éxito. Hoy esta tasa de éxito oscila entre el 20% y el 38%. Nos referimos al promedio de bateo en miles, por lo que, por ejemplo, si su índice de éxito es 28%, decimos que _está bateando 280_.
+Históricamente, el _promedio de bateo_ se ha considerado la estadística ofensiva más importante. Para definir este promedio, definimos un _hit_ (H) y un _al bate_ (AB o _at bat_ en inglés). Sencillos, dobles, triples y cuadrangulares son éxitos. La quinta forma de tener éxito, BB, no es un éxito. Un AB es la cantidad de veces que un bateador logra un _hit_ o un _out_; los BB se excluyen. El promedio de bateo es simplemente H/AB y se considera la medida principal de una tasa de éxito. Hoy esta tasa de éxito oscila entre el 20% y el 38%. Nos referimos al promedio de bateo en miles, por lo que, por ejemplo, si su índice de éxito es 28%, decimos que _está bateando 280_.
 
 
 ```{r, echo = FALSE}
@@ -88,39 +87,39 @@ knitr::include_graphics(file.path(img_path,"JumboTron.png"))
 ```
 (Imagen cortesía de Keith Allison^[https://www.flickr.com/people/27003603@N00]. Licencia CC BY-SA 2.0^[https://creativecommons.org/licenses/by-sa/2.0]. )
 
-Una de las primeras ideas importantes de Bill James es que el promedio de bateo ignora BB, pero un BB es un éxito. James propuso que se usara el _on-base porcentage_ (OBP), o porcentaje de veces que un bateador llega a una base, en lugar del promedio de bateo. Definió OBP como (H + BB)/(AB + BB), que es simplemente la proporción de apariciones en el plato que no resultan en un _out_, una medida muy intuitiva. [fix eng not clear] Señaló que un jugador que obtiene muchos más BB que el jugador promedio podría no ser reconocido si su promedio de bateo no es alto.[fix] ¿Pero este jugador no está ayudando a producir carreras? Aún así, no se otorga premio al jugador con más BB. Además, el béisbol no adoptó de inmediato el OBP como una estadística importante. [fix is this present or past?] En contraste, el total de bases robadas se considera importante y le otorgan un premio al jugador con la mayor cantidad^[http://www.baseball-almanac.com/awards/lou_brock_award.shtml]. Pero los jugadores con altos totales de SB, o bases robadas, también hacían más _outs_ ya que no siempre tenían éxito. ¿Un jugador con un alto total se SB ayuda a producir carreras? ¿Podemos usar la ciencia de datos para determinar si es mejor pagar por jugadores con totales altos de BB o SB?
+Una de las primeras ideas importantes de Bill James es que el promedio de bateo ignora BB, pero un BB es un éxito. James propuso que se usara el _on-base percentage_ (OBP), o porcentaje de veces que un bateador llega a una base, en lugar del promedio de bateo. Definió OBP como (H + BB)/(AB + BB), que es simplemente la proporción de turnos al bate que no resultan en un _out_, una medida muy intuitiva. Señaló que un jugador que obtiene muchos más BB que el jugador promedio podría no ser reconocido si su promedio de bateo no es alto. ¿Pero este jugador no está ayudando a producir carreras? Aún así, no se le otorga premio al jugador con más BB. Además, el béisbol no adoptó de inmediato el OBP como una estadística importante. En contraste, el total de bases robadas se considera importante y le otorgan un premio al jugador con la mayor cantidad^[http://www.baseball-almanac.com/awards/lou_brock_award.shtml]. Pero los jugadores con altos totales de SB también hacen más _outs_ ya que no siempre tienen éxito. ¿Un jugador con un alto total de SB ayuda a producir carreras? ¿Podemos usar la ciencia de datos para determinar si es mejor pagar por jugadores con totales altos de BB o de SB?
 
 ### ¿Base por bolas o bases robadas?
 
-Uno de los desafíos en este análisis es que no es obvio cómo determinar si un jugador produce carreras porque mucho depende de sus compañeros de equipo. Llevamos un registro del número de carreras anotadas por un jugador. Sin embargo, recuerden que si un jugador X batea justo antes de alguien que logra muchos jonrones, el bateador X marcará muchas carreras. Pero estas carreras no necesariamente suceden si contratamos al jugador X pero no a su compañero de equipo que batea jonrones. Sin embargo, podemos examinar las estadísticas a nivel de equipo. ¿Cómo se comparan los equipos con muchos SB con los equipos con pocos? ¿Qué tal BB? !Tenemos datos! Vamos a examinar algunos.
+Uno de los desafíos en este análisis es que no es obvio cómo determinar si un jugador produce carreras porque mucho depende de sus compañeros de equipo. Llevamos un registro del número de carreras anotadas por un jugador. Sin embargo, recuerden que si un jugador X batea justo antes de alguien que logra muchos cuadrangulares, el bateador X marcará muchas carreras. Pero estas carreras no necesariamente suceden si contratamos al jugador X pero no a su compañero de equipo que batea cuadrangulares. Sin embargo, podemos examinar las estadísticas a nivel de equipo. ¿Cómo se comparan los equipos con muchos SB con los equipos con pocos? ¿Qué tal BB? !Tenemos datos! Vamos a examinar algunos.
 
-Comencemos con una obvia: HR. ¿Los equipos que tienen más jonrones anotan más carreras? Examinamos los datos de 1961 a 2001. La visualización de las opciones al explorar la relación entre dos variables, como HR y triunfos, es un diagrama de dispersión:
+Comencemos con una obvia: HR. ¿Los equipos que tienen más cuadrangulares anotan más carreras? Examinamos los datos de 1961 a 2001. La visualización de las opciones al explorar la relación entre dos variables, como HR y triunfos, es un diagrama de dispersión:
 
 ```{r runs-vs-hrs, message=FALSE, warning=FALSE}
 library(Lahman)
 
 Teams %>% filter(yearID %in% 1961:2001) %>%
-mutate(HR_per_game = HR/ G, R_per_game = R/ G) %>%
-ggplot(aes(HR_per_game, R_per_game)) +
-geom_point(alpha = 0.5)
+  mutate(HR_per_game = HR/ G, R_per_game = R/ G) %>%
+  ggplot(aes(HR_per_game, R_per_game)) +
+  geom_point(alpha = 0.5)
 ```
 
 El gráfico muestra una fuerte asociación: los equipos con más HR tienden a anotar más carreras. Ahora examinemos la relación entre bases robadas y carreras:
 
 ```{r runs-vs-sb}
 Teams %>% filter(yearID %in% 1961:2001) %>%
-mutate(SB_per_game = SB/ G, R_per_game = R/ G) %>%
-ggplot(aes(SB_per_game, R_per_game)) +
-geom_point(alpha = 0.5)
+  mutate(SB_per_game = SB/ G, R_per_game = R/ G) %>%
+  ggplot(aes(SB_per_game, R_per_game)) +
+  geom_point(alpha = 0.5)
 ```
 
 Aquí la relación no es tan clara. Finalmente, examinemos la relación entre BB y carreras:
 
 ```{r runs-vs-bb}
 Teams %>% filter(yearID %in% 1961:2001) %>%
-mutate(BB_per_game = BB/G, R_per_game = R/G) %>%
-ggplot(aes(BB_per_game, R_per_game)) +
-geom_point(alpha = 0.5)
+  mutate(BB_per_game = BB/G, R_per_game = R/G) %>%
+  ggplot(aes(BB_per_game, R_per_game)) +
+  geom_point(alpha = 0.5)
 ```
 
 Aquí nuevamente vemos una asociación clara. Pero, ¿esto significa que aumentar las BB de un equipo **causa** un aumento en las carreras? Una de las lecciones más importantes que aprenderemos en este libro es que **la asociación no implica causalidad.**
@@ -129,26 +128,26 @@ De hecho, parece que los BB y HR también están asociados:
 
 ```{r bb-vs-hrs}
 Teams %>% filter(yearID %in% 1961:2001 ) %>%
-mutate(HR_per_game = HR/G, BB_per_game = BB/G) %>%
-ggplot(aes(HR_per_game, BB_per_game)) +
-geom_point(alpha = 0.5)
+  mutate(HR_per_game = HR/G, BB_per_game = BB/G) %>%
+  ggplot(aes(HR_per_game, BB_per_game)) +
+  geom_point(alpha = 0.5)
 ```
 
-Sabemos que los HR causan carreras porque, como su nombre sugiere, cuando un jugador logra un "home run", se le garantiza al menos una carrera. ¿Podría ser que los HR también causen BB y esto hace que parezca que los BB también causen carreras? [fix] Cuando esto sucede, decimos que hay _confundidos_ (_confounding_ en inglés), un concepto importante sobre el que aprenderemos más a lo largo de este capítulo.
+Sabemos que los HR causan carreras porque, como su nombre sugiere, cuando un jugador logra un "home run", se le garantiza al menos una carrera. ¿Podría ser que los HR también causen BB y esto hace que parezca que los BB también causen carreras? Cuando esto sucede, decimos que hay _confusión_, un concepto importante sobre el que aprenderemos más a lo largo de este capítulo.
 
-La regresión lineal nos ayudará a analizar todo esto y cuantificar las asociaciones para determinar qué jugadores reclutar. Específicamente, trataremos de predecir cosas como cuántas carreras más anotará un equipo si aumentamos el número de BB, pero mantenemos los HR fijos. [fix delete this last sent?] La regresión nos ayudará a responder preguntas como esta.
+La regresión lineal nos ayudará a analizar todo esto y cuantificar las asociaciones para determinar qué jugadores reclutar. Específicamente, trataremos de predecir cosas como cuántas carreras más anotará un equipo si aumentamos el número de BB, pero mantenemos los HR fijos. La regresión nos ayudará a responder preguntas como esta.
 
 
 ### Regresión aplicada a las estadísticas de béisbol
 
-¿Podemos usar la regresión con estos datos? Primero, observen que los datos de HR y _Run_ parecen ser bivariados normales. Guardamos el gráfico en el objeto `p` ya que lo usaremos más tarde.
+¿Podemos usar la regresión con estos datos? Primero, observen que los datos de HR y carreras parecen seguir una distribución normal de dos variables. Guardamos el gráfico en el objeto `p` ya que lo usaremos más tarde.
 
 ```{r hr-runs-bivariate}
 library(Lahman)
 p <- Teams %>% filter(yearID %in% 1961:2001 ) %>%
-mutate(HR_per_game = HR/G, R_per_game = R/G) %>%
-ggplot(aes(HR_per_game, R_per_game)) +
-geom_point(alpha = 0.5)
+  mutate(HR_per_game = HR/G, R_per_game = R/G) %>%
+  ggplot(aes(HR_per_game, R_per_game)) +
+  geom_point(alpha = 0.5)
 p
 ```
 
@@ -157,25 +156,25 @@ Los gráficos Q-Q confirman que la aproximación normal es útil aquí:
 
 ```{r hr-by-runs-qq}
 Teams %>% filter(yearID %in% 1961:2001 ) %>%
-mutate(z_HR = round((HR - mean(HR))/sd(HR)),
-R_per_game = R/G) %>%
-filter(z_HR %in% -2:3) %>%
-ggplot() +
-stat_qq(aes(sample=R_per_game)) +
-facet_wrap(~z_HR)
+  mutate(z_HR = round((HR - mean(HR))/sd(HR)),
+         R_per_game = R/G) %>%
+  filter(z_HR %in% -2:3) %>%
+  ggplot() +
+  stat_qq(aes(sample=R_per_game)) +
+  facet_wrap(~z_HR)
 ```
 
-Ahora estamos listos para usar la regresión lineal para predecir el número de carreras que anotará un equipo si sabemos cuántos jonrones logrará el equipo. Lo único que necesitamos hacer es calcular los cinco resúmenes estadísticos:
+Ahora estamos listos para usar la regresión lineal para predecir el número de carreras que anotará un equipo si sabemos cuántos cuadrangulares logrará el equipo. Lo único que necesitamos hacer es calcular los cinco resúmenes estadísticos:
 
 ```{r}
 summary_stats <- Teams %>%
-filter(yearID %in% 1961:2001 ) %>%
-mutate(HR_per_game = HR/G, R_per_game = R/G) %>%
-summarize(avg_HR = mean(HR_per_game),
-s_HR = sd(HR_per_game),
-avg_R = mean(R_per_game),
-s_R = sd(R_per_game),
-r = cor(HR_per_game, R_per_game))
+  filter(yearID %in% 1961:2001 ) %>%
+  mutate(HR_per_game = HR/G, R_per_game = R/G) %>%
+  summarize(avg_HR = mean(HR_per_game),
+            s_HR = sd(HR_per_game),
+            avg_R = mean(R_per_game),
+            s_R = sd(R_per_game),
+            r = cor(HR_per_game, R_per_game))
 summary_stats
 ```
 
@@ -183,17 +182,17 @@ y usar las fórmulas dadas arriba para crear las líneas de regresión:
 
 ```{r hr-versus-runs-regression}
 reg_line <- summary_stats %>% summarize(slope = r*s_R/s_HR,
-intercept = avg_R - slope*avg_HR)
+                                        intercept = avg_R - slope*avg_HR)
 
 p + geom_abline(intercept = reg_line$intercept, slope = reg_line$slope)
 ```
 
-Pronto aprenderemos las funciones de R, como `lm`, que facilitan el [fix] ajuste de las líneas de regresión. Otro ejemplo es la función `geom_smooth` de __ggplot2__ que calcula y agrega una línea de regresión para graficar junto con intervalos de confianza, de los cuales también aprenderemos más adelante. Usamos el argumento `method = "lm"` que [fix] significa _linear model_, el título de una próxima sección. Entonces podemos simplificar el código anterior así:
+Pronto aprenderemos las funciones de R, como `lm`, que facilitan el ajuste de las líneas de regresión. Otro ejemplo es la función `geom_smooth` de __ggplot2__ que calcula y agrega una línea de regresión junto con intervalos de confianza al gráfico, de los cuales aprenderemos más adelante. Usamos el argumento `method = "lm"` que significa _modelo lineal_ (_linear model_ en inglés), el título de una próxima sección. Entonces podemos simplificar el código anterior así:
 
 ```{r hr-versus-runs-regression-easy}
 p + geom_smooth(method = "lm")
 ```
 
-En el ejemplo anterior, la pendiente es `r reg_line $slope`. Esto nos dice que los equipos que logran 1 HR más por juego que el equipo promedio, anotan `r reg_line$ pendiente` más carreras por juego que el equipo promedio. Dado que el puntaje final más común es la diferencia de una carrera, esto ciertamente puede conducir a un gran aumento en [fix] victorias. No es sorprendente que los jugadores con muchos HR sean muy caros. Debido a que estamos trabajando con un presupuesto ajustado, necesitaremos encontrar otra forma de aumentar las victorias. Entonces, en la siguiente sección, trasladamos nuestra atención a BB.
+En el ejemplo anterior, la pendiente es `r reg_line $slope`. Esto nos dice que los equipos que logran 1 HR más por juego que el equipo promedio, anotan `r reg_line$ pendiente` más carreras por juego que el equipo promedio. Dado que la puntuación final más común es la diferencia de una carrera, esto ciertamente puede conducir a un gran aumento en victorias. No es sorprendente que los jugadores con muchos HR sean muy caros. Debido a que estamos trabajando con un presupuesto ajustado, necesitaremos encontrar otra forma de aumentar las victorias. Entonces, en la siguiente sección, trasladamos nuestra atención a BB.
 
 
