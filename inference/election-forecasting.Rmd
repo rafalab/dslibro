@@ -111,17 +111,18 @@ Los datos simulados realmente no parecen capturar las características de los da
 
 ```{r simulated-data-without-bias, echo=FALSE, message=FALSE, warning=FALSE}
 polls %>% group_by(pollster) %>%
-filter(n() >= 6) %>% ungroup() %>%
-select(pollster, spread) %>%
-mutate(type = "Observed data", pollster = as.character(pollster)) %>%
-bind_rows(data.frame(spread = as.vector(X) ,
-pollster = I(rep(as.character(1:I), each=J)),
-type = I("Simulated data"))) %>%
-mutate(type = factor(type, levels = c("Simulated data", "Observed data"))) %>%
-ggplot(aes(pollster, spread)) +
-geom_point() +
-coord_flip() +
-facet_wrap( ~ type, scales = "free_y")
+  filter(n() >= 6) %>%
+  ungroup() %>%
+  select(pollster, spread) %>%
+  mutate(type = "Observed data", pollster = as.character(pollster)) %>%
+  bind_rows(tibble(spread = as.vector(X) ,
+                      pollster = rep(as.character(1:I), each=J),
+                      type = "Simulated data")) %>%
+  mutate(type = factor(type, levels = c("Simulated data", "Observed data"))) %>%
+  ggplot(aes(pollster, spread)) +
+  geom_point() +
+  coord_flip() +
+  facet_wrap( ~ type, scales = "free_y")
 ```
 
 El modelo anterior no toma en cuenta la variabilidad entre encuestadores. Para arreglar esto, añadimos un nuevo término para el efecto de los encuestadores. Usaremos $h_i$ para representar el sesgo del encuestador número $i$. Le añadimos este nuevo término al modelo:
