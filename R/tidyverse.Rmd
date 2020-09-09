@@ -28,8 +28,8 @@ Para ver cómo se puede proveer la misma información en diferentes formatos, co
 library(dslabs)
 data("gapminder")
 tidy_data <- gapminder %>%
-filter(country %in% c("South Korea", "Germany") & !is.na(fertility)) %>%
-select(country, year, fertility)
+  filter(country %in% c("South Korea", "Germany") & !is.na(fertility)) %>%
+  select(country, year, fertility)
 head(tidy_data, 6)
 ```
 
@@ -252,13 +252,13 @@ Tengan en cuenta que el _pipe_ funciona bien con las funciones donde el primer a
 
 ```{r, eval=FALSE}
 murders <- mutate(murders, rate = total/ population * 100000,
-rank = rank(-rate))
+                  rank = rank(-rate))
 ```
 
 En la solución al ejercicio anterior, hicimos lo siguiente:
 ```{r, eval=FALSE}
 my_states <- filter(murders, region %in% c("Northeast", "West") &
-rate < 1)
+                      rate < 1)
 
 select(my_states, state, rate, rank)
 ```
@@ -267,8 +267,8 @@ El _pipe_ `%>%` nos permite realizar ambas operaciones secuencialmente sin tener
 
 ```{r, eval=FALSE}
 mutate(murders, rate = total/ population * 100000,
-rank = rank(-rate)) %>%
-select(state, rate, rank)
+       rank = rank(-rate)) %>%
+  select(state, rate, rank)
 ```
 
 Note que `select` ya no tiene un _data frame_ como primer argumento. Se supone que el primer argumento sea el resultado de la operación realizada justo antes de `%>%`.
@@ -279,9 +279,9 @@ Repita el ejercicio anterior, pero ahora, en lugar de crear un nuevo objeto, mue
 
 ```{r, eval=FALSE}
 my_states <- murders %>%
-mutate SOMETHING %>%
-filter SOMETHING %>%
-select SOMETHING
+  mutate SOMETHING %>%
+  filter SOMETHING %>%
+  select SOMETHING
 ```
 
 ## Cómo resumir datos
@@ -306,8 +306,8 @@ El siguiente código calcula la desviación promedio y estándar para las hembra
 
 ```{r}
 s <- heights %>%
-filter(sex == "Female") %>%
-summarize(average = mean(height), standard_deviation = sd(height))
+  filter(sex == "Female") %>%
+  summarize(average = mean(height), standard_deviation = sd(height))
 s
 ```
 
@@ -324,17 +324,17 @@ Igual que con la mayoría de las otras funciones de __dplyr__, `summarize` conoc
 
 ```{r}
 heights %>%
-filter(sex == "Female") %>%
-summarize(median = median(height), minimum = min(height),
-maximum = max(height))
+  filter(sex == "Female") %>%
+  summarize(median = median(height), minimum = min(height),
+            maximum = max(height))
 ```
 
 Podemos obtener estos tres valores con solo una línea usando la función `quantile`: por ejemplo, `quantile(x, c(0,0.5,1))` devuelve el mínimo (percentil 0), la mediana (percentil 50) y el máximo (percentil 100) del vector `x`. Sin embargo, si intentamos usar una función como esta que devuelve dos o más valores dentro de `summarize`:
 
 ```{r, eval=FALSE}
 heights %>%
-filter(sex == "Female") %>%
-summarize(range = quantile(height, c(0, 0.5, 1)))
+  filter(sex == "Female") %>%
+  summarize(range = quantile(height, c(0, 0.5, 1)))
 ```
 
 recibiremos un error: `Error: expecting result of length one, got : 2`. Con la función `summarize`, solo podemos llamar a funciones que devuelven un solo valor. En la sección \@ref(do), aprenderemos cómo lidiar con funciones que devuelven más de un valor.
@@ -355,7 +355,7 @@ Esto se debe a que en el cálculo anterior, los estados pequeños tienen el mism
 
 ```{r}
 us_murder_rate <- murders %>%
-summarize(rate = sum(total)/ sum(population) * 100000)
+  summarize(rate = sum(total)/ sum(population) * 100000)
 us_murder_rate
 ```
 
@@ -383,8 +383,8 @@ Para obtener un número de la tabla de datos original con una línea de código,
 
 ```{r}
 us_murder_rate <- murders %>%
-summarize(rate = sum(total)/ sum(population) * 100000) %>%
-pull(rate)
+  summarize(rate = sum(total)/ sum(population) * 100000) %>%
+  pull(rate)
 
 us_murder_rate
 ```
@@ -409,8 +409,8 @@ El resultado no se ve muy diferente de `heights`, excepto que vemos `Groups: sex
 
 ```{r}
 heights %>%
-group_by(sex) %>%
-summarize(average = mean(height), standard_deviation = sd(height))
+  group_by(sex) %>%
+  summarize(average = mean(height), standard_deviation = sd(height))
 ```
 
 La función `summarize` aplica el resumen a cada grupo por separado.
@@ -419,8 +419,8 @@ Para ver otro ejemplo, calculemos la tasa media de asesinatos en las cuatro regi
 
 ```{r}
 murders %>%
-group_by(region) %>%
-summarize(median_rate = median(rate))
+  group_by(region) %>%
+  summarize(median_rate = median(rate))
 ```
 
 ## Cómo ordenar los _data frames_
@@ -429,23 +429,23 @@ Al examinar un set de datos, a menudo es conveniente ordenar, numérica o alfab�
 
 ```{r}
 murders %>%
-arrange(population) %>%
-head()
+  arrange(population) %>%
+  head()
 ```
 
 Con `arrange` podemos decidir cuál columna usar para ordenar. Para ver los estados por población, de menor a mayor, organizamos por el `rate` :
 
 ```{r}
 murders %>%
-arrange(rate) %>%
-head()
+  arrange(rate) %>%
+  head()
 ```
 
 Tengan en cuenta que el comportamiento por defecto es ordenar en orden ascendente. En __dplyr__, la función `desc` transforma un vector para que esté en orden descendente. Para ordenar la tabla en orden descendente, podemos escribir:
 
 ```{r, eval=FALSE}
 murders %>%
-arrange(desc(rate))
+  arrange(desc(rate))
 ```
 
 ### Cómo ordenar anidadamente
@@ -454,8 +454,8 @@ Si estamos ordenando una columna cuando hay empates, podemos usar una segunda co
 
 ```{r}
 murders %>%
-arrange(region, rate) %>%
-head()
+  arrange(region, rate) %>%
+  head()
 ```
 
 
@@ -595,25 +595,25 @@ A veces es útil para nosotros crear nuestros propios _data frames_. Para crear 
 
 ```{r}
 grades <- tibble(names = c("John", "Juan", "Jean", "Yao"),
-exam_1 = c(95, 80, 90, 85),
-exam_2 = c(90, 85, 85, 90))
+                 exam_1 = c(95, 80, 90, 85),
+                 exam_2 = c(90, 85, 85, 90))
 ```
 
 Tengan en cuenta que la base R (sin paquetes cargados) tiene una función con un nombre muy similar, `data.frame`, que se puede usar para crear un _data frame_ regular en vez de un _tibble_. Otra diferencia importante es que por defecto `data.frame` fuerza una conversion de caracteres en factores sin proveer una advertencia o un mensaje:
 
 ```{r}
 grades <- data.frame(names = c("John", "Juan", "Jean", "Yao"),
-exam_1 = c(95, 80, 90, 85),
-exam_2 = c(90, 85, 85, 90))
+                     exam_1 = c(95, 80, 90, 85),
+                     exam_2 = c(90, 85, 85, 90))
 class(grades$names)
 ```
 
 Para evitar esto, usamos el argumento bastante engorroso `stringsAsFactors`:
 ```{r}
 grades <- data.frame(names = c("John", "Juan", "Jean", "Yao"),
-exam_1 = c(95, 80, 90, 85),
-exam_2 = c(90, 85, 85, 90),
-stringsAsFactors = FALSE)
+                     exam_1 = c(95, 80, 90, 85),
+                     exam_2 = c(90, 85, 85, 90),
+                     stringsAsFactors = FALSE)
 class(grades$names)
 ```
 
@@ -639,9 +639,9 @@ podemos evitar definir nuevos objetos intermedios escribiendo:
 
 ```{r}
 filter(murders, region == "South") %>%
-mutate(rate = total/ population * 10^5) %>%
-summarize(median = median(rate)) %>%
-pull(median)
+  mutate(rate = total/ population * 10^5) %>%
+  summarize(median = median(rate)) %>%
+  pull(median)
 ```
 
 Podemos hacer esto porque cada una de estas funciones toma un _data frame_ como primer argumento. Pero, ¿qué pasa si queremos acceder a un componente del _data frame_? Por ejemplo, ¿qué pasa si la función `pull` no está disponible y queremos acceder `tab_2$rate`? ¿Qué nombre de _data frame_ usamos? La respuesta es el operador punto (_dot operator_ en inglés).
@@ -650,8 +650,8 @@ Por ejemplo, para acceder al vector de velocidad sin la función `pull`, podría
 
 ```{r}
 rates <-filter(murders, region == "South") %>%
-mutate(rate = total/ population * 10^5) %>%
-.$rate
+  mutate(rate = total/ population * 10^5) %>%
+  .$rate
 median(rates)
 ```
 
@@ -666,8 +666,8 @@ En la sección \@ref(summarize), notamos que si intentamos usar `quantile` para 
 ```{r, eval=FALSE}
 data(heights)
 heights %>%
-filter(sex == "Female") %>%
-summarize(range = quantile(height, c(0, 0.5, 1)))
+  filter(sex == "Female") %>%
+  summarize(range = quantile(height, c(0, 0.5, 1)))
 ```
 
 Podemos usar la función `do` para arreglar esto.
@@ -676,8 +676,8 @@ Primero tenemos que escribir una función que se ajuste al enfoque del _tidyvers
 
 ```{r}
 my_summary <- function(dat){
-x <- quantile(dat$height, c(0, 0.5, 1))
-tibble(min = x[1], median = x[2], max = x[3])
+  x <- quantile(dat$height, c(0, 0.5, 1))
+  tibble(min = x[1], median = x[2], max = x[3])
 }
 ```
 
@@ -685,24 +685,24 @@ Ahora podemos aplicar la función al set de datos de alturas para obtener los re
 
 ```{r}
 heights %>%
-group_by(sex) %>%
-my_summary
+  group_by(sex) %>%
+  my_summary
 ```
 
 Pero esto no es lo que queremos. Queremos un resumen para cada sexo y el código devolvió solo un resumen. Esto es porque `my_summary` no es parte del _tidyverse_ y no sabe cómo manejar los _tibbles_ agrupados. `do` hace esta conexión:
 
 ```{r}
 heights %>%
-group_by(sex) %>%
-do(my_summary(.))
+  group_by(sex) %>%
+  do(my_summary(.))
 ```
 
 Recuerden que aquí necesitamos usar el operador punto. El _tibble_ creado por `group_by` se canaliza a `do`. Dentro de la llamada a `do`, el nombre de este _tibble_ es `.` y queremos enviarlo a `my_summary`. Si no usan el punto, entonces `my_summary` no tiene ningún argumento y devuelve un error que nos dice que falta el `argument "dat"` . Pueden ver el error escribiendo:
 
 ```{r, eval=FALSE}
 heights %>%
-group_by(sex) %>%
-do(my_summary())
+  group_by(sex) %>%
+  do(my_summary())
 ```
 
 Si no usan el paréntesis, entonces la función no se ejecuta y en su lugar `do` intenta devolver la función. Esto da un error porque `do` siempre debe devolver un _data frame_. Pueden ver el error escribiendo:
@@ -710,8 +710,8 @@ Si no usan el paréntesis, entonces la función no se ejecuta y en su lugar `do`
 
 ```{r, eval=FALSE}
 heights %>%
-group_by(sex) %>%
-do(my_summary)
+  group_by(sex) %>%
+  do(my_summary)
 ```
 
 ## El paquete __purrr__
@@ -721,8 +721,8 @@ En la sección \@ref(vectorization) aprendimos sobre la función `sapply`, que n
 
 ```{r}
 compute_s_n <- function(n){
-x <- 1:n
-sum(x)
+  x <- 1:n
+  sum(x)
 }
 n <- 1:25
 s_n <- sapply(n, compute_s_n)
@@ -757,8 +757,8 @@ Necesitamos cambiar la función para arreglar esto:
 
 ```{r}
 compute_s_n <- function(n){
-x <- 1:n
-tibble(sum = sum(x))
+  x <- 1:n
+  tibble(sum = sum(x))
 }
 s_n <- map_df(n, compute_s_n)
 ```
@@ -782,13 +782,13 @@ Un uso común de esta función es definir unas variables categóricas basadas en
 
 ```{r}
 murders %>%
-mutate(group = case_when(
-abb %in% c("ME", "NH", "VT", "MA", "RI", "CT") ~ "New England",
-abb %in% c("WA", "OR", "CA") ~ "West Coast",
-region == "South" ~ "South",
-TRUE ~ "Other")) %>%
-group_by(group) %>%
-summarize(rate = sum(total)/ sum(population) * 10^5)
+  mutate(group = case_when(
+    abb %in% c("ME", "NH", "VT", "MA", "RI", "CT") ~ "New England",
+    abb %in% c("WA", "OR", "CA") ~ "West Coast",
+    region == "South" ~ "South",
+    TRUE ~ "Other")) %>%
+  group_by(group) %>%
+  summarize(rate = sum(total)/ sum(population) * 10^5)
 ```
 
 ### `between`
