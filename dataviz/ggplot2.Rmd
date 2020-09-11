@@ -34,20 +34,20 @@ library(ggthemes)
 library(ggrepel)
 
 r <- murders %>%
-summarize(pop=sum(population), tot=sum(total)) %>%
-mutate(rate = tot/pop*10^6) %>% pull(rate)
+  summarize(pop=sum(population), tot=sum(total)) %>%
+  mutate(rate = tot/pop*10^6) %>% pull(rate)
 
 murders %>% ggplot(aes(x = population/10^6, y = total, label = abb)) +
-geom_abline(intercept = log10(r), lty=2, col="darkgrey") +
-geom_point(aes(color=region), size = 3) +
-geom_text_repel() +
-scale_x_log10() +
-scale_y_log10() +
-xlab("Populations in millions (log scale)") +
-ylab("Total number of murders (log scale)") +
-ggtitle("US Gun Murders in 2010") +
-scale_color_discrete(name="Region") +
-theme_economist()
+  geom_abline(intercept = log10(r), lty=2, col="darkgrey") +
+  geom_point(aes(color=region), size = 3) +
+  geom_text_repel() +
+  scale_x_log10() +
+  scale_y_log10() +
+  xlab("Populations in millions (log scale)") +
+  ylab("Total number of murders (log scale)") +
+  ggtitle("US Gun Murders in 2010") +
+  scale_color_discrete(name="Region") +
+  theme_economist()
 ```
 
 Podemos ver claramente cuánto varían los estados según el tamaño de la población y el número total de asesinatos. No es sorprendente que también se observe una relación clara entre los totales de asesinatos y el tamaño de la población. Un estado que cae en la línea discontinua gris tiene la misma tasa de asesinatos que el promedio de EE. UU.. Las cuatro regiones geográficas se denotan con color, que señala cómo la mayoría de los estados del sur tienen tasas de asesinatos por encima del promedio.
@@ -123,7 +123,7 @@ Echando un vistazo rápido a la hoja de referencia, vemos que la función utiliz
 ##https://ugoproto.github.io/ugo_r_doc/img/visualization_cs/ggplot2-cheatsheeta.png
 ##https://ugoproto.github.io/ugo_r_doc/img/visualization_cs/ggplot2-cheatsheetb.png
 knitr::include_graphics(c(file.path(img_path,"ggplot2-cheatsheeta.png"),
-file.path(img_path,"ggplot2-cheatsheetb.png")))
+                          file.path(img_path,"ggplot2-cheatsheetb.png")))
 ```
 
 (Imagen cortesía de RStudio^[https://github.com/rstudio/cheatsheets]. Licencia CC-BY-4.0^[https://github.com/rstudio/cheatsheets/blob/master/LICENSE].)
@@ -157,7 +157,7 @@ Los __mapeos estéticos__ (_aesthetic mappings_ en inglés) describen cómo las 
 
 ```{r, eval = FALSE}
 murders %>% ggplot() +
-geom_point(aes(x = population/10^6, y = total))
+  geom_point(aes(x = population/10^6, y = total))
 ```
 
 Podemos quitar el `x = ` y `y =` si quisiéramos ya que estos son el primer y el segundo argumento esperado, como se ve en la página de ayuda.
@@ -181,7 +181,7 @@ Debido a que cada punto (cada estado en este caso) tiene una etiqueta, necesitam
 
 ```{r ggplot-example-4}
 p + geom_point(aes(population/10^6, total)) +
-geom_text(aes(population/10^6, total, label = abb))
+  geom_text(aes(population/10^6, total, label = abb))
 ```
 
 Hemos agregado exitosamente una segunda capa al gráfico.
@@ -202,10 +202,12 @@ les dará un error ya que `abb` no se encuentra porque está fuera de la funció
 
 ### Cómo probar varios argumentos
 
+Cada función de geometría tiene muchos otros argumentos además de `aes` y `data`. Estos suelen ser específicos de la función. Por ejemplo, en el gráfico que queremos hacer, los puntos son más grandes que el tamaño predeterminado. En el archivo de ayuda vemos que `size` es una estética y se puede cambiar así:
+
 
 ```{r ggplot-example-5}
 p + geom_point(aes(population/10^6, total), size = 3) +
-geom_text(aes(population/10^6, total, label = abb))
+  geom_text(aes(population/10^6, total, label = abb))
 ```
 
 `size` **no** es un mapeo: mientras los mapeos usan datos de observaciones específicas y necesitan estar dentro de `aes()`, las operaciones que queremos que afecten a todos los puntos de la misma manera no necesitan ser incluidas dentro `aes`.
@@ -214,7 +216,7 @@ Ahora, debido a que los puntos son más grandes, es difícil ver las etiquetas. 
 
 ```{r ggplot-example-6}
 p + geom_point(aes(population/10^6, total), size = 3) +
-geom_text(aes(population/10^6, total, label = abb), nudge_x = 1.5)
+  geom_text(aes(population/10^6, total, label = abb), nudge_x = 1.5)
 ```
 
 Esto es preferible puesto que facilita la lectura del texto. En la sección \@ref(add-on-packages) aprenderemos una mejor manera de asegurarnos de que podemos ver los puntos y las etiquetas.
@@ -237,7 +239,7 @@ y entonces podemos simplemente escribir el siguiente código para producir el gr
 
 ```{r ggplot-example-7, eval=FALSE}
 p + geom_point(size = 3) +
-geom_text(nudge_x = 1.5)
+  geom_text(nudge_x = 1.5)
 ```
 
 Mantenemos los argumentos `size` y `nudge_x` en `geom_point` y `geom_text`, respectivamente, porque solo queremos aumentar el tamaño de los puntos y ajustar la posición (_nudge_ en inglés) de las etiquetas. Si ponemos esos argumentos en `aes`, entonces se aplicarán a ambos gráficos. También tengan en cuenta que la función `geom_point` no necesita un argumento `label` y por lo tanto ignora esa estética.
@@ -246,7 +248,7 @@ Si es necesario, podemos anular el mapeo global definiendo un nuevo mapeo dentro
 
 ```{r ggplot-example-8}
 p + geom_point(size = 3) +
-geom_text(aes(x = 10, y = 800, label = "Hello there!"))
+  geom_text(aes(x = 10, y = 800, label = "Hello there!"))
 ```
 
 Claramente, la segunda llamada a `geom_text` no usa `population` y `total`.
@@ -259,9 +261,9 @@ Primero, las escalas que queremos están en escala logarítmica. Este no es el v
 
 ```{r ggplot-example-9}
 p + geom_point(size = 3) +
-geom_text(nudge_x = 0.05) +
-scale_x_continuous(trans = "log10") +
-scale_y_continuous(trans = "log10")
+  geom_text(nudge_x = 0.05) +
+  scale_x_continuous(trans = "log10") +
+  scale_y_continuous(trans = "log10")
 ```
 
 Debido a que ahora estamos en la escala logarítmica, el ajuste a la posición debe hacerse más pequeño.
@@ -270,9 +272,9 @@ Esta transformación particular es tan común que __ggplot2__ ofrece dos funcion
 
 ```{r, eval=FALSE}
 p + geom_point(size = 3) +
-geom_text(nudge_x = 0.05) +
-scale_x_log10() +
-scale_y_log10()
+  geom_text(nudge_x = 0.05) +
+  scale_x_log10() +
+  scale_y_log10()
 ```
 
 
@@ -282,12 +284,12 @@ Del mismo modo, la hoja de referencia revela que para cambiar las etiquetas y a�
 
 ```{r ggplot-example-10}
 p + geom_point(size = 3) +
-geom_text(nudge_x = 0.05) +
-scale_x_log10() +
-scale_y_log10() +
-xlab("Populations in millions (log scale)") +
-ylab("Total number of murders (log scale)") +
-ggtitle("US Gun Murders in 2010")
+  geom_text(nudge_x = 0.05) +
+  scale_x_log10() +
+  scale_y_log10() +
+  xlab("Populations in millions (log scale)") +
+  ylab("Total number of murders (log scale)") +
+  ggtitle("US Gun Murders in 2010")
 ```
 
 ¡Casi terminamos! Lo único que nos falta es añadir color, leyenda y cambios opcionales al estilo.
@@ -298,12 +300,12 @@ Podemos cambiar el color de los puntos usando el argumento `col` en la función 
 
 ```{r}
 p <- murders %>% ggplot(aes(population/10^6, total, label = abb)) +
-geom_text(nudge_x = 0.05) +
-scale_x_log10() +
-scale_y_log10() +
-xlab("Populations in millions (log scale)") +
-ylab("Total number of murders (log scale)") +
-ggtitle("US Gun Murders in 2010")
+  geom_text(nudge_x = 0.05) +
+  scale_x_log10() +
+  scale_y_log10() +
+  xlab("Populations in millions (log scale)") +
+  ylab("Total number of murders (log scale)") +
+  ggtitle("US Gun Murders in 2010")
 ```
 
 y luego probaremos lo que sucede cuando agregamos diferentes llamadas a `geom_point`. Por ejemplo, podemos hacer que todos los puntos sean azules agregando el argumento `color`:
@@ -332,15 +334,15 @@ Aquí queremos añadir una línea que represente la tasa promedio de asesinatos 
 
 ```{r}
 r <- murders %>%
-summarize(rate = sum(total)/ sum(population) * 10^6) %>%
-pull(rate)
+  summarize(rate = sum(total)/ sum(population) * 10^6) %>%
+  pull(rate)
 ```
 
 Para añadir una línea, usamos la función `geom_abline`. __ggplot2__ utiliza `ab` en el nombre para recordarnos que estamos suministrando el intercepto (`a`) y el pendiente (`b`). La línea predeterminada tiene pendiente 1 e intercepto 0, por lo que solo tenemos que definir el intercepto:
 
 ```{r ggplot-example-13}
 p + geom_point(aes(col=region), size = 3) +
-geom_abline(intercept = log10(r))
+  geom_abline(intercept = log10(r))
 ```
 
 Aquí `geom_abline` no utiliza ninguna información del objeto de datos.
@@ -349,9 +351,9 @@ Podemos cambiar el tipo de línea y el color de las líneas usando argumentos. A
 
 ```{r}
 p <- p + geom_abline(intercept = log10(r), lty = 2, color = "darkgrey") +
-geom_point(aes(col=region), size = 3)
+  geom_point(aes(col=region), size = 3)
 ```
-Tengan en cuenta que hemos redefinido `p` y usaremos este nuevo `p` a continuación y en la siguiente sección.
+Noten que hemos redefinido `p` y usaremos este nuevo `p` a continuación y en la siguiente sección.
 
 Los gráficos por defecto creados por __ggplot2__ ya son muy útiles. Sin embargo, con frecuencia necesitamos hacer pequeños ajustes al comportamiento predeterminado. Aunque no siempre es obvio cómo hacer esto aun con la hoja de referencia, __ggplot2__ es muy flexible.
 
@@ -392,20 +394,20 @@ library(ggthemes)
 library(ggrepel)
 
 r <- murders %>%
-summarize(rate = sum(total)/ sum(population) * 10^6) %>%
-pull(rate)
+  summarize(rate = sum(total)/ sum(population) * 10^6) %>%
+  pull(rate)
 
 murders %>% ggplot(aes(population/10^6, total, label = abb)) +
-geom_abline(intercept = log10(r), lty = 2, color = "darkgrey") +
-geom_point(aes(col=region), size = 3) +
-geom_text_repel() +
-scale_x_log10() +
-scale_y_log10() +
-xlab("Populations in millions (log scale)") +
-ylab("Total number of murders (log scale)") +
-ggtitle("US Gun Murders in 2010") +
-scale_color_discrete(name = "Region") +
-theme_economist()
+  geom_abline(intercept = log10(r), lty = 2, color = "darkgrey") +
+  geom_point(aes(col=region), size = 3) +
+  geom_text_repel() +
+  scale_x_log10() +
+  scale_y_log10() +
+  xlab("Populations in millions (log scale)") +
+  ylab("Total number of murders (log scale)") +
+  ggtitle("US Gun Murders in 2010") +
+  scale_color_discrete(name = "Region") +
+  theme_economist()
 ```
 
 ```{r, echo=FALSE}
@@ -429,8 +431,8 @@ y queremos hacer un diagrama de dispersión con ggplot, tendríamos que escribir
 
 ```{r, eval=FALSE}
 data.frame(x = x, y = y) %>%
-ggplot(aes(x, y)) +
-geom_point()
+  ggplot(aes(x, y)) +
+  geom_point()
 ```
 
 Esto parece ser demasiado código para una gráfico tan sencillo. La función `qplot` sacrifica la flexibilidad ofrecida por el enfoque de `ggplot`, pero nos permite rápidamente generar un gráfico.
@@ -512,7 +514,7 @@ d. `murders` y `size`
 
 ```{r, eval=FALSE}
 murders %>% ggplot(aes(x = , y = )) +
-geom_point()
+  geom_point()
 ```
 
 excepto que tenemos que definir las dos variables `x` y `y`. Llene el espacio con los nombres correctos de las variables.
@@ -522,7 +524,7 @@ excepto que tenemos que definir las dos variables `x` y `y`. Llene el espacio co
 
 ```{r, eval=FALSE}
 murders %>% ggplot(aes(population, total)) +
-geom_point()
+  geom_point()
 ```
 
 Vuelva a hacer el gráfico pero ahora con total en el eje-x y población en el eje-y.
@@ -572,8 +574,8 @@ d. Como queremos que todos los colores sean azules, no necesitamos asignar color
 
 ```{r, eval=FALSE}
 p <- murders %>%
-ggplot(aes(population, total, label = abb, color = region)) +
-geom_label()
+  ggplot(aes(population, total, label = abb, color = region)) +
+  geom_label()
 ```
 
 Para cambiar el eje-y a una escala logarítmica, aprendimos sobre la función `scale_x_log10()`. Agregue esta capa al objeto `p` para cambiar la escala y crear el gráfico.
