@@ -187,7 +187,7 @@ La altura es un vector de caracteres, por lo que creamos una nueva columna con l
 
 ```{r}
 reported_heights <- reported_heights %>%
-mutate(original_heights = height, height = as.numeric(height))
+  mutate(original_heights = height, height = as.numeric(height))
 ```
 
 Tengan en cuenta que recibimos una advertencia sobre los NAs. Esto se debe a que algunas de las alturas autoreportadas no eran números. Podemos ver por qué obtenemos estos NAs:
@@ -207,17 +207,17 @@ Si calculamos el promedio y la desviación estándar, observamos que obtenemos r
 
 ```{r}
 reported_heights %>%
-group_by(sex) %>%
-summarize(average = mean(height), sd = sd(height),
-median = median(height), MAD = mad(height))
+  group_by(sex) %>%
+  summarize(average = mean(height), sd = sd(height),
+            median = median(height), MAD = mad(height))
 ```
 
 Esto sugiere que tenemos valores atípicos, lo que se confirma creando un diagrama de caja:
 
 ```{r height-outlier-ggplot, echo=FALSE}
 reported_heights %>%
-ggplot(aes(sex, height)) +
-geom_boxplot()
+  ggplot(aes(sex, height)) +
+  geom_boxplot()
 ```
 
 Vemos algunos valores bastante extremos. Para ver cuáles son estos valores, podemos rápidamente mirar los valores más grandes utilizando la función `arrange`:
@@ -235,9 +235,9 @@ whisker <- 3*IQR(reported_heights$height)
 max_height <- quantile(reported_heights$height, .75) + whisker
 min_height <- quantile(reported_heights$height, .25) - whisker
 reported_heights %>%
-filter(!between(height, min_height, max_height)) %>%
-select(original_heights) %>%
-head(n=10) %>% pull(original_heights)
+  filter(!between(height, min_height, max_height)) %>%
+  select(original_heights) %>%
+  head(n=10) %>% pull(original_heights)
 ```
 
 Revisando estas alturas cuidadosamente, vemos dos errores comunes: entradas en centímetros, que resultan ser demasiado grandes, y entradas del tipo `x.y` con `x` y `y` representando pies y pulgadas respectivamente, que resultan ser demasiado pequeñas. Algunos de los valores aún más pequeños, como 1.6, podrían ser entradas en metros.
