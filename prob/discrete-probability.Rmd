@@ -221,10 +221,10 @@ library(VennDiagram)
 rafalib::mypar()
 grid.newpage()
 tmp <- draw.pairwise.venn(22, 20, 11, category = c("A", "B"),
-lty = rep("blank", 2),
-fill = c("light blue", "pink"),
-alpha = rep(0.5, 2),
-cat.dist = rep(0.025, 2), cex=0, cat.cex = rep(2.5,2))
+                          lty = rep("blank", 2),
+                          fill = c("light blue", "pink"),
+                          alpha = rep(0.5, 2),
+                          cat.dist = rep(0.025, 2), cex=0, cat.cex = rep(2.5,2))
 ```
 
 ## Combinaciones y permutaciones
@@ -257,7 +257,7 @@ Aquí es como generamos una baraja de cartas:
 ```{r}
 suits <- c("Diamonds", "Clubs", "Hearts", "Spades")
 numbers <- c("Ace", "Deuce", "Three", "Four", "Five", "Six", "Seven",
-"Eight", "Nine", "Ten", "Jack", "Queen", "King")
+             "Eight", "Nine", "Ten", "Jack", "Queen", "King")
 deck <- expand.grid(number=numbers, suit=suits)
 deck <- paste(deck$number, deck$suit)
 ```
@@ -354,7 +354,7 @@ En la última línea, suponemos que el As es la primera carta que recibimos. Est
 
 ```{r}
 mean((hands[,1] %in% aces & hands[,2] %in% facecard) |
-(hands[,2] %in% aces & hands[,1] %in% facecard))
+       (hands[,2] %in% aces & hands[,1] %in% facecard))
 ```
 
 
@@ -371,7 +371,7 @@ Y luego verificar si una carta es un As y la otra una carta de figura o un 10. D
 
 ```{r}
 (hands[1] %in% aces & hands[2] %in% facecard) |
-(hands[2] %in% aces & hands[1] %in% facecard)
+  (hands[2] %in% aces & hands[1] %in% facecard)
 ```
 
 Si repetimos esto 10,000 veces, obtenemos una muy buena aproximación de la probabilidad de un _Natural 21_.
@@ -379,9 +379,9 @@ Si repetimos esto 10,000 veces, obtenemos una muy buena aproximación de la prob
 Comencemos escribiendo una función que escoje una mano y devuelve TRUE si obtenemos un 21. La función no necesita argumentos porque usa objetos definidos en el entorno global.
 ```{r}
 blackjack <- function(){
-hand <- sample(deck, 2)
-(hand[1] %in% aces & hand[2] %in% facecard) |
-(hand[2] %in% aces & hand[1] %in% facecard)
+  hand <- sample(deck, 2)
+  (hand[1] %in% aces & hand[2] %in% facecard) |
+    (hand[2] %in% aces & hand[1] %in% facecard)
 }
 ```
 
@@ -414,16 +414,16 @@ Comencemos con la estrategia de no cambiar de puerta:
 ```{r}
 B <- 10000
 monty_hall <- function(strategy){
-doors <- as.character(1:3)
-prize <- sample(c("car", "goat", "goat"))
-prize_door <- doors[prize == "car"]
-my_pick <- sample(doors, 1)
-show <- sample(doors[!doors %in% c(my_pick, prize_door)],1)
-stick <- my_pick
-stick == prize_door
-switch <- doors[!doors%in%c(my_pick, show)]
-choice <- ifelse(strategy == "stick", stick, switch)
-choice == prize_door
+  doors <- as.character(1:3)
+  prize <- sample(c("car", "goat", "goat"))
+  prize_door <- doors[prize == "car"]
+  my_pick <- sample(doors, 1)
+  show <- sample(doors[!doors %in% c(my_pick, prize_door)],1)
+  stick <- my_pick
+  stick == prize_door
+  switch <- doors[!doors%in%c(my_pick, show)]
+  choice <- ifelse(strategy == "stick", stick, switch)
+  choice == prize_door
 }
 stick <- replicate(B, monty_hall("stick"))
 mean(stick)
@@ -467,8 +467,8 @@ Para estimar la probabilidad de un cumpleaños compartido en el grupo, repetimos
 ```{r birthday-problem}
 B <- 10000
 same_birthday <- function(n){
-bdays <- sample(1:365, n, replace=TRUE)
-any(duplicated(bdays))
+  bdays <- sample(1:365, n, replace=TRUE)
+  any(duplicated(bdays))
 }
 results <- replicate(B, same_birthday(50))
 mean(results)
@@ -484,8 +484,8 @@ Empecemos creando una tabla de consulta. Rápidamente podemos crear una función
 
 ```{r}
 compute_prob <- function(n, B=10000){
-results <- replicate(B, same_birthday(n))
-mean(results)
+  results <- replicate(B, same_birthday(n))
+  mean(results)
 }
 ```
 
@@ -520,8 +520,8 @@ Podemos escribir una función que haga esto para cualquier número:
 
 ```{r birthday-problem-exact-probabilities}
 exact_prob <- function(n){
-prob_unique <- seq(365,365-n+1)/365
-1 - prod( prob_unique)
+  prob_unique <- seq(365,365-n+1)/365
+  1 - prod( prob_unique)
 }
 eprob <- sapply(n, exact_prob)
 qplot(n, prob) + geom_line(aes(n, eprob), col = "red")
@@ -539,8 +539,8 @@ Un enfoque práctico que describiremos aquí es verificar la estabilidad de la e
 ```{r monte-carlo-convergence}
 B <- 10^seq(1, 5, len = 100)
 compute_prob <- function(B, n=25){
-same_day <- replicate(B, same_birthday(n))
-mean(same_day)
+  same_day <- replicate(B, same_birthday(n))
+  mean(same_day)
 }
 prob <- sapply(B, compute_prob)
 qplot(log10(B), prob, geom = "line")
@@ -593,12 +593,12 @@ Los Celtics deben ganar uno de estos 4 juegos.
 
 ```{r, eval=FALSE}
 prob_win <- function(p){
-B <- 10000
-result <- replicate(B, {
-b_win <- sample(c(1,0), 7, replace = TRUE, prob = c(1-p, p))
-sum(b_win)>=4
-})
-mean(result)
+  B <- 10000
+  result <- replicate(B, {
+    b_win <- sample(c(1,0), 7, replace = TRUE, prob = c(1-p, p))
+    sum(b_win)>=4
+  })
+  mean(result)
 }
 ```
 
@@ -608,12 +608,12 @@ Use la función `sapply` para calcular la probabilidad, llámela `Pr`, de ganar 
 
 ```{r, eval = FALSE}
 prob_win <- function(N, p=0.75){
-B <- 10000
-result <- replicate(B, {
-b_win <- sample(c(1,0), N, replace = TRUE, prob = c(1-p, p))
-sum(b_win)>=(N+1)/2
-})
-mean(result)
+  B <- 10000
+  result <- replicate(B, {
+    b_win <- sample(c(1,0), N, replace = TRUE, prob = c(1-p, p))
+    sum(b_win)>=(N+1)/2
+  })
+  mean(result)
 }
 ```
 
