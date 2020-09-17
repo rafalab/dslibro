@@ -24,7 +24,7 @@
 <meta name="author" content="Rafael A. Irizarry" />
 
 
-<meta name="date" content="2020-09-09" />
+<meta name="date" content="2020-09-16" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -848,9 +848,9 @@ lo que significa que aproximadamente 30% de las alturas masculinas están entre 
 <span id="cb325-3"><a href="distributions.html#cb325-3"></a><span class="kw">qplot</span>(theoretical_quantiles, sample_quantiles) <span class="op">+</span><span class="st"> </span><span class="kw">geom_abline</span>()</span></code></pre></div>
 <p>El código anterior se incluye para ayudar a describir los gráficos Q-Q. Sin embargo, en la práctica es más fácil usar el código <strong>ggplot2</strong> descrito en la Sección <a href="distributions.html#other-geometries">8.16</a>:</p>
 <div class="sourceCode" id="cb326"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb326-1"><a href="distributions.html#cb326-1"></a>heights <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">filter</span>(sex <span class="op">==</span><span class="st"> &quot;Male&quot;</span>) <span class="op">%&gt;%</span></span>
-<span id="cb326-2"><a href="distributions.html#cb326-2"></a><span class="kw">ggplot</span>(<span class="kw">aes</span>(<span class="dt">sample =</span> <span class="kw">scale</span>(height))) <span class="op">+</span></span>
-<span id="cb326-3"><a href="distributions.html#cb326-3"></a><span class="kw">geom_qq</span>() <span class="op">+</span></span>
-<span id="cb326-4"><a href="distributions.html#cb326-4"></a><span class="kw">geom_abline</span>()</span></code></pre></div>
+<span id="cb326-2"><a href="distributions.html#cb326-2"></a><span class="st">  </span><span class="kw">ggplot</span>(<span class="kw">aes</span>(<span class="dt">sample =</span> <span class="kw">scale</span>(height))) <span class="op">+</span></span>
+<span id="cb326-3"><a href="distributions.html#cb326-3"></a><span class="st">  </span><span class="kw">geom_qq</span>() <span class="op">+</span></span>
+<span id="cb326-4"><a href="distributions.html#cb326-4"></a><span class="st">  </span><span class="kw">geom_abline</span>()</span></code></pre></div>
 <p>Mientras que para la ilustración anterior usamos 20 cuantiles, el valor por defecto de la función <code>geom_qq</code> es utilizar la misma cantidad de cuantiles como datos.</p>
 </div>
 <div id="percentiles" class="section level2">
@@ -889,8 +889,8 @@ Supongamos que queremos resumir la distribución de la tasa de asesinatos. Usand
 <p>Sin embargo, releemos la cita de Tukey y nos damos cuenta de que hemos notado lo que no esperábamos ver. Si observamos otras distribuciones de altura femenina, encontramos que están bien aproximadas con una distribución normal. Entonces, ¿por qué nuestras alumnas son diferentes? ¿Es nuestra clase un requisito para el equipo femenino de baloncesto? ¿Hay una proporción pequeña de mujeres que dicen ser más altas de lo que son? Otra explicación, quizás más probable, es que en el formulario en que los estudiantes ingresaron sus alturas, <code>FEMALE</code> era el sexo predeterminado y algunos varones ingresaron sus alturas, pero olvidaron cambiar la variable de sexo. En cualquier caso, la visualización de datos ha ayudado a descubrir una posible falla en nuestros datos.</p>
 <p>Con respecto a los cinco valores más pequeños, noten que estos valores son:</p>
 <div class="sourceCode" id="cb327"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb327-1"><a href="distributions.html#cb327-1"></a>heights <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">filter</span>(sex <span class="op">==</span><span class="st"> &quot;Female&quot;</span>) <span class="op">%&gt;%</span></span>
-<span id="cb327-2"><a href="distributions.html#cb327-2"></a><span class="kw">top_n</span>(<span class="dv">5</span>, <span class="kw">desc</span>(height)) <span class="op">%&gt;%</span></span>
-<span id="cb327-3"><a href="distributions.html#cb327-3"></a><span class="kw">pull</span>(height)</span>
+<span id="cb327-2"><a href="distributions.html#cb327-2"></a><span class="st">  </span><span class="kw">top_n</span>(<span class="dv">5</span>, <span class="kw">desc</span>(height)) <span class="op">%&gt;%</span></span>
+<span id="cb327-3"><a href="distributions.html#cb327-3"></a><span class="st">  </span><span class="kw">pull</span>(height)</span>
 <span id="cb327-4"><a href="distributions.html#cb327-4"></a><span class="co">#&gt; [1] 51 53 55 52 52</span></span></code></pre></div>
 <p>Debido a que estas son alturas autoreportadas, una posibilidad es que las estudiantes quisieron ingresar <code>5'1"</code>, <code>5'2"</code>, <code>5'3"</code> o <code>5'5"</code>.</p>
 </div>
@@ -946,8 +946,8 @@ Supongamos que queremos resumir la distribución de la tasa de asesinatos. Usand
 <p>A menudo ya tenemos una tabla con una distribución que queremos presentar como diagrama de barras. Aquí tenemos un ejemplo de tal tabla:</p>
 <div class="sourceCode" id="cb331"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb331-1"><a href="distributions.html#cb331-1"></a><span class="kw">data</span>(murders)</span>
 <span id="cb331-2"><a href="distributions.html#cb331-2"></a>tab &lt;-<span class="st"> </span>murders <span class="op">%&gt;%</span></span>
-<span id="cb331-3"><a href="distributions.html#cb331-3"></a><span class="kw">count</span>(region) <span class="op">%&gt;%</span></span>
-<span id="cb331-4"><a href="distributions.html#cb331-4"></a><span class="kw">mutate</span>(<span class="dt">proportion =</span> n<span class="op">/</span><span class="kw">sum</span>(n))</span>
+<span id="cb331-3"><a href="distributions.html#cb331-3"></a><span class="st">  </span><span class="kw">count</span>(region) <span class="op">%&gt;%</span></span>
+<span id="cb331-4"><a href="distributions.html#cb331-4"></a><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">proportion =</span> n<span class="op">/</span><span class="kw">sum</span>(n))</span>
 <span id="cb331-5"><a href="distributions.html#cb331-5"></a>tab</span>
 <span id="cb331-6"><a href="distributions.html#cb331-6"></a><span class="co">#&gt;          region  n proportion</span></span>
 <span id="cb331-7"><a href="distributions.html#cb331-7"></a><span class="co">#&gt; 1     Northeast  9      0.176</span></span>
@@ -963,9 +963,9 @@ Supongamos que queremos resumir la distribución de la tasa de asesinatos. Usand
 <p>Para generar histogramas utilizamos <code>geom_histogram</code>. Al revisar la página de ayuda para esta función, vemos que el único argumento requerido es <code>x</code>, la variable para la cual construiremos un histograma. No usamos la <code>x</code> porque sabemos que es el primer argumento.
 El código se ve así:</p>
 <div class="sourceCode" id="cb333"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb333-1"><a href="distributions.html#cb333-1"></a>heights <span class="op">%&gt;%</span></span>
-<span id="cb333-2"><a href="distributions.html#cb333-2"></a><span class="kw">filter</span>(sex <span class="op">==</span><span class="st"> &quot;Female&quot;</span>) <span class="op">%&gt;%</span></span>
-<span id="cb333-3"><a href="distributions.html#cb333-3"></a><span class="kw">ggplot</span>(<span class="kw">aes</span>(height)) <span class="op">+</span></span>
-<span id="cb333-4"><a href="distributions.html#cb333-4"></a><span class="kw">geom_histogram</span>()</span></code></pre></div>
+<span id="cb333-2"><a href="distributions.html#cb333-2"></a><span class="st">  </span><span class="kw">filter</span>(sex <span class="op">==</span><span class="st"> &quot;Female&quot;</span>) <span class="op">%&gt;%</span></span>
+<span id="cb333-3"><a href="distributions.html#cb333-3"></a><span class="st">  </span><span class="kw">ggplot</span>(<span class="kw">aes</span>(height)) <span class="op">+</span></span>
+<span id="cb333-4"><a href="distributions.html#cb333-4"></a><span class="st">  </span><span class="kw">geom_histogram</span>()</span></code></pre></div>
 <p>Si ejecutamos el código anterior, nos da un mensaje:</p>
 <blockquote>
 <p><code>stat_bin()</code> utilizando <code>bins = 30</code>. Elija un mejor valor con
@@ -973,35 +973,35 @@ El código se ve así:</p>
 </blockquote>
 <p>Anteriormente utilizamos un tamaño de compartimiento de 1 pulgada, por lo que el código se ve así:</p>
 <div class="sourceCode" id="cb334"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb334-1"><a href="distributions.html#cb334-1"></a>heights <span class="op">%&gt;%</span></span>
-<span id="cb334-2"><a href="distributions.html#cb334-2"></a><span class="kw">filter</span>(sex <span class="op">==</span><span class="st"> &quot;Female&quot;</span>) <span class="op">%&gt;%</span></span>
-<span id="cb334-3"><a href="distributions.html#cb334-3"></a><span class="kw">ggplot</span>(<span class="kw">aes</span>(height)) <span class="op">+</span></span>
-<span id="cb334-4"><a href="distributions.html#cb334-4"></a><span class="kw">geom_histogram</span>(<span class="dt">binwidth =</span> <span class="dv">1</span>)</span></code></pre></div>
+<span id="cb334-2"><a href="distributions.html#cb334-2"></a><span class="st">  </span><span class="kw">filter</span>(sex <span class="op">==</span><span class="st"> &quot;Female&quot;</span>) <span class="op">%&gt;%</span></span>
+<span id="cb334-3"><a href="distributions.html#cb334-3"></a><span class="st">  </span><span class="kw">ggplot</span>(<span class="kw">aes</span>(height)) <span class="op">+</span></span>
+<span id="cb334-4"><a href="distributions.html#cb334-4"></a><span class="st">  </span><span class="kw">geom_histogram</span>(<span class="dt">binwidth =</span> <span class="dv">1</span>)</span></code></pre></div>
 <p>Finalmente, si por razones estéticas queremos añadir color, usamos los argumentos descritos en la página de ayuda. También añadimos etiquetas y un título:</p>
 <div class="sourceCode" id="cb335"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb335-1"><a href="distributions.html#cb335-1"></a>heights <span class="op">%&gt;%</span></span>
-<span id="cb335-2"><a href="distributions.html#cb335-2"></a><span class="kw">filter</span>(sex <span class="op">==</span><span class="st"> &quot;Female&quot;</span>) <span class="op">%&gt;%</span></span>
-<span id="cb335-3"><a href="distributions.html#cb335-3"></a><span class="kw">ggplot</span>(<span class="kw">aes</span>(height)) <span class="op">+</span></span>
-<span id="cb335-4"><a href="distributions.html#cb335-4"></a><span class="kw">geom_histogram</span>(<span class="dt">binwidth =</span> <span class="dv">1</span>, <span class="dt">fill =</span> <span class="st">&quot;blue&quot;</span>, <span class="dt">col =</span> <span class="st">&quot;black&quot;</span>) <span class="op">+</span></span>
-<span id="cb335-5"><a href="distributions.html#cb335-5"></a><span class="kw">xlab</span>(<span class="st">&quot;Male heights in inches&quot;</span>) <span class="op">+</span></span>
-<span id="cb335-6"><a href="distributions.html#cb335-6"></a><span class="kw">ggtitle</span>(<span class="st">&quot;Histogram&quot;</span>)</span></code></pre></div>
+<span id="cb335-2"><a href="distributions.html#cb335-2"></a><span class="st">  </span><span class="kw">filter</span>(sex <span class="op">==</span><span class="st"> &quot;Female&quot;</span>) <span class="op">%&gt;%</span></span>
+<span id="cb335-3"><a href="distributions.html#cb335-3"></a><span class="st">  </span><span class="kw">ggplot</span>(<span class="kw">aes</span>(height)) <span class="op">+</span></span>
+<span id="cb335-4"><a href="distributions.html#cb335-4"></a><span class="st">  </span><span class="kw">geom_histogram</span>(<span class="dt">binwidth =</span> <span class="dv">1</span>, <span class="dt">fill =</span> <span class="st">&quot;blue&quot;</span>, <span class="dt">col =</span> <span class="st">&quot;black&quot;</span>) <span class="op">+</span></span>
+<span id="cb335-5"><a href="distributions.html#cb335-5"></a><span class="st">  </span><span class="kw">xlab</span>(<span class="st">&quot;Male heights in inches&quot;</span>) <span class="op">+</span></span>
+<span id="cb335-6"><a href="distributions.html#cb335-6"></a><span class="st">  </span><span class="kw">ggtitle</span>(<span class="st">&quot;Histogram&quot;</span>)</span></code></pre></div>
 <p><img src="libro_files/figure-html/height-histogram-geom-1.png" width="70%" style="display: block; margin: auto;" /></p>
 </div>
 <div id="gráficos-de-densidad" class="section level3">
 <h3><span class="header-section-number">8.16.3</span> Gráficos de densidad</h3>
 <p>Para crear una densidad suave, usamos <code>geom_density</code>. Para hacer un gráfico de densidad suave con los datos que anteriormente visualizamos como un histograma, podemos usar este código:</p>
 <div class="sourceCode" id="cb336"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb336-1"><a href="distributions.html#cb336-1"></a>heights <span class="op">%&gt;%</span></span>
-<span id="cb336-2"><a href="distributions.html#cb336-2"></a><span class="kw">filter</span>(sex <span class="op">==</span><span class="st"> &quot;Female&quot;</span>) <span class="op">%&gt;%</span></span>
-<span id="cb336-3"><a href="distributions.html#cb336-3"></a><span class="kw">ggplot</span>(<span class="kw">aes</span>(height)) <span class="op">+</span></span>
-<span id="cb336-4"><a href="distributions.html#cb336-4"></a><span class="kw">geom_density</span>()</span></code></pre></div>
+<span id="cb336-2"><a href="distributions.html#cb336-2"></a><span class="st">  </span><span class="kw">filter</span>(sex <span class="op">==</span><span class="st"> &quot;Female&quot;</span>) <span class="op">%&gt;%</span></span>
+<span id="cb336-3"><a href="distributions.html#cb336-3"></a><span class="st">  </span><span class="kw">ggplot</span>(<span class="kw">aes</span>(height)) <span class="op">+</span></span>
+<span id="cb336-4"><a href="distributions.html#cb336-4"></a><span class="st">  </span><span class="kw">geom_density</span>()</span></code></pre></div>
 <p>Para rellenar con color, podemos usar el argumento <code>fill</code>.</p>
 <div class="sourceCode" id="cb337"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb337-1"><a href="distributions.html#cb337-1"></a>heights <span class="op">%&gt;%</span></span>
-<span id="cb337-2"><a href="distributions.html#cb337-2"></a><span class="kw">filter</span>(sex <span class="op">==</span><span class="st"> &quot;Female&quot;</span>) <span class="op">%&gt;%</span></span>
-<span id="cb337-3"><a href="distributions.html#cb337-3"></a><span class="kw">ggplot</span>(<span class="kw">aes</span>(height)) <span class="op">+</span></span>
-<span id="cb337-4"><a href="distributions.html#cb337-4"></a><span class="kw">geom_density</span>(<span class="dt">fill=</span><span class="st">&quot;blue&quot;</span>)</span></code></pre></div>
+<span id="cb337-2"><a href="distributions.html#cb337-2"></a><span class="st">  </span><span class="kw">filter</span>(sex <span class="op">==</span><span class="st"> &quot;Female&quot;</span>) <span class="op">%&gt;%</span></span>
+<span id="cb337-3"><a href="distributions.html#cb337-3"></a><span class="st">  </span><span class="kw">ggplot</span>(<span class="kw">aes</span>(height)) <span class="op">+</span></span>
+<span id="cb337-4"><a href="distributions.html#cb337-4"></a><span class="st">  </span><span class="kw">geom_density</span>(<span class="dt">fill=</span><span class="st">&quot;blue&quot;</span>)</span></code></pre></div>
 <p><img src="libro_files/figure-html/ggplot-density-1.png" width="70%" style="display: block; margin: auto;" /></p>
 <p>Para cambiar la suavidad de la densidad, utilizamos el argumento <code>adjust</code> para multiplicar el valor por defecto por ese <code>adjust</code>. Por ejemplo, si queremos que el parámetro de suavizado sea el doble de grande, usamos:</p>
 <div class="sourceCode" id="cb338"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb338-1"><a href="distributions.html#cb338-1"></a>heights <span class="op">%&gt;%</span></span>
-<span id="cb338-2"><a href="distributions.html#cb338-2"></a><span class="kw">filter</span>(sex <span class="op">==</span><span class="st"> &quot;Female&quot;</span>) <span class="op">+</span></span>
-<span id="cb338-3"><a href="distributions.html#cb338-3"></a><span class="kw">geom_density</span>(<span class="dt">fill=</span><span class="st">&quot;blue&quot;</span>, <span class="dt">adjust =</span> <span class="dv">2</span>)</span></code></pre></div>
+<span id="cb338-2"><a href="distributions.html#cb338-2"></a><span class="st">  </span><span class="kw">filter</span>(sex <span class="op">==</span><span class="st"> &quot;Female&quot;</span>) <span class="op">+</span></span>
+<span id="cb338-3"><a href="distributions.html#cb338-3"></a><span class="st">  </span><span class="kw">geom_density</span>(<span class="dt">fill=</span><span class="st">&quot;blue&quot;</span>, <span class="dt">adjust =</span> <span class="dv">2</span>)</span></code></pre></div>
 </div>
 <div id="diagramas-de-caja-1" class="section level3">
 <h3><span class="header-section-number">8.16.4</span> Diagramas de caja</h3>
@@ -1012,36 +1012,36 @@ El código se ve así:</p>
 <h3><span class="header-section-number">8.16.5</span> Gráficos Q-Q</h3>
 <p>Para gráficos Q-Q usamos la geometría <code>geom_qq</code>. De la página de ayuda, aprendemos que necesitamos especificar el <code>sample</code> (aprenderemos sobre <em>samples</em> en un capítulo posterior). Aquí tenemos el gráfico Q-Q para alturas de varones:</p>
 <div class="sourceCode" id="cb339"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb339-1"><a href="distributions.html#cb339-1"></a>heights <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">filter</span>(sex<span class="op">==</span><span class="st">&quot;Male&quot;</span>) <span class="op">%&gt;%</span></span>
-<span id="cb339-2"><a href="distributions.html#cb339-2"></a><span class="kw">ggplot</span>(<span class="kw">aes</span>(<span class="dt">sample =</span> height)) <span class="op">+</span></span>
-<span id="cb339-3"><a href="distributions.html#cb339-3"></a><span class="kw">geom_qq</span>()</span></code></pre></div>
+<span id="cb339-2"><a href="distributions.html#cb339-2"></a><span class="st">  </span><span class="kw">ggplot</span>(<span class="kw">aes</span>(<span class="dt">sample =</span> height)) <span class="op">+</span></span>
+<span id="cb339-3"><a href="distributions.html#cb339-3"></a><span class="st">  </span><span class="kw">geom_qq</span>()</span></code></pre></div>
 <p><img src="libro_files/figure-html/ggplot-qq-1.png" width="70%" style="display: block; margin: auto;" /></p>
 <p>Por defecto, la variable muestral se compara con una distribución normal con un promedio de 0 y una desviación estándar de 1. Para cambiar esto, utilizamos el argumento <code>dparams</code> según la página de ayuda. Para añadir una línea de identidad simplemente asignen otra capa. Para líneas rectas, usamos la función <code>geom_abline</code>. La línea por defecto es la línea de identidad (pendiente = 1, intercepto = 0).</p>
 <div class="sourceCode" id="cb340"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb340-1"><a href="distributions.html#cb340-1"></a>params &lt;-<span class="st"> </span>heights <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">filter</span>(sex<span class="op">==</span><span class="st">&quot;Male&quot;</span>) <span class="op">%&gt;%</span></span>
-<span id="cb340-2"><a href="distributions.html#cb340-2"></a><span class="kw">summarize</span>(<span class="dt">mean =</span> <span class="kw">mean</span>(height), <span class="dt">sd =</span> <span class="kw">sd</span>(height))</span>
+<span id="cb340-2"><a href="distributions.html#cb340-2"></a><span class="st">  </span><span class="kw">summarize</span>(<span class="dt">mean =</span> <span class="kw">mean</span>(height), <span class="dt">sd =</span> <span class="kw">sd</span>(height))</span>
 <span id="cb340-3"><a href="distributions.html#cb340-3"></a></span>
 <span id="cb340-4"><a href="distributions.html#cb340-4"></a>heights <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">filter</span>(sex<span class="op">==</span><span class="st">&quot;Male&quot;</span>) <span class="op">%&gt;%</span></span>
-<span id="cb340-5"><a href="distributions.html#cb340-5"></a><span class="kw">ggplot</span>(<span class="kw">aes</span>(<span class="dt">sample =</span> height)) <span class="op">+</span></span>
-<span id="cb340-6"><a href="distributions.html#cb340-6"></a><span class="kw">geom_qq</span>(<span class="dt">dparams =</span> params) <span class="op">+</span></span>
-<span id="cb340-7"><a href="distributions.html#cb340-7"></a><span class="kw">geom_abline</span>()</span></code></pre></div>
+<span id="cb340-5"><a href="distributions.html#cb340-5"></a><span class="st">  </span><span class="kw">ggplot</span>(<span class="kw">aes</span>(<span class="dt">sample =</span> height)) <span class="op">+</span></span>
+<span id="cb340-6"><a href="distributions.html#cb340-6"></a><span class="st">  </span><span class="kw">geom_qq</span>(<span class="dt">dparams =</span> params) <span class="op">+</span></span>
+<span id="cb340-7"><a href="distributions.html#cb340-7"></a><span class="st">  </span><span class="kw">geom_abline</span>()</span></code></pre></div>
 <p>Otra opción aquí es escalar los datos primero y luego hacer un gráfico Q-Q contra la distribución normal estándar.</p>
 <div class="sourceCode" id="cb341"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb341-1"><a href="distributions.html#cb341-1"></a>heights <span class="op">%&gt;%</span></span>
-<span id="cb341-2"><a href="distributions.html#cb341-2"></a><span class="kw">filter</span>(sex<span class="op">==</span><span class="st">&quot;Male&quot;</span>) <span class="op">%&gt;%</span></span>
-<span id="cb341-3"><a href="distributions.html#cb341-3"></a><span class="kw">ggplot</span>(<span class="kw">aes</span>(<span class="dt">sample =</span> <span class="kw">scale</span>(height))) <span class="op">+</span></span>
-<span id="cb341-4"><a href="distributions.html#cb341-4"></a><span class="kw">geom_qq</span>() <span class="op">+</span></span>
-<span id="cb341-5"><a href="distributions.html#cb341-5"></a><span class="kw">geom_abline</span>()</span></code></pre></div>
+<span id="cb341-2"><a href="distributions.html#cb341-2"></a><span class="st">  </span><span class="kw">filter</span>(sex<span class="op">==</span><span class="st">&quot;Male&quot;</span>) <span class="op">%&gt;%</span></span>
+<span id="cb341-3"><a href="distributions.html#cb341-3"></a><span class="st">  </span><span class="kw">ggplot</span>(<span class="kw">aes</span>(<span class="dt">sample =</span> <span class="kw">scale</span>(height))) <span class="op">+</span></span>
+<span id="cb341-4"><a href="distributions.html#cb341-4"></a><span class="st">  </span><span class="kw">geom_qq</span>() <span class="op">+</span></span>
+<span id="cb341-5"><a href="distributions.html#cb341-5"></a><span class="st">  </span><span class="kw">geom_abline</span>()</span></code></pre></div>
 </div>
 <div id="imágenes" class="section level3">
 <h3><span class="header-section-number">8.16.6</span> Imágenes</h3>
 <p>No hemos tenido que usar imágenes para los conceptos descritos en este capítulo, pero los usaremos en la Sección <a href="principios-de-visualización-de-datos.html#vaccines">10.14</a>, así que presentamos las dos geometrías utilizadas para crear imágenes: <strong>geom_tile</strong> y <strong>geom_raster</strong>. Se comportan de manera similar; para ver cómo difieren, consulten la página de ayuda. Para crear una imagen en <strong>ggplot2</strong>, necesitamos un <em>data frame</em> con las coordenadas x e y, así como los valores asociados con cada uno de estos. Aquí tenemos un <em>data frame</em>:</p>
 <div class="sourceCode" id="cb342"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb342-1"><a href="distributions.html#cb342-1"></a>x &lt;-<span class="st"> </span><span class="kw">expand.grid</span>(<span class="dt">x =</span> <span class="dv">1</span><span class="op">:</span><span class="dv">12</span>, <span class="dt">y =</span> <span class="dv">1</span><span class="op">:</span><span class="dv">10</span>) <span class="op">%&gt;%</span></span>
-<span id="cb342-2"><a href="distributions.html#cb342-2"></a><span class="kw">mutate</span>(<span class="dt">z =</span> <span class="dv">1</span><span class="op">:</span><span class="dv">120</span>)</span></code></pre></div>
+<span id="cb342-2"><a href="distributions.html#cb342-2"></a><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">z =</span> <span class="dv">1</span><span class="op">:</span><span class="dv">120</span>)</span></code></pre></div>
 <p>Tengan en cuenta que esta es la versión <em>tidy</em> de una matriz, <code>matrix(1:120, 12, 10)</code>. Para graficar la imagen, usamos el siguiente código:</p>
 <div class="sourceCode" id="cb343"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb343-1"><a href="distributions.html#cb343-1"></a>x <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">ggplot</span>(<span class="kw">aes</span>(x, y, <span class="dt">fill =</span> z)) <span class="op">+</span></span>
-<span id="cb343-2"><a href="distributions.html#cb343-2"></a><span class="kw">geom_raster</span>()</span></code></pre></div>
+<span id="cb343-2"><a href="distributions.html#cb343-2"></a><span class="st">  </span><span class="kw">geom_raster</span>()</span></code></pre></div>
 <p>Con estas imágenes, a menudo querrán cambiar la escala de color. Esto se puede hacer a través de la capa <code>scale_fill_gradientn</code>.</p>
 <div class="sourceCode" id="cb344"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb344-1"><a href="distributions.html#cb344-1"></a>x <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">ggplot</span>(<span class="kw">aes</span>(x, y, <span class="dt">fill =</span> z)) <span class="op">+</span></span>
-<span id="cb344-2"><a href="distributions.html#cb344-2"></a><span class="kw">geom_raster</span>() <span class="op">+</span></span>
-<span id="cb344-3"><a href="distributions.html#cb344-3"></a><span class="kw">scale_fill_gradientn</span>(<span class="dt">colors =</span> <span class="kw">terrain.colors</span>(<span class="dv">10</span>))</span></code></pre></div>
+<span id="cb344-2"><a href="distributions.html#cb344-2"></a><span class="st">  </span><span class="kw">geom_raster</span>() <span class="op">+</span></span>
+<span id="cb344-3"><a href="distributions.html#cb344-3"></a><span class="st">  </span><span class="kw">scale_fill_gradientn</span>(<span class="dt">colors =</span> <span class="kw">terrain.colors</span>(<span class="dv">10</span>))</span></code></pre></div>
 <p><img src="libro_files/figure-html/ggplot2-image-new-colors-1.png" width="70%" style="display: block; margin: auto;" /></p>
 </div>
 <div id="gráficos-rápidos" class="section level3">
@@ -1049,8 +1049,8 @@ El código se ve así:</p>
 <p>En la sección <a href="ggplot2.html#qplot">7.13</a> presentamos <code>qplot</code> como una función útil cuando necesitamos hacer un diagrama de dispersión rápido. También podemos usar <code>qplot</code> para hacer histogramas, diagramas de densidad, diagramas de caja, gráficos Q-Q y más. Aunque no provee el nivel de control de <code>ggplot</code>, <code>qplot</code> es definitivamente útil, ya que nos permite hacer un gráfico con un pequeño fragmento de código.</p>
 <p>Supongamos que tenemos las alturas femeninas en un objeto <code>x</code>:</p>
 <div class="sourceCode" id="cb345"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb345-1"><a href="distributions.html#cb345-1"></a>x &lt;-<span class="st"> </span>heights <span class="op">%&gt;%</span></span>
-<span id="cb345-2"><a href="distributions.html#cb345-2"></a><span class="kw">filter</span>(sex<span class="op">==</span><span class="st">&quot;Male&quot;</span>) <span class="op">%&gt;%</span></span>
-<span id="cb345-3"><a href="distributions.html#cb345-3"></a><span class="kw">pull</span>(height)</span></code></pre></div>
+<span id="cb345-2"><a href="distributions.html#cb345-2"></a><span class="st">  </span><span class="kw">filter</span>(sex<span class="op">==</span><span class="st">&quot;Male&quot;</span>) <span class="op">%&gt;%</span></span>
+<span id="cb345-3"><a href="distributions.html#cb345-3"></a><span class="st">  </span><span class="kw">pull</span>(height)</span></code></pre></div>
 <p>Para hacer un histograma rápido podemos usar:</p>
 <div class="sourceCode" id="cb346"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb346-1"><a href="distributions.html#cb346-1"></a><span class="kw">qplot</span>(x)</span></code></pre></div>
 <p>La función adivina que queremos hacer un histograma porque solo proveemos una variable. En la sección <a href="ggplot2.html#qplot">7.13</a> vimos que si le proporcionamos dos variables a <code>qplot</code> , automáticamente crea un diagrama de dispersión.</p>
@@ -1088,8 +1088,8 @@ El código se ve así:</p>
 <p>7. También podemos asignar grupos a través del argumento <code>color</code>. Esto tiene el beneficio adicional de que utiliza el color para distinguir los grupos. Cambie el código anterior para usar color.</p>
 <p>8. Además, podemos asignar grupos a través del argumento <code>fill</code>. Esto tiene el beneficio adicional de que usa colores para distinguir los grupos así:</p>
 <div class="sourceCode" id="cb352"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb352-1"><a href="distributions.html#cb352-1"></a>heights <span class="op">%&gt;%</span></span>
-<span id="cb352-2"><a href="distributions.html#cb352-2"></a><span class="kw">ggplot</span>(<span class="kw">aes</span>(height, <span class="dt">fill =</span> sex)) <span class="op">+</span></span>
-<span id="cb352-3"><a href="distributions.html#cb352-3"></a><span class="kw">geom_density</span>()</span></code></pre></div>
+<span id="cb352-2"><a href="distributions.html#cb352-2"></a><span class="st">  </span><span class="kw">ggplot</span>(<span class="kw">aes</span>(height, <span class="dt">fill =</span> sex)) <span class="op">+</span></span>
+<span id="cb352-3"><a href="distributions.html#cb352-3"></a><span class="st">  </span><span class="kw">geom_density</span>()</span></code></pre></div>
 <p>Sin embargo, aquí la segunda densidad se traza sobre la primera. Podemos hacer que las curvas sean más visibles mediante el uso de <em>alpha blending</em> para añadir transparencia. Establezca el parámetro alfa a 0.2 en la función <code>geom_density</code> para hacer este cambio.</p>
 
 </div>

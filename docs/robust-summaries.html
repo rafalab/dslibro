@@ -24,7 +24,7 @@
 <meta name="author" content="Rafael A. Irizarry" />
 
 
-<meta name="date" content="2020-09-09" />
+<meta name="date" content="2020-09-16" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -714,9 +714,9 @@ de los datos caen en este intervalo. Esto se traduce en aproximadamente 2 en un 
 <span id="cb432-2"><a href="robust-summaries.html#cb432-2"></a><span class="kw">data</span>(<span class="st">&quot;reported_heights&quot;</span>)</span></code></pre></div>
 <p>La altura es un vector de caracteres, por lo que creamos una nueva columna con la versión numérica:</p>
 <div class="sourceCode" id="cb433"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb433-1"><a href="robust-summaries.html#cb433-1"></a>reported_heights &lt;-<span class="st"> </span>reported_heights <span class="op">%&gt;%</span></span>
-<span id="cb433-2"><a href="robust-summaries.html#cb433-2"></a><span class="kw">mutate</span>(<span class="dt">original_heights =</span> height, <span class="dt">height =</span> <span class="kw">as.numeric</span>(height))</span>
+<span id="cb433-2"><a href="robust-summaries.html#cb433-2"></a><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">original_heights =</span> height, <span class="dt">height =</span> <span class="kw">as.numeric</span>(height))</span>
 <span id="cb433-3"><a href="robust-summaries.html#cb433-3"></a><span class="co">#&gt; Warning: Problem with `mutate()` input `height`.</span></span>
-<span id="cb433-4"><a href="robust-summaries.html#cb433-4"></a><span class="co">#&gt; ✖ NAs introducidos por coerción</span></span>
+<span id="cb433-4"><a href="robust-summaries.html#cb433-4"></a><span class="co">#&gt; ℹ NAs introducidos por coerción</span></span>
 <span id="cb433-5"><a href="robust-summaries.html#cb433-5"></a><span class="co">#&gt; ℹ Input `height` is `as.numeric(height)`.</span></span>
 <span id="cb433-6"><a href="robust-summaries.html#cb433-6"></a><span class="co">#&gt; Warning in mask$eval_all_mutate(dots[[i]]): NAs introducidos por</span></span>
 <span id="cb433-7"><a href="robust-summaries.html#cb433-7"></a><span class="co">#&gt; coerción</span></span></code></pre></div>
@@ -733,9 +733,9 @@ de los datos caen en este intervalo. Esto se traduce en aproximadamente 2 en un 
 <div class="sourceCode" id="cb435"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb435-1"><a href="robust-summaries.html#cb435-1"></a>reported_heights &lt;-<span class="st"> </span><span class="kw">filter</span>(reported_heights, <span class="op">!</span><span class="kw">is.na</span>(height))</span></code></pre></div>
 <p>Si calculamos el promedio y la desviación estándar, observamos que obtenemos resultados extraños. El promedio y la desviación estándar son diferentes de la mediana y del MAD:</p>
 <div class="sourceCode" id="cb436"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb436-1"><a href="robust-summaries.html#cb436-1"></a>reported_heights <span class="op">%&gt;%</span></span>
-<span id="cb436-2"><a href="robust-summaries.html#cb436-2"></a><span class="kw">group_by</span>(sex) <span class="op">%&gt;%</span></span>
-<span id="cb436-3"><a href="robust-summaries.html#cb436-3"></a><span class="kw">summarize</span>(<span class="dt">average =</span> <span class="kw">mean</span>(height), <span class="dt">sd =</span> <span class="kw">sd</span>(height),</span>
-<span id="cb436-4"><a href="robust-summaries.html#cb436-4"></a><span class="dt">median =</span> <span class="kw">median</span>(height), <span class="dt">MAD =</span> <span class="kw">mad</span>(height))</span>
+<span id="cb436-2"><a href="robust-summaries.html#cb436-2"></a><span class="st">  </span><span class="kw">group_by</span>(sex) <span class="op">%&gt;%</span></span>
+<span id="cb436-3"><a href="robust-summaries.html#cb436-3"></a><span class="st">  </span><span class="kw">summarize</span>(<span class="dt">average =</span> <span class="kw">mean</span>(height), <span class="dt">sd =</span> <span class="kw">sd</span>(height),</span>
+<span id="cb436-4"><a href="robust-summaries.html#cb436-4"></a>            <span class="dt">median =</span> <span class="kw">median</span>(height), <span class="dt">MAD =</span> <span class="kw">mad</span>(height))</span>
 <span id="cb436-5"><a href="robust-summaries.html#cb436-5"></a><span class="co">#&gt; `summarise()` ungrouping output (override with `.groups` argument)</span></span>
 <span id="cb436-6"><a href="robust-summaries.html#cb436-6"></a><span class="co">#&gt; # A tibble: 2 x 5</span></span>
 <span id="cb436-7"><a href="robust-summaries.html#cb436-7"></a><span class="co">#&gt;   sex    average    sd median   MAD</span></span>
@@ -764,9 +764,9 @@ de los datos caen en este intervalo. Esto se traduce en aproximadamente 2 en un 
 <span id="cb438-2"><a href="robust-summaries.html#cb438-2"></a>max_height &lt;-<span class="st"> </span><span class="kw">quantile</span>(reported_heights<span class="op">$</span>height, <span class="fl">.75</span>) <span class="op">+</span><span class="st"> </span>whisker</span>
 <span id="cb438-3"><a href="robust-summaries.html#cb438-3"></a>min_height &lt;-<span class="st"> </span><span class="kw">quantile</span>(reported_heights<span class="op">$</span>height, <span class="fl">.25</span>) <span class="op">-</span><span class="st"> </span>whisker</span>
 <span id="cb438-4"><a href="robust-summaries.html#cb438-4"></a>reported_heights <span class="op">%&gt;%</span></span>
-<span id="cb438-5"><a href="robust-summaries.html#cb438-5"></a><span class="kw">filter</span>(<span class="op">!</span><span class="kw">between</span>(height, min_height, max_height)) <span class="op">%&gt;%</span></span>
-<span id="cb438-6"><a href="robust-summaries.html#cb438-6"></a><span class="kw">select</span>(original_heights) <span class="op">%&gt;%</span></span>
-<span id="cb438-7"><a href="robust-summaries.html#cb438-7"></a><span class="kw">head</span>(<span class="dt">n=</span><span class="dv">10</span>) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">pull</span>(original_heights)</span>
+<span id="cb438-5"><a href="robust-summaries.html#cb438-5"></a><span class="st">  </span><span class="kw">filter</span>(<span class="op">!</span><span class="kw">between</span>(height, min_height, max_height)) <span class="op">%&gt;%</span></span>
+<span id="cb438-6"><a href="robust-summaries.html#cb438-6"></a><span class="st">  </span><span class="kw">select</span>(original_heights) <span class="op">%&gt;%</span></span>
+<span id="cb438-7"><a href="robust-summaries.html#cb438-7"></a><span class="st">  </span><span class="kw">head</span>(<span class="dt">n=</span><span class="dv">10</span>) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">pull</span>(original_heights)</span>
 <span id="cb438-8"><a href="robust-summaries.html#cb438-8"></a><span class="co">#&gt;  [1] &quot;6&quot;     &quot;5.3&quot;   &quot;511&quot;   &quot;6&quot;     &quot;2&quot;     &quot;5.25&quot;  &quot;5.5&quot;   &quot;11111&quot;</span></span>
 <span id="cb438-9"><a href="robust-summaries.html#cb438-9"></a><span class="co">#&gt;  [9] &quot;6&quot;     &quot;6.5&quot;</span></span></code></pre></div>
 <p>Revisando estas alturas cuidadosamente, vemos dos errores comunes: entradas en centímetros, que resultan ser demasiado grandes, y entradas del tipo <code>x.y</code> con <code>x</code> y <code>y</code> representando pies y pulgadas respectivamente, que resultan ser demasiado pequeñas. Algunos de los valores aún más pequeños, como 1.6, podrían ser entradas en metros.</p>

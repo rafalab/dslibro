@@ -24,7 +24,7 @@
 <meta name="author" content="Rafael A. Irizarry" />
 
 
-<meta name="date" content="2020-09-09" />
+<meta name="date" content="2020-09-16" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -797,7 +797,7 @@ Usemos el juego de cartas Blackjack como ejemplo. En Blackjack, se les asignan d
 <p>Aquí es como generamos una baraja de cartas:</p>
 <div class="sourceCode" id="cb454"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb454-1"><a href="probabilidad.html#cb454-1"></a>suits &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;Diamonds&quot;</span>, <span class="st">&quot;Clubs&quot;</span>, <span class="st">&quot;Hearts&quot;</span>, <span class="st">&quot;Spades&quot;</span>)</span>
 <span id="cb454-2"><a href="probabilidad.html#cb454-2"></a>numbers &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;Ace&quot;</span>, <span class="st">&quot;Deuce&quot;</span>, <span class="st">&quot;Three&quot;</span>, <span class="st">&quot;Four&quot;</span>, <span class="st">&quot;Five&quot;</span>, <span class="st">&quot;Six&quot;</span>, <span class="st">&quot;Seven&quot;</span>,</span>
-<span id="cb454-3"><a href="probabilidad.html#cb454-3"></a><span class="st">&quot;Eight&quot;</span>, <span class="st">&quot;Nine&quot;</span>, <span class="st">&quot;Ten&quot;</span>, <span class="st">&quot;Jack&quot;</span>, <span class="st">&quot;Queen&quot;</span>, <span class="st">&quot;King&quot;</span>)</span>
+<span id="cb454-3"><a href="probabilidad.html#cb454-3"></a>             <span class="st">&quot;Eight&quot;</span>, <span class="st">&quot;Nine&quot;</span>, <span class="st">&quot;Ten&quot;</span>, <span class="st">&quot;Jack&quot;</span>, <span class="st">&quot;Queen&quot;</span>, <span class="st">&quot;King&quot;</span>)</span>
 <span id="cb454-4"><a href="probabilidad.html#cb454-4"></a>deck &lt;-<span class="st"> </span><span class="kw">expand.grid</span>(<span class="dt">number=</span>numbers, <span class="dt">suit=</span>suits)</span>
 <span id="cb454-5"><a href="probabilidad.html#cb454-5"></a>deck &lt;-<span class="st"> </span><span class="kw">paste</span>(deck<span class="op">$</span>number, deck<span class="op">$</span>suit)</span></code></pre></div>
 <p>Con la baraja construida, podemos verificar que la probabilidad de que una K sea la primera carta es 1/13 calculando la proporción de posibles resultados que satisfagan nuestra condición:</p>
@@ -866,7 +866,7 @@ Usemos el juego de cartas Blackjack como ejemplo. En Blackjack, se les asignan d
 <span id="cb464-9"><a href="probabilidad.html#cb464-9"></a><span class="co">#&gt; [1] 0.0483</span></span></code></pre></div>
 <p>En la última línea, suponemos que el As es la primera carta que recibimos. Esto lo sabemos porque, sabiendo como <code>combination</code> enumera las probabilidades, entendemos que enumerará este caso primero. Pero para estar seguros, podríamos haber producido la misma respuesta al escribir lo siguiente:</p>
 <div class="sourceCode" id="cb465"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb465-1"><a href="probabilidad.html#cb465-1"></a><span class="kw">mean</span>((hands[,<span class="dv">1</span>] <span class="op">%in%</span><span class="st"> </span>aces <span class="op">&amp;</span><span class="st"> </span>hands[,<span class="dv">2</span>] <span class="op">%in%</span><span class="st"> </span>facecard) <span class="op">|</span></span>
-<span id="cb465-2"><a href="probabilidad.html#cb465-2"></a>(hands[,<span class="dv">2</span>] <span class="op">%in%</span><span class="st"> </span>aces <span class="op">&amp;</span><span class="st"> </span>hands[,<span class="dv">1</span>] <span class="op">%in%</span><span class="st"> </span>facecard))</span>
+<span id="cb465-2"><a href="probabilidad.html#cb465-2"></a><span class="st">       </span>(hands[,<span class="dv">2</span>] <span class="op">%in%</span><span class="st"> </span>aces <span class="op">&amp;</span><span class="st"> </span>hands[,<span class="dv">1</span>] <span class="op">%in%</span><span class="st"> </span>facecard))</span>
 <span id="cb465-3"><a href="probabilidad.html#cb465-3"></a><span class="co">#&gt; [1] 0.0483</span></span></code></pre></div>
 <div id="ejemplo-monte-carlo" class="section level3">
 <h3><span class="header-section-number">13.6.1</span> Ejemplo Monte Carlo</h3>
@@ -876,14 +876,14 @@ Usemos el juego de cartas Blackjack como ejemplo. En Blackjack, se les asignan d
 <span id="cb466-3"><a href="probabilidad.html#cb466-3"></a><span class="co">#&gt; [1] &quot;Queen Clubs&quot;  &quot;Seven Spades&quot;</span></span></code></pre></div>
 <p>Y luego verificar si una carta es un As y la otra una carta de figura o un 10. De ahora en adelante, incluimos 10 cuando decimos <em>carta de figura</em> o <em>figura</em>. Ahora necesitamos verificar ambas probabilidades:</p>
 <div class="sourceCode" id="cb467"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb467-1"><a href="probabilidad.html#cb467-1"></a>(hands[<span class="dv">1</span>] <span class="op">%in%</span><span class="st"> </span>aces <span class="op">&amp;</span><span class="st"> </span>hands[<span class="dv">2</span>] <span class="op">%in%</span><span class="st"> </span>facecard) <span class="op">|</span></span>
-<span id="cb467-2"><a href="probabilidad.html#cb467-2"></a>(hands[<span class="dv">2</span>] <span class="op">%in%</span><span class="st"> </span>aces <span class="op">&amp;</span><span class="st"> </span>hands[<span class="dv">1</span>] <span class="op">%in%</span><span class="st"> </span>facecard)</span>
+<span id="cb467-2"><a href="probabilidad.html#cb467-2"></a><span class="st">  </span>(hands[<span class="dv">2</span>] <span class="op">%in%</span><span class="st"> </span>aces <span class="op">&amp;</span><span class="st"> </span>hands[<span class="dv">1</span>] <span class="op">%in%</span><span class="st"> </span>facecard)</span>
 <span id="cb467-3"><a href="probabilidad.html#cb467-3"></a><span class="co">#&gt; [1] FALSE</span></span></code></pre></div>
 <p>Si repetimos esto 10,000 veces, obtenemos una muy buena aproximación de la probabilidad de un <em>Natural 21</em>.</p>
 <p>Comencemos escribiendo una función que escoje una mano y devuelve TRUE si obtenemos un 21. La función no necesita argumentos porque usa objetos definidos en el entorno global.</p>
 <div class="sourceCode" id="cb468"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb468-1"><a href="probabilidad.html#cb468-1"></a>blackjack &lt;-<span class="st"> </span><span class="cf">function</span>(){</span>
-<span id="cb468-2"><a href="probabilidad.html#cb468-2"></a>hand &lt;-<span class="st"> </span><span class="kw">sample</span>(deck, <span class="dv">2</span>)</span>
-<span id="cb468-3"><a href="probabilidad.html#cb468-3"></a>(hand[<span class="dv">1</span>] <span class="op">%in%</span><span class="st"> </span>aces <span class="op">&amp;</span><span class="st"> </span>hand[<span class="dv">2</span>] <span class="op">%in%</span><span class="st"> </span>facecard) <span class="op">|</span></span>
-<span id="cb468-4"><a href="probabilidad.html#cb468-4"></a>(hand[<span class="dv">2</span>] <span class="op">%in%</span><span class="st"> </span>aces <span class="op">&amp;</span><span class="st"> </span>hand[<span class="dv">1</span>] <span class="op">%in%</span><span class="st"> </span>facecard)</span>
+<span id="cb468-2"><a href="probabilidad.html#cb468-2"></a>  hand &lt;-<span class="st"> </span><span class="kw">sample</span>(deck, <span class="dv">2</span>)</span>
+<span id="cb468-3"><a href="probabilidad.html#cb468-3"></a>  (hand[<span class="dv">1</span>] <span class="op">%in%</span><span class="st"> </span>aces <span class="op">&amp;</span><span class="st"> </span>hand[<span class="dv">2</span>] <span class="op">%in%</span><span class="st"> </span>facecard) <span class="op">|</span></span>
+<span id="cb468-4"><a href="probabilidad.html#cb468-4"></a><span class="st">    </span>(hand[<span class="dv">2</span>] <span class="op">%in%</span><span class="st"> </span>aces <span class="op">&amp;</span><span class="st"> </span>hand[<span class="dv">1</span>] <span class="op">%in%</span><span class="st"> </span>facecard)</span>
 <span id="cb468-5"><a href="probabilidad.html#cb468-5"></a>}</span></code></pre></div>
 <p>Aquí tenemos que verificar ambas probabilidades: As primero o As segundo porque no estamos usando la función <code>combinations</code>. La función devuelve <code>TRUE</code> si obtenemos un 21 y <code>FALSE</code> de otra manera:</p>
 <div class="sourceCode" id="cb469"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb469-1"><a href="probabilidad.html#cb469-1"></a><span class="kw">blackjack</span>()</span>
@@ -905,16 +905,16 @@ Usemos el juego de cartas Blackjack como ejemplo. En Blackjack, se les asignan d
 <p>Comencemos con la estrategia de no cambiar de puerta:</p>
 <div class="sourceCode" id="cb471"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb471-1"><a href="probabilidad.html#cb471-1"></a>B &lt;-<span class="st"> </span><span class="dv">10000</span></span>
 <span id="cb471-2"><a href="probabilidad.html#cb471-2"></a>monty_hall &lt;-<span class="st"> </span><span class="cf">function</span>(strategy){</span>
-<span id="cb471-3"><a href="probabilidad.html#cb471-3"></a>doors &lt;-<span class="st"> </span><span class="kw">as.character</span>(<span class="dv">1</span><span class="op">:</span><span class="dv">3</span>)</span>
-<span id="cb471-4"><a href="probabilidad.html#cb471-4"></a>prize &lt;-<span class="st"> </span><span class="kw">sample</span>(<span class="kw">c</span>(<span class="st">&quot;car&quot;</span>, <span class="st">&quot;goat&quot;</span>, <span class="st">&quot;goat&quot;</span>))</span>
-<span id="cb471-5"><a href="probabilidad.html#cb471-5"></a>prize_door &lt;-<span class="st"> </span>doors[prize <span class="op">==</span><span class="st"> &quot;car&quot;</span>]</span>
-<span id="cb471-6"><a href="probabilidad.html#cb471-6"></a>my_pick &lt;-<span class="st"> </span><span class="kw">sample</span>(doors, <span class="dv">1</span>)</span>
-<span id="cb471-7"><a href="probabilidad.html#cb471-7"></a>show &lt;-<span class="st"> </span><span class="kw">sample</span>(doors[<span class="op">!</span>doors <span class="op">%in%</span><span class="st"> </span><span class="kw">c</span>(my_pick, prize_door)],<span class="dv">1</span>)</span>
-<span id="cb471-8"><a href="probabilidad.html#cb471-8"></a>stick &lt;-<span class="st"> </span>my_pick</span>
-<span id="cb471-9"><a href="probabilidad.html#cb471-9"></a>stick <span class="op">==</span><span class="st"> </span>prize_door</span>
-<span id="cb471-10"><a href="probabilidad.html#cb471-10"></a><span class="cf">switch</span> &lt;-<span class="st"> </span>doors[<span class="op">!</span>doors<span class="op">%in%</span><span class="kw">c</span>(my_pick, show)]</span>
-<span id="cb471-11"><a href="probabilidad.html#cb471-11"></a>choice &lt;-<span class="st"> </span><span class="kw">ifelse</span>(strategy <span class="op">==</span><span class="st"> &quot;stick&quot;</span>, stick, <span class="cf">switch</span>)</span>
-<span id="cb471-12"><a href="probabilidad.html#cb471-12"></a>choice <span class="op">==</span><span class="st"> </span>prize_door</span>
+<span id="cb471-3"><a href="probabilidad.html#cb471-3"></a>  doors &lt;-<span class="st"> </span><span class="kw">as.character</span>(<span class="dv">1</span><span class="op">:</span><span class="dv">3</span>)</span>
+<span id="cb471-4"><a href="probabilidad.html#cb471-4"></a>  prize &lt;-<span class="st"> </span><span class="kw">sample</span>(<span class="kw">c</span>(<span class="st">&quot;car&quot;</span>, <span class="st">&quot;goat&quot;</span>, <span class="st">&quot;goat&quot;</span>))</span>
+<span id="cb471-5"><a href="probabilidad.html#cb471-5"></a>  prize_door &lt;-<span class="st"> </span>doors[prize <span class="op">==</span><span class="st"> &quot;car&quot;</span>]</span>
+<span id="cb471-6"><a href="probabilidad.html#cb471-6"></a>  my_pick &lt;-<span class="st"> </span><span class="kw">sample</span>(doors, <span class="dv">1</span>)</span>
+<span id="cb471-7"><a href="probabilidad.html#cb471-7"></a>  show &lt;-<span class="st"> </span><span class="kw">sample</span>(doors[<span class="op">!</span>doors <span class="op">%in%</span><span class="st"> </span><span class="kw">c</span>(my_pick, prize_door)],<span class="dv">1</span>)</span>
+<span id="cb471-8"><a href="probabilidad.html#cb471-8"></a>  stick &lt;-<span class="st"> </span>my_pick</span>
+<span id="cb471-9"><a href="probabilidad.html#cb471-9"></a>  stick <span class="op">==</span><span class="st"> </span>prize_door</span>
+<span id="cb471-10"><a href="probabilidad.html#cb471-10"></a>  <span class="cf">switch</span> &lt;-<span class="st"> </span>doors[<span class="op">!</span>doors<span class="op">%in%</span><span class="kw">c</span>(my_pick, show)]</span>
+<span id="cb471-11"><a href="probabilidad.html#cb471-11"></a>  choice &lt;-<span class="st"> </span><span class="kw">ifelse</span>(strategy <span class="op">==</span><span class="st"> &quot;stick&quot;</span>, stick, <span class="cf">switch</span>)</span>
+<span id="cb471-12"><a href="probabilidad.html#cb471-12"></a>  choice <span class="op">==</span><span class="st"> </span>prize_door</span>
 <span id="cb471-13"><a href="probabilidad.html#cb471-13"></a>}</span>
 <span id="cb471-14"><a href="probabilidad.html#cb471-14"></a>stick &lt;-<span class="st"> </span><span class="kw">replicate</span>(B, <span class="kw">monty_hall</span>(<span class="st">&quot;stick&quot;</span>))</span>
 <span id="cb471-15"><a href="probabilidad.html#cb471-15"></a><span class="kw">mean</span>(stick)</span>
@@ -940,8 +940,8 @@ Usemos el juego de cartas Blackjack como ejemplo. En Blackjack, se les asignan d
 <p>Para estimar la probabilidad de un cumpleaños compartido en el grupo, repetimos este experimento muestreando sets de 50 cumpleaños una y otra vez:</p>
 <div class="sourceCode" id="cb475"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb475-1"><a href="probabilidad.html#cb475-1"></a>B &lt;-<span class="st"> </span><span class="dv">10000</span></span>
 <span id="cb475-2"><a href="probabilidad.html#cb475-2"></a>same_birthday &lt;-<span class="st"> </span><span class="cf">function</span>(n){</span>
-<span id="cb475-3"><a href="probabilidad.html#cb475-3"></a>bdays &lt;-<span class="st"> </span><span class="kw">sample</span>(<span class="dv">1</span><span class="op">:</span><span class="dv">365</span>, n, <span class="dt">replace=</span><span class="ot">TRUE</span>)</span>
-<span id="cb475-4"><a href="probabilidad.html#cb475-4"></a><span class="kw">any</span>(<span class="kw">duplicated</span>(bdays))</span>
+<span id="cb475-3"><a href="probabilidad.html#cb475-3"></a>  bdays &lt;-<span class="st"> </span><span class="kw">sample</span>(<span class="dv">1</span><span class="op">:</span><span class="dv">365</span>, n, <span class="dt">replace=</span><span class="ot">TRUE</span>)</span>
+<span id="cb475-4"><a href="probabilidad.html#cb475-4"></a>  <span class="kw">any</span>(<span class="kw">duplicated</span>(bdays))</span>
 <span id="cb475-5"><a href="probabilidad.html#cb475-5"></a>}</span>
 <span id="cb475-6"><a href="probabilidad.html#cb475-6"></a>results &lt;-<span class="st"> </span><span class="kw">replicate</span>(B, <span class="kw">same_birthday</span>(<span class="dv">50</span>))</span>
 <span id="cb475-7"><a href="probabilidad.html#cb475-7"></a><span class="kw">mean</span>(results)</span>
@@ -951,8 +951,8 @@ Usemos el juego de cartas Blackjack como ejemplo. En Blackjack, se les asignan d
 <p>Digamos que queremos usar este conocimiento para apostar con amigos sobre si dos personas en un grupo tienen el mismo cumpleaños. ¿Con un grupo de qué tamaño son las probabilidades superiores a 50%? ¿Superiores a 75%?</p>
 <p>Empecemos creando una tabla de consulta. Rápidamente podemos crear una función para calcular esto para cualquier tamaño de grupo:</p>
 <div class="sourceCode" id="cb476"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb476-1"><a href="probabilidad.html#cb476-1"></a>compute_prob &lt;-<span class="st"> </span><span class="cf">function</span>(n, <span class="dt">B=</span><span class="dv">10000</span>){</span>
-<span id="cb476-2"><a href="probabilidad.html#cb476-2"></a>results &lt;-<span class="st"> </span><span class="kw">replicate</span>(B, <span class="kw">same_birthday</span>(n))</span>
-<span id="cb476-3"><a href="probabilidad.html#cb476-3"></a><span class="kw">mean</span>(results)</span>
+<span id="cb476-2"><a href="probabilidad.html#cb476-2"></a>  results &lt;-<span class="st"> </span><span class="kw">replicate</span>(B, <span class="kw">same_birthday</span>(n))</span>
+<span id="cb476-3"><a href="probabilidad.html#cb476-3"></a>  <span class="kw">mean</span>(results)</span>
 <span id="cb476-4"><a href="probabilidad.html#cb476-4"></a>}</span></code></pre></div>
 <p>Usando la función <code>sapply</code>, podemos realizar operaciones elemento por elemento en cualquier función:</p>
 <div class="sourceCode" id="cb477"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb477-1"><a href="probabilidad.html#cb477-1"></a>n &lt;-<span class="st"> </span><span class="kw">seq</span>(<span class="dv">1</span>,<span class="dv">60</span>)</span>
@@ -970,8 +970,8 @@ Usemos el juego de cartas Blackjack como ejemplo. En Blackjack, se les asignan d
 \]</span></p>
 <p>Podemos escribir una función que haga esto para cualquier número:</p>
 <div class="sourceCode" id="cb479"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb479-1"><a href="probabilidad.html#cb479-1"></a>exact_prob &lt;-<span class="st"> </span><span class="cf">function</span>(n){</span>
-<span id="cb479-2"><a href="probabilidad.html#cb479-2"></a>prob_unique &lt;-<span class="st"> </span><span class="kw">seq</span>(<span class="dv">365</span>,<span class="dv">365</span><span class="op">-</span>n<span class="op">+</span><span class="dv">1</span>)<span class="op">/</span><span class="dv">365</span></span>
-<span id="cb479-3"><a href="probabilidad.html#cb479-3"></a><span class="dv">1</span> <span class="op">-</span><span class="st"> </span><span class="kw">prod</span>( prob_unique)</span>
+<span id="cb479-2"><a href="probabilidad.html#cb479-2"></a>  prob_unique &lt;-<span class="st"> </span><span class="kw">seq</span>(<span class="dv">365</span>,<span class="dv">365</span><span class="op">-</span>n<span class="op">+</span><span class="dv">1</span>)<span class="op">/</span><span class="dv">365</span></span>
+<span id="cb479-3"><a href="probabilidad.html#cb479-3"></a>  <span class="dv">1</span> <span class="op">-</span><span class="st"> </span><span class="kw">prod</span>( prob_unique)</span>
 <span id="cb479-4"><a href="probabilidad.html#cb479-4"></a>}</span>
 <span id="cb479-5"><a href="probabilidad.html#cb479-5"></a>eprob &lt;-<span class="st"> </span><span class="kw">sapply</span>(n, exact_prob)</span>
 <span id="cb479-6"><a href="probabilidad.html#cb479-6"></a><span class="kw">qplot</span>(n, prob) <span class="op">+</span><span class="st"> </span><span class="kw">geom_line</span>(<span class="kw">aes</span>(n, eprob), <span class="dt">col =</span> <span class="st">&quot;red&quot;</span>)</span></code></pre></div>
@@ -985,8 +985,8 @@ Usemos el juego de cartas Blackjack como ejemplo. En Blackjack, se les asignan d
 <p>Un enfoque práctico que describiremos aquí es verificar la estabilidad de la estimación. A continuación ofrecemos un ejemplo con el problema de cumpleaños para un grupo de 25 personas.</p>
 <div class="sourceCode" id="cb480"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb480-1"><a href="probabilidad.html#cb480-1"></a>B &lt;-<span class="st"> </span><span class="dv">10</span><span class="op">^</span><span class="kw">seq</span>(<span class="dv">1</span>, <span class="dv">5</span>, <span class="dt">len =</span> <span class="dv">100</span>)</span>
 <span id="cb480-2"><a href="probabilidad.html#cb480-2"></a>compute_prob &lt;-<span class="st"> </span><span class="cf">function</span>(B, <span class="dt">n=</span><span class="dv">25</span>){</span>
-<span id="cb480-3"><a href="probabilidad.html#cb480-3"></a>same_day &lt;-<span class="st"> </span><span class="kw">replicate</span>(B, <span class="kw">same_birthday</span>(n))</span>
-<span id="cb480-4"><a href="probabilidad.html#cb480-4"></a><span class="kw">mean</span>(same_day)</span>
+<span id="cb480-3"><a href="probabilidad.html#cb480-3"></a>  same_day &lt;-<span class="st"> </span><span class="kw">replicate</span>(B, <span class="kw">same_birthday</span>(n))</span>
+<span id="cb480-4"><a href="probabilidad.html#cb480-4"></a>  <span class="kw">mean</span>(same_day)</span>
 <span id="cb480-5"><a href="probabilidad.html#cb480-5"></a>}</span>
 <span id="cb480-6"><a href="probabilidad.html#cb480-6"></a>prob &lt;-<span class="st"> </span><span class="kw">sapply</span>(B, compute_prob)</span>
 <span id="cb480-7"><a href="probabilidad.html#cb480-7"></a><span class="kw">qplot</span>(<span class="kw">log10</span>(B), prob, <span class="dt">geom =</span> <span class="st">&quot;line&quot;</span>)</span></code></pre></div>
@@ -1016,22 +1016,22 @@ Usemos el juego de cartas Blackjack como ejemplo. En Blackjack, se les asignan d
 <p>11. Confirme los resultados de la pregunta anterior con una simulación Monte Carlo.</p>
 <p>12. Dos equipos, <span class="math inline">\(A\)</span> y <span class="math inline">\(B\)</span>, están jugando una serie de siete juegos. Equipo <span class="math inline">\(A\)</span> es mejor que equipo <span class="math inline">\(B\)</span> y tiene un <span class="math inline">\(p&gt;0.5\)</span> probabilidad de ganar cada juego. Dado un valor <span class="math inline">\(p\)</span>, la probabilidad de que el equipo no favorito <span class="math inline">\(B\)</span> gane la serie se puede calcular con la siguiente función basada en una simulación Monte Carlo:</p>
 <div class="sourceCode" id="cb482"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb482-1"><a href="probabilidad.html#cb482-1"></a>prob_win &lt;-<span class="st"> </span><span class="cf">function</span>(p){</span>
-<span id="cb482-2"><a href="probabilidad.html#cb482-2"></a>B &lt;-<span class="st"> </span><span class="dv">10000</span></span>
-<span id="cb482-3"><a href="probabilidad.html#cb482-3"></a>result &lt;-<span class="st"> </span><span class="kw">replicate</span>(B, {</span>
-<span id="cb482-4"><a href="probabilidad.html#cb482-4"></a>b_win &lt;-<span class="st"> </span><span class="kw">sample</span>(<span class="kw">c</span>(<span class="dv">1</span>,<span class="dv">0</span>), <span class="dv">7</span>, <span class="dt">replace =</span> <span class="ot">TRUE</span>, <span class="dt">prob =</span> <span class="kw">c</span>(<span class="dv">1</span><span class="op">-</span>p, p))</span>
-<span id="cb482-5"><a href="probabilidad.html#cb482-5"></a><span class="kw">sum</span>(b_win)<span class="op">&gt;=</span><span class="dv">4</span></span>
-<span id="cb482-6"><a href="probabilidad.html#cb482-6"></a>})</span>
-<span id="cb482-7"><a href="probabilidad.html#cb482-7"></a><span class="kw">mean</span>(result)</span>
+<span id="cb482-2"><a href="probabilidad.html#cb482-2"></a>  B &lt;-<span class="st"> </span><span class="dv">10000</span></span>
+<span id="cb482-3"><a href="probabilidad.html#cb482-3"></a>  result &lt;-<span class="st"> </span><span class="kw">replicate</span>(B, {</span>
+<span id="cb482-4"><a href="probabilidad.html#cb482-4"></a>    b_win &lt;-<span class="st"> </span><span class="kw">sample</span>(<span class="kw">c</span>(<span class="dv">1</span>,<span class="dv">0</span>), <span class="dv">7</span>, <span class="dt">replace =</span> <span class="ot">TRUE</span>, <span class="dt">prob =</span> <span class="kw">c</span>(<span class="dv">1</span><span class="op">-</span>p, p))</span>
+<span id="cb482-5"><a href="probabilidad.html#cb482-5"></a>    <span class="kw">sum</span>(b_win)<span class="op">&gt;=</span><span class="dv">4</span></span>
+<span id="cb482-6"><a href="probabilidad.html#cb482-6"></a>  })</span>
+<span id="cb482-7"><a href="probabilidad.html#cb482-7"></a>  <span class="kw">mean</span>(result)</span>
 <span id="cb482-8"><a href="probabilidad.html#cb482-8"></a>}</span></code></pre></div>
 <p>Use la función <code>sapply</code> para calcular la probabilidad, llámela <code>Pr</code>, de ganar para <code>p &lt;- seq(0.5, 0.95, 0.025)</code>. Luego grafique el resultado.</p>
 <p>13. Repita el ejercicio anterior, pero ahora mantenga la probabilidad fija en <code>p &lt;- 0.75</code> y calcule la probabilidad para diferentes números de juegos necesarios para acabar la serie: ganar 1 juego, ganar 2 de 3 juegos, ganar 3 de 5 juegos, … Específicamente, <code>N &lt;- seq(1, 25, 2)</code>. Sugerencia: use esta función:</p>
 <div class="sourceCode" id="cb483"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb483-1"><a href="probabilidad.html#cb483-1"></a>prob_win &lt;-<span class="st"> </span><span class="cf">function</span>(N, <span class="dt">p=</span><span class="fl">0.75</span>){</span>
-<span id="cb483-2"><a href="probabilidad.html#cb483-2"></a>B &lt;-<span class="st"> </span><span class="dv">10000</span></span>
-<span id="cb483-3"><a href="probabilidad.html#cb483-3"></a>result &lt;-<span class="st"> </span><span class="kw">replicate</span>(B, {</span>
-<span id="cb483-4"><a href="probabilidad.html#cb483-4"></a>b_win &lt;-<span class="st"> </span><span class="kw">sample</span>(<span class="kw">c</span>(<span class="dv">1</span>,<span class="dv">0</span>), N, <span class="dt">replace =</span> <span class="ot">TRUE</span>, <span class="dt">prob =</span> <span class="kw">c</span>(<span class="dv">1</span><span class="op">-</span>p, p))</span>
-<span id="cb483-5"><a href="probabilidad.html#cb483-5"></a><span class="kw">sum</span>(b_win)<span class="op">&gt;=</span>(N<span class="op">+</span><span class="dv">1</span>)<span class="op">/</span><span class="dv">2</span></span>
-<span id="cb483-6"><a href="probabilidad.html#cb483-6"></a>})</span>
-<span id="cb483-7"><a href="probabilidad.html#cb483-7"></a><span class="kw">mean</span>(result)</span>
+<span id="cb483-2"><a href="probabilidad.html#cb483-2"></a>  B &lt;-<span class="st"> </span><span class="dv">10000</span></span>
+<span id="cb483-3"><a href="probabilidad.html#cb483-3"></a>  result &lt;-<span class="st"> </span><span class="kw">replicate</span>(B, {</span>
+<span id="cb483-4"><a href="probabilidad.html#cb483-4"></a>    b_win &lt;-<span class="st"> </span><span class="kw">sample</span>(<span class="kw">c</span>(<span class="dv">1</span>,<span class="dv">0</span>), N, <span class="dt">replace =</span> <span class="ot">TRUE</span>, <span class="dt">prob =</span> <span class="kw">c</span>(<span class="dv">1</span><span class="op">-</span>p, p))</span>
+<span id="cb483-5"><a href="probabilidad.html#cb483-5"></a>    <span class="kw">sum</span>(b_win)<span class="op">&gt;=</span>(N<span class="op">+</span><span class="dv">1</span>)<span class="op">/</span><span class="dv">2</span></span>
+<span id="cb483-6"><a href="probabilidad.html#cb483-6"></a>  })</span>
+<span id="cb483-7"><a href="probabilidad.html#cb483-7"></a>  <span class="kw">mean</span>(result)</span>
 <span id="cb483-8"><a href="probabilidad.html#cb483-8"></a>}</span></code></pre></div>
 
 </div>
@@ -1076,7 +1076,7 @@ Usemos el juego de cartas Blackjack como ejemplo. En Blackjack, se les asignan d
 <span id="cb490-4"><a href="probabilidad.html#cb490-4"></a><span class="co">#&gt; [1] 0.119</span></span>
 <span id="cb490-5"><a href="probabilidad.html#cb490-5"></a><span class="kw">mean</span>(x <span class="op">&lt;=</span><span class="st"> </span><span class="fl">70.5</span>) <span class="op">-</span><span class="st"> </span><span class="kw">mean</span>(x <span class="op">&lt;=</span><span class="st"> </span><span class="fl">69.5</span>)</span>
 <span id="cb490-6"><a href="probabilidad.html#cb490-6"></a><span class="co">#&gt; [1] 0.122</span></span></code></pre></div>
-<p>Tengan en cuenta lo mucho que nos acercamos con la aproximación normal:</p>
+<p>Observen lo mucho que nos acercamos con la aproximación normal:</p>
 <div class="sourceCode" id="cb491"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb491-1"><a href="probabilidad.html#cb491-1"></a><span class="kw">pnorm</span>(<span class="fl">68.5</span>, m, s) <span class="op">-</span><span class="st"> </span><span class="kw">pnorm</span>(<span class="fl">67.5</span>, m, s)</span>
 <span id="cb491-2"><a href="probabilidad.html#cb491-2"></a><span class="co">#&gt; [1] 0.103</span></span>
 <span id="cb491-3"><a href="probabilidad.html#cb491-3"></a><span class="kw">pnorm</span>(<span class="fl">69.5</span>, m, s) <span class="op">-</span><span class="st"> </span><span class="kw">pnorm</span>(<span class="fl">68.5</span>, m, s)</span>
@@ -1128,8 +1128,8 @@ F(a) = \mbox{Pr}(X\leq a) = \int_{-\infty}^a f(x)\, dx
 <p>Si, por ejemplo, elegimos 800 hombres al azar, ¿cuál es la distribución de la persona más alta? ¿Cuán raro es un hombre de 7 pies, un <em>seven footer</em>, en un grupo de 800 hombres? La siguiente simulación Monte Carlo nos ayuda a responder esa pregunta:</p>
 <div class="sourceCode" id="cb496"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb496-1"><a href="probabilidad.html#cb496-1"></a>B &lt;-<span class="st"> </span><span class="dv">10000</span></span>
 <span id="cb496-2"><a href="probabilidad.html#cb496-2"></a>tallest &lt;-<span class="st"> </span><span class="kw">replicate</span>(B, {</span>
-<span id="cb496-3"><a href="probabilidad.html#cb496-3"></a>simulated_data &lt;-<span class="st"> </span><span class="kw">rnorm</span>(<span class="dv">800</span>, m, s)</span>
-<span id="cb496-4"><a href="probabilidad.html#cb496-4"></a><span class="kw">max</span>(simulated_data)</span>
+<span id="cb496-3"><a href="probabilidad.html#cb496-3"></a>  simulated_data &lt;-<span class="st"> </span><span class="kw">rnorm</span>(<span class="dv">800</span>, m, s)</span>
+<span id="cb496-4"><a href="probabilidad.html#cb496-4"></a>  <span class="kw">max</span>(simulated_data)</span>
 <span id="cb496-5"><a href="probabilidad.html#cb496-5"></a>})</span></code></pre></div>
 <p>Tener un <em>seven footer</em> es bastante raro:</p>
 <div class="sourceCode" id="cb497"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb497-1"><a href="probabilidad.html#cb497-1"></a><span class="kw">mean</span>(tallest <span class="op">&gt;=</span><span class="st"> </span><span class="dv">7</span><span class="op">*</span><span class="dv">12</span>)</span>
