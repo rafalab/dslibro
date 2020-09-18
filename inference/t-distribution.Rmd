@@ -6,13 +6,13 @@ library(dslabs)
 data("polls_us_election_2016")
 ds_theme_set()
 polls <- polls_us_election_2016 %>%
-filter(state == "U.S." & enddate >= "2016-10-31" &
-(grade %in% c("A+","A","A-","B+") | is.na(grade))) %>%
-mutate(spread = rawpoll_clinton/100 - rawpoll_trump/100)
+  filter(state == "U.S." & enddate >= "2016-10-31" &
+           (grade %in% c("A+","A","A-","B+") | is.na(grade))) %>%
+  mutate(spread = rawpoll_clinton/100 - rawpoll_trump/100)
 
 one_poll_per_pollster <- polls %>% group_by(pollster) %>%
-filter(enddate == max(enddate)) %>%
-ungroup()
+  filter(enddate == max(enddate)) %>%
+  ungroup()
 ```
 
 Arriba utilizamos el CLT con un tamaño de muestra de 15. Como estamos estimando un segundo parámetro $\sigma$, se introduce más variabilidad a nuestro intervalo de confianza, lo que da como resultado intervalos muy pequeños. Para tamaños de muestra muy grandes, esta variabilidad adicional es insignificante, pero, en general, para valores menores de 30 debemos ser cautelosos al usar el CLT.
@@ -42,7 +42,7 @@ data.frame(x=x, Normal = dnorm(x, 0, 1), t_03 = dt(x,3), t_05 = dt(x,5), t_15=dt
 Si estamos dispuestos a suponer que los datos del efecto del encuestador siguen una distribución normal, según la muestra de datos $X_1, \dots, X_N$,
 ```{r poll-spread-qq}
 one_poll_per_pollster %>%
-ggplot(aes(sample=spread)) + stat_qq()
+  ggplot(aes(sample=spread)) + stat_qq()
 ```
 entonces $Z$ sigue una distribución t con $N-1$ grados de libertad. Por eso, quizás un mejor intervalo de confianza para $d$ es:
 
@@ -50,8 +50,8 @@ entonces $Z$ sigue una distribución t con $N-1$ grados de libertad. Por eso, qu
 ```{r}
 z <- qt(0.975, nrow(one_poll_per_pollster)-1)
 one_poll_per_pollster %>%
-summarize(avg = mean(spread), moe = z*sd(spread)/sqrt(length(spread))) %>%
-mutate(start = avg - moe, end = avg + moe)
+  summarize(avg = mean(spread), moe = z*sd(spread)/sqrt(length(spread))) %>%
+  mutate(start = avg - moe, end = avg + moe)
 ```
 
 que es un poco más grande que cuando usamos la distribución normal. Esto es porque:
@@ -71,16 +71,16 @@ La distribución t también se puede usar para modelar errores cuando esperamos 
 ```{r}
 data("polls_us_election_2016")
 polls_us_election_2016 %>%
-filter(state =="Wisconsin" &
-enddate >="2016-10-31" &
-(grade %in% c("A+","A","A-","B+") | is.na(grade))) %>%
-mutate(spread = rawpoll_clinton/100 - rawpoll_trump/100) %>%
-mutate(state = as.character(state)) %>%
-left_join(results_us_election_2016, by = "state") %>%
-mutate(actual = clinton/100 - trump/100) %>%
-summarize(actual = first(actual), avg = mean(spread),
-sd = sd(spread), n = n()) %>%
-select(actual, avg, sd, n)
+  filter(state =="Wisconsin" &
+           enddate >="2016-10-31" &
+           (grade %in% c("A+","A","A-","B+") | is.na(grade))) %>%
+  mutate(spread = rawpoll_clinton/100 - rawpoll_trump/100) %>%
+  mutate(state = as.character(state)) %>%
+  left_join(results_us_election_2016, by = "state") %>%
+  mutate(actual = clinton/100 - trump/100) %>%
+  summarize(actual = first(actual), avg = mean(spread),
+            sd = sd(spread), n = n()) %>%
+  select(actual, avg, sd, n)
 ```
 
 
