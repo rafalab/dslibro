@@ -18,7 +18,7 @@ library(tidyverse)
 library(dslabs)
 data("research_funding_rates")
 research_funding_rates %>% select(discipline, applications_total,
-success_rates_total) %>% head()
+                                  success_rates_total) %>% head()
 ```
 
 Tenemos estos valores para cada género:
@@ -30,19 +30,19 @@ Podemos calcular el total de los que tuvieron éxito y el total de los que no lo
 
 ```{r}
 totals <- research_funding_rates %>%
-select(-discipline) %>%
-summarize_all(sum) %>%
-summarize(yes_men = awards_men,
-no_men = applications_men - awards_men,
-yes_women = awards_women,
-no_women = applications_women - awards_women)
+  select(-discipline) %>%
+  summarize_all(sum) %>%
+  summarize(yes_men = awards_men,
+            no_men = applications_men - awards_men,
+            yes_women = awards_women,
+            no_women = applications_women - awards_women)
 ```
 
 Entonces vemos que un mayor porcentaje de hombres que mujeres recibieron premios:
 
 ```{r}
 totals %>% summarize(percent_men = yes_men/(yes_men+no_men),
-percent_women = yes_women/(yes_women+no_women))
+                     percent_women = yes_women/(yes_women+no_women))
 ```
 
 Pero, ¿podría esto deberse solo a la variabilidad aleatoria? Aquí aprenderemos a llevar a cabo inferencia estadística para este tipo de datos.
@@ -90,17 +90,17 @@ Imaginen que tenemos `r prettyNum(totals, ,big.mark=",")` solicitantes, algunos 
 
 ```{r}
 totals %>% summarize(percent_men = yes_men/(yes_men+no_men),
-percent_women = yes_women/(yes_women+no_women))
+                     percent_women = yes_women/(yes_women+no_women))
 ```
 
 respectivamente. ¿Volveríamos a ver esto si asignamos fondos al azar usando como tasa la tasa general?
 
 ```{r}
 rate <- totals %>%
-summarize(percent_total =
-(yes_men + yes_women)/
-(yes_men + no_men +yes_women + no_women)) %>%
-pull(percent_total)
+  summarize(percent_total =
+              (yes_men + yes_women)/
+              (yes_men + no_men +yes_women + no_women)) %>%
+  pull(percent_total)
 rate
 ```
 
@@ -108,8 +108,8 @@ La prueba de chi-cuadrado responde a esta pregunta. El primer paso es crear la t
 
 ```{r}
 two_by_two <- data.frame(awarded = c("no", "yes"),
-men = c(totals$no_men, totals$yes_men),
-women = c(totals$no_women, totals$yes_women))
+                         men = c(totals$no_men, totals$yes_men),
+                         women = c(totals$no_women, totals$yes_women))
 two_by_two
 ```
 
@@ -117,8 +117,8 @@ La idea general de la prueba de chi-cuadrado es comparar esta tabla 2x2 con lo q
 
 ```{r}
 data.frame(awarded = c("no", "yes"),
-men = (totals$no_men + totals$yes_men) * c(1 - rate, rate),
-women = (totals$no_women + totals$yes_women) * c(1 - rate, rate))
+           men = (totals$no_men + totals$yes_men) * c(1 - rate, rate),
+           women = (totals$no_women + totals$yes_women) * c(1 - rate, rate))
 ```
 
 Podemos ver que más hombres y menos mujeres de lo esperado recibieron fondos. Sin embargo, bajo la hipótesis nula, estas observaciones son variables aleatorias. La prueba de chi-cuadrado nos dice cuán probable es ver una desviación así de grande o más grande. Esta prueba utiliza un resultado asintótico, similar al CLT, relacionado con las sumas de resultados binarios independientes. La función `chisq.test` de R toma una tabla 2x2 y devuelve los resultados de la prueba:
@@ -172,11 +172,11 @@ mat <- cbind(c(" a "," c "), c(" b "," d "))
 colnames(mat) <- c("Men","Women")
 rownames(mat) <- c("Awarded", "Not Awarded")
 if(knitr::is_html_output()){
-knitr::kable(mat, "html", align = "c") %>%
-kableExtra::kable_styling(bootstrap_options = "striped", full_width = FALSE)
+  knitr::kable(mat, "html", align = "c") %>%
+    kableExtra::kable_styling(bootstrap_options = "striped", full_width = FALSE)
 } else{
-knitr::kable(mat, "latex", booktabs = TRUE, align = "c") %>%
-kableExtra::kable_styling(font_size = 8)
+  knitr::kable(mat, "latex", booktabs = TRUE, align = "c") %>%
+    kableExtra::kable_styling(font_size = 8)
 }
 ```
 
@@ -206,8 +206,8 @@ Usando R, podemos calcular este intervalo de confianza de la siguiente manera:
 ```{r}
 log_or <- log(odds_men/ odds_women)
 se <- two_by_two %>% select(-awarded) %>%
-summarize(se = sqrt(sum(1/men) + sum(1/women))) %>%
-pull(se)
+  summarize(se = sqrt(sum(1/men) + sum(1/women))) %>%
+  pull(se)
 ci <- log_or + c(-1,1) * qnorm(0.975) * se
 ```
 
@@ -238,8 +238,8 @@ Tengan en cuenta que la relación entre el riesgo relativo y el valor p no es un
 
 ```{r}
 two_by_two %>% select(-awarded) %>%
-mutate(men = men*10, women = women*10) %>%
-chisq.test() %>% .$p.value
+  mutate(men = men*10, women = women*10) %>%
+  chisq.test() %>% .$p.value
 ```
 
 ## Ejercicios

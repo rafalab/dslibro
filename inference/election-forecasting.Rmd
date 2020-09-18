@@ -5,17 +5,17 @@ En una sección anterior, generamos las siguientes tablas de datos:
 library(tidyverse)
 library(dslabs)
 polls <- polls_us_election_2016 %>%
-filter(state == "U.S." & enddate >= "2016-10-31" &
-(grade %in% c("A+","A","A-","B+") | is.na(grade))) %>%
-mutate(spread = rawpoll_clinton/100 - rawpoll_trump/100)
+  filter(state == "U.S." & enddate >= "2016-10-31" &
+           (grade %in% c("A+","A","A-","B+") | is.na(grade))) %>%
+  mutate(spread = rawpoll_clinton/100 - rawpoll_trump/100)
 
 one_poll_per_pollster <- polls %>% group_by(pollster) %>%
-filter(enddate == max(enddate)) %>%
-ungroup()
+  filter(enddate == max(enddate)) %>%
+  ungroup()
 
 results <- one_poll_per_pollster %>%
-summarize(avg = mean(spread), se = sd(spread)/sqrt(length(spread))) %>%
-mutate(start = avg - 1.96*se, end = avg + 1.96*se)
+  summarize(avg = mean(spread), se = sd(spread)/sqrt(length(spread))) %>%
+  mutate(start = avg - 1.96*se, end = avg + 1.96*se)
 ```
 
 A continuación, las utilizaremos para nuestro pronóstico.
@@ -103,7 +103,7 @@ I <- 5
 J <- 6
 N <- 2000
 X <- sapply(1:I, function(i){
-d + rnorm(J, 0, 2 * sqrt(p * (1 - p)/ N))
+  d + rnorm(J, 0, 2 * sqrt(p * (1 - p)/ N))
 })
 ```
 
@@ -116,8 +116,8 @@ polls %>% group_by(pollster) %>%
   select(pollster, spread) %>%
   mutate(type = "Observed data", pollster = as.character(pollster)) %>%
   bind_rows(tibble(spread = as.vector(X) ,
-                      pollster = rep(as.character(1:I), each=J),
-                      type = "Simulated data")) %>%
+                   pollster = rep(as.character(1:I), each=J),
+                   type = "Simulated data")) %>%
   mutate(type = factor(type, levels = c("Simulated data", "Observed data"))) %>%
   ggplot(aes(pollster, spread)) +
   geom_point() +
@@ -141,7 +141,7 @@ d <- .021
 p <- (d + 1)/ 2
 h <- rnorm(I, 0, 0.025)
 X <- sapply(1:I, function(i){
-d + h[i] + rnorm(J, 0, 2 * sqrt(p * (1 - p)/ N))
+  d + h[i] + rnorm(J, 0, 2 * sqrt(p * (1 - p)/ N))
 })
 ```
 
@@ -149,10 +149,10 @@ Los datos simulados ahora se parecen más a los datos reales:
 
 ```{r simulated-pollster-data, fig.height=3.78, fig.width=3, out.width="35%", echo=FALSE}
 data.frame(Spread = as.vector(X) , Pollster = as.factor(rep(1:I, each=J))) %>%
-ggplot(aes(Pollster, Spread)) +
-geom_point() +
-scale_y_continuous(limit = c(-0.056, 0.092)) +
-coord_flip()
+  ggplot(aes(Pollster, Spread)) +
+  geom_point() +
+  scale_y_continuous(limit = c(-0.056, 0.092)) +
+  coord_flip()
 ```
 
 Noten que $h_i$ es común a todas las variabilidades observadas de un encuestador específico. Diferentes encuestadores tienen una $h_i$ diferente, lo que explica por qué cuando vemos los datos de los distintos encuestadores, podemos ver los diferentes grupos de puntos desplazarse hacia arriba y hacia abajo.
@@ -215,14 +215,14 @@ Ahora estamos listos para predecir el resultado del colegio electoral para 2016.
 
 ```{r}
 results <- polls_us_election_2016 %>%
-filter(state!="U.S." &
-!str_detect(state, "CD") &
-enddate >="2016-10-31" &
-(grade %in% c("A+","A","A-","B+") | is.na(grade))) %>%
-mutate(spread = rawpoll_clinton/100 - rawpoll_trump/100) %>%
-group_by(state) %>%
-summarize(avg = mean(spread), sd = sd(spread), n = n()) %>%
-mutate(state = as.character(state))
+  filter(state!="U.S." &
+           !str_detect(state, "CD") &
+           enddate >="2016-10-31" &
+           (grade %in% c("A+","A","A-","B+") | is.na(grade))) %>%
+  mutate(spread = rawpoll_clinton/100 - rawpoll_trump/100) %>%
+  group_by(state) %>%
+  summarize(avg = mean(spread), sd = sd(spread), n = n()) %>%
+  mutate(state = as.character(state))
 ```
 
 Aquí están los cinco estados con los resultados más cerrados según las encuestas:
@@ -241,7 +241,7 @@ Observen que algunos estados no tienen encuestas porque prácticamente se conoce
 
 ```{r}
 results_us_election_2016 %>% filter(!state %in% results$state) %>%
-pull(state)
+  pull(state)
 ```
 
 No se realizaron encuestas en DC, Rhode Island, Alaska y Wyoming porque los demócratas seguramente ganarán en los primeros dos y los republicanos en los últimos dos.
@@ -250,7 +250,7 @@ Debido a que no podemos estimar la desviación estándar para los estados con un
 
 ```{r}
 results <- results %>%
-mutate(sd = ifelse(is.na(sd), median(results$sd, na.rm = TRUE), sd))
+  mutate(sd = ifelse(is.na(sd), median(results$sd, na.rm = TRUE), sd))
 ```
 
 Para hacer argumentos probabilísticos, utilizaremos una simulación Monte Carlo. Para cada estado, aplicamos el enfoque bayesiano para generar una $d$ para el día de elecciones. Podríamos construir las probabilidades a priori de cada estado basado en la historia reciente. Sin embargo, para simplificar, asignamos una probabilidad a priori a cada estado que supone que no sabemos nada sobre lo que sucederá. Dado que de un año electoral a otro, los resultados de un estado específico no cambian tanto, asignaremos una desviación estándar de 2% o $\tau=0.02$. Por ahora, vamos a suponer, incorrectamente, que los resultados de la encuesta de cada estado son independientes. El código para el cálculo bayesiano bajo estos supuestos se ve así:
@@ -259,20 +259,20 @@ Para hacer argumentos probabilísticos, utilizaremos una simulación Monte Carlo
 mu <- 0
 tau <- 0.02
 results %>% mutate(sigma = sd/sqrt(n),
-B = sigma^2/ (sigma^2 + tau^2),
-posterior_mean = B * mu + (1 - B) * avg,
-posterior_se = sqrt(1/ (1/sigma^2 + 1/tau^2)))
+                   B = sigma^2/ (sigma^2 + tau^2),
+                   posterior_mean = B * mu + (1 - B) * avg,
+                   posterior_se = sqrt(1/ (1/sigma^2 + 1/tau^2)))
 ```
 
 Las estimaciones basadas en las probabilidades a posteriori mueven las estimaciones hacia 0, aunque los estados con muchas encuestas están menos influenciados. Esto se espera ya que mientras más datos de encuestas recolectamos, más confiamos en esos resultados:
 
 ```{r posterior-versus-original-estimates, echo=FALSE}
 results %>% mutate(sigma = sd/ sqrt(n),
-B = sigma^2/ (sigma^2 + tau^2),
-posterior_mean = B * mu + (1 - B) * avg,
-posterior_se = sqrt(1/ (1/sigma^2 + 1/tau^2))) %>%
-ggplot(aes(avg, posterior_mean, size = n)) + geom_point() +
-geom_abline(slope = 1, intercept = 0)
+                   B = sigma^2/ (sigma^2 + tau^2),
+                   posterior_mean = B * mu + (1 - B) * avg,
+                   posterior_se = sqrt(1/ (1/sigma^2 + 1/tau^2))) %>%
+  ggplot(aes(avg, posterior_mean, size = n)) + geom_point() +
+  geom_abline(slope = 1, intercept = 0)
 ```
 
 Ahora repetimos esto 10,000 veces y generamos un resultado de la probabilidad a posteriori. En cada iteración, hacemos un seguimiento del número total de votos electorales para Clinton. Recuerden que Trump obtiene 270 votos electorales menos los votos para Clinton. También noten que la razón por la que añadimos 7 en el código es para tomar en cuenta Rhode Island y DC:
@@ -282,15 +282,15 @@ B <- 10000
 mu <- 0
 tau <- 0.02
 clinton_EV <- replicate(B, {
-results %>% mutate(sigma = sd/sqrt(n),
-B = sigma^2/ (sigma^2 + tau^2),
-posterior_mean = B * mu + (1 - B) * avg,
-posterior_se = sqrt(1/ (1/sigma^2 + 1/tau^2)),
-result = rnorm(length(posterior_mean),
-posterior_mean, posterior_se),
-clinton = ifelse(result > 0, electoral_votes, 0)) %>%
-summarize(clinton = sum(clinton)) %>%
-pull(clinton) + 7
+  results %>% mutate(sigma = sd/sqrt(n),
+                     B = sigma^2/ (sigma^2 + tau^2),
+                     posterior_mean = B * mu + (1 - B) * avg,
+                     posterior_se = sqrt(1/ (1/sigma^2 + 1/tau^2)),
+                     result = rnorm(length(posterior_mean),
+                                    posterior_mean, posterior_se),
+                     clinton = ifelse(result > 0, electoral_votes, 0)) %>%
+    summarize(clinton = sum(clinton)) %>%
+    pull(clinton) + 7
 })
 
 mean(clinton_EV > 269)
@@ -316,15 +316,15 @@ $\sqrt{\sigma^2/N + \sigma_b^2}$. FiveThirtyEight, que modela el sesgo general d
 tau <- 0.02
 bias_sd <- 0.03
 clinton_EV_2 <- replicate(1000, {
-results %>% mutate(sigma = sqrt(sd^2/n + bias_sd^2),
-B = sigma^2/ (sigma^2 + tau^2),
-posterior_mean = B*mu + (1-B)*avg,
-posterior_se = sqrt( 1/ (1/sigma^2 + 1/tau^2)),
-result = rnorm(length(posterior_mean),
-posterior_mean, posterior_se),
-clinton = ifelse(result>0, electoral_votes, 0)) %>%
-summarize(clinton = sum(clinton) + 7) %>%
-pull(clinton)
+  results %>% mutate(sigma = sqrt(sd^2/n + bias_sd^2),
+                     B = sigma^2/ (sigma^2 + tau^2),
+                     posterior_mean = B*mu + (1-B)*avg,
+                     posterior_se = sqrt( 1/ (1/sigma^2 + 1/tau^2)),
+                     result = rnorm(length(posterior_mean),
+                                    posterior_mean, posterior_se),
+                     clinton = ifelse(result>0, electoral_votes, 0)) %>%
+    summarize(clinton = sum(clinton) + 7) %>%
+    pull(clinton)
 })
 mean(clinton_EV_2 > 269)
 ```
@@ -333,10 +333,10 @@ Esto nos da una estimación mucho más sensata. Al observar los resultados de la
 
 ```{r comparison-forecast-with-and-without-bias, echo=FALSE}
 data.frame(no_bias=clinton_EV, with_bias=clinton_EV_2) %>% gather(approach, result) %>%
-ggplot(aes(result)) +
-geom_histogram(binwidth = 1) +
-geom_vline(xintercept = 269) +
-facet_grid(approach~., scales="free")
+  ggplot(aes(result)) +
+  geom_histogram(binwidth = 1) +
+  geom_vline(xintercept = 269) +
+  facet_grid(approach~., scales="free")
 ```
 
 
@@ -351,17 +351,17 @@ Para asegurarnos de que la variabilidad que observamos no se debe a efectos del 
 
 ```{r poplular-vote-time-trend}
 one_pollster <- polls_us_election_2016 %>%
-filter(pollster == "Ipsos" & state == "U.S.") %>%
-mutate(spread = rawpoll_clinton/100 - rawpoll_trump/100)
+  filter(pollster == "Ipsos" & state == "U.S.") %>%
+  mutate(spread = rawpoll_clinton/100 - rawpoll_trump/100)
 ```
 
 Como no hay efecto de encuestador, quizás el error estándar teórico coincide con la desviación estándar derivada de los datos. Calculamos ambos aquí:
 
 ```{r}
 se <- one_pollster %>%
-summarize(empirical = sd(spread),
-theoretical = 2 * sqrt(mean(spread) * (1 - mean(spread))/
-min(samplesize)))
+  summarize(empirical = sd(spread),
+            theoretical = 2 * sqrt(mean(spread) * (1 - mean(spread))/
+                                     min(samplesize)))
 se
 ```
 
@@ -376,22 +376,22 @@ Los modelos que hemos descrito incluyen la variabilidad entre encuestadores y el
 
 ```{r time-trend-estimate, echo=FALSE}
 one_pollster %>% ggplot(aes(enddate, spread)) +
-geom_point() +
-geom_smooth(method = "loess", span = 0.1)
+  geom_point() +
+  geom_smooth(method = "loess", span = 0.1)
 ```
 
 Algunos de los picos y valles que vemos coinciden con eventos como las convenciones de los partidos, que tienden a dar un impulso a los candidatos. Vemos consistencia entre los distintos encuestadores en cuanto a la localización de los picos y valles.
 
 ```{r time-trend-estimate-several-pollsters, echo=FALSE}
 polls_us_election_2016 %>%
-filter(state == "U.S.") %>%
-group_by(pollster) %>%
-filter(n()>=10) %>%
-ungroup() %>%
-mutate(spread = rawpoll_clinton/100 - rawpoll_trump/100) %>%
-ggplot(aes(enddate, spread)) +
-geom_smooth(method = "loess", span = 0.1) +
-geom_point(aes(color=pollster), show.legend = FALSE, alpha=0.6)
+  filter(state == "U.S.") %>%
+  group_by(pollster) %>%
+  filter(n()>=10) %>%
+  ungroup() %>%
+  mutate(spread = rawpoll_clinton/100 - rawpoll_trump/100) %>%
+  ggplot(aes(enddate, spread)) +
+  geom_smooth(method = "loess", span = 0.1) +
+  geom_point(aes(color=pollster), show.legend = FALSE, alpha=0.6)
 ```
 
 Esto implica que, si vamos a pronosticar, nuestro modelo debe incluir un término que toma en cuenta el efecto temporal. Necesitamos escribir un modelo que incluya un término de sesgo para el tiempo:
@@ -413,18 +413,18 @@ Usualmente vemos el estimado $f(t)$ no para la diferencia, sino para los porcent
 
 ```{r trend-estimate-for-all-pollsters, warning=FALSE, message=FALSE, echo=FALSE}
 polls_us_election_2016 %>%
-filter(state == "U.S." & enddate>="2016-07-01") %>%
-select(enddate, pollster, rawpoll_clinton, rawpoll_trump) %>%
-rename(Clinton = rawpoll_clinton, Trump = rawpoll_trump) %>%
-gather(candidate, percentage, -enddate, -pollster) %>%
-mutate(candidate = factor(candidate, levels = c("Trump","Clinton")))%>%
-group_by(pollster) %>%
-filter(n()>=10) %>%
-ungroup() %>%
-ggplot(aes(enddate, percentage, color = candidate)) +
-geom_point(show.legend = FALSE, alpha=0.4) +
-geom_smooth(method = "loess", span = 0.15) +
-scale_y_continuous(limits = c(30,50))
+  filter(state == "U.S." & enddate>="2016-07-01") %>%
+  select(enddate, pollster, rawpoll_clinton, rawpoll_trump) %>%
+  rename(Clinton = rawpoll_clinton, Trump = rawpoll_trump) %>%
+  gather(candidate, percentage, -enddate, -pollster) %>%
+  mutate(candidate = factor(candidate, levels = c("Trump","Clinton")))%>%
+  group_by(pollster) %>%
+  filter(n()>=10) %>%
+  ungroup() %>%
+  ggplot(aes(enddate, percentage, color = candidate)) +
+  geom_point(show.legend = FALSE, alpha=0.4) +
+  geom_smooth(method = "loess", span = 0.15) +
+  scale_y_continuous(limits = c(30,50))
 ```
 
 Una vez que se seleccione un modelo como el anterior, podemos usar datos históricos y actuales para estimar todos los parámetros necesarios para hacer predicciones. Existe una variedad de métodos para estimar tendencias $f(t)$ que discutimos en la parte de _machine learning_.
@@ -438,8 +438,8 @@ library(tidyverse)
 library(dslabs)
 data("polls_us_election_2016")
 polls <- polls_us_election_2016 %>%
-filter(state != "U.S." & enddate >= "2016-10-31") %>%
-mutate(spread = rawpoll_clinton/100 - rawpoll_trump/100)
+  filter(state != "U.S." & enddate >= "2016-10-31") %>%
+  mutate(spread = rawpoll_clinton/100 - rawpoll_trump/100)
 ```
 
 Ahora, para cada encuesta, use el CLT para crear un intervalo de confianza de 95% para la diferencia informada por cada encuesta. Llame al objeto resultante `cis` con columnas inferior y superior para los límites de los intervalos de confianza. Utilice la función `select` para mantener las columnas `state, startdate, end date, pollster, grade, spread, lower, upper`.
@@ -448,11 +448,11 @@ Ahora, para cada encuesta, use el CLT para crear un intervalo de confianza de 95
 
 ```{r, eval=FALSE}
 add <- results_us_election_2016 %>%
-mutate(actual_spread = clinton/100 - trump/100) %>%
-select(state, actual_spread)
+  mutate(actual_spread = clinton/100 - trump/100) %>%
+  select(state, actual_spread)
 cis <- cis %>%
-mutate(state = as.character(state)) %>%
-left_join(add, by = "state")
+  mutate(state = as.character(state)) %>%
+  left_join(add, by = "state")
 ```
 
 Ahora determine con qué frecuencia el intervalo de confianza de 95% incluye el resultado real.

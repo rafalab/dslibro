@@ -32,13 +32,13 @@ Ns <- c(1298, 533, 1342, 897, 774, 254, 812, 324, 1291, 1056, 2172, 516)
 p <- (d + 1)/ 2
 
 polls <- map_df(Ns, function(N) {
-x <- sample(c(0,1), size=N, replace=TRUE, prob=c(1-p, p))
-x_hat <- mean(x)
-se_hat <- sqrt(x_hat * (1 - x_hat)/ N)
-list(estimate = 2 * x_hat - 1,
-low = 2*(x_hat - 1.96*se_hat) - 1,
-high = 2*(x_hat + 1.96*se_hat) - 1,
-sample_size = N)
+  x <- sample(c(0,1), size=N, replace=TRUE, prob=c(1-p, p))
+  x_hat <- mean(x)
+  se_hat <- sqrt(x_hat * (1 - x_hat)/ N)
+  list(estimate = 2 * x_hat - 1,
+       low = 2*(x_hat - 1.96*se_hat) - 1,
+       high = 2*(x_hat + 1.96*se_hat) - 1,
+       sample_size = N)
 }) %>% mutate(poll = seq_along(Ns))
 
 ```
@@ -47,13 +47,13 @@ Aquí tenemos una visualización que muestra los intervalos que los encuestadore
 
 ```{r simulated-polls, message=FALSE, echo=FALSE}
 ggplot(polls, aes(poll, estimate, ymin=low, ymax=high)) +
-geom_hline(yintercept = 0) +
-geom_point(col="#00B6EB")+
-geom_errorbar(col="#00B6EB") +
-coord_flip() +
-scale_x_continuous(breaks=c(1,ncol(polls))) +
-scale_y_continuous(limits = c(-0.17, 0.17)) +
-geom_hline(yintercept = 2*p-1, lty=2)
+  geom_hline(yintercept = 0) +
+  geom_point(col="#00B6EB")+
+  geom_errorbar(col="#00B6EB") +
+  coord_flip() +
+  scale_x_continuous(breaks=c(1,ncol(polls))) +
+  scale_y_continuous(limits = c(-0.17, 0.17)) +
+  geom_hline(yintercept = 2*p-1, lty=2)
 ```
 
 No es sorprendente que las 12 encuestas informen intervalos de confianza que incluyen el resultado de la noche electoral (línea discontinua). Sin embargo, las 12 encuestas también incluyen 0 (línea negra sólida). Por lo tanto, si se les pide individualmente una predicción, los encuestadores tendrían que decir: las probabilidades están parejas. A continuación describimos una idea clave que no consideraron.
@@ -70,8 +70,8 @@ participantes. Básicamente, construimos una estimación de la diferencia, llam�
 
 ```{r}
 d_hat <- polls %>%
-summarize(avg = sum(estimate*sample_size)/ sum(sample_size)) %>%
-pull(avg)
+  summarize(avg = sum(estimate*sample_size)/ sum(sample_size)) %>%
+  pull(avg)
 ```
 
 Una vez que tengamos una estimación de $d$, podemos construir una estimación de la proporción votando por Obama, que luego podemos usar para estimar el error estándar. Tan pronto hacemos esto, vemos que nuestro margen de error es `r p_hat <- (1+d_hat)/2; moe <- 2*1.96*sqrt(p_hat*(1-p_hat)/sum(polls$sample_size)); moe`.
@@ -88,12 +88,12 @@ polls2$poll<-as.character(polls2$poll);
 polls2$poll[13] <- "Avg"
 polls2$col <- as.character(c(rep(2,12),1))
 ggplot(polls2, aes(poll, estimate, ymin=low, ymax=high, color=col)) +
-geom_hline(yintercept = 0) +
-geom_point(show.legend = FALSE)+
-geom_errorbar(show.legend = FALSE) +
-coord_flip() +
-scale_y_continuous(limits = c(-0.17, 0.17)) +
-geom_hline(yintercept = 2*p-1, lty=2)
+  geom_hline(yintercept = 0) +
+  geom_point(show.legend = FALSE)+
+  geom_errorbar(show.legend = FALSE) +
+  coord_flip() +
+  scale_y_continuous(limits = c(-0.17, 0.17)) +
+  geom_hline(yintercept = 2*p-1, lty=2)
 ```
 
 Por supuesto, esto fue solo una simulación para ilustrar la idea. El ejercicio real de la ciencia de datos de pronosticar elecciones es mucho más complicado y requiere modelos estadísticos. A continuación explicamos cómo los encuestadores ajustan los modelos multinivel a los datos y los utilizan para pronosticar los resultados electorales. En las elecciones presidenciales estadounidensas del 2008 y 2012, Nate Silver utilizó este enfoque para hacer una predicción casi perfecta y callar a los expertos.
@@ -105,11 +105,11 @@ Desde las elecciones del 2008, otras organizaciones han establecido sus propios 
 #knitr::include_graphics(file.path(img_path, "pollster-2016-predictions.png"))
 tmp <- data.frame(NYT = " 85%", `538` = " 71%", HuffPost = " 98%", PW = " 89%", PEC = " >99%", DK = " 92%", Cook = " Lean Dem", Roth = " Lean Dem", check.names = FALSE, row.names = "Win Prob")
 if(knitr::is_html_output()){
-knitr::kable(tmp, "html") %>%
-kableExtra::kable_styling(bootstrap_options = "striped", full_width = FALSE)
+  knitr::kable(tmp, "html") %>%
+    kableExtra::kable_styling(bootstrap_options = "striped", full_width = FALSE)
 } else{
-knitr::kable(tmp, "latex", booktabs = TRUE) %>%
-kableExtra::kable_styling(font_size = 8)
+  knitr::kable(tmp, "latex", booktabs = TRUE) %>%
+    kableExtra::kable_styling(font_size = 8)
 }
 ```
 
@@ -125,58 +125,58 @@ Aunque no tan interesante como predecir el colegio electoral, para fines ilustra
 ## knitr::include_graphics(file.path(img_path, "popular-vote-538.png"))
 
 my_dgamma <- function(x, mean = 1, sd = 1){
-shape = mean^2/sd^2
-scale = sd^2/ mean
-dgamma(x, shape = shape, scale = scale)
+  shape = mean^2/sd^2
+  scale = sd^2/ mean
+  dgamma(x, shape = shape, scale = scale)
 }
 
 my_qgamma <- function(mean = 1, sd = 1){
-shape = mean^2/sd^2
-scale = sd^2/ mean
-qgamma(c(0.1,0.9), shape = shape, scale = scale)
+  shape = mean^2/sd^2
+  scale = sd^2/ mean
+  qgamma(c(0.1,0.9), shape = shape, scale = scale)
 }
 
 tmp <- tibble(candidate = c("Clinton", "Trump", "Johnson"), avg = c(48.5, 44.9, 5.0), avg_txt = c("48.5%", "44.9%", "5.0%"), sd = rep(2, 3), m = my_dgamma(avg, avg, sd)) %>%
-mutate(candidate = reorder(candidate, -avg))
+  mutate(candidate = reorder(candidate, -avg))
 
 xx <- seq(0, 75, len = 300)
 tmp_2 <- map_df(1:3, function(i){
-tibble(candidate = tmp$candidate[i],
-avg = tmp$avg[i],
-sd = tmp$sd[i],
-x = xx,
-y = my_dgamma(xx, tmp$avg[i], tmp$sd[i]))
+  tibble(candidate = tmp$candidate[i],
+         avg = tmp$avg[i],
+         sd = tmp$sd[i],
+         x = xx,
+         y = my_dgamma(xx, tmp$avg[i], tmp$sd[i]))
 })
 
 tmp_3 <- map_df(1:3, function(i){
-qq <- my_qgamma(tmp$avg[i], tmp$sd[i])
-xx <- seq(qq[1], qq[2], len = 200)
-tibble(candidate = tmp$candidate[i],
-avg = tmp$avg[i],
-sd = tmp$sd[i],
-x = xx,
-y = my_dgamma(xx, tmp$avg[i], tmp$sd[i]))
+  qq <- my_qgamma(tmp$avg[i], tmp$sd[i])
+  xx <- seq(qq[1], qq[2], len = 200)
+  tibble(candidate = tmp$candidate[i],
+         avg = tmp$avg[i],
+         sd = tmp$sd[i],
+         x = xx,
+         y = my_dgamma(xx, tmp$avg[i], tmp$sd[i]))
 })
 
 tmp_2 %>%
-ggplot(aes(x, ymax = y, ymin = 0)) +
-geom_ribbon(fill = "grey") +
-facet_grid(candidate~., switch="y") +
-scale_x_continuous(breaks = seq(0, 75, 25), position = "top",
-label= paste0(seq(0, 75, 25), "%")) +
-geom_abline(intercept = 0, slope = 0) +
-xlab("") + ylab("") +
-theme_minimal() +
-theme(panel.grid.major.y = element_blank(),
-panel.grid.minor.y = element_blank(),
-axis.title.y=element_blank(),
-axis.text.y=element_blank(),
-axis.ticks.y=element_blank(),
-strip.text.y = element_text(angle = 180, size = 11, vjust = 0.2)) +
-geom_ribbon(data = tmp_3, mapping = aes(x = x, ymax = y, ymin = 0, fill = candidate), inherit.aes = FALSE, show.legend = FALSE) +
-scale_fill_manual(values = c("#3cace4", "#fc5c34", "#fccc2c")) +
-geom_point(data = tmp, mapping = aes(x = avg, y = m), inherit.aes = FALSE) +
-geom_text(data = tmp, mapping = aes(x = avg, y = m, label = avg_txt), inherit.aes = FALSE, hjust = 0, nudge_x = 1)
+  ggplot(aes(x, ymax = y, ymin = 0)) +
+  geom_ribbon(fill = "grey") +
+  facet_grid(candidate~., switch="y") +
+  scale_x_continuous(breaks = seq(0, 75, 25), position = "top",
+                     label= paste0(seq(0, 75, 25), "%")) +
+  geom_abline(intercept = 0, slope = 0) +
+  xlab("") + ylab("") +
+  theme_minimal() +
+  theme(panel.grid.major.y = element_blank(),
+        panel.grid.minor.y = element_blank(),
+        axis.title.y=element_blank(),
+        axis.text.y=element_blank(),
+        axis.ticks.y=element_blank(),
+        strip.text.y = element_text(angle = 180, size = 11, vjust = 0.2)) +
+  geom_ribbon(data = tmp_3, mapping = aes(x = x, ymax = y, ymin = 0, fill = candidate), inherit.aes = FALSE, show.legend = FALSE) +
+  scale_fill_manual(values = c("#3cace4", "#fc5c34", "#fccc2c")) +
+  geom_point(data = tmp, mapping = aes(x = avg, y = m), inherit.aes = FALSE) +
+  geom_text(data = tmp, mapping = aes(x = avg, y = m, label = avg_txt), inherit.aes = FALSE, hjust = 0, nudge_x = 1)
 
 
 ```
@@ -198,15 +198,15 @@ La tabla incluye los resultados de las encuestas nacionales, así como las encue
 
 ```{r}
 polls <- polls_us_election_2016 %>%
-filter(state == "U.S." & enddate >= "2016-10-31" &
-(grade %in% c("A+","A","A-","B+") | is.na(grade)))
+  filter(state == "U.S." & enddate >= "2016-10-31" &
+           (grade %in% c("A+","A","A-","B+") | is.na(grade)))
 ```
 
 Agregamos la estimación de la diferencia:
 
 ```{r}
 polls <- polls %>%
-mutate(spread = rawpoll_clinton/100 - rawpoll_trump/100)
+  mutate(spread = rawpoll_clinton/100 - rawpoll_trump/100)
 ```
 
 Para este ejemplo, suponemos que solo hay dos partes y llamaremos $p$ a la proporción de votos para Clinton y $1-p$ a la proporción votando por Trump. Estamos interesados en la diferencia $2p-1$. Llamemos a la diferencia $d$.
@@ -216,8 +216,8 @@ Tenemos `r nrow(polls)` estimaciones de la diferencia. La teoría que aprendimos
 
 ```{r}
 d_hat <- polls %>%
-summarize(d_hat = sum(spread * samplesize)/ sum(samplesize)) %>%
-pull(d_hat)
+  summarize(d_hat = sum(spread * samplesize)/ sum(samplesize)) %>%
+  pull(d_hat)
 ```
 
 y el error estándar es:
@@ -233,8 +233,8 @@ Entonces informamos una diferencia de `r round(d_hat*100,2)`\% con un margen de 
 Un histograma de las variabilidades reportadas muestra un problema:
 ```{r polls-2016-spread-histogram}
 polls %>%
-ggplot(aes(spread)) +
-geom_histogram(color="black", binwidth = .01)
+  ggplot(aes(spread)) +
+  geom_histogram(color="black", binwidth = .01)
 ```
 
 Los datos no parecen estar distribuidos normalmente y el error estándar parece ser mayor que `r moe`. La teoría no está funcionando bien aquí.
@@ -251,18 +251,18 @@ Visualicemos los datos de los encuestadores que sondean regularmente:
 
 ```{r pollster-bias, echo=FALSE}
 polls %>% group_by(pollster) %>%
-filter(n() >= 6) %>%
-ggplot(aes(pollster, spread)) +
-geom_point() +
-coord_flip()
+  filter(n() >= 6) %>%
+  ggplot(aes(pollster, spread)) +
+  geom_point() +
+  coord_flip()
 ```
 
 Este gráfico revela un resultado inesperado. Primero, consideren que el error estándar predicho por la teoría para cada encuesta:
 
 ```{r}
 polls %>% group_by(pollster) %>%
-filter(n() >= 6) %>%
-summarize(se = 2 * sqrt(p_hat * (1-p_hat)/ median(samplesize)))
+  filter(n() >= 6) %>%
+  summarize(se = 2 * sqrt(p_hat * (1-p_hat)/ median(samplesize)))
 ```
 
 está entre 0.018 y 0.033, que concuerda con la variación de encuesta a encuesta que vemos para cada encuestador. Sin embargo, parece haber diferencias _entre los encuestadores_. Observen, por ejemplo, cómo el encuestador USC Dornsife/LA Times predice una ventaja de 4\% para Trump, mientras que Ipsos predice una ventaja mayor de 5\% para Clinton. La teoría que aprendimos no dice nada acerca de diferentes encuestadores que producen encuestas con diferentes valores esperados. Todas las encuestas deben tener el mismo valor esperado. FiveThirtyEight se refiere a estas diferencias como "house effects". También las llamamos _sesgo de encuestadores_.
@@ -276,8 +276,8 @@ Para cada encuestador, recopilemos el último resultado que informan antes de la
 
 ```{r}
 one_poll_per_pollster <- polls %>% group_by(pollster) %>%
-filter(enddate == max(enddate)) %>%
-ungroup()
+  filter(enddate == max(enddate)) %>%
+  ungroup()
 ```
 
 Aquí hay un histograma de los datos para estos `r nrow(one_poll_per_pollster)` encuestadores:
@@ -311,10 +311,10 @@ Ahora estamos listos para formar un nuevo intervalo de confianza basado en nuest
 
 ```{r}
 results <- one_poll_per_pollster %>%
-summarize(avg = mean(spread),
-se = sd(spread)/ sqrt(length(spread))) %>%
-mutate(start = avg - 1.96 * se,
-end = avg + 1.96 * se)
+  summarize(avg = mean(spread),
+            se = sd(spread)/ sqrt(length(spread))) %>%
+  mutate(start = avg - 1.96 * se,
+         end = avg + 1.96 * se)
 round(results * 100, 1)
 ```
 
@@ -332,7 +332,7 @@ Volvamos al conjunto de datos de alturas. Supongamos que consideramos a los varo
 library(dslabs)
 data(heights)
 x <- heights %>% filter(sex == "Male") %>%
-pull(height)
+  pull(height)
 ```
 
 1\. Matemáticamente hablando, `x` es nuestra población. Usando la analogía de la urna, tenemos una urna con los valores de `x` dentro de ella. ¿Cuáles son el promedio y la desviación estándar de nuestra población?
@@ -361,11 +361,11 @@ d. No contiene información.
 ```{r, eval=FALSE}
 data(polls_us_election_2016)
 polls <- polls_us_election_2016 %>%
-filter(pollster %in% c("Rasmussen Reports/Pulse Opinion Research",
-"The Times-Picayune/Lucid") &
-enddate >= "2016-10-15" &
-state == "U.S.") %>%
-mutate(spread = rawpoll_clinton/100 - rawpoll_trump/100)
+  filter(pollster %in% c("Rasmussen Reports/Pulse Opinion Research",
+                         "The Times-Picayune/Lucid") &
+           enddate >= "2016-10-15" &
+           state == "U.S.") %>%
+  mutate(spread = rawpoll_clinton/100 - rawpoll_trump/100)
 ```
 
 Queremos contestar la pregunta: ¿hay un sesgo en la encuesta? Haga un gráfico que muestre la diferencia para cada encuesta.
@@ -397,8 +397,8 @@ d. ¿Son $b_1 = 0$ y $b_2 = 0$?
 
 ```{r, eval=FALSE}
 polls %>%
-filter(pollster=="Rasmussen Reports/Pulse Opinion Research") %>%
-summarize(N_1 = n())
+  filter(pollster=="Rasmussen Reports/Pulse Opinion Research") %>%
+  summarize(N_1 = n())
 ```
 
 ¿Cuál es el valor esperado de $\bar{Y}_1$?
@@ -441,12 +441,12 @@ Para este ejercicio, cree una nueva tabla:
 
 ```{r, eval=FALSE}
 polls <- polls_us_election_2016 %>%
-filter(enddate >= "2016-10-15" &
-state == "U.S.") %>%
-group_by(pollster) %>%
-filter(n() >= 5) %>%
-mutate(spread = rawpoll_clinton/100 - rawpoll_trump/100) %>%
-ungroup()
+  filter(enddate >= "2016-10-15" &
+           state == "U.S.") %>%
+  group_by(pollster) %>%
+  filter(n() >= 5) %>%
+  mutate(spread = rawpoll_clinton/100 - rawpoll_trump/100) %>%
+  ungroup()
 ```
 
 Calcule el promedio y la desviación estándar para cada encuestador y examine la variabilidad entre los promedios y cómo se compara con la variabilidad dentro de los encuestadores, resumida por la desviación estándar.

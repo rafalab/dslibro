@@ -6,10 +6,10 @@ Los intervalos de confianza son un concepto muy útil ampliamente utilizado por 
 library(tidyverse)
 data("nhtemp")
 data.frame(year = as.numeric(time(nhtemp)), temperature=as.numeric(nhtemp)) %>%
-ggplot(aes(year, temperature)) +
-geom_point() +
-geom_smooth() +
-ggtitle("Average Yearly Temperatures in New Haven")
+  ggplot(aes(year, temperature)) +
+  geom_point() +
+  geom_smooth() +
+  ggtitle("Average Yearly Temperatures in New Haven")
 ```
 
 
@@ -117,10 +117,10 @@ set.seed(1)
 N <- 1000
 B <- 10000
 inside <- replicate(B, {
-x <- sample(c(0,1), size = N, replace = TRUE, prob = c(1-p, p))
-x_hat <- mean(x)
-se_hat <- sqrt(x_hat * (1 - x_hat)/ N)
-between(p, x_hat - 1.96 * se_hat, x_hat + 1.96 * se_hat)
+  x <- sample(c(0,1), size = N, replace = TRUE, prob = c(1-p, p))
+  x_hat <- mean(x)
+  se_hat <- sqrt(x_hat * (1 - x_hat)/ N)
+  between(p, x_hat - 1.96 * se_hat, x_hat + 1.96 * se_hat)
 })
 mean(inside)
 ```
@@ -131,21 +131,21 @@ El siguiente gráfico muestra los primeros 100 intervalos de confianza. En este 
 ```{r confidence-interval-coverage, message=FALSE, echo=FALSE, fig.height=6}
 set.seed(1)
 tab <- replicate(100, {
-x <- sample(c(0,1), size = N, replace = TRUE, prob = c(1-p, p))
-x_hat <- mean(x)
-se_hat <- sqrt(x_hat * (1 - x_hat)/ N)
-hit <- between(p, x_hat - 1.96 * se_hat, x_hat + 1.96 * se_hat)
-c(x_hat, x_hat - 1.96 * se_hat, x_hat + 2 * se_hat, hit)
+  x <- sample(c(0,1), size = N, replace = TRUE, prob = c(1-p, p))
+  x_hat <- mean(x)
+  se_hat <- sqrt(x_hat * (1 - x_hat)/ N)
+  hit <- between(p, x_hat - 1.96 * se_hat, x_hat + 1.96 * se_hat)
+  c(x_hat, x_hat - 1.96 * se_hat, x_hat + 2 * se_hat, hit)
 })
 
 tab <- data.frame(poll=1:ncol(tab), t(tab))
 names(tab)<-c("poll", "estimate", "low", "high", "hit")
 tab <- mutate(tab, p_inside = ifelse(hit, "Yes", "No") )
 ggplot(tab, aes(poll, estimate, ymin=low, ymax=high, col = p_inside)) +
-geom_point()+
-geom_errorbar() +
-coord_flip() +
-geom_hline(yintercept = p)
+  geom_point()+
+  geom_errorbar() +
+  coord_flip() +
+  geom_hline(yintercept = p)
 ```
 
 
@@ -167,7 +167,7 @@ Específicamente, utilizaremos todas las encuestas nacionales que acabaron dentr
 ```{r, message=FALSE, message=FALSE}
 library(tidyverse)
 polls <- polls_us_election_2016 %>%
-filter(enddate >= "2016-10-31" & state == "U.S.")
+  filter(enddate >= "2016-10-31" & state == "U.S.")
 ```
 
 1\. Para la primera encuesta, puede obtener el tamaño de las muestras y el porcentaje estimado para Clinton con:
@@ -196,8 +196,8 @@ Suponga que solo hay dos partidos y que $d = 2p - 1$, redefina `polls` como se h
 
 ```{r, message=FALSE, comment=FALSE}
 polls <- polls_us_election_2016 %>%
-filter(enddate >= "2016-10-31" & state == "U.S.") %>%
-mutate(d_hat = rawpoll_clinton/ 100 - rawpoll_trump/ 100)
+  filter(enddate >= "2016-10-31" & state == "U.S.") %>%
+  mutate(d_hat = rawpoll_clinton/ 100 - rawpoll_trump/ 100)
 ```
 
 
