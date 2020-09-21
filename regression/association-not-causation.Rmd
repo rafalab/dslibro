@@ -12,16 +12,16 @@ El siguiente ejemplo cómico subraya que la correlación no es causalidad. Muest
 library(tidyverse)
 library(dslabs)
 the_title <- paste("Correlation =",
-round(with(divorce_margarine,
-cor(margarine_consumption_per_capita, divorce_rate_maine)),2))
+                   round(with(divorce_margarine,
+                              cor(margarine_consumption_per_capita, divorce_rate_maine)),2))
 data(divorce_margarine)
 divorce_margarine %>%
-ggplot(aes(margarine_consumption_per_capita, divorce_rate_maine)) +
-geom_point(cex=3) +
-geom_smooth(method = "lm") +
-ggtitle(the_title) +
-xlab("Margarine Consumption per Capita (lbs)") +
-ylab("Divorce rate in Maine (per 1000)")
+  ggplot(aes(margarine_consumption_per_capita, divorce_rate_maine)) +
+  geom_point(cex=3) +
+  geom_smooth(method = "lm") +
+  ggtitle(the_title) +
+  xlab("Margarine Consumption per Capita (lbs)") +
+  ylab("Divorce rate in Maine (per 1000)")
 ```
 
 ¿Significa esto que la margarina causa divorcios? ¿O los divorcios hacen que las personas coman más margarina? Por supuesto, la respuesta a ambas preguntas es "no". Esto es solo un ejemplo de lo que llamamos una correlación espuria.
@@ -36,8 +36,8 @@ Se puede usar una simulación Monte Carlo para mostrar cómo _data dredging_ pue
 N <- 25
 g <- 1000000
 sim_data <- tibble(group = rep(1:g, each=N),
-x = rnorm(N * g),
-y = rnorm(N * g))
+                   x = rnorm(N * g),
+                   y = rnorm(N * g))
 ```
 
 La primera columna denota grupo. Creamos `r cat(prettyNum(g, big.mark=",",scientific=FALSE))` grupos y para cada uno generamos un par de vectores independientes, $X$ y $Y$, cada una con `r N` observaciones, almacenadas en la segunda y tercera columnas. Debido a que construimos la simulación, sabemos que $X$ y $Y$ no están correlacionadas.
@@ -46,9 +46,9 @@ A continuación, calculamos la correlación entre `X` y `Y` para cada grupo y mi
 
 ```{r}
 res <- sim_data %>%
-group_by(group) %>%
-summarize(r = cor(x, y)) %>%
-arrange(desc(r))
+  group_by(group) %>%
+  summarize(r = cor(x, y)) %>%
+  arrange(desc(r))
 res
 ```
 
@@ -56,9 +56,9 @@ Vemos una correlación máxima de `r max (res $r)` y si solo graficamos los dato
 
 ```{r dredging}
 sim_data %>% filter(group == res$group[which.max(res$r)]) %>%
-ggplot(aes(x, y)) +
-geom_point() +
-geom_smooth(method = "lm")
+  ggplot(aes(x, y)) +
+  geom_point() +
+  geom_smooth(method = "lm")
 ```
 
 Recuerden que el resumen de correlación es una variable aleatoria. Aquí está la distribución generada por la simulación Monte Carlo:
@@ -74,9 +74,9 @@ Si realizamos una regresión en este grupo e interpretemos el valor p, afirmarí
 ```{r, message=FALSE, warning=FALSE}
 library(broom)
 sim_data %>%
-filter(group == res$group[which.max(res$r)]) %>%
-do(tidy(lm(y ~ x, data = .))) %>%
-filter(term == "x")
+  filter(group == res$group[which.max(res$r)]) %>%
+  do(tidy(lm(y ~ x, data = .))) %>%
+  filter(term == "x")
 ```
 
 Esta forma particular de dragado de datos se conoce como _p-hacking_. El _hackeo P_ es un tema de mucha discusión porque es un problema en publicaciones científicas. Debido a que los editores tienden a recompensar resultados estadísticamente significativos sobre resultados negativos, existe un incentivo para informar resultados significativos. En epidemiología y ciencias sociales, por ejemplo, los investigadores pueden buscar asociaciones entre un resultado adverso y [fix] varias exposiciones e informar solo la exposición que resultó en un valor p pequeño. Además, podrían intentar ajustar varios modelos diferentes para tomar en cuenta la confusión y elegir el que da el valor p más pequeño. En disciplinas experimentales, un experimento puede repetirse más de una vez, pero solo informar los resultados del experimento con un valor p pequeño. Esto no sucede necesariamente debido a comportamientos poco éticos, sino más bien como resultado de la ignorancia estadística [fix "wishful thinking"] o la ilusión. En los cursos de estadística avanzada, pueden aprender métodos para ajustar/tomar en cuenta estas comparaciones múltiples.
@@ -154,10 +154,10 @@ a los datos de altura de padre e hijo, con $X_i$ la altura del padre y $y_i$ la 
 library(HistData)
 data("GaltonFamilies")
 GaltonFamilies %>%
-filter(childNum == 1 & gender == "male") %>%
-select(father, childHeight) %>%
-rename(son = childHeight) %>%
-do(tidy(lm(father ~ son, data = .)))
+  filter(childNum == 1 & gender == "male") %>%
+  select(father, childHeight) %>%
+  rename(son = childHeight) %>%
+  do(tidy(lm(father ~ son, data = .)))
 ```
 
 El modelo se ajusta muy bien a los datos. Si observamos la formulación matemática del modelo anterior, podría interpretarse fácilmente de manera incorrecta para sugerir que el hijo siendo alto hace que el padre sea alto. Pero dado lo que sabemos sobre genética y biología, sabemos que es al revés. El modelo es técnicamente correcto. Las estimaciones y los valores p también se obtuvieron correctamente. Lo que está mal aquí es la interpretación.
@@ -188,18 +188,18 @@ round(sum(admitted*applicants)/sum(applicants),1))
 ```{r}
 data(admissions)
 admissions %>% group_by(gender) %>%
-summarize(total_admitted = round(sum(admitted/ 100 * applicants)),
-not_admitted = sum(applicants) - sum(total_admitted)) %>%
-select(-gender) %>%
-do(tidy(chisq.test(.))) %>% .$p.value
+  summarize(total_admitted = round(sum(admitted/ 100 * applicants)),
+            not_admitted = sum(applicants) - sum(total_admitted)) %>%
+  select(-gender) %>%
+  do(tidy(chisq.test(.))) %>% .$p.value
 ```
 
 Pero una inspección más cercana muestra un resultado paradójico. Aquí están los porcentajes de admisión por concentración :
 
 ```{r}
 admissions %>% select(major, gender, admitted) %>%
-spread(gender, admitted) %>%
-mutate(women_minus_men = women - men)
+  spread(gender, admitted) %>%
+  mutate(women_minus_men = women - men)
 ```
 
 Cuatro de los seis concentraciones favorecen a las mujeres. Más importante aún, todas las diferencias son mucho más pequeñas que la diferencia de 14.2 que vemos al examinar los totales.
@@ -212,12 +212,12 @@ Una forma de ver esto es graficar el porcentaje total admitido a una concentraci
 
 ```{r uc-berkeley-majors}
 admissions %>%
-group_by(major) %>%
-summarize(major_selectivity = sum(admitted * applicants)/sum(applicants),
-percent_women_applicants = sum(applicants * (gender=="women"))/
-sum(applicants) * 100) %>%
-ggplot(aes(major_selectivity, percent_women_applicants, label = major)) +
-geom_text()
+  group_by(major) %>%
+  summarize(major_selectivity = sum(admitted * applicants)/sum(applicants),
+            percent_women_applicants = sum(applicants * (gender=="women"))/
+              sum(applicants) * 100) %>%
+  ggplot(aes(major_selectivity, percent_women_applicants, label = major)) +
+  geom_text()
 ```
 
 Parece haber asociación. El gráfico sugiere que las mujeres eran mucho más propensas a solicitar a las dos concentraciones "difíciles": el género y la selectividad de la concentración están confundidos. Compare, por ejemplo, la concentración B y la E. La concentración B es mucho más difícil de ingresar que la B y más del 60% de los solicitantes a la concentración E  eran mujeres, mientras que menos del 30% de los solicitantes a la concentración B eran mujeres.
@@ -229,12 +229,12 @@ El siguiente gráfico muestra el número de solicitantes que fueron admitidos [f
 
 ```{r confounding, echo=FALSE}
 admissions %>%
-mutate(yes = round(admitted/100*applicants), no = applicants - yes) %>%
-select(-applicants, -admitted) %>%
-gather(admission, number_of_students, -c("major", "gender")) %>%
-ggplot(aes(gender, number_of_students, fill = admission)) +
-geom_bar(stat = "identity", position = "stack") +
-facet_wrap(. ~ major)
+  mutate(yes = round(admitted/100*applicants), no = applicants - yes) %>%
+  select(-applicants, -admitted) %>%
+  gather(admission, number_of_students, -c("major", "gender")) %>%
+  ggplot(aes(gender, number_of_students, fill = admission)) +
+  geom_bar(stat = "identity", position = "stack") +
+  facet_wrap(. ~ major)
 ```
 
 <!--
@@ -254,8 +254,8 @@ geom_bar(stat = "identity", position = "stack")
 
 ```{r admission-by-major}
 admissions %>%
-ggplot(aes(major, admitted, col = gender, size = applicants)) +
-geom_point()
+  ggplot(aes(major, admitted, col = gender, size = applicants)) +
+  geom_point()
 ```
 
 Ahora vemos que concentración por concentración, no hay mucha diferencia. El tamaño del punto representa el número de solicitantes y explica la paradoja: vemos grandes puntos rojos y pequeños puntos azules para las concentraciones más fáciles/menos retantes, A y B.
@@ -275,22 +275,22 @@ El caso que acabamos de cubrir es un ejemplo de la paradoja de Simpson. [fix che
 N <- 100
 Sigma <- matrix(c(1,0.75,0.75, 1), 2, 2)*1.5
 means <- list(c(x = 11, y = 3),
-c(x = 9, y = 5),
-c(x = 7, y = 7),
-c(x = 5, y = 9),
-c(x = 3, y = 11))
+              c(x = 9, y = 5),
+              c(x = 7, y = 7),
+              c(x = 5, y = 9),
+              c(x = 3, y = 11))
 dat <- lapply(means, function(mu){
-res <- MASS::mvrnorm(N, mu, Sigma)
-colnames(res) <- c("x", "y")
-res
+  res <- MASS::mvrnorm(N, mu, Sigma)
+  colnames(res) <- c("x", "y")
+  res
 })
 
 dat <- do.call(rbind, dat) %>%
-as_tibble() %>%
-mutate(z = as.character(rep(seq_along(means), each = N)))
+  as_tibble() %>%
+  mutate(z = as.character(rep(seq_along(means), each = N)))
 
 dat %>% ggplot(aes(x, y)) + geom_point(alpha = .5) +
-ggtitle(paste("Correlation = ", round(cor(dat$x, dat$y), 2)))
+  ggtitle(paste("Correlation = ", round(cor(dat$x, dat$y), 2)))
 ```
 
 Pueden ver que $X$ y $Y$ están correlacionados negativamente Sin embargo, una vez que nos estratifiquemos por $Z$ (se muestra en diferentes colores a continuación) surge otro patrón:
@@ -298,15 +298,15 @@ Pueden ver que $X$ y $Y$ están correlacionados negativamente Sin embargo, una v
 
 ```{r simpsons-paradox-explained, echo=FALSE}
 means <- do.call(rbind, means) %>%
-as_tibble() %>%
-mutate(z = as.character(seq_along(means)))
+  as_tibble() %>%
+  mutate(z = as.character(seq_along(means)))
 
 corrs <- dat %>% group_by(z) %>% summarize(cor = cor(x, y)) %>% pull(cor)
 
 dat %>% ggplot(aes(x, y, color = z)) +
-geom_point(show.legend = FALSE, alpha = 0.5) +
-ggtitle(paste("Correlations =", paste(signif(corrs,2), collapse=" "))) +
-annotate("text", x = means$x, y = means$y, label = paste("z =", means$z), cex = 5)
+  geom_point(show.legend = FALSE, alpha = 0.5) +
+  ggtitle(paste("Correlations =", paste(signif(corrs,2), collapse=" "))) +
+  annotate("text", x = means$x, y = means$y, label = paste("z =", means$z), cex = 5)
 ```
 
 Es realmente $Z$ que está negativamente correlacionada con $X$. [fix check ok] Si estratificamos por $Z$, el $X$ y $Y$ están positivamente correlacionadas como se ve en el gráfico anterior.
