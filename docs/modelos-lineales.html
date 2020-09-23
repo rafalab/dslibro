@@ -24,7 +24,7 @@
 <meta name="author" content="Rafael A. Irizarry" />
 
 
-<meta name="date" content="2020-09-21" />
+<meta name="date" content="2020-09-23" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -571,7 +571,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="19" data-path="la-asociación-no-implica-causalidad.html"><a href="la-asociación-no-implica-causalidad.html"><i class="fa fa-check"></i><b>19</b> La asociación no implica causalidad</a><ul>
 <li class="chapter" data-level="19.1" data-path="la-asociación-no-implica-causalidad.html"><a href="la-asociación-no-implica-causalidad.html#correlación-espuria"><i class="fa fa-check"></i><b>19.1</b> Correlación espuria</a></li>
 <li class="chapter" data-level="19.2" data-path="la-asociación-no-implica-causalidad.html"><a href="la-asociación-no-implica-causalidad.html#valores-atípicos-1"><i class="fa fa-check"></i><b>19.2</b> Valores atípicos</a></li>
-<li class="chapter" data-level="19.3" data-path="la-asociación-no-implica-causalidad.html"><a href="la-asociación-no-implica-causalidad.html#fix-inversión-de-causa-y-efecto"><i class="fa fa-check"></i><b>19.3</b> [fix] Inversión de causa y efecto</a></li>
+<li class="chapter" data-level="19.3" data-path="la-asociación-no-implica-causalidad.html"><a href="la-asociación-no-implica-causalidad.html#inversión-de-causa-y-efecto"><i class="fa fa-check"></i><b>19.3</b> Inversión de causa y efecto</a></li>
 <li class="chapter" data-level="19.4" data-path="la-asociación-no-implica-causalidad.html"><a href="la-asociación-no-implica-causalidad.html#factores-de-confusión"><i class="fa fa-check"></i><b>19.4</b> Factores de confusión</a><ul>
 <li class="chapter" data-level="19.4.1" data-path="la-asociación-no-implica-causalidad.html"><a href="la-asociación-no-implica-causalidad.html#ejemplo-admisiones-a-la-universidad-de-california-berkeley"><i class="fa fa-check"></i><b>19.4.1</b> Ejemplo: admisiones a la Universidad de California, Berkeley</a></li>
 <li class="chapter" data-level="19.4.2" data-path="la-asociación-no-implica-causalidad.html"><a href="la-asociación-no-implica-causalidad.html#confusión-explicada-gráficamente"><i class="fa fa-check"></i><b>19.4.2</b> Confusión explicada gráficamente</a></li>
@@ -993,7 +993,7 @@ Y_i = \beta_0 + \beta_1 x_i + \varepsilon_i
 <span id="cb695-4"><a href="modelos-lineales.html#cb695-4"></a>         <span class="dt">R =</span> R<span class="op">/</span>G) <span class="op">%&gt;%</span></span>
 <span id="cb695-5"><a href="modelos-lineales.html#cb695-5"></a><span class="st">  </span><span class="kw">select</span>(HR, BB, R) <span class="op">%&gt;%</span></span>
 <span id="cb695-6"><a href="modelos-lineales.html#cb695-6"></a><span class="st">  </span><span class="kw">filter</span>(HR <span class="op">&gt;=</span><span class="st"> </span><span class="fl">0.4</span> <span class="op">&amp;</span><span class="st"> </span>HR<span class="op">&lt;=</span><span class="fl">1.2</span>)</span></code></pre></div>
-<p>Como todavía no sabíamos de la función <code>lm</code> para calcular la línea de regresión en cada estrato, utilizamos la fórmula así:</p>
+<p>Como en ese momento no sabíamos de la función <code>lm</code> para calcular la línea de regresión en cada estrato, utilizamos la fórmula así:</p>
 <div class="sourceCode" id="cb696"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb696-1"><a href="modelos-lineales.html#cb696-1"></a>get_slope &lt;-<span class="st"> </span><span class="cf">function</span>(x, y) <span class="kw">cor</span>(x, y) <span class="op">*</span><span class="st"> </span><span class="kw">sd</span>(y)<span class="op">/</span><span class="st"> </span><span class="kw">sd</span>(x)</span>
 <span id="cb696-2"><a href="modelos-lineales.html#cb696-2"></a>dat <span class="op">%&gt;%</span></span>
 <span id="cb696-3"><a href="modelos-lineales.html#cb696-3"></a><span class="st">  </span><span class="kw">group_by</span>(HR) <span class="op">%&gt;%</span></span>
@@ -1006,7 +1006,7 @@ Y_i = \beta_0 + \beta_1 x_i + \varepsilon_i
 <span id="cb697-4"><a href="modelos-lineales.html#cb697-4"></a><span class="co">#&gt; (Intercept)          BB </span></span>
 <span id="cb697-5"><a href="modelos-lineales.html#cb697-5"></a><span class="co">#&gt;       2.198       0.638</span></span></code></pre></div>
 <p>no obtenemos el resultado que queremos. La función <code>lm</code> ignora el <code>group_by</code> ya que <code>lm</code> no es parte del <strong>tidyverse</strong> y no sabe cómo manejar el resultado de un tibble agrupado.</p>
-<p>Las funciones de <strong>tidyverse</strong> saben cómo interpretar los tibbles agrupados. Además, para facilitar la creación de una secuencia de comandos con el <em>pipe</em> <code>%&gt;%</code>, las funciones de <strong>tidyverse</strong> consistentemente devuelven <em>data frames</em>, ya que esto asegura que el resultado de una función sea aceptado como la entrada de otra. Pero la mayoría de las funciones de R no reconocen los tibbles agrupados ni devuelven <em>data frames</em>. La función <code>lm</code> es un ejemplo. Las funciones <code>do</code> sirven como un puente entre las funciones de R, como <code>lm</code>, y el <strong>tidyverse</strong>. La función <code>do</code> entiende tibbles agrupados y siempre devuelve un <em>data frame</em>.</p>
+<p>Las funciones de <strong>tidyverse</strong> saben cómo interpretar los tibbles agrupados. Además, para facilitar la creación de una secuencia de comandos con el <em>pipe</em> <code>%&gt;%</code>, las funciones de <strong>tidyverse</strong> consistentemente devuelven <em>data frames</em>, ya que esto asegura que el resultado de una función sea aceptado como la entrada de otra. Pero la mayoría de las funciones de R no reconocen los tibbles agrupados ni devuelven <em>data frames</em>. La función <code>lm</code> es un ejemplo. La función <code>do</code> sirve como un puente entre las funciones de R, como <code>lm</code>, y el <strong>tidyverse</strong>. <code>do</code> entiende tibbles agrupados y siempre devuelve un <em>data frame</em>.</p>
 <p>Entonces, intentemos usar la función <code>do</code> para ajustar una línea de regresión a cada estrato de HR:</p>
 <div class="sourceCode" id="cb698"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb698-1"><a href="modelos-lineales.html#cb698-1"></a>dat <span class="op">%&gt;%</span></span>
 <span id="cb698-2"><a href="modelos-lineales.html#cb698-2"></a><span class="st">  </span><span class="kw">group_by</span>(HR) <span class="op">%&gt;%</span></span>
@@ -1234,7 +1234,7 @@ Y_i = \beta_0 + \beta_1 x_{i,1} + \beta_2 x_{i,2} + \beta_3 x_{i,3}+ \beta_4 x_{
 <span id="cb714-4"><a href="modelos-lineales.html#cb714-4"></a><span class="st">  </span><span class="kw">pull</span>(pa_per_game) <span class="op">%&gt;%</span></span>
 <span id="cb714-5"><a href="modelos-lineales.html#cb714-5"></a><span class="st">  </span>mean</span>
 <span id="cb714-6"><a href="modelos-lineales.html#cb714-6"></a><span class="co">#&gt; `summarise()` ungrouping output (override with `.groups` argument)</span></span></code></pre></div>
-<p>Calculamos las tasas de turnos al bate para jugadores disponibles en 2002 con datos de 1997-2001. Para evitar pequeños artefactos de muestra, filtramos jugadores con menos de 200 turnos al bate por año. Aquí está el cálculo completo en una línea: [fix eng compare]</p>
+<p>Calculamos las tasas de turnos al bate para jugadores disponibles en 2002 con datos de 1997-2001. Para evitar pequeños artefactos de muestra, filtramos jugadores con menos de 200 turnos al bate por año. Aquí está el cálculo completo en una línea:</p>
 <div class="sourceCode" id="cb715"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb715-1"><a href="modelos-lineales.html#cb715-1"></a>players &lt;-<span class="st"> </span>Batting <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">filter</span>(yearID <span class="op">%in%</span><span class="st"> </span><span class="dv">1997</span><span class="op">:</span><span class="dv">2001</span>) <span class="op">%&gt;%</span></span>
 <span id="cb715-2"><a href="modelos-lineales.html#cb715-2"></a><span class="st">  </span><span class="kw">group_by</span>(playerID) <span class="op">%&gt;%</span></span>
 <span id="cb715-3"><a href="modelos-lineales.html#cb715-3"></a><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">PA =</span> BB <span class="op">+</span><span class="st"> </span>AB) <span class="op">%&gt;%</span></span>
@@ -1255,7 +1255,7 @@ Y_i = \beta_0 + \beta_1 x_{i,1} + \beta_2 x_{i,2} + \beta_3 x_{i,3}+ \beta_4 x_{
 <p><img src="libro_files/figure-html/r-hat-hist-1.png" width="70%" style="display: block; margin: auto;" /></p>
 <div id="añadiendo-información-sobre-salario-y-posición" class="section level3">
 <h3><span class="header-section-number">18.7.1</span> Añadiendo información sobre salario y posición</h3>
-<p>Para realmente construir el equipo, necesitaremos conocer sus salarios y su posición defensiva. Para hacer esto, unimos el <em>data frame</em> <code>players</code> que acabamos de crear con el <em>data frame</em> de información del jugador incluido en algunas de las otras tablas de datos de Lahman. Aprenderemos más sobre la función <code>join</code> que aprendimos en la Sección <a href="#joins"><strong>??</strong></a>.</p>
+<p>Para realmente construir el equipo, necesitaremos conocer sus salarios y su posición defensiva. Para hacer esto, unimos el <em>data frame</em> <code>players</code> que acabamos de crear con el <em>data frame</em> de información del jugador incluido en algunas de las otras tablas de datos de Lahman. Aprenderemos más sobre la función <code>join</code> en la Sección <a href="#joins"><strong>??</strong></a>.</p>
 <p>Comiencen añadiendo los salarios del 2002 para cada jugador:</p>
 <div class="sourceCode" id="cb717"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb717-1"><a href="modelos-lineales.html#cb717-1"></a>players &lt;-<span class="st"> </span>Salaries <span class="op">%&gt;%</span></span>
 <span id="cb717-2"><a href="modelos-lineales.html#cb717-2"></a><span class="st">  </span><span class="kw">filter</span>(yearID <span class="op">==</span><span class="st"> </span><span class="dv">2002</span>) <span class="op">%&gt;%</span></span>
@@ -1778,7 +1778,7 @@ Valentin
 <blockquote>
 <p>Una caída de segundo año o maldición de segundo año se refiere a una instancia en la que un segundo esfuerzo, o segundo año, no cumple con los estándares del primer esfuerzo. Se usa comúnmente para referirse a la apatía de los estudiantes (segundo año de secundaria, colegio o universidad), el rendimiento de los atletas (segunda temporada de juego), cantantes/bandas (segundo álbum), programas de televisión (segunda temporada) y películas (secuelas/precuelas).</p>
 </blockquote>
-<p>En las Grandes Ligas de Béisbol, el premio al novato del año (ROY o <em>Rookie of the Year</em>) se otorga al jugador de primer año que se considera que ha tenido el mejor desempeño. La frase maldición de segundo año se usa para describir la observación de que a los ganadores del premio ROY no les va tan bien durante su segundo año. Por ejemplo, este artículo de Fox Sports<a href="#fn74" class="footnote-ref" id="fnref74"><sup>74</sup></a> pregunta “¿La impresionante clase de novatos del MLB de 2015 sufrirá una caída de segundo año?”</p>
+<p>En las Grandes Ligas de Béisbol, el premio al novato del año (ROY o <em>Rookie of the Year</em> en inglés) se otorga al jugador de primer año que se considera que ha tenido el mejor desempeño. La frase maldición de segundo año se usa para describir la observación de que a los ganadores del premio ROY no les va tan bien durante su segundo año. Por ejemplo, este artículo de Fox Sports<a href="#fn74" class="footnote-ref" id="fnref74"><sup>74</sup></a> pregunta “¿La impresionante clase de novatos del MLB de 2015 sufrirá una maldición de segundo año?”</p>
 <p>¿Los datos confirman la existencia de una maldición de segundo año? Vamos a ver. Al examinar los datos para el promedio de bateo, vemos que esta observación es válida para los ROY de mayor rendimiento:</p>
 <!--The data is available in the Lahman library, but we have to do some work to create a table with the statistics for all the ROY. First we create a table with player ID, their names, and their most played position.-->
 <!--
