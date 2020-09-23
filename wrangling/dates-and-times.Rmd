@@ -1,0 +1,224 @@
+# Analizando fechas y horas
+
+## El tipo de datos de fecha
+
+Hemos descrito tres tipos principales de vectores: numéricos, de caracteres y lógicos. En proyectos de ciencia de datos, a menudo encontramos variables que son fechas. Aunque podemos representar una fecha con una cadena, por ejemplo `November 2, 2017`, una vez que elegimos un día de referencia, conocido como _epoch_, se pueden convertir a números calculando el número de días desde la época. Los lenguajes de computadora usualmente usan el 1 de enero de 1970 como época. Entonces, por ejemplo, el 2 de enero de 2017 es el día 1, el 31 de diciembre de 1969 es el día -1 y el 2 de noviembre de 2017 es el día 17,204.
+
+Ahora, ¿cómo debemos representar fechas y horas al analizar los datos en R? Podríamos usar días desde la época, pero es casi imposible de interpretar. Si te digo que es el 2 de noviembre de 2017, sabes lo que esto significa inmediatamente. Si te digo que es el día 17,204, estarás bastante confundido. Problemas similares surgen con los tiempos e incluso pueden aparecer más complicaciones debido a las zonas horarias.
+
+Por esta razón, R define un tipo de datos solo para fechas y horas. Vimos un ejemplo en los datos de las encuestas:
+
+```{r, message=FALSE, warning=FALSE}
+library(tidyverse)
+library(dslabs)
+data("polls_us_election_2016")
+polls_us_election_2016$startdate %>% head
+```
+
+Estas parecen cuerdas, pero no lo son:
+
+```{r}
+class(polls_us_election_2016$startdate)
+```
+
+Mira lo que sucede cuando los convertimos a números:
+
+```{r}
+as.numeric(polls_us_election_2016$startdate) %>% head
+```
+
+Los convierte en días desde la época. los `as.Date` la función puede convertir un carácter en una fecha. Entonces, para ver que la época es el día 0, podemos escribir
+
+```{r}
+as.Date("1970-01-01") %>% as.numeric
+```
+
+Las funciones de trazado, como las de ggplot, conocen el formato de fecha. Esto significa que, por ejemplo, un diagrama de dispersión puede usar la representación numérica para decidir la posición del punto, pero incluye la cadena en las etiquetas:
+
+```{r rawpolls-vs-time}
+polls_us_election_2016 %>% filter(pollster == "Ipsos" & state =="U.S.") %>%
+ggplot(aes(startdate, rawpoll_trump)) +
+geom_line()
+```
+
+Tenga en cuenta en particular que se muestran los nombres de los meses, una característica muy conveniente.
+
+## El paquete lubridate {#lubridate}
+
+El __tidyverse__incluye funcionalidad para manejar fechas a través del paquete__lubridate__.
+
+```{r, warning=FALSE, message=FALSE}
+library(lubridate)
+```
+
+Tomaremos una muestra aleatoria de fechas para mostrar algunas de las cosas útiles que uno puede hacer:
+
+```{r}
+set.seed(2002)
+dates <- sample(polls_us_election_2016$startdate, 10) %>% sort
+dates
+```
+
+Las funciones `year`, `month` y `day` extraer esos valores:
+
+```{r}
+tibble(date = dates,
+month = month(dates),
+day = day(dates),
+year = year(dates))
+```
+
+También podemos extraer las etiquetas del mes:
+
+```{r}
+month(dates, label = TRUE)
+```
+
+
+Otro conjunto útil de funciones son los _parsers_ que convierten cadenas en fechas. La función `ymd` asume que las fechas están en el formato AAAA-MM-DD e intenta analizar lo mejor posible.
+
+```{r}
+x <- c(20090101, "2009-01-02", "2009 01 03", "2009-1-4",
+"2009-1, 5", "Created on 2009 1 6", "200901 !!! 07")
+ymd(x)
+```
+
+Otra complicación proviene del hecho de que las fechas a menudo vienen en diferentes formatos en los que el orden de año, mes y día son diferentes. El formato preferido es mostrar año (con los cuatro dígitos), mes (dos dígitos) y luego día, o lo que se llama ISO 8601. Específicamente usamos AAAA-MM-DD para que si ordenamos la cadena, ser ordenado por fecha. Puedes ver la función `ymd` los devuelve en este formato.
+
+Pero, ¿qué pasa si encuentra fechas como "01/09/02"? Esto podría ser el 1 de septiembre de 2002 o el 2 de enero de 2009 o el 9 de enero de 2002.
+En estos casos, examinar todo el vector de fechas lo ayudará a determinar qué formato es por proceso de eliminación. Una vez que sepa, puede usar los muchos análisis proporcionados por __lubridate__.
+
+Por ejemplo, si la cadena es:
+
+```{r}
+x <- "09/01/02"
+```
+
+Los `ymd` la función supone que la primera entrada es el año, la segunda es el mes y la tercera es el día, por lo que la convierte a:
+
+```{r}
+ymd(x)
+```
+
+Los `mdy` la función asume que la primera entrada es el mes, luego el día, luego el año:
+
+```{r}
+mdy(x)
+```
+
+El paquete _lubridate_ proporciona una función para cada posibilidad:
+```{r}
+ydm(x)
+myd(x)
+dmy(x)
+dym(x)
+```
+
+El paquete __lubridate__ también es útil para lidiar con los tiempos. En R base, puede obtener la hora actual escribiendo `Sys.time()`. El paquete __lubridate__ proporciona una función un poco más avanzada, `now`, que le permite definir la zona horaria:
+
+```{r}
+now()
+now("GMT")
+```
+
+Puede ver todas las zonas horarias disponibles con `OlsonNames()` función.
+
+También podemos extraer horas, minutos y segundos:
+
+```{r}
+now() %>% hour()
+now() %>% minute()
+now() %>% second()
+```
+
+El paquete también incluye una función para analizar cadenas en tiempos, así como analizadores para objetos de tiempo que incluyen fechas:
+
+
+```{r}
+x <- c("12:34:56")
+hms(x)
+x <- "Nov/2/2012 12:34:56"
+mdy_hms(x)
+```
+
+Este paquete tiene muchas otras funciones útiles. Aquí describimos dos de estos que encontramos particularmente útiles.
+
+Los `make_date` la función se puede utilizar para crear rápidamente un objeto de fecha. Toma tres argumentos: año, mes, día, hora, minuto, segundos y zona horaria predeterminada a los valores de época en la hora UTC. Entonces cree un objeto de fecha que represente, por ejemplo, el 6 de julio de 2019, escribimos:
+
+```{r}
+make_date(2019, 7, 6)
+```
+
+Para hacer un vector del 1 de enero para los años 80 escribimos:
+
+```{r}
+make_date(1980:1989)
+```
+
+Otra función muy útil es la `round_date`. Se puede utilizar para redondear las fechas al año, trimestre, mes, semana, día, hora, minutos o segundos más cercanos. Entonces, si queremos agrupar todas las encuestas por semana del año, podemos hacer lo siguiente:
+
+```{r poll-margin-versus-week}
+polls_us_election_2016 %>%
+mutate(week = round_date(startdate, "week")) %>%
+group_by(week) %>%
+summarize(margin = mean(rawpoll_clinton - rawpoll_trump)) %>%
+qplot(week, margin, data = .)
+```
+
+
+## Ejercicios
+
+
+En la sección de ejercicio anterior, recopilamos datos de un archivo PDF que contiene estadísticas vitales de Puerto Rico. Hicimos esto para el mes de septiembre. A continuación incluimos un código que lo hace durante los 12 meses.
+
+```{r, eval=FALSE}
+library(tidyverse)
+library(purrr)
+library(pdftools)
+
+fn <- system.file("extdata", "RD-Mortality-Report_2015-18-180531.pdf",
+package="dslabs")
+tab <- map_df(str_split(pdf_text(fn), "\n"), function(s){
+s <- str_trim(s)
+header_index <- str_which(s, "2015")[1]
+tmp <- str_split(s[header_index], "\\s+", simplify = TRUE)
+month <- tmp[1]
+header <- tmp[-1]
+tail_index <- str_which(s, "Total")
+n <- str_count(s, "\\d+")
+out <- c(1:header_index, which(n==1), which(n>=28), tail_index:length(s))
+s[-out] %>% str_remove_all("[^\\d\\s]") %>% str_trim() %>%
+str_split_fixed("\\s+", n = 6) %>% .[,1:5] %>% as_tibble() %>%
+setNames(c("day", header)) %>%
+mutate(month = month, day = as.numeric(day)) %>%
+gather(year, deaths, -c(day, month)) %>%
+mutate(deaths = as.numeric(deaths))
+})
+```
+
+1\. Queremos hacer un complot de recuentos de muertes versus fecha. Un primer paso es convertir la variable del mes de caracteres a números. Tenga en cuenta que las abreviaturas de los meses están en spanglish. Utilizar el `recode` función para convertir meses en números y redefinir `tab`.
+
+
+2\. Crea una nueva columna `date` con la fecha de cada observación. Sugerencia: use el `make_date` función.
+
+
+3\. Trazar muertes versus fecha.
+
+
+4\. Tenga en cuenta que después del 31 de mayo de 2018, las muertes son todas 0. Los datos probablemente aún no se hayan ingresado. También vemos una caída a partir del 1 de mayo. Redefinir `tab` para excluir observaciones tomadas a partir del 1 de mayo de 2018. Luego, rehaga la trama.
+
+
+
+5\. Vuelva a hacer la trama anterior, pero esta vez las muertes de la trama contra el día del año, por ejemplo, 12 de enero de 2016 y 12 de enero de 2017, son ambos el día 12. Use el color para indicar los diferentes años. Sugerencia: use la función __lubridate__ `yday`.
+
+
+
+6\. Vuelva a hacer la trama anterior pero, esta vez, use dos colores diferentes para antes y después del 20 de septiembre de 2017.
+
+
+7\. Avanzado: rehaga el gráfico anterior, pero esta vez muestre el mes en el eje x. Sugerencia: cree una variable con la fecha de un año determinado. Luego usa el `scale_x_date` función para mostrar solo los meses.
+
+8\. Remake las muertes versus el día pero con promedios semanales. Sugerencia: use la función `round_date`.
+
+
+9\. Rehacer la trama pero con promedios mensuales. Sugerencia: use la función `round_date` de nuevo.

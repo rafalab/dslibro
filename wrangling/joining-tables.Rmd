@@ -1,0 +1,311 @@
+# Unir mesas
+
+```{r, echo=FALSE}
+img_path <- "wrangling/img"
+```
+
+La información que necesitamos para un análisis dado puede no estar solo en una tabla. Por ejemplo, cuando pronosticamos elecciones usamos la función `left_join` combinar la información de dos tablas. Aquí usamos un ejemplo más simple para ilustrar el desafío general de combinar tablas.
+
+Supongamos que queremos explorar la relación entre el tamaño de la población de los estados de EE. UU. Y los votos electorales. Tenemos el tamaño de la población en esta tabla:
+
+```{r, warning=FALSE, message=FALSE}
+library(tidyverse)
+library(dslabs)
+data(murders)
+head(murders)
+```
+
+y votos electorales en este:
+
+```{r}
+data(polls_us_election_2016)
+head(results_us_election_2016)
+```
+
+Simplemente concatenar estas dos tablas juntas no funcionará ya que el orden de los estados no es el mismo.
+
+```{r}
+identical(results_us_election_2016$state, murders$state)
+```
+
+Las funciones _join_, descritas a continuación, están diseñadas para manejar este desafío.
+
+## Uniones {#joins}
+
+Las funciones _join_en el paquete__dplyr__ aseguran que las tablas se combinen para que las filas coincidentes estén juntas. Si conoce SQL, verá que el enfoque y la sintaxis son muy similares. La idea general es que uno necesita identificar una o más columnas que servirán para unir las dos tablas. Luego se devuelve una nueva tabla con la información combinada. Observe lo que sucede si unimos las dos tablas anteriores por estado usando `left_join` (eliminaremos el `others` columna y renombrar `electoral_votes` para que las tablas quepan en la página):
+
+```{r}
+tab <- left_join(murders, results_us_election_2016, by = "state") %>%
+select(-others) %>% rename(ev = electoral_votes)
+head(tab)
+```
+
+Los datos se han unido con éxito y ahora podemos, por ejemplo, hacer un diagrama para explorar la relación:
+
+```{r ev-vs-population, message=FALSE, warning=FALSE}
+library(ggrepel)
+tab %>% ggplot(aes(population/10^6, ev, label = abb)) +
+geom_point() +
+geom_text_repel() +
+scale_x_continuous(trans = "log2") +
+scale_y_continuous(trans = "log2") +
+geom_smooth(method = "lm", se = FALSE)
+```
+
+Vemos que la relación es casi lineal con aproximadamente 2 votos electorales por cada millón de personas, pero con estados muy pequeños que obtienen proporciones más altas.
+
+
+En la práctica, no siempre ocurre que cada fila de una tabla tenga una fila coincidente en la otra. Por esta razón, tenemos varias versiones de join. Para ilustrar este desafío, tomaremos subconjuntos de las tablas anteriores. Creamos las tablas `tab1` y `tab2` para que tengan algunos estados en común pero no todos:
+
+```{r}
+tab_1 <- slice(murders, 1:6) %>% select(state, population)
+tab_1
+tab_2 <- results_us_election_2016 %>%
+filter(state%in%c("Alabama", "Alaska", "Arizona",
+"California", "Connecticut", "Delaware")) %>%
+select(state, electoral_votes) %>% rename(ev = electoral_votes)
+tab_2
+```
+
+
+Utilizaremos estas dos tablas como ejemplos en las siguientes secciones.
+
+### Izquierda unirse
+
+Supongamos que queremos una mesa como `tab_1`, pero agregando votos electorales a cualquier estado que tengamos disponible. Para esto, usamos `left_join` con `tab_1` como el primer argumento Especificamos qué columna usar para que coincida con `by` argumento.
+
+```{r}
+left_join(tab_1, tab_2, by = "state")
+```
+
+Tenga en cuenta que `NA` s se agregan a los dos estados que no aparecen en `tab_2`. Además, observe que esta función, así como todas las otras uniones, pueden recibir los primeros argumentos a través de la tubería:
+
+```{r, eval=FALSE}
+tab_1 %>% left_join(tab_2, by = "state")
+```
+
+
+### Únete a la derecha
+
+Si en lugar de una tabla con las mismas filas que la primera tabla, queremos una con las mismas filas que la segunda tabla, podemos usar `right_join`:
+
+```{r}
+tab_1 %>% right_join(tab_2, by = "state")
+```
+
+Ahora los NA están en la columna de `tab_1`.
+
+### Unir internamente
+
+Si queremos mantener solo las filas que tienen información en ambas tablas, usamos `inner_join`. Puedes pensar en esto como una intersección:
+
+```{r}
+inner_join(tab_1, tab_2, by = "state")
+```
+
+### Unión completa
+
+Si queremos mantener todas las filas y llenar las partes faltantes con NA, podemos usar `full_join`. Puedes pensar en esto como una unión:
+
+```{r}
+full_join(tab_1, tab_2, by = "state")
+```
+
+### Semi unirse
+
+Los `semi_join` la función nos permite mantener la parte de la primera tabla para la que tenemos información en la segunda. No agrega las columnas del segundo:
+
+```{r}
+semi_join(tab_1, tab_2, by = "state")
+```
+
+
+### Anti unirse
+
+La función `anti_join` es lo contrario de `semi_join`. Mantiene los elementos de la primera tabla para los que no hay información en la segunda:
+
+```{r}
+anti_join(tab_1, tab_2, by = "state")
+```
+
+El siguiente diagrama resume las uniones anteriores:
+
+
+```{r, echo=FALSE, out.width = "40%"}
+knitr::include_graphics(file.path(img_path,"joins.png"))
+```
+(Imagen cortesía de RStudio^[https://github.com/rstudio/cheatsheets]. Licencia CC-BY-4.0^[https://github.com/rstudio/cheatsheets/blob/master/LICENSE]. Recortada del original .)
+
+## Unión
+
+Aunque todavía tenemos que usarlo en este libro, otra forma común en la que se combinan los conjuntos de datos es uniéndolos. A diferencia de la función de unión, las funciones de enlace no intentan coincidir con una variable, sino que simplemente combinan conjuntos de datos. Si los conjuntos de datos no coinciden con las dimensiones apropiadas, se obtiene un error.
+
+### Columnas de enlace
+
+La función __dplyr__ _bind_cols_ une dos objetos convirtiéndolos en columnas en un tibble. Por ejemplo, queremos crear rápidamente un marco de datos que consista en números que podamos usar.
+
+```{r}
+bind_cols(a = 1:3, b = 4:6)
+```
+
+Esta función requiere que asignemos nombres a las columnas. Aquí elegimos `a` y `b`.
+
+Tenga en cuenta que hay una función R-base `cbind` con exactamente la misma funcionalidad. Una diferencia importante es que `cbind` puede crear diferentes tipos de objetos, mientras `bind_cols` siempre produce un marco de datos.
+
+`bind_cols` también puede enlazar dos marcos de datos diferentes. Por ejemplo, aquí separamos el `tab` marco de datos y luego volver a unirlos:
+
+```{r}
+tab_1 <- tab[, 1:3]
+tab_2 <- tab[, 4:6]
+tab_3 <- tab[, 7:8]
+new_tab <- bind_cols(tab_1, tab_2, tab_3)
+head(new_tab)
+```
+
+
+### Enlace por filas
+
+Los `bind_rows` la función es similar a `bind_cols`, pero enlaza filas en lugar de columnas:
+
+```{r}
+tab_1 <- tab[1:2,]
+tab_2 <- tab[3:4,]
+bind_rows(tab_1, tab_2)
+```
+
+Esto se basa en una función R-base `rbind`.
+
+## Establecer operadores
+
+Otro conjunto de comandos útiles para combinar conjuntos de datos son los operadores de conjuntos. Cuando se aplica a los vectores, estos se comportan como lo sugieren sus nombres. Ejemplos son `intersect`, `union`, `setdiff` y `setequal`. Sin embargo, si se carga el __tidyverse__, o más específicamente __dplyr__, estas funciones se pueden usar en marcos de datos en lugar de solo en vectores.
+
+### Intersecar
+
+Puede tomar intersecciones de vectores de cualquier tipo, como numéricos:
+
+```{r}
+intersect(1:10, 6:15)
+```
+o personajes:
+
+```{r}
+intersect(c("a","b","c"), c("b","c","d"))
+```
+
+El paquete __dplyr__ incluye un `intersect` función que se puede aplicar a tablas con los mismos nombres de columna. Esta función devuelve las filas en común entre dos tablas. Para asegurarnos de que usamos la versión __dplyr__ de `intersect` en lugar de la versión del paquete base, podemos usar `dplyr::intersect` me gusta esto:
+
+
+```{r}
+tab_1 <- tab[1:5,]
+tab_2 <- tab[3:7,]
+dplyr::intersect(tab_1, tab_2)
+```
+
+
+### Unión
+
+Del mismo modo, _union_ toma la unión de vectores. Por ejemplo:
+
+```{r}
+union(1:10, 6:15)
+union(c("a","b","c"), c("b","c","d"))
+```
+
+El paquete __dplyr__ incluye una versión de `union` que combina todas las filas de dos tablas con los mismos nombres de columna.
+
+```{r}
+tab_1 <- tab[1:5,]
+tab_2 <- tab[3:7,]
+dplyr::union(tab_1, tab_2)
+```
+
+
+### `setdiff`
+
+La diferencia establecida entre un primer y un segundo argumento se puede obtener con `setdiff`. Diferente a `intersect` y `union`, esta función no es simétrica:
+
+
+```{r}
+setdiff(1:10, 6:15)
+setdiff(6:15, 1:10)
+```
+
+Al igual que con las funciones que se muestran arriba, __dplyr__ tiene una versión para marcos de datos:
+
+```{r}
+tab_1 <- tab[1:5,]
+tab_2 <- tab[3:7,]
+dplyr::setdiff(tab_1, tab_2)
+```
+
+### `setequal`
+
+Finalmente la funcion `setequal` nos dice si dos conjuntos son iguales, independientemente del orden. Entonces note que:
+
+```{r}
+setequal(1:5, 1:6)
+```
+
+pero:
+
+```{r}
+setequal(1:5, 5:1)
+```
+
+Cuando se aplica a marcos de datos que no son iguales, independientemente del orden, la versión __dplyr__ proporciona un mensaje útil que nos permite saber cómo los conjuntos son diferentes:
+
+```{r}
+dplyr::setequal(tab_1, tab_2)
+```
+
+## Ejercicios
+
+
+1\. Instale y cargue la biblioteca __Lahman__. Esta base de datos incluye datos relacionados con equipos de béisbol. Incluye estadísticas resumidas sobre cómo se desempeñaron los jugadores en ataque y defensa durante varios años. También incluye información personal sobre los jugadores.
+
+Los `Batting` el marco de datos contiene las estadísticas ofensivas de todos los jugadores durante muchos años. Puede ver, por ejemplo, los 10 mejores bateadores ejecutando este código:
+
+```{r, eval=FALSE}
+library(Lahman)
+
+top <- Batting %>%
+filter(yearID == 2016) %>%
+arrange(desc(HR)) %>%
+slice(1:10)
+
+top %>% as_tibble()
+```
+
+¿Pero quiénes son estos jugadores? Vemos una identificación, pero no los nombres. Los nombres de los jugadores están en esta tabla.
+
+```{r, eval=FALSE}
+Master %>% as_tibble()
+```
+
+Podemos ver los nombres de las columnas `nameFirst` y `nameLast`. Utilizar el `left_join` función para crear una tabla de los mejores bateadores de jonrones. La mesa debe tener `playerID`, nombre, apellido y número de jonrones (HR). Reescribe el objeto `top` con esta nueva mesa
+
+
+
+2\. Ahora usa el `Salaries` marco de datos para agregar el salario de cada jugador a la tabla que creó en el ejercicio 1. Tenga en cuenta que los salarios son diferentes cada año, así que asegúrese de filtrar para el año 2016, luego use `right_join`. Esta vez muestra el nombre, apellido, equipo, recursos humanos y salario.
+
+
+
+3\. En un ejercicio anterior, creamos una versión ordenada del `co2` conjunto de datos:
+
+
+```{r, eval=FALSE}
+co2_wide <- data.frame(matrix(co2, ncol = 12, byrow = TRUE)) %>%
+setNames(1:12) %>%
+mutate(year = 1959:1997) %>%
+gather(month, co2, -year, convert = TRUE)
+```
+
+Queremos ver si la tendencia mensual está cambiando, por lo que eliminaremos los efectos del año y luego trazaremos los resultados. Primero calcularemos los promedios del año. Utilizar el `group_by` y `summarize` para calcular el co2 promedio de cada año. Guardar en un objeto llamado `yearly_avg`.
+
+
+4\. Ahora usa el `left_join` función para agregar el promedio anual a la `co2_wide` conjunto de datos Luego calcule los residuos: medida de CO2 observada - promedio anual.
+
+
+5\. Haga un diagrama de las tendencias estacionales por año, pero solo después de eliminar el efecto del año.
+
+

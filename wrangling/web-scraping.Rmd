@@ -1,0 +1,268 @@
+# Web scraping
+
+```{r, echo=FALSE}
+img_path <- "wrangling/img/"
+```
+
+Los datos que necesitamos para responder una pregunta no siempre están en una hoja de cálculo lista para que la leamos. Por ejemplo, el conjunto de datos sobre asesinatos de EE. UU. Que utilizamos en el capítulo R Basics proviene originalmente de esta página de Wikipedia:
+
+```{r}
+url <- paste0("https://en.wikipedia.org/w/index.php?title=",
+"Gun_violence_in_the_United_States_by_state",
+"&direction=prev&oldid=810166167")
+```
+
+Puede ver la tabla de datos cuando visita la página web:
+
+```{r, echo=FALSE}
+knitr::include_graphics(file.path(img_path,"murders-data-wiki-page.png"))
+```
+
+(Página web cortesía de Wikipedia^[https://en.wikipedia.org/w/index.php?title=Gun_violence_in_the_United_States_by_state&amp;direction=prev&amp;oldid=810166167]. Licencia CC-BY-SA-3.0^[https://en.wikipedia .org/ wiki/ Wikipedia: Text_of_Creative_Commons_Attribution-ShareAlike_3.0_Unported_License]. Captura de pantalla de parte de la página.)
+
+Desafortunadamente, no hay un enlace a un archivo de datos. Para hacer el marco de datos que se carga cuando escribimos `data(murders)`, tuvimos que hacer algo de _desguace web_.
+
+_Web scraping_, o _web harvesting_, es el término que usamos para describir el proceso de extracción de datos de un sitio web. La razón por la que podemos hacer esto es porque la información utilizada por un navegador para representar páginas web se recibe como un archivo de texto de un servidor. El texto es un código escrito en lenguaje de marcado de hipertexto (HTML). Cada navegador tiene una manera de mostrar el código fuente html de una página, cada uno diferente. En Chrome, puede usar Control-U en una PC y comando + alt + U en una Mac. Verás algo como esto:
+
+```{r, echo=FALSE}
+knitr::include_graphics(file.path(img_path,"html-code.png"))
+```
+
+## HTML
+
+Debido a que este código es accesible, podemos descargar el archivo HTML, importarlo a R y luego escribir programas para extraer la información que necesitamos de la página. Sin embargo, una vez que miramos el código HTML, esto puede parecer una tarea desalentadora. Pero le mostraremos algunas herramientas convenientes para facilitar el proceso. Para tener una idea de cómo funciona, aquí hay algunas líneas de código de la página de Wikipedia que proporciona los datos de asesinatos en los Estados Unidos:
+
+```
+<table class="wikitable sortable">
+<tr>
+<th>State</th>
+<th><a href="/wiki/List_of_U.S._states_and_territories_by_population"
+title="List of U.S. states and territories by population">Population</a><br/>
+<small>(total inhabitants)</small><br/>
+<small>(2015)</small> <sup id="cite_ref-1" class="reference">
+<a href="#cite_note-1">[1]</a></sup></th>
+<th>Murders and Nonnegligent
+<p>Manslaughter<br/>
+<small>(total deaths)</small><br/>
+<small>(2015)</small> <sup id="cite_ref-2" class="reference">
+<a href="#cite_note-2">[2]</a></sup></p>
+</th>
+<th>Murder and Nonnegligent
+<p>Manslaughter Rate<br/>
+<small>(per 100,000 inhabitants)</small><br/>
+<small>(2015)</small></p>
+</th>
+</tr>
+<tr>
+<td><a href="/wiki/Alabama" title="Alabama">Alabama</a></td>
+<td>4,853,875</td>
+<td>348</td>
+<td>7.2</td>
+</tr>
+<tr>
+<td><a href="/wiki/Alaska" title="Alaska">Alaska</a></td>
+<td>737,709</td>
+<td>59</td>
+<td>8.0</td>
+</tr>
+<tr>
+```
+
+De hecho, puede ver los datos, excepto que los valores de datos están rodeados por un código html como `<td>`. También podemos ver un patrón de cómo se almacena. Si conoce HTML, puede escribir programas que aprovechen el conocimiento de estos patrones para extraer lo que queremos. También aprovechamos un lenguaje ampliamente utilizado para hacer que las páginas web se vean "bonitas" llamadas Cascading Style Sheets (CSS). Decimos más sobre esto en la Sección \@ref(css-selectors).
+
+Aunque proporcionamos herramientas que permiten raspar datos sin conocer HTML, como científico de datos es bastante útil aprender algo de HTML y CSS. Esto no solo mejora sus habilidades de raspado, sino que puede ser útil si está creando una página web para exhibir su trabajo. Hay muchos cursos y tutoriales en línea para aprenderlos. Dos ejemplos son Codeacademy^[https://www.codecademy.com/learn/learn-html] y W3schools^[https://www.w3schools.com/].
+
+## El paquete rvest
+
+El __tidyverse__proporciona un paquete de recolección web llamado__rvest__. El primer paso para usar este paquete es importar la página web a R. El paquete lo hace bastante simple:
+
+```{r, message=FALSE, warning=FALSE}
+library(tidyverse)
+library(rvest)
+h <- read_html(url)
+```
+
+
+Tenga en cuenta que todo el asesinato en la página web de Wikipedia de EE. UU. Ahora está contenido en `h`. La clase de este objeto es:
+
+```{r}
+class(h)
+```
+
+El paquete __rvest__ es en realidad más general; maneja documentos XML. XML es un lenguaje de marcado general (eso es lo que significa ML) que se puede usar para representar cualquier tipo de datos. HTML es un tipo específico de XML desarrollado específicamente para representar páginas web. Aquí nos centramos en documentos HTML.
+
+Ahora, ¿cómo extraemos la tabla del objeto? `h`? Si imprimimos `h`, realmente no vemos mucho:
+
+```{r}
+h
+```
+
+Podemos ver todo el código que define la página web descargada usando el `html_text` funciona así:
+
+```{r, eval=FALSE}
+html_text(h)
+```
+
+No mostramos el resultado aquí porque incluye miles de caracteres, pero si lo observamos, podemos ver que los datos que buscamos se almacenan en una tabla HTML: puede ver esto en esta línea del código HTML anterior. `<table class="wikitable sortable">`. Las diferentes partes de un documento HTML, a menudo definidas con un mensaje intermedio `<` y `>` se conocen como _nodes_. El paquete __rvest__ incluye funciones para extraer nodos de un documento HTML: `html_nodes` extrae todos los nodos de diferentes tipos y `html_node` extrae el primero. Para extraer las tablas del código html usamos:
+
+
+```{r}
+tab <- h %>% html_nodes("table")
+```
+
+Ahora, en lugar de toda la página web, solo tenemos el código html para las tablas de la página:
+
+```{r}
+tab
+```
+
+La tabla que nos interesa es la primera:
+
+```{r}
+tab[[1]]
+```
+
+
+Esto claramente no es un conjunto de datos ordenado, ni siquiera un marco de datos. En el código anterior, definitivamente puede ver un patrón y escribir código para extraer solo los datos es muy factible. De hecho, __rvest__ incluye una función solo para convertir tablas HTML en marcos de datos:
+
+
+```{r}
+tab <- tab[[1]] %>% html_table
+class(tab)
+```
+
+Ahora estamos mucho más cerca de tener una tabla de datos utilizable:
+
+```{r}
+tab <- tab %>% setNames(c("state", "population", "total", "murder_rate"))
+head(tab)
+```
+
+Todavía tenemos algunas disputas que hacer. Por ejemplo, necesitamos eliminar las comas y convertir los caracteres en números. Antes de continuar con esto, aprenderemos un enfoque más general para extraer información de sitios web.
+
+
+## Selectores CSS {#css-selectors}
+
+El aspecto predeterminado de una página web hecha con el HTML más básico es bastante poco atractivo. Las páginas estéticamente agradables que vemos hoy están hechas con CSS para definir el aspecto y el estilo de las páginas web. El hecho de que todas las páginas de una empresa tengan el mismo estilo generalmente resulta del uso del mismo archivo CSS para definir el estilo. La forma general en que funcionan estos archivos CSS es definiendo cómo se verá cada uno de los elementos de una página web. El título, los encabezados, las listas detalladas, las tablas y los enlaces, por ejemplo, reciben cada uno su propio estilo, incluida la fuente, el color, el tamaño y la distancia desde el margen. CSS hace esto aprovechando los patrones utilizados para definir estos elementos, denominados _selectores_. Un ejemplo de dicho patrón, que utilizamos anteriormente, es `table`, pero hay muchos, muchos más.
+
+Si queremos obtener datos de una página web y conocemos un selector que es único para la parte de la página que contiene estos datos, podemos usar el `html_nodes` función. Sin embargo, saber qué selector puede ser bastante complicado.
+De hecho, la complejidad de las páginas web ha aumentado a medida que se vuelven más sofisticadas. Para algunos de los más avanzados, parece casi imposible encontrar los nodos que definen un dato en particular. Sin embargo, los gadgets selectores realmente hacen esto posible.
+
+SelectorGadget^[http://selectorgadget.com/] es un software que le permite determinar de manera interactiva qué selector CSS necesita para extraer componentes específicos de la página web. Si planea raspar datos que no sean tablas de páginas html, le recomendamos que lo instale. Está disponible una extensión de Chrome que le permite encender el gadget y luego, al hacer clic en la página, resalta partes y le muestra el selector que necesita para extraer estas partes. Hay varias demostraciones de cómo hacer esto, incluido el autor de __rvest__ Hadley Wickham
+viñeta^[https://cran.r-project.org/web/packages/rvest/vignettes/selectorgadget.html] y otros tutoriales basados en la viñeta^[https://stat4701.github.io/edav/2015/ 04/02/ rvest_tutorial/]^[https://www.analyticsvidhya.com/blog/2017/03/beginners-guide-on-web-scraping-in-r-using-rvest-with-hands-on-knowledge/].
+
+## JSON
+
+Compartir datos en Internet se ha vuelto cada vez más común. Desafortunadamente, los proveedores usan diferentes formatos, lo que hace que sea más difícil para los científicos de datos reorganizar los datos en R. Sin embargo, hay algunos estándares que también se están volviendo más comunes. Actualmente, un formato que se está adoptando ampliamente es la notación de objetos JavaScript o JSON. Debido a que este formato es muy general, no se parece en nada a una hoja de cálculo. Este archivo JSON se parece más al código que usa para definir una lista. Aquí hay un ejemplo de información almacenada en formato JSON:
+
+```{r, echo=FALSE}
+library(jsonlite)
+example <- data.frame(name= c("Miguel", "Sofia", "Aya", "Cheng"), student_id = 1:4, exam_1 = c(85, 94, 87, 90), exam_2 = c(86, 93, 88, 91))
+json <- toJSON(example, pretty = TRUE)
+json
+```
+
+El archivo anterior en realidad representa un marco de datos. Para leerlo, podemos usar la función `fromJSON` del paquete __jsonlite__. Tenga en cuenta que los archivos JSON a menudo están disponibles a través de Internet. Varias organizaciones proporcionan una API JSON o un servicio web al que puede conectarse directamente y obtener datos. Aquí hay un ejemplo:
+
+```{r}
+library(jsonlite)
+citi_bike <- fromJSON("http://citibikenyc.com/stations/json")
+```
+
+Esto descarga una lista. El primer argumento te dice cuando lo descargaste:
+
+```{r}
+citi_bike$executionTime
+```
+
+y el segundo es una tabla de datos:
+
+```{r}
+citi_bike$stationBeanList %>% as_tibble()
+```
+
+
+Puede aprender mucho más examinando tutoriales y archivos de ayuda del paquete __jsonlite__. Este paquete está destinado a tareas relativamente simples, como la convergencia de datos en tablas. Para mayor flexibilidad, recomendamos `rjson`.
+
+
+
+## Ejercicios
+
+
+1\. Visite la siguiente página web: [https://web.archive.org/web/20181024132313/http://www.stevetheump.com/Payrolls.htmfont>(https://web.archive.org/web/20181024132313/ http://www.stevetheump.com/Payrolls.htm)
+
+Observe que hay varias tablas. Digamos que estamos interesados en comparar las nóminas de los equipos a lo largo de los años. Los siguientes ejercicios nos llevan a través de los pasos necesarios para hacer esto.
+
+Comience aplicando lo que aprendió a leer en el sitio web en un objeto llamado `h`.
+
+2\. Tenga en cuenta que, aunque no es muy útil, podemos ver el contenido de la página escribiendo:
+
+```{r, eval = FALSE}
+html_text(h)
+```
+
+El siguiente paso es extraer las tablas. Para esto, podemos usar el `html_nodes` función. Aprendimos que las tablas en html están asociadas con el `table` nodo. Utilizar el `html_nodes` función y el `table` nodo para extraer la primera tabla. Almacenarlo en un objeto `nodes`.
+
+
+
+3\. Los `html_nodes` la función devuelve una lista de objetos de clase `xml_node`. Podemos ver el contenido de cada uno usando, por ejemplo, el `html_text` función. Puede ver el contenido de un componente elegido arbitrariamente como este:
+
+```{r, eval = FALSE}
+html_text(nodes[[8]])
+```
+
+Si el contenido de este objeto es una tabla html, podemos usar el `html_table` función para convertirlo en un marco de datos. Utilizar el `html_table` función para convertir la octava entrada de `nodes` en una mesa
+
+
+4\. Repita lo anterior para los primeros 4 componentes de `nodes`. ¿Cuáles de las siguientes son tablas de nómina:
+
+a. Todos ellos.
+si. 1
+c. 2
+re. 2-4
+
+
+5\. Repita lo anterior para los primeros __los últimos 3 componentes de `nodes`. Cual de los siguientes es verdadero:
+
+a. La última entrada en `nodes` muestra el promedio de todos los equipos a lo largo del tiempo, no la nómina por equipo.
+si. Las tres son tablas de nómina por equipo.
+c. Los tres son como la primera entrada, no una tabla de nómina.
+re. Todas las anteriores.
+
+6\. Hemos aprendido que la primera y la última entrada de `nodes` no son tablas de nómina. Redefinir `nodes` para que estos dos se eliminen.
+
+
+7\. Vimos en el análisis anterior que el primer nodo de la tabla no es en realidad una tabla. Esto sucede a veces en html porque las tablas se usan para hacer que el texto se vea de cierta manera, en lugar de almacenar valores numéricos.
+Retire el primer componente y luego use `sapply` y `html_table` para convertir cada nodo en `nodes` en una mesa Tenga en cuenta que en este caso, `sapply` devolverá una lista de tablas. También puedes usar `lapply` para asegurar que se aplique una lista.
+
+
+
+8\. Mira a través de las tablas resultantes. son todos iguales? ¿Podríamos unirnos a ellos con `bind_rows`?
+
+
+9\. Crea dos tablas, llámalas `tab_1` y `tab_2` utilizando las entradas 10 y 19.
+
+
+10\. Utilizar una `full_join` función para combinar estas dos tablas. Antes de hacer esto, deberá corregir el problema del encabezado que falta. También deberá hacer que los nombres coincidan.
+
+
+11\. Después de unirse a las mesas, verá varias NA. Esto se debe a que algunos equipos están en una mesa y no en la otra. Utilizar el `anti_join` funcionan para tener una mejor idea de por qué sucede esto.
+
+
+12\. Vemos que uno de los problemas es que los Yankees están listados como _N.Y. Yankees_y_NY Yankees_. En la siguiente sección, aprenderemos enfoques eficientes para solucionar problemas como este. Aquí podemos hacerlo "a mano" de la siguiente manera:
+
+
+```{r, eval=FALSE}
+tab_1 <- tab_1 %>%
+mutate(Team = ifelse(Team == "N.Y. Yankees", "NY Yankees", Team))
+```
+
+Ahora únase a las tablas y muestre solo Oakland y los Yankees y las columnas de nómina.
+
+13\. Avanzado: extraiga los títulos de las películas que obtuvieron la Mejor Película de este sitio web: [https://m.imdb.com/chart/bestpicture/font>(https://m.imdb.com/chart/bestpicture/)
+
+
+
+
+
+

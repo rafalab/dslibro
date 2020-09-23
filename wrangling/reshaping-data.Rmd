@@ -1,0 +1,249 @@
+# Reformar datos
+
+```{r, echo=FALSE}
+img_path <- "wrangling/img/"
+```
+
+Como hemos visto a través del libro, tener datos en formato _tidy_ es lo que hace que el tidyverse fluya. Después del primer paso en el proceso de análisis de datos, la importación de datos, el siguiente paso común es remodelar los datos en una forma que facilite el resto del análisis. El paquete __tidyr__ incluye varias funciones que son útiles para ordenar datos.
+
+Utilizaremos el conjunto de datos de formato ancho de fertilidad descrito en la Sección \@ref(tidy-data) como ejemplo en esta sección.
+
+```{r, message=FALSE, warning=FALSE}
+library(tidyverse)
+library(dslabs)
+path <- system.file("extdata", package="dslabs")
+filename <- file.path(path, "fertility-two-countries-example.csv")
+wide_data <- read_csv(filename)
+```
+
+
+## `gather`
+
+Una de las funciones más utilizadas en el paquete __tidyr__ es `gather`, que es útil para convertir datos anchos en datos ordenados.
+
+Como con la mayoría de las funciones tidyverse, el `gather` el primer argumento de la función es el marco de datos que se convertirá. Aquí queremos remodelar el `wide_data` conjunto de datos para que cada fila represente una observación de fertilidad, lo que implica que necesitamos tres columnas para almacenar el año, el país y el valor observado. En su forma actual, los datos de diferentes años están en diferentes columnas con los valores del año almacenados en los nombres de las columnas. A través del segundo y tercer argumento diremos `gather` los nombres de columna que queremos asignar a las columnas que contienen los nombres de columna y observaciones actuales, respectivamente. En este caso, una buena opción para estos dos argumentos sería `year` y `fertility`. Tenga en cuenta que en ninguna parte del archivo de datos nos dice que se trata de datos de fertilidad. En cambio, desciframos esto del nombre del archivo. A través del cuarto argumento especificamos las columnas que contienen los valores observados; Estas son las columnas que se _gregaron_. El valor predeterminado es reunir todas las columnas, por lo que, en la mayoría de los casos, tenemos que especificar las columnas. En nuestro ejemplo queremos columnas `1960`, `1961` hasta `2015`.
+
+El código para recopilar los datos de fertilidad se ve así:
+
+```{r}
+new_tidy_data <- gather(wide_data, year, fertility, `1960`:`2015`)
+```
+
+También podemos usar la tubería de esta manera:
+
+```{r}
+new_tidy_data <- wide_data %>% gather(year, fertility, `1960`:`2015`)
+```
+
+Podemos ver que los datos se han convertido al formato ordenado con columnas `year` y `fertility`:
+
+```{r}
+head(new_tidy_data)
+```
+
+y que cada año resultó en dos filas ya que tenemos dos países y esta columna no se recopiló.
+Una forma algo más rápida de escribir este código es especificar qué columna **no** se recopilará, en lugar de todas las columnas que se recopilarán:
+
+```{r}
+new_tidy_data <- wide_data %>%
+gather(year, fertility, -country)
+```
+
+Los `new_tidy_data` objeto se parece al original `tidy_data` definimos de esta manera
+
+```{r}
+data("gapminder")
+tidy_data <- gapminder %>%
+filter(country %in% c("South Korea", "Germany") & !is.na(fertility)) %>%
+select(country, year, fertility)
+```
+
+con solo una pequeña diferencia. ¿Puedes distinguirlo? Mire el tipo de datos de la columna del año:
+
+```{r}
+class(tidy_data$year)
+class(new_tidy_data$year)
+```
+
+Los `gather` la función supone que los nombres de columna son caracteres. Así que necesitamos un poco más de discusión antes de que estemos listos para hacer un argumento. Necesitamos convertir la columna del año en números. los `gather` la función incluye el `convert` argumento para este propósito:
+
+```{r}
+new_tidy_data <- wide_data %>%
+gather(year, fertility, -country, convert = TRUE)
+class(new_tidy_data$year)
+```
+
+Tenga en cuenta que también podríamos haber utilizado el `mutate` y `as.numeric`.
+
+Ahora que los datos están ordenados, podemos usar este código ggplot relativamente simple:
+
+```{r fertility-year-check, eval=FALSE}
+new_tidy_data %>% ggplot(aes(year, fertility, color = country)) +
+geom_point()
+```
+
+## `spread`
+
+Como veremos en ejemplos posteriores, a veces es útil para fines de disputa de datos convertir datos ordenados en datos amplios. A menudo usamos esto como un paso intermedio para ordenar los datos. los `spread` la función es básicamente la inversa de `gather`. El primer argumento es para los datos, pero como estamos usando la tubería, no lo mostramos. El segundo argumento dice `spread` qué variable se usará como los nombres de columna. El tercer argumento especifica qué variable usar para completar las celdas:
+
+```{r}
+new_wide_data <- new_tidy_data %>% spread(year, fertility)
+select(new_wide_data, country, `1960`:`1967`)
+```
+
+El siguiente diagrama puede ayudarlo a recordar cómo funcionan estas dos funciones:
+
+```{r, echo=FALSE}
+knitr::include_graphics(file.path(img_path,"gather-spread.png"))
+```
+
+(Imagen cortesía de RStudio^[https://github.com/rstudio/cheatsheets]. Licencia CC-BY-4.0^[https://github.com/rstudio/cheatsheets/blob/master/LICENSE]. Recortada del original .)
+<!-- (Source: RStudio. The image is a section of this [cheat sheet](https://github.com/rstudio/cheatsheets/raw/master/data-transformation.pdf).)-->
+
+## `separate` {#separate}
+
+La disputa de datos que se muestra arriba fue simple en comparación con lo que generalmente se requiere. En nuestros archivos de hoja de cálculo de ejemplo, incluimos una ilustración que es un poco más complicada. Contiene dos variables: esperanza de vida y fertilidad. Sin embargo, la forma en que se almacena no es ordenada y, como explicaremos, no es óptima.
+
+```{r, message=FALSE}
+path <- system.file("extdata", package = "dslabs")
+
+filename <- "life-expectancy-and-fertility-two-countries-example.csv"
+filename <- file.path(path, filename)
+
+raw_dat <- read_csv(filename)
+select(raw_dat, 1:5)
+```
+
+Primero, tenga en cuenta que los datos están en formato ancho. En segundo lugar, observe que esta tabla incluye valores para dos variables, fertilidad y esperanza de vida, con el nombre de la columna que codifica qué columna representa qué variable. No se recomienda codificar la información en los nombres de las columnas, pero, desafortunadamente, es bastante común. Pondremos a trabajar nuestras habilidades de discusión para extraer esta información y almacenarla de manera ordenada.
+
+Podemos comenzar la disputa de datos con el `gather` función, pero ya no deberíamos usar el nombre de la columna `year` para la nueva columna, ya que también contiene el tipo de variable. Lo llamaremos `key`, el valor predeterminado, por ahora:
+
+```{r}
+dat <- raw_dat %>% gather(key, value, -country)
+head(dat)
+```
+
+El resultado no es exactamente lo que llamamos ordenado ya que cada observación está asociada con dos, no una, filas. Queremos tener los valores de las dos variables, fertilidad y esperanza de vida, en dos columnas separadas. El primer desafío para lograr esto es separar el `key` columna en el año y el tipo de variable. Observe que las entradas en esta columna separan el año del nombre de la variable con un guión bajo:
+
+```{r}
+dat$key[1:5]
+```
+
+Codificar múltiples variables en el nombre de una columna es un problema tan común que el paquete __readr__ incluye una función para separar estas columnas en dos o más. Aparte de los datos, el `separate` la función toma tres argumentos: el nombre de la columna que se separará, los nombres que se utilizarán para las nuevas columnas y el carácter que separa las variables. Entonces, un primer intento en esto es:
+
+```{r, eval=FALSE}
+dat %>% separate(key, c("year", "variable_name"), "_")
+```
+
+Porque `_` es el separador predeterminado asumido por `separate`, no tenemos que incluirlo en el código:
+
+```{r}
+dat %>% separate(key, c("year", "variable_name"))
+```
+
+La función separa los valores, pero nos encontramos con un nuevo problema. Recibimos la advertencia `Too many values at 112 locations:` y que el `life_expectancy` variable se trunca a `life`. Esto es porque el `_` se usa para separar `life` y `expectancy`, no solo año y nombre de variable! Podríamos agregar una tercera columna para captar esto y dejar que el `separate` la función sabe qué columna completar con los valores faltantes, `NA`, cuando no hay un tercer valor. Aquí le decimos que llene la columna de la derecha:
+
+```{r}
+var_names <- c("year", "first_variable_name", "second_variable_name")
+dat %>% separate(key, var_names, fill = "right")
+```
+
+Sin embargo, si leemos el `separate` en el archivo de ayuda, encontramos que un mejor enfoque es fusionar las dos últimas variables cuando hay una separación adicional:
+
+```{r}
+dat %>% separate(key, c("year", "variable_name"), extra = "merge")
+```
+
+Esto logra la separación que queríamos. Sin embargo, aún no hemos terminado. Necesitamos crear una columna para cada variable. Como aprendimos, el `spread` la función puede hacer esto:
+
+```{r}
+dat %>%
+separate(key, c("year", "variable_name"), extra = "merge") %>%
+spread(variable_name, value)
+```
+
+Los datos ahora están en formato ordenado con una fila para cada observación con tres variables: año, fertilidad y esperanza de vida.
+
+## `unite`
+
+A veces es útil hacer el inverso de `separate`, une dos columnas en una. Para demostrar cómo usar `unite`, mostramos un código que, aunque * no * es el enfoque óptimo, sirve como ilustración. Supongamos que no supiéramos sobre `extra` y usé este comando para separar:
+
+```{r}
+dat %>%
+separate(key, var_names, fill = "right")
+```
+
+Podemos lograr el mismo resultado final uniendo las columnas segunda y tercera, luego extendiendo las columnas y renombrando `fertility_NA` a `fertility`:
+
+```{r}
+dat %>%
+separate(key, var_names, fill = "right") %>%
+unite(variable_name, first_variable_name, second_variable_name) %>%
+spread(variable_name, value) %>%
+rename(fertility = fertility_NA)
+```
+
+
+## Ejercicios
+
+1\. Ejecute el siguiente comando para definir el `co2_wide` objeto:
+
+```{r, eval=FALSE}
+co2_wide <- data.frame(matrix(co2, ncol = 12, byrow = TRUE)) %>%
+setNames(1:12) %>%
+mutate(year = as.character(1959:1997))
+```
+
+Utilice la función de recopilación para organizar esto en un conjunto de datos ordenado. Llame a la columna con las mediciones de CO2. `co2` y llama a la columna del mes `month`. Llamar al objeto resultante `co2_tidy`.
+
+
+2\. Trace CO2 versus mes con una curva diferente para cada año usando este código:
+
+```{r, eval=FALSE}
+co2_tidy %>% ggplot(aes(month, co2, color = year)) + geom_line()
+```
+
+Si no se realiza la trama esperada, probablemente sea porque `co2_tidy$month` no es numérico:
+
+```{r, eval=FALSE}
+class(co2_tidy$month)
+```
+
+
+Vuelva a escribir la llamada para reunir usando un argumento que asegure que la columna del mes será numérica. Luego haz la trama.
+
+
+3\. ¿Qué aprendemos de esta trama?
+
+a. Las medidas de CO2 aumentan monotónicamente de 1959 a 1997.
+si. Las medidas de CO2 son más altas en el verano y el promedio anual aumentó de 1959 a 1997.
+c. Las medidas de CO2 parecen constantes y la variabilidad aleatoria explica las diferencias.
+c. Las medidas de CO2 no tienen una tendencia estacional.
+
+
+4\. Ahora cargue el `admissions` conjunto de datos, que contiene información de admisión para hombres y mujeres en seis carreras y mantiene solo la columna de porcentaje admitido:
+
+```{r, eval=FALSE}
+load(admissions)
+dat <- admissions %>% select(-applicants)
+```
+
+Si pensamos en una observación como importante, y que cada observación tiene dos variables (porcentaje de hombres admitidos y porcentaje de mujeres admitidas), entonces esto no es ordenado. Utilizar el `spread` función para discutir en forma ordenada: una fila para cada especialidad.
+
+
+5\. Ahora intentaremos un desafío de discusión más avanzado. Queremos discutir los datos de admisión para que para cada especialidad tengamos 4 observaciones: `admitted_men`, `admitted_women`, `applicants_men` y `applicants_women`. El _trick_ que realizamos aquí es realmente bastante común: primero se reúne para generar un marco de datos intermedio y luego se extiende para obtener los datos ordenados que queremos. Iremos paso a paso en este y en los próximos dos ejercicios.
+
+Utilice la función de recopilación para crear un `tmp` data.frame con una columna que contiene el tipo de observación `admitted` o `applicants`. Llamar a las nuevas columnas. `key` y valor.
+
+
+6\. Ahora tienes un objeto `tmp` con columnas `major`, `gender`, `key` y `value`. Tenga en cuenta que si combina la clave y el género, obtenemos los nombres de columna que queremos: `admitted_men`, `admitted_women`, `applicants_men` y `applicants_women`. Usa la función `unite` para crear una nueva columna llamada `column_name`.
+
+
+
+7\. Ahora usa el `spread` función para generar los datos ordenados con cuatro variables para cada mayor.
+
+
+8\. Ahora use la tubería para escribir una línea de código que gire `admissions` a la tabla producida en el ejercicio anterior.
+
+
+
