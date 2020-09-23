@@ -76,7 +76,9 @@
 | key bindings | | combinaciones de teclas | combinaciones de teclas |
 | keyboard shortcut | Use the keyboard shortcut command-S | atajo del teclado | atajo de teclado |
 | __L__ | | | | |
-| log transformation | transformación logarítmica | | transformación logarítmica   |  |
+| log odds ratio | logaritmo de riesgo relativo |  |  |
+| log transformation | transformación logarítmica | |
+transformación logarítmica   |  |
 | logicals |  lógicos o booleanos | to get a vector of logicals | operadores lógicos o booleanos | lógicos o booleanos |
 | loop |  | bucle |  |
 | __M__ | | | | |
@@ -97,6 +99,7 @@
 | notebook |  | un _notebook_ |  |
 | __O__ | | | | |
 | odds |  |  |  |
+| odds ratio | riesgo relativo |  |  |
 | operator | operador |the `!=` operator| operador | operador |
 | outliers | valores atípicos|  | |  |
 | output | _output_, resultado, salida | the output of the function is a vector |un _output_ (no se traduce),resultado, salida  | salida |
