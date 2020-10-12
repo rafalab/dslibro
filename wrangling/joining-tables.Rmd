@@ -32,7 +32,7 @@ Las funciones _join_, descritas a continuación, están diseñadas para manejar 
 
 ## Joins {#joins}
 
-Las funciones _join_ del paquete __dplyr__ aseguran que las tablas se combinen para que las filas coincidentes estén juntas. Si conocen SQL, verán que el acercamiento y la sintaxis son muy similares. La idea general es que uno necesita identificar una o más columnas que servirán para [fix "match"] unir las dos tablas. Entonces se devuelve una nueva tabla con la información combinada. Observen lo que sucede si unimos las dos tablas anteriores por estado usando `left_join` (eliminaremos la columna `others`y renombraremos `electoral_votes` para que las tablas quepen en la página):
+Las funciones _join_ del paquete __dplyr__ aseguran que las tablas se combinen para que las filas coincidentes estén juntas. Si conocen SQL, verán que el acercamiento y la sintaxis son muy similares. La idea general es que uno necesita identificar una o más columnas que servirán para emparejar las dos tablas. Entonces se devuelve una nueva tabla con la información combinada. Observen lo que sucede si unimos las dos tablas anteriores por estado usando `left_join` (eliminaremos la columna `others`y renombraremos `electoral_votes` para que las tablas quepen en la página):
 
 ```{r}
 tab <- left_join(murders, results_us_election_2016, by = "state") %>%
@@ -52,7 +52,7 @@ scale_y_continuous(trans = "log2") +
 geom_smooth(method = "lm", se = FALSE)
 ```
 
-Vemos que la relación es casi lineal con aproximadamente 2 votos electorales por cada millón de personas, pero con estados muy pequeños obteniendo [fix "higher ratios" ok?] proporciones más altas.
+Vemos que la relación es casi lineal con aproximadamente dos votos electorales para cada millón de personas, pero con estados muy pequeños obteniendo proporciones más altas.
 
 
 En la práctica, no siempre ocurre que cada fila de una tabla tenga una fila correspondiente en la otra. Por esta razón, tenemos varias versiones de _join_. Para ilustrar este reto, tomaremos subconjuntos de las tablas anteriores. Creamos las tablas `tab1` y `tab2` para que tengan algunos estados en común pero no todos:
@@ -113,7 +113,7 @@ full_join(tab_1, tab_2, by = "state")
 
 ### Semi join
 
-[fix] La función `semi_join`nos permite mantener la parte de la primera tabla para la que tenemos información en la segunda. No agrega las columnas de la segunda:
+La función `semi_join` nos permite mantener la parte de la primera tabla para la cual tenemos información en la segunda. No agrega las columnas de la segunda:
 
 ```{r}
 semi_join(tab_1, tab_2, by = "state")
@@ -122,27 +122,27 @@ semi_join(tab_1, tab_2, by = "state")
 
 ### Anti join
 
-La función `anti_join` es la contrario de `semi_join`. Mantiene los elementos de la primera tabla para los que no hay información en la segunda:
+La función `anti_join` es la opuesta de `semi_join`. Mantiene los elementos de la primera tabla para los que no hay información en la segunda:
 
 ```{r}
 anti_join(tab_1, tab_2, by = "state")
 ```
 
-El siguiente diagrama resume las uniones anteriores:
+El siguiente diagrama resume las funciones _join_:
 
 
 ```{r, echo=FALSE, out.width = "40%"}
 knitr::include_graphics(file.path(img_path,"joins.png"))
 ```
-(Imagen cortesía de RStudio^[https://github.com/rstudio/cheatsheets]. Licencia CC-BY-4.0^[https://github.com/rstudio/cheatsheets/blob/master/LICENSE]. Recortada del original .)
+(Imagen cortesía de RStudio^[https://github.com/rstudio/cheatsheets]. Licencia CC-BY-4.0^[https://github.com/rstudio/cheatsheets/blob/master/LICENSE]. Recortada del original.)
 
-## Unión
+## Binding
 
-Aunque todavía tenemos que usarlo en este libro, otra forma común en la que se combinan los conjuntos de datos es uniéndolos. A diferencia de la función de unión, las funciones de enlace no intentan coincidir con una variable, sino que simplemente combinan conjuntos de datos. Si los conjuntos de datos no coinciden con las dimensiones apropiadas, se obtiene un error.
+Aunque todavía no lo hemos usado en este libro, otra forma común en la que se combinan los sets de datos es con pegándolas. A diferencia de [fix check eng plural?] las funciones _join_, estas funciones no intentan coincidir con una variable, sino que simplemente combinan sets de datos. Si los sets de datos no coinciden con las dimensiones apropiadas, se obtiene un error.
 
-### Columnas de enlace
+### Pegando columnas
 
-La función __dplyr__ _bind_cols_ une dos objetos convirtiéndolos en columnas en un tibble. Por ejemplo, queremos crear rápidamente un marco de datos que consista en números que podamos usar.
+La función _bind_cols_ de __dplyr__ pegan dos objetos convirtiéndolos en columnas en un tibble. [fix check] Por ejemplo, queremos crear rápidamente un _data frame_ que consiste de números que podemos usar.
 
 ```{r}
 bind_cols(a = 1:3, b = 4:6)
@@ -150,9 +150,9 @@ bind_cols(a = 1:3, b = 4:6)
 
 Esta función requiere que asignemos nombres a las columnas. Aquí elegimos `a` y `b`.
 
-Tenga en cuenta que hay una función R-base `cbind` con exactamente la misma funcionalidad. Una diferencia importante es que `cbind` puede crear diferentes tipos de objetos, mientras `bind_cols` siempre produce un marco de datos.
+Tengan en cuenta que hay [fix] una función de R `cbind` con exactamente la misma funcionalidad. Una diferencia importante es que `cbind` puede crear diferentes tipos de objetos, mientras `bind_cols` siempre produce un _data frame_.
 
-`bind_cols` también puede enlazar dos marcos de datos diferentes. Por ejemplo, aquí separamos el `tab` marco de datos y luego volver a unirlos:
+`bind_cols` también puede pegar dos _data frames_ diferentes. Por ejemplo, aquí separamos el _data frame_ `tab` en tres _data frames_ y luego volvemos a pegarlos:
 
 ```{r}
 tab_1 <- tab[, 1:3]
@@ -163,9 +163,9 @@ head(new_tab)
 ```
 
 
-### Enlace por filas
+### Pegando filas
 
-Los `bind_rows` la función es similar a `bind_cols`, pero enlaza filas en lugar de columnas:
+La función `bind_rows` es similar a `bind_cols`, pero [fix "bind"] enlaza filas en lugar de columnas:
 
 ```{r}
 tab_1 <- tab[1:2,]
@@ -173,11 +173,11 @@ tab_2 <- tab[3:4,]
 bind_rows(tab_1, tab_2)
 ```
 
-Esto se basa en una función R-base `rbind`.
+[fix check] Esto se basa en una función `rbind` de R.
 
-## Establecer operadores
+## Operadores de conjuntos [fix check math term]
 
-Otro conjunto de comandos útiles para combinar conjuntos de datos son los operadores de conjuntos. Cuando se aplica a los vectores, estos se comportan como lo sugieren sus nombres. Ejemplos son `intersect`, `union`, `setdiff` y `setequal`. Sin embargo, si se carga el __tidyverse__, o más específicamente __dplyr__, estas funciones se pueden usar en marcos de datos en lugar de solo en vectores.
+Otro conjunto de comandos útiles para combinar sets de datos son los operadores de sets. Cuando se aplican a los vectores, estos se comportan como lo sugieren sus nombres. Ejemplos son `intersect`, `union`, `setdiff` y `setequal`. Sin embargo, si se carga el __tidyverse__, o más específicamente __dplyr__, estas funciones se pueden usar en _data frames_ en lugar de solo en vectores.
 
 ### Intersecar
 
@@ -240,7 +240,7 @@ dplyr::setdiff(tab_1, tab_2)
 
 ### `setequal`
 
-Finalmente la funcion `setequal` nos dice si dos conjuntos son iguales, independientemente del orden. Entonces note que:
+Finalmente la funcion `setequal` nos dice si dos sets son iguales, independientemente del orden. Entonces note que:
 
 ```{r}
 setequal(1:5, 1:6)
@@ -252,7 +252,7 @@ pero:
 setequal(1:5, 5:1)
 ```
 
-Cuando se aplica a marcos de datos que no son iguales, independientemente del orden, la versión __dplyr__ proporciona un mensaje útil que nos permite saber cómo los conjuntos son diferentes:
+Cuando se aplica a marcos de datos que no son iguales, independientemente del orden, la versión __dplyr__ proporciona un mensaje útil que nos permite saber cómo los sets son diferentes:
 
 ```{r}
 dplyr::setequal(tab_1, tab_2)
@@ -263,7 +263,7 @@ dplyr::setequal(tab_1, tab_2)
 
 1\. Instale y cargue la biblioteca __Lahman__. Esta base de datos incluye datos relacionados con equipos de béisbol. Incluye estadísticas resumidas sobre cómo se desempeñaron los jugadores en ataque y defensa durante varios años. También incluye información personal sobre los jugadores.
 
-Los `Batting` el marco de datos contiene las estadísticas ofensivas de todos los jugadores durante muchos años. Puede ver, por ejemplo, los 10 mejores bateadores ejecutando este código:
+Los `Batting` el _data frame_ contiene las estadísticas ofensivas de todos los jugadores durante muchos años. Puede ver, por ejemplo, los 10 mejores bateadores ejecutando este código:
 
 ```{r, eval=FALSE}
 library(Lahman)
@@ -286,7 +286,7 @@ Podemos ver los nombres de las columnas `nameFirst` y `nameLast`. Utilizar el `l
 
 
 
-2\. Ahora usa el `Salaries` marco de datos para agregar el salario de cada jugador a la tabla que creó en el ejercicio 1. Tenga en cuenta que los salarios son diferentes cada año, así que asegúrese de filtrar para el año 2016, luego use `right_join`. Esta vez muestra el nombre, apellido, equipo, recursos humanos y salario.
+2\. Ahora usa el `Salaries` _data frame_ para agregar el salario de cada jugador a la tabla que creó en el ejercicio 1. Tenga en cuenta que los salarios son diferentes cada año, así que asegúrese de filtrar para el año 2016, luego use `right_join`. Esta vez muestra el nombre, apellido, equipo, recursos humanos y salario.
 
 
 
