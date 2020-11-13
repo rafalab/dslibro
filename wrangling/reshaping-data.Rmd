@@ -23,7 +23,7 @@ Una de las funciones más usadas del paquete __tidyr__ es `gather`, que es útil
 
 Igual que con la mayoría de las funciones de tidyverse, el primer argumento de la función `gather` es el _data frame_ que será procesado. Aquí queremos cambiar la forma del set de datos `wide_data` para que cada fila represente una observación de fertilidad, que implica que necesitamos tres columnas para almacenar el año, el país y el valor observado. En su forma actual, los datos de diferentes años están en diferentes columnas con los valores de año almacenados en los nombres de las columnas. A través del segundo y tercer argumento, le daremos a `gather` los nombres de columna que le queremos asignar a las columnas que contienen los nombres de columna y observaciones actuales, respectivamente. En este caso, una buena opción para estos dos argumentos serían `year` y `fertility`. Noten que ninguna parte del archivo nos dice que se trata de datos de fertilidad. En cambio, desciframos esto del nombre del archivo. A través del cuarto argumento especificamos las columnas que contienen los valores observados; estas son las columnas que serán _gathered_ o recopiladas. La acción por defecto es recopilar todas las columnas, por lo que, en la mayoría de los casos, tenemos que especificar las columnas. En nuestro ejemplo queremos las columnas `1960`, `1961` hasta `2015`.
 
-El código para [fix eng `gather`?] recopilar los datos de fertilidad se ve así:
+El código para recopilar los datos de fertilidad se ve así:
 
 ```{r}
 new_tidy_data <- gather(wide_data, year, fertility, `1960`:`2015`)
@@ -41,7 +41,7 @@ Podemos ver que los datos se han convertido al formato _tidy_ con columnas `year
 head(new_tidy_data)
 ```
 
-[fix check] y que cada año resultó en dos filas ya que tenemos dos países y esta columna no se recopiló.
+y que cada año resultó en dos filas ya que tenemos dos países y la columna de los países no se recopiló.
 
 Una forma un poco más rápida de escribir este código es especificar qué columna **no** se recopilará, en lugar de todas las columnas que se recopilarán:
 
@@ -76,7 +76,7 @@ class(new_tidy_data$year)
 
 Tengan en cuenta que también podríamos haber utilizado `mutate` y `as.numeric`.
 
-Ahora que los datos están _tidy_, podemos usar este código relativamente simple de [fix eng too __ggplot__ ?] ggplot:
+Ahora que los datos están _tidy_, podemos usar este código relativamente simple de __ggplot__:
 
 ```{r fertility-year-check, eval=FALSE}
 new_tidy_data %>% ggplot(aes(year, fertility, color = country)) +
@@ -115,7 +115,7 @@ raw_dat <- read_csv(filename)
 select(raw_dat, 1:5)
 ```
 
-Primero, tengan en cuenta que los datos están en formato ancho. En segundo lugar, observen que esta tabla incluye valores para dos variables, fertilidad y esperanza de vida, [fix] con el nombre de la columna "encoding"/codificando/determinando qué columna representa qué variable. No recomendamos [fix] encoding/codificar la información en los nombres de las columnas, pero, desafortunadamente, es algo bastante común. Usaremos nuestras habilidades de _wrangling_ para extraer esta información y almacenarla de manera _tidy_.
+Primero, tengan en cuenta que los datos están en formato ancho. En segundo lugar, observen que esta tabla incluye valores para dos variables, fertilidad y esperanza de vida, con el nombre de la columna codificando qué columna representa qué variable. No recomendamos codificar la información en los nombres de las columnas, pero, desafortunadamente, es algo bastante común. Usaremos nuestras habilidades de _wrangling_ para extraer esta información y almacenarla de manera _tidy_.
 
 Podemos comenzar el _wrangling_ de datos con la función `gather`, pero ya no deberíamos usar el nombre de la columna `year` para la nueva columna, dado que también contiene el tipo de variable. La llamaremos `key`, el valor predeterminado, por ahora:
 
@@ -124,7 +124,7 @@ dat <- raw_dat %>% gather(key, value, -country)
 head(dat)
 ```
 
-El resultado no es exactamente lo que llamamos _tidy_ ya que cada observación está asociada con dos, no una, filas. Queremos tener los valores de las dos variables, fertilidad y esperanza de vida, en dos columnas separadas. El primer desafío para lograr esto es separar la columna `key` en año y tipo de variable. Observen que las entradas en esta columna separan el año del nombre de la variable con [fix underscore] una barra baja :
+El resultado no es exactamente lo que llamamos _tidy_ ya que cada observación está asociada con dos, no una, filas. Queremos tener los valores de las dos variables, fertilidad y esperanza de vida, en dos columnas separadas. El primer desafío para lograr esto es separar la columna `key` en año y tipo de variable. Observen que las entradas en esta columna separan el año del nombre de la variable con una barra baja:
 
 ```{r}
 dat$key[1:5]
@@ -136,20 +136,20 @@ Codificar múltiples variables en el nombre de una columna es un problema tan co
 dat %>% separate(key, c("year", "variable_name"), "_")
 ```
 
-Como `_` es el separador por defecto [fix assumed?] asumido por `separate`, no tenemos que incluirlo en el código:
+`separate` supone por defecto que`_` es el separador y, por eso, no tenemos que incluirlo en el código:
 
 ```{r}
 dat %>% separate(key, c("year", "variable_name"))
 ```
 
-La función separa los valores, pero nos encontramos con un nuevo problema. Recibimos la advertencia `Too many values at 112 locations:` y que la variable`life_expectancy` [fix read to end] se trunca/corta a `life`. Esto es porque el `_` se usa para separar `life` y `expectancy`, no solo año y nombre de variable. Podríamos añadir una tercera columna para captar esto y dejar que la función `separate` sepa qué columna completar con los valores que faltan, `NA`, cuando no hay un tercer valor. Aquí le decimos que llene la columna de la derecha:
+La función separa los valores, pero nos encontramos con un nuevo problema. Recibimos la advertencia `Too many values at 112 locations:` y que la variable`life_expectancy` se corta a `life`. Esto es porque el `_` se usa para separar `life` y `expectancy`, no solo año y nombre de variable. Podríamos añadir una tercera columna para captar esto y dejar que la función `separate` sepa qué columna completar con los valores que faltan, `NA`, cuando no hay un tercer valor. Aquí le decimos que llene la columna de la derecha:
 
 ```{r}
 var_names <- c("year", "first_variable_name", "second_variable_name")
 dat %>% separate(key, var_names, fill = "right")
 ```
 
-Sin embargo, si leemos el archivo de ayuda de `separate`, encontramos que un mejor enfoque es [fix merge] fusionar las dos últimas variables cuando hay una separación adicional:
+Sin embargo, si leemos el archivo de ayuda de `separate`, encontramos que un mejor enfoque es fusionar las dos últimas variables cuando hay una separación adicional:
 
 ```{r}
 dat %>% separate(key, c("year", "variable_name"), extra = "merge")
@@ -174,7 +174,7 @@ dat %>%
 separate(key, var_names, fill = "right")
 ```
 
-Podemos lograr el mismo resultado final uniendo las segunda y tercera columnas, luego [fix "spreading"] esparciendo las columnas y renombrando `fertility_NA` a `fertility`:
+Podemos lograr el mismo resultado final uniendo las segunda y tercera columnas, luego esparciendo las columnas usando `spread` y renombrando `fertility_NA` a `fertility`:
 
 ```{r}
 dat %>%
