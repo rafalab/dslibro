@@ -67,7 +67,7 @@ el | stringr | Tarea | Descripción | Base R |
 ## Estudio de caso 1: datos de asesinatos en EE. UU.
 
 
-En esta sección presentamos algunos de los desafíos de procesamiento de cadenas más sencillas con los siguientes conjuntos de datos como ejemplo:
+En esta sección presentamos algunos de los desafíos de procesamiento de cadenas más sencillas con los siguientes  sets de datos como ejemplo:
 
 ```{r,message=FALSE, warning=FALSE}
 library(rvest)
@@ -80,7 +80,7 @@ html_table() %>%
 setNames(c("state", "population", "total", "murder_rate"))
 ```
 
-El código anterior muestra el primer paso para construir el conjunto de datos
+El código anterior muestra el primer paso para construir el set de datos
 
 ```{r}
 library(dslabs)
@@ -137,7 +137,7 @@ Este caso es relativamente sencillo en comparación con los desafíos de procesa
 
 ## Estudio de caso 2: alturas autoinformadas
 
-El paquete __dslabs__ incluye los datos sin procesar de los que se obtuvo el conjunto de datos de alturas. Pueden cargarlo así:
+El paquete __dslabs__ incluye los datos sin procesar de los que se obtuvo el set de datos de alturas. Pueden cargarlo así:
 
 ```{r}
 data(reported_heights)
@@ -873,7 +873,7 @@ s
 }
 ```
 
-Tenga en cuenta que podemos realizar la operación anterior de manera más eficiente con la función `recode`, que aprendemos en la Sección \@ref(recode).
+Tengan en cuenta que podemos realizar la operación anterior de manera más eficiente con la función `recode`, que estudiaremos en la Sección \@ref(recode).
 Ahora podemos ver qué entradas problemáticas permanecen:
 
 ```{r}
@@ -884,32 +884,32 @@ index <- str_detect(remaining_problems, pattern)
 remaining_problems[!index]
 ```
 
-además de los casos informados como medidores, que solucionaremos a continuación, todos parecen ser casos imposibles de solucionar.
+además de los casos informados como metros, que solucionaremos a continuación, todos parecen ser casos imposibles de solucionar.
 
-### Los `extract` función
+### La función `extract` 
 
-Los `extract` la función es una función __tidyverse__ útil para el procesamiento de cadenas que usaremos en nuestra solución final, así que la presentamos aquí. En una sección anterior, construimos una expresión regular que nos permite identificar qué elementos de un vector de caracteres coinciden con el patrón de pies y pulgadas. Sin embargo, queremos hacer más. Queremos extraer y guardar los pies y los valores numéricos para poder convertirlos a pulgadas cuando sea apropiado.
+La función `extract` [fix check] es una función util de __tidyverse__ para el procesamiento de cadenas que usaremos en nuestra solución final y, por ende, la presentamos aquí. En una sección anterior, construimos una expresión regular que nos permite identificar qué elementos de un vector de caracteres coinciden con el patrón de pies y pulgadas. Sin embargo, queremos hacer más. Queremos extraer y guardar los pies y los valores numéricos para poder convertirlos en pulgadas cuando sea apropiado.
 
-Si tenemos un caso más simple como este:
+Si tenemos un caso más sencillo como este:
 ```{r}
 s <- c("5'10", "6'1")
 tab <- data.frame(x = s)
 ```
 
-En la sección \@ref(separate) aprendimos sobre el `separate` función, que se puede utilizar para lograr nuestro objetivo actual:
+En la sección \@ref(separate) aprendimos sobre la función `separate`, que se puede utilizar para lograr nuestro objetivo actual:
 
 ```{r}
 tab %>% separate(x, c("feet", "inches"), sep = "'")
 ```
 
-Los `extract` la función del paquete __tidyr__ nos permite usar grupos regex para extraer los valores deseados. Aquí está el equivalente al código anterior usando `separate` pero usando `extract`:
+La función `extract` del paquete __tidyr__ nos permite usar grupos _regex_ para extraer los valores deseados. [fix eng off] Aquí está el equivalente al código anterior usando `separate` pero usando `extract`:
 
 ```{r}
 library(tidyr)
 tab %>% extract(x, c("feet", "inches"), regex = "(\\d)'(\\d{1,2})")
 ```
 
-Entonces, ¿por qué necesitamos la nueva función? `extract`? Hemos visto cómo pequeños cambios pueden provocar la coincidencia exacta de patrones. Los grupos en expresiones regulares nos dan más flexibilidad. Por ejemplo, si definimos:
+Entonces, ¿por qué necesitamos la nueva función `extract`? Hemos visto cómo pequeños cambios pueden provocar la coincidencia exacta de patrones. Los grupos en _regex_ nos dan más flexibilidad. Por ejemplo, si definimos:
 
 ```{r}
 s <- c("5'10", "6'1\"","5'8inches")
@@ -922,7 +922,7 @@ y solo queremos los números, `separate` falla:
 tab %>% separate(x, c("feet","inches"), sep = "'", fill = "right")
 ```
 
-Sin embargo, podemos usar `extract`. La expresión regular aquí es un poco más complicada ya que tenemos que permitir `'` con espacios y `feet`. Tampoco queremos el `"` incluido en el valor, por lo que no lo incluimos en el grupo:
+Sin embargo, podemos usar `extract`. La __regex_ aquí es un poco más complicada ya que tenemos que permitir `'` con espacios y `feet`. Tampoco queremos el `"` incluido en el valor, por lo que no lo incluimos en el grupo:
 
 ```{r}
 tab %>% extract(x, c("feet", "inches"), regex = "(\\d)'(\\d{1,2})")
@@ -935,7 +935,7 @@ Ahora estamos listos para poner todo junto y discutir nuestros datos de alturas 
 
 Comenzamos limpiando el `height` columna para que las alturas estén más cerca de un formato de pulgadas y pies. Agregamos una columna de alturas original para poder comparar antes y después.
 
-Ahora estamos listos para discutir nuestro conjunto de datos de alturas reportadas:
+Ahora estamos listos para _wrangle_ nuestro set de datos de alturas reportadas:
 
 ```{r, warning=FALSE, message=FALSE}
 pattern <- "^([4-7])\\s*'\\s*(\\d+\\.?\\d*)$"
@@ -960,7 +960,7 @@ guess, height)) %>%
 select(-guess)
 ```
 
-Podemos verificar todas las entradas que convertimos escribiendo:
+Podemos verificar todas las entradas que convertimos al escribir:
 
 ```{r, eval=FALSE}
 new_heights %>%
@@ -977,18 +977,18 @@ Una observación final es que si miramos a los estudiantes más bajos de nuestro
 new_heights %>% arrange(height) %>% head(n=7)
 ```
 
-Vemos alturas de 53, 54 y 55. En los originales, también tenemos 51 y 52. Estas alturas cortas son raras y es probable que los estudiantes realmente quisieran decir `5'1`, `5'2`, `5'3`, `5'4` y `5'5`. Debido a que no estamos completamente seguros, los dejaremos según lo informado. El objeto `new_heights` contiene nuestra solución final para este caso de estudio.
+Vemos alturas de 53, 54 y 55. En los originales, también tenemos 51 y 52. Estas alturas tan bajas son raras y es probable que los estudiantes realmente querían decir `5'1`, `5'2`, `5'3`, `5'4` y `5'5`. Debido a que no estamos completamente seguros, los dejaremos según lo informado. El objeto `new_heights` contiene nuestra solución final para este caso de estudio.
 
 ## División de cadenas
 
-Otra operación de disputa de datos muy común es la división de cadenas. Para ilustrar cómo surge esto, comenzamos con un ejemplo ilustrativo. Supongamos que no tenemos la función `read_csv` o `read.csv` disponible para nosotros. En cambio, tenemos que leer un archivo csv usando la función base R `readLines` me gusta esto:
+Otra operación de _wrangling_ de datos muy común es la división de cadenas. Para ilustrar cómo surge esto, comenzamos con un ejemplo ilustrativo. Supongamos que no tenemos la función `read_csv` o `read.csv` disponible para nosotros. En cambio, tenemos que leer un archivo csv usando la función base R `readLines` así
 
 ```{r}
 filename <- system.file("extdata/murders.csv", package = "dslabs")
 lines <- readLines(filename)
 ```
 
-Esta función lee los datos línea por línea para crear un vector de cadenas. En este caso, una cadena para cada fila en la hoja de cálculo. Las primeras seis líneas son:
+Esta función [fix 'read-in']  lee/importa los datos línea por línea para crear un vector de cadenas. En este caso, una cadena para cada fila en la hoja de cálculo. Las primeras seis líneas son:
 
 ```{r}
 lines %>% head()
@@ -1001,27 +1001,27 @@ x <- str_split(lines, ",")
 x %>% head(2)
 ```
 
-Tenga en cuenta que la primera entrada tiene los nombres de columna, por lo que podemos separar eso:
+Tengan en cuenta que la primera entrada tiene los nombres de columna, por lo que podemos separar eso:
 
 ```{r}
 col_names <- x[[1]]
 x <- x[-1]
 ```
 
-Para convertir nuestra lista en un marco de datos, podemos usar un acceso directo proporcionado por el `map` funciona en el paquete __purrr__. La función de mapa aplica la misma función a cada elemento en una lista. Entonces, si queremos extraer la primera entrada de cada elemento en `x`, podemos escribir:
+Para convertir nuestra lista en un _data frame_, podemos usar un acceso directo ofrecido por la función `map` en el paquete __purrr__. La función `map` aplica la misma función a cada elemento en una lista. Entonces, si queremos extraer la primera entrada de cada elemento en `x`, podemos escribir:
 
 ```{r}
 library(purrr)
 map(x, function(y) y[1]) %>% head(2)
 ```
 
-Sin embargo, debido a que esta es una tarea tan común, __purrr__ proporciona un acceso directo. Si el segundo argumento recibe un entero en lugar de una función, se supone que queremos esa entrada. Entonces, el código anterior se puede escribir de manera más eficiente de esta manera:
+Sin embargo, debido a que esta es una tarea tan común, __purrr__ provee un acceso directo. Si el segundo argumento recibe [fix check from here to end] un número? entero en lugar de una función, supondrá que queremos esa entrada. Entonces, el código anterior se puede escribir de manera más eficiente de esta manera:
 
 ```{r, eval=FALSE}
 map(x, 1)
 ```
 
-Para forzar `map` para devolver un vector de caracteres en lugar de una lista, podemos usar `map_chr`. Similar, `map_int` devuelve enteros. Entonces, para crear nuestro marco de datos, podemos usar:
+Para forzar `map` a devolver un vector de caracteres en lugar de una lista, podemos usar `map_chr`. Similar, `map_int` devuelve enteros. Entonces, para crear nuestro _data frame_, podemos usar:
 
 ```{r}
 dat <- tibble(map_chr(x, 1),
@@ -1034,7 +1034,7 @@ setNames(col_names)
 dat %>% head
 ```
 
-Si aprende más sobre el paquete __purrr__, aprenderá que realiza lo anterior con el siguiente código, más eficiente:
+Si aprenden más sobre el paquete __purrr__, aprenderán que es posible realizar lo anterior con el siguiente código, más eficiente:
 
 ```{r}
 dat <- x %>%
@@ -1059,7 +1059,7 @@ head(5)
 
 ## Estudio de caso 3: extracción de tablas de un PDF
 
-Uno de los conjuntos de datos proporcionados en __dslabs__ muestra las tasas de financiación científica por género en los Países Bajos:
+Uno de los  sets de datos proporcionados en __dslabs__ muestra las tasas de financiación científica por género en los Países Bajos:
 
 ```{r}
 library(dslabs)
@@ -1213,7 +1213,7 @@ filter(str_length(country) >= 12) %>%
 distinct(country)
 ```
 -->
-Tenemos cuatro países con nombres de más de 12 caracteres. Estos nombres aparecen una vez por año en el conjunto de datos Gapminder. Una vez que elegimos los apodos, debemos cambiarlos todos de manera consistente. los `recode` la función se puede utilizar para hacer esto:
+Tenemos cuatro países con nombres de más de 12 caracteres. Estos nombres aparecen una vez por año en el setde datos Gapminder. Una vez que elegimos los apodos, debemos cambiarlos todos de manera consistente. los `recode` la función se puede utilizar para hacer esto:
 
 
 ```{r caribbean-with-nicknames}
@@ -1263,7 +1263,7 @@ c. Es un informe que combina gráficos y tablas. Extraer los datos parece posibl
 re. Muestra gráficos de los datos. Extraer los datos será difícil.
 
 
-3\. Vamos a crear un conjunto de datos ordenado con cada fila que representa una observación. Las variables en este conjunto de datos serán año, mes, día y muertes.
+3\. Vamos a crear un set de datos ordenado con cada fila que representa una observación. Las variables en este set de datos serán año, mes, día y muertes.
 Comience instalando y cargando el paquete __pdftools__:
 
 
