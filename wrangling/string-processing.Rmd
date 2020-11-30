@@ -5,20 +5,15 @@
 img_path <- "wrangling/img/"
 ```
 
-Uno de los desafíos de discusión de datos más comunes consiste en extraer datos numéricos contenidos en cadenas de caracteres y convertirlos en las representaciones numéricas requeridas para hacer gráficos, calcular resúmenes o ajustar modelos en R. También es común procesar texto no organizado en nombres de variables significativas o variables categóricas . Muchos de los desafíos de procesamiento de cadenas que enfrenta un científico de datos son únicos y a menudo inesperados. Por lo tanto, es bastante ambicioso escribir una sección completa sobre este tema. Aquí usamos una serie de estudios de casos que nos ayudan a demostrar cómo el procesamiento de cadenas es un paso necesario para muchos desafíos de disputas de datos. Específicamente, describimos el proceso de convertir los datos _raw_ originales aún no mostrados de los que extrajimos `murders`, `heights` y `research_funding_rates` ejemplo en los marcos de datos que hemos estudiado en este libro.
+Uno de los desafíos más comunes del _wrangling_ de datos consiste en extraer datos numéricos contenidos en cadenas de caracteres y convertirlos en las representaciones numéricas requeridas para hacer gráficos, calcular resúmenes o ajustar modelos en R. También, es común tener que procesar texto no organizado en [fix check] nombres de variables significativas o variables categóricas. Muchos de los desafíos de procesamiento de cadenas que enfrentan los científicos de datos son únicos y a menudo inesperados. Por lo tanto, es bastante ambicioso escribir una sección completa sobre este tema. Aquí usamos una serie de estudios de casos que nos ayudan a demostrar cómo el procesamiento de cadenas es un paso necesario para muchos desafíos de disputas de datos. Específicamente, [fix] describimos el proceso de convertir los datos _raw_ originales aún no mostrados de los que extrajimos el ejemplo `murders`, `heights` y `research_funding_rates` en _los marcos de datos _data frames_ que hemos estudiado en este libro.
 
-Al repasar estos estudios de caso, cubriremos algunas de las tareas más comunes en el procesamiento de cadenas, incluyendo
-extrayendo números de cadenas,
-eliminar caracteres no deseados del texto,
-encontrar y reemplazar personajes,
-extracción de partes específicas de cuerdas,
-convertir texto de forma libre a formatos más uniformes, y
-dividir cadenas en múltiples valores.
+Al repasar estos estudios de caso, cubriremos algunas de las tareas más comunes en el procesamiento de cadenas, incluyendo extraer números de cadenas, eliminar caracteres no deseados del texto, encontrar y reemplazar caracteres, extraer partes específicas de cadenas,
+convertir texto de forma libre a formatos más uniformes y dividir cadenas en múltiples valores.
 
 
-Base R incluye funciones para realizar todas estas tareas. Sin embargo, no siguen una convención unificadora, lo que los hace un poco difíciles de memorizar y usar. El paquete __stringr__ básicamente reempaqueta esta funcionalidad, pero utiliza un enfoque más consistente de nombrar funciones y ordenar sus argumentos. Por ejemplo, en __stringr__, todas las funciones de procesamiento de cadenas comienzan con `str_`. Esto significa que si escribe `str_` y presione la pestaña, R se completará automáticamente y mostrará todas las funciones disponibles. Como resultado, no necesariamente tenemos que memorizar todos los nombres de funciones. Otra ventaja es que en las funciones de este paquete, la cadena que se procesa es siempre el primer argumento, lo que significa que podemos usar la tubería más fácilmente. Por lo tanto, comenzaremos describiendo cómo usar las funciones en el paquete __stringr__.
+Base R incluye funciones para realizar todas estas tareas. Sin embargo, no siguen una convención unificadora, lo que los hace un poco difíciles de memorizar y usar. El paquete __stringr__ básicamente reempaqueta esta funcionalidad, pero utiliza un enfoque más consistente de nombrar funciones y ordenar sus argumentos. Por ejemplo, en __stringr__, todas las funciones de procesamiento de cadenas comienzan con `str_`. Esto significa que si escriben `str_` y presionen _tab_, R se completará automáticamente y mostrará todas las funciones disponibles. Como resultado, no necesariamente tenemos que memorizar todos los nombres de las funciones. Otra ventaja es que en las funciones de este paquete, la cadena que se procesa siempre es el primer argumento, lo que significa que podemos usar el _pipe_ más fácilmente. Por lo tanto, comenzaremos describiendo cómo usar las funciones en el paquete __stringr__.
 
-La mayoría de los ejemplos provendrán del segundo estudio de caso que trata sobre las alturas autoinformadas por los estudiantes y la mayor parte del capítulo está dedicado al aprendizaje de expresiones regulares (expresiones regulares) y funciones en el paquete __stringr__.
+La mayoría de los ejemplos provendrán del segundo estudio de caso que trata sobre las alturas autoreportadas por los estudiantes y la mayor parte del capítulo está dedicado al aprendizaje de expresiones regulares (_regular expressions_ _regex_ en inglés) y funciones en el paquete __stringr__.
 
 
 ## El paquete stringr {#stringr}
@@ -27,52 +22,52 @@ La mayoría de los ejemplos provendrán del segundo estudio de caso que trata so
 library(tidyverse)
 library(stringr)
 ```
-En general, las tareas de procesamiento de cadenas se pueden dividir en **detectar**, **ubicar**, **extraer** o **reemplazar** patrones en cadenas. Veremos varios ejemplos. La siguiente tabla incluye las funciones disponibles en el paquete __stringr__. Los dividimos por tarea. También incluimos el equivalente R-base cuando esté disponible.
+En general, las tareas de procesamiento de cadenas se pueden dividir en **detectar**, **ubicar**, **extraer** o **reemplazar** patrones en cadenas. Veremos varios ejemplos. La siguiente tabla incluye las funciones disponibles en el paquete __stringr__. Las dividimos por tarea. También incluimos el equivalente de base R cuando esté disponible.
 
 Todas estas funciones toman un vector de caracteres como primer argumento. Además, para cada función, las operaciones se vectorizan: la operación se aplica a cada cadena en el vector.
 
-Finalmente, tenga en cuenta que en esta tabla mencionamos _groups_. Estos se explicarán en la Sección \@ref(groups).
+Finalmente, tengan en cuenta que en esta tabla mencionamos _groups_. Estos se explicarán en la Sección \@ref(groups).
 
 el | stringr | Tarea | Descripción | Base R |
 |--------------- |----------|--------------------------------------|-------------|
-| `str_detect` El | Detectar | ¿Está el patrón en la cadena? El | `grepl` |
-| `str_which` El | Detectar | Devuelve el índice de entradas que contienen el patrón. El | `grep` |
-| `str_subset` El | Detectar | Devuelve el subconjunto de cadenas que contienen el patrón. El | `grep` con `value = TRUE` |
-| `str_locate` El | Localizar | Devuelve las posiciones de la primera aparición del patrón en una cadena. `regexpr` |
-| `str_locate_all` El | Localizar | Devuelve la posición de todas las apariciones de patrón en una cadena. El | `gregexpr` |
-| `str_view` El | Localizar | Muestra la primera parte de la cadena que coincide con el patrón. El | El |
-| `str_view_all` El | Localizar | Muéstrame todas las partes de la cadena que coinciden con el patrón. El |
-| `str_extract` El | Extracto | Extraiga la primera parte de la cadena que coincida con el patrón. El | El |
-`str_extract_all` El | Extracto | Extraiga todas las partes de la cadena que coincidan con el patrón. El | El |
-| `str_match` El | Extracto | Extraiga la primera parte de la cadena que coincida con los grupos y los patrones definidos por los grupos. El |
-| `str_match_all` El | Extracto | Extraiga todas las partes de la cadena que coincidan con los grupos y los patrones definidos por los grupos. El | El |
-| `str_sub` El | Extracto | Extraer una subcadena. El | `substring` |
-| `str_split` El | Extracto | Dividir una cadena en una lista con partes separadas por patrón. El | `strsplit`|
-| `str_split_fixed` El | Extracto | Dividir una cadena en una matriz con partes separadas por patrón. El | `strsplit` con `fixed = TRUE`|
-| `str_count` El | Describa | Cuente el número de veces que aparece un patrón en una cadena. El | El |
-| `str_length` El | Describa | Número de caracteres en la cadena. El | `nchar` |
-| `str_replace` El | Reemplazar | Reemplace la primera parte de una cadena que coincida con un patrón con otro. El | El |
-| `str_replace_all` El | Reemplazar | Reemplace todas las partes de una cadena que coincida con un patrón con otro. El | `gsub` |
-| `str_to_upper` El | Reemplazar | Cambia todos los caracteres a mayúsculas. El | `toupper` |
-| `str_to_lower` El | Reemplazar | Cambia todos los caracteres a minúsculas. El | `tolower` |
-| `str_to_title` El | Reemplazar | Cambie el primer carácter a superior y descanse a inferior. El | El |
-| `str_replace_na` El | Reemplazar | Reemplaza todo `NA` s a un nuevo valor. El | El |
-| `str_trim` El | Reemplazar | Elimine el espacio en blanco desde el inicio y el final de la cadena. El | El |
-| `str_c` El | Manipular | Unir múltiples cadenas. El | `paste0` |
-| `str_conv` El | Manipular | Cambiar la codificación de la cadena. El |
-| `str_sort` El | Manipular | Ordenar el vector en orden alfabético. `sort` |
-| `str_order` El | Manipular | Índice necesario para ordenar el vector en orden alfabético. El | `order` |
-| `str_trunc` El | Manipular | Truncar una cadena a un tamaño fijo. El | El |
-| `str_pad` El | Manipular | Agregue espacio en blanco a la cadena para que tenga un tamaño fijo. El | El |
-| `str_dup` El | Manipular | Repite una cuerda. El | `rep` luego `paste` |
-| `str_wrap` El | Manipular | Envuelva cosas en párrafos formateados. El | El |
-| `str_interp` El | Manipular | Interpolación de cuerdas. El | `sprintf` |
+| `str_detect` | Detectar | ¿El patrón está en la cadena? | `grepl` |
+| `str_which` | Detectar | Devuelve el índice de entradas que contienen el patrón. | `grep` |
+| `str_subset` | Detectar | Devuelve el subconjunto de cadenas que contienen el patrón. | `grep` con `value = TRUE` |
+| `str_locate` | Localizar | Devuelve las posiciones de la primera aparición del patrón en una cadena. `regexpr` |
+| `str_locate_all` | Localizar | Devuelve la posición de todas las apariciones de patrón en una cadena. | `gregexpr` |
+| `str_view`  | Localizar | Muestra la primera parte de la cadena que coincide con el patrón. |  |
+| `str_view_all` | Localizar | Muéstrame todas las partes de la cadena que coinciden con el patrón. |
+| `str_extract` | Extracto | Extraiga la primera parte de la cadena que coincida con el patrón. |  |
+`str_extract_all` | Extracto | Extraiga todas las partes de la cadena que coincidan con el patrón. |  |
+| `str_match` | Extracto | Extraiga la primera parte de la cadena que coincida con los grupos y los patrones definidos por los grupos.|
+| `str_match_all` | Extracto | Extraiga todas las partes de la cadena que coincidan con los grupos y los patrones definidos por los grupos. | |
+| `str_sub`| Extracto | Extraer una subcadena.| `substring` |
+| `str_split`| Extracto | Dividir una cadena en una lista con partes separadas por patrón.| `strsplit`|
+| `str_split_fixed`| Extracto | Dividir una cadena en una matriz con partes separadas por patrón. | `strsplit` con `fixed = TRUE`|
+| `str_count` | Describa | Cuente el número de veces que aparece un patrón en una cadena. | |
+| `str_length` | Describa | Número de caracteres en la cadena. | `nchar` |
+| `str_replace` | Reemplazar | Reemplace la primera parte de una cadena que coincida con un patrón con otro. | |
+| `str_replace_all` | Reemplazar | Reemplace todas las partes de una cadena que coincida con un patrón con otro. | `gsub` |
+| `str_to_upper` | Reemplazar | Cambia todos los caracteres a mayúsculas. | `toupper` |
+| `str_to_lower` | Reemplazar | Cambia todos los caracteres a minúsculas. | `tolower` |
+| `str_to_title` | Reemplazar | Cambie el primer carácter a superior y descanse a inferior. | |
+| `str_replace_na` | Reemplazar | Reemplaza todo `NA` s a un nuevo valor. | |
+| `str_trim` | Reemplazar | Elimine el espacio en blanco desde el inicio y el final de la cadena. | |
+| `str_c` | Manipular | Unir múltiples cadenas. | `paste0` |
+| `str_conv` | Manipular | Cambiar la codificación de la cadena. |
+| `str_sort` | Manipular | Ordenar el vector en orden alfabético. `sort` |
+| `str_order` | Manipular | Índice necesario para ordenar el vector en orden alfabético. | `order` |
+| `str_trunc` | Manipular | Truncar una cadena a un tamaño fijo. | |
+| `str_pad` | Manipular | Agregue espacio en blanco a la cadena para que tenga un tamaño fijo. | |
+| `str_dup` | Manipular | Repite una cuerda. | `rep` luego `paste` |
+| `str_wrap` | Manipular | Envuelva cosas en párrafos formateados. | |
+| `str_interp` | Manipular | Interpolación de cuerdas. | `sprintf` |
 
 
 ## Estudio de caso 1: datos de asesinatos en EE. UU.
 
 
-En esta sección presentamos algunos de los desafíos de procesamiento de cadenas más simples con los siguientes conjuntos de datos como ejemplo:
+En esta sección presentamos algunos de los desafíos de procesamiento de cadenas más sencillas con los siguientes conjuntos de datos como ejemplo:
 
 ```{r,message=FALSE, warning=FALSE}
 library(rvest)
@@ -92,7 +87,7 @@ library(dslabs)
 data(murders)
 ```
 
-de los datos en bruto, que se extrajo de una página de Wikipedia.
+de los datos sin procesar, que se extrajeron de una página de Wikipedia.
 
 En general, el procesamiento de cadenas implica una cadena y un patrón. En R, generalmente almacenamos cadenas en un vector de caracteres como `murders$population`. Las primeras tres cadenas en este vector definidas por la variable de población son:
 
@@ -100,21 +95,22 @@ En general, el procesamiento de cadenas implica una cadena y un patrón. En R, g
 murders_raw$population[1:3]
 ```
 
-La coerción habitual no funciona aquí:
+[fix ok?] Forzar una conversión como siempre no funciona aquí:
 
 ```{r}
 as.numeric(murders_raw$population[1:3])
 ```
 
-Esto se debe a las comas `,`. El procesamiento de cadenas que queremos hacer aquí es eliminar el **patrón**, `,`, de las **cadenas** en `murders_raw$population` y luego coaccionar a los números.
-Podemos usar el `str_detect` funciona para ver que dos de las tres columnas tienen comas en las entradas:
+Esto se debe a las comas `,`. El procesamiento de cadenas que queremos hacer aquí es eliminar el **patrón**, `,`, de las **cadenas** en `murders_raw$population` y luego forzar una conversión de los números.
+
+Podemos usar la función `str_detect` para ver que dos de las tres columnas tienen comas en las entradas:
 
 ```{r}
 commas <- function(x) any(str_detect(x, ","))
 murders_raw %>% summarize_all(commas)
 ```
 
-Entonces podemos usar el `str_replace_all` función para eliminarlos:
+Entonces podemos usar la función `str_replace_all` para eliminarlos:
 
 ```{r}
 test_1 <- str_replace_all(murders_raw$population, ",", "")
@@ -123,7 +119,7 @@ test_1 <- as.numeric(test_1)
 
 Entonces podemos usar `mutate_all` para aplicar esta operación a cada columna, ya que no afectará a las columnas sin comas.
 
-Resulta que esta operación es tan común que `readr` incluye la función `parse_number` específicamente destinado a eliminar caracteres no numéricos antes de la coacción:
+Resulta que esta operación es tan común que `readr` incluye la función `parse_number` específicamente para eliminar caracteres no numéricos antes de forzar una conversión:
 
 ```{r}
 test_2 <- parse_number(murders_raw$population)
@@ -137,17 +133,17 @@ murders_new <- murders_raw %>% mutate_at(2:3, parse_number)
 head(murders_new)
 ```
 
-Este caso es relativamente simple en comparación con los desafíos de procesamiento de cadenas que normalmente enfrentamos en la ciencia de datos. El siguiente ejemplo es bastante complejo y ofrece varios desafíos que nos permitirán aprender muchas técnicas de procesamiento de cadenas.
+Este caso es relativamente sencillo en comparación con los desafíos de procesamiento de cadenas que normalmente enfrentamos en la ciencia de datos. El siguiente ejemplo es bastante complejo y ofrece varios desafíos que nos permitirán aprender muchas técnicas de procesamiento de cadenas.
 
 ## Estudio de caso 2: alturas autoinformadas
 
-El paquete __dslabs__ incluye los datos sin procesar de los que se obtuvo el conjunto de datos de alturas. Puedes cargarlo así:
+El paquete __dslabs__ incluye los datos sin procesar de los que se obtuvo el conjunto de datos de alturas. Pueden cargarlo así:
 
 ```{r}
 data(reported_heights)
 ```
 
-Estas alturas se obtuvieron mediante un formulario web en el que se pedía a los estudiantes que ingresaran sus alturas. Podían ingresar cualquier cosa, pero las instrucciones pedían _altura en pulgadas_, un número. Recopilamos `r prettyNum(nrow(reported_heights), big.mark=",")` presentaciones, pero desafortunadamente el vector de columna con las alturas reportadas tenía varias entradas no numéricas y como resultado se convirtió en un vector de caracteres:
+Estas alturas se obtuvieron mediante un formulario web en el que se les pedía a los estudiantes que ingresaran sus alturas. Podían ingresar cualquier cosa, pero las instrucciones pedían _altura en pulgadas_, un número. Recopilamos `r prettyNum(nrow(reported_heights), big.mark=",")` presentaciones, pero desafortunadamente el vector de columna con las alturas reportadas tenía varias entradas no numéricas y como resultado se convirtió en un vector de caracteres:
 
 ```{r}
 class(reported_heights$height)
@@ -1099,7 +1095,7 @@ Si examinamos el texto del objeto, notamos que es un vector de caracteres con un
 raw_data_research_funding_rates <- txt[2]
 ```
 
-Los pasos anteriores se pueden omitir realmente porque también incluimos estos datos en bruto en el paquete __dslabs__:
+Los pasos anteriores se pueden omitir realmente porque también incluimos estos datos sin procesar en el paquete __dslabs__:
 
 ```{r}
 data("raw_data_research_funding_rates")
