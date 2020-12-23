@@ -18,11 +18,11 @@ Pueden ver la tabla de datos cuando visitan la página web:
 knitr::include_graphics(file.path(img_path,"murders-data-wiki-page.png"))
 ```
 
-(Página web cortesía de Wikipedia^[https://en.wikipedia.org/w/index.php?title=Gun_violence_in_the_United_States_by_state&amp;direction=prev&amp;oldid=810166167]. Licencia CC-BY-SA-3.0^[https://en.wikipedia .org/ wiki/ Wikipedia: Text_of_Creative_Commons_Attribution-ShareAlike_3.0_Unported_License].
+(Página web cortesía de Wikipedia^[https://en.wikipedia.org/w/index.php?title=Gun_violence_in_the_United_States_by_state&amp;direction=prev&amp;oldid=810166167]. Licencia CC-BY-SA-3.0^[https://en.wikipedia.org/wiki/Wikipedia:Text_of_Creative_Commons_Attribution-ShareAlike_3.0_Unported_License].
 
 Desafortunadamente, no hay un enlace a un archivo de datos. Para hacer el _data frame_ que se carga cuando escribimos `data(murders)`, tuvimos que hacer un poco de _extracción de la web_ (_web scraping_ o _web harvesting_ en inglés).
 
-_Extracción de la web_ es el término que usamos para describir el proceso de extracción de datos de un sitio web. La razón por la que podemos hacer esto es porque la información utilizada por un navegador para representar páginas web se recibe como un archivo de texto de un servidor. El texto es un código escrito en lenguaje de marcado de hipertexto (HTML). Cada navegador tiene una manera de mostrar el código fuente html de una página, cada uno diferente. En Chrome, pueden usar Control-U en una PC y comando + alt + U en una Mac. Verán algo como esto:
+_Extracción de la web_ es el término que usamos para describir el proceso de extracción de datos de un sitio web. La razón por la que podemos hacer esto es porque la información utilizada por un navegador para representar páginas web se recibe como un archivo de texto de un servidor. El texto es un código escrito en lenguaje de marcado de hipertexto (HTML). [fix check sent] Cada navegador tiene una manera de mostrar el código fuente html de una página, cada uno diferente. En Chrome, pueden usar Control-U en una PC y comando + alt + U en una Mac. Verán algo como esto:
 
 ```{r, echo=FALSE}
 knitr::include_graphics(file.path(img_path,"html-code.png"))
@@ -68,9 +68,9 @@ title="List of U.S. states and territories by population">Population</a><br/>
 <tr>
 ```
 
-Pueden ver los datos, excepto que los valores de datos están rodeados por un código html como `<td>`. También podemos ver un patrón de cómo se almacenan. Si conocen HTML, pueden escribir programas que aprovechen el conocimiento de estos patrones para extraer lo que queremos. Además, aprovechamos un lenguaje ampliamente utilizado para hacer que las páginas web se vean "bonitas" que se llama _Cascading Style Sheets_ (CSS). Decimos más sobre esto en la Sección \@ref(css-selectors).
+Pueden ver los datos, excepto que los valores de datos están rodeados por un código html como `<td>`. También podemos ver un patrón de cómo se almacenan. Si conocen HTML, pueden escribir programas que aprovechen el conocimiento de estos patrones para extraer lo que queremos. Además, nos aprovechamos de _Cascading Style Sheets_ (CSS), un lenguaje ampliamente utilizado para hacer que las páginas web se vean "bonitas". Discutimos más sobre esto en la Sección \@ref(css-selectors).
 
-Aunque ofrecemos herramientas que permiten raspar datos sin conocer HTML, como científicos de datos es bastante útil aprender algo de HTML y CSS. Esto no solo mejora sus habilidades de extracción, sino que puede ser útil si está creando una página web para exhibir su trabajo. Hay muchos cursos y tutoriales en línea para aprenderlos. Dos ejemplos son Codeacademy^[https://www.codecademy.com/learn/learn-html] y W3schools^[https://www.w3schools.com/].
+Aunque ofrecemos herramientas que permiten extraer datos sin conocer HTML, como científicos de datos es bastante útil aprender algo de HTML y CSS. Esto no solo mejora sus habilidades de extracción, sino que puede ser útil si están creando una página web para exhibir su trabajo. Hay muchos cursos y tutoriales en línea para aprenderlos. Dos ejemplos son Codeacademy^[https://www.codecademy.com/learn/learn-html] y W3schools^[https://www.w3schools.com/].
 
 ## El paquete rvest
 
@@ -91,7 +91,7 @@ class(h)
 
 El paquete __rvest__ es más general; maneja documentos XML. XML es un lenguaje de marcado general (ML siendo las iniciales de _markup language_) que se puede usar para representar cualquier tipo de datos. HTML es un tipo específico de XML desarrollado específicamente para representar páginas web. Aquí nos concentramos en documentos HTML.
 
-Ahora, ¿cómo extraemos la tabla del objeto? `h`? Si imprimimos `h`, realmente no vemos mucho:
+Ahora, ¿cómo extraemos la tabla del objeto `h`? Si imprimimos `h`, realmente no vemos mucho:
 
 ```{r}
 h
@@ -131,7 +131,7 @@ tab <- tab[[1]] %>% html_table
 class(tab)
 ```
 
-Ahora estamos mucho más cerca de tener una tabla de datos utilizable:
+Ahora estamos mucho más cerca de tener una tabla de datos utilizables:
 
 ```{r}
 tab <- tab %>% setNames(c("state", "population", "total", "murder_rate"))
@@ -143,17 +143,17 @@ Todavía tenemos que hacer un poco de _wrangling_. Por ejemplo, necesitamos elim
 
 ## Selectores CSS {#css-selectors}
 
-El aspecto por defecto de una página web hecha con el HTML más básico es poco atractivo. Las páginas estéticamente agradables que vemos hoy usan CSS para definir el aspecto y el estilo de las páginas web. El hecho de que todas las páginas de una empresa tengan el mismo estilo generalmente resulta del uso del mismo archivo CSS para definir el estilo. La forma general en que funcionan estos archivos CSS es definiendo cómo se verá cada uno de los elementos de una página web. El título, los encabezados, las listas detalladas, las tablas y los enlaces, por ejemplo, reciben cada uno su propio estilo, que incluye la fuente, el color, el tamaño y la distancia del margen. CSS hace esto aprovechando los patrones utilizados para definir estos elementos, denominados _selectores_. Un ejemplo de dicho patrón, que utilizamos anteriormente, es `table`, pero hay muchos, muchos más.
+El aspecto por defecto de una página web hecha con el HTML más básico es poco atractivo. Las páginas estéticamente agradables que vemos hoy usan CSS para definir su aspecto y estilo. El hecho de que todas las páginas de una empresa tengan el mismo estilo generalmente resulta del uso del mismo archivo CSS para definir el estilo. La forma general en que funcionan estos archivos CSS es definiendo cómo se verá cada uno de los elementos de una página web. El título, los encabezados, las listas detalladas, las tablas y los enlaces, por ejemplo, reciben cada uno su propio estilo, que incluye la fuente, el color, el tamaño y la distancia del margen. CSS hace esto aprovechando los patrones utilizados para definir estos elementos, denominados _selectores_. Un ejemplo de dicho patrón, que utilizamos anteriormente, es `table`, pero hay muchos más.
 
 Si queremos obtener datos de una página web y conocemos un selector que es único para la parte de la página que contiene estos datos, podemos usar la función `html_nodes`. Sin embargo, saber qué selector puede ser bastante complicado.
 De hecho, la complejidad de las páginas web ha aumentado a medida que se vuelven más sofisticadas. Para algunas de los más avanzadas, parece casi imposible encontrar los nodos que definen un dato en particular. Sin embargo, los _gadgets_ selectores lo hacen posible.
 
-SelectorGadget^[http://selectorgadget.com/] es un _software_ que le permite determinar de manera interactiva qué selector CSS necesitan para extraer componentes específicos de la página web. Si planean extraer datos que no sean tablas de páginas html, le recomendamos que lo instale. Está disponible una extensión de Chrome que les permite encender el _gadget_ y luego, al hacer clic en la página, resalta partes y les muestra el selector que necesitan para extraer estas partes. Hay varias demostraciones de cómo hacer esto, incluyendo la del autor de la viñeta __rvest__, Hadley Wickham, y otros tutoriales que se basen en esa viñeta
-^[https://cran.r-project.org/web/packages/rvest/vignettes/selectorgadget.html] y otros tutoriales basados en la viñeta^[https://stat4701.github.io/edav/2015/ 04/02/ rvest_tutorial/]^[https://www.analyticsvidhya.com/blog/2017/03/beginners-guide-on-web-scraping-in-r-using-rvest-with-hands-on-knowledge/].
+SelectorGadget^[http://selectorgadget.com/] es un _software_ que les permite determinar de manera interactiva qué selector CSS necesitan para extraer componentes específicos de la página web. Si planean extraer datos que no sean tablas de páginas html, les recomendamos que lo instalen. Está disponible una extensión de Chrome que les permite encender el _gadget_ y luego, al hacer clic en la página, resalta partes y les muestra el selector que necesitan para extraer estas partes. [fix] Hay varias demostraciones de cómo hacer esto, incluyendo la del autor de la viñeta __rvest__, Hadley Wickham, y otros tutoriales que se basen en esa viñeta
+^[https://cran.r-project.org/web/packages/rvest/vignettes/selectorgadget.html] y otros tutoriales basados en la viñeta^[https://stat4701.github.io/edav/2015/04/02/ rvest_tutorial/]^[https://www.analyticsvidhya.com/blog/2017/03/beginners-guide-on-web-scraping-in-r-using-rvest-with-hands-on-knowledge/].
 
 ## JSON
 
-Compartir datos en Internet se ha vuelto cada vez más común. Desafortunadamente, los proveedores usan diferentes formatos, lo que hace que sea más difícil para los científicos de datos reorganizar los datos en R. Sin embargo, hay algunos estándares que también se están volviendo más comunes. Actualmente, un formato que se está adoptando ampliamente es la Notación de Objetos JavaScript o JSON por sus siglas en inglés. Debido a que este formato es muy general, no se parece en nada a una hoja de cálculo. [fix eng too] Este archivo JSON se parece más al código que usamos para definir una lista. Aquí hay un ejemplo de información almacenada en formato JSON:
+Compartir datos en Internet se ha vuelto cada vez más común. Desafortunadamente, los proveedores usan diferentes formatos, lo que hace que sea más difícil para los científicos de datos reorganizar los datos en R. Sin embargo, hay algunos estándares que también se están volviendo más comunes. Actualmente, un formato que se está adoptando ampliamente es la Notación de Objetos JavaScript o JSON por sus siglas en inglés. Debido a que este formato es muy general, no se parece en nada a una hoja de cálculo. [fix eng too] Este archivo JSON se parece más al código que usamos para definir una lista. Aquí un ejemplo de información almacenada en formato JSON:
 
 ```{r, echo=FALSE}
 library(jsonlite)
@@ -162,7 +162,7 @@ json <- toJSON(example, pretty = TRUE)
 json
 ```
 
-El [fix "file" ok?] archivo anterior en realidad representa un _data frame_. Para leerlo, podemos usar la función `fromJSON` del paquete __jsonlite__. Noten que los archivos JSON a menudo están disponibles a través de Internet. Varias organizaciones proveen una API JSON o un servicio web al que pueden conectarse directamente y obtener datos. Aquí hay un ejemplo:
+El [fix "file" ok?] archivo anterior en realidad representa un _data frame_. Para leerlo, podemos usar la función `fromJSON` del paquete __jsonlite__. Noten que los archivos JSON a menudo están disponibles a través de Internet. Varias organizaciones proveen una API JSON o un servicio web al que pueden conectarse directamente y obtener datos. Aquí un ejemplo:
 
 ```{r, eval = FALSE}
 library(jsonlite)
@@ -189,9 +189,9 @@ Pueden aprender mucho más examinando tutoriales y archivos de ayuda del paquete
 ## Ejercicios
 
 
-1\. Visite la siguiente página web: [https://web.archive.org/web/20181024132313/http://www.stevetheump.com/Payrolls.htmfont>(https://web.archive.org/web/20181024132313/ http://www.stevetheump.com/Payrolls.htm)
+1\. [fix] Visite la siguiente página web: [https://web.archive.org/web/20181024132313/http://www.stevetheump.com/Payrolls.htmfont]^(https://web.archive.org/web/20181024132313/ http://www.stevetheump.com/Payrolls.htm)
 
-Observe que hay varias tablas. Digamos que estamos interesados en comparar las nóminas de los equipos a lo largo de los años. Los siguientes ejercicios nos llevan a través de los pasos necesarios para hacer esto.
+Observe que hay varias tablas. Digamos que estamos interesados en comparar las nóminas de los equipos a lo largo de los años. Los siguientes ejercicios nos llevan por los pasos necesarios para hacer esto.
 
 Comience aplicando [fix check eng no entiendo] lo que aprendió a leer en el sitio web en un objeto llamado `h`.
 
@@ -201,7 +201,7 @@ Comience aplicando [fix check eng no entiendo] lo que aprendió a leer en el sit
 html_text(h)
 ```
 
-El siguiente paso es extraer las tablas. Para esto, podemos usar la función `html_nodes`. Aprendimos que las tablas en html están asociadas con el nodo `table`. Utilizar la función `html_nodes` y el nodo `table` para extraer la primera tabla. Almacénelo en un objeto `nodes`.
+El siguiente paso es extraer las tablas. Para esto, podemos usar la función `html_nodes`. Aprendimos que las tablas en html están asociadas con el nodo `table`. Utilice la función `html_nodes` y el nodo `table` para extraer la primera tabla. Almacénelo en un objeto `nodes`.
 
 
 
@@ -226,7 +226,7 @@ d. 2-4
 
 a. La última entrada en `nodes` muestra el promedio de todos los equipos a lo largo del tiempo, no la nómina por equipo.
 b. Las tres son tablas de cáculo de nómina por equipo.
-c. Los tres son como la primera entrada, no una tabla de cáculo de nómina.
+c. Las tres son como la primera entrada, no una tabla de cáculo de nómina.
 d. Todas las anteriores.
 
 6\. Hemos aprendido que la primera y la última entrada de `nodes` no son tablas de cáculo de nómina. Redefina `nodes` para que estos dos se eliminen.
@@ -236,16 +236,16 @@ d. Todas las anteriores.
 
 
 
-8\. Mire a través de las tablas resultantes. ¿Son todos iguales? ¿Podríamos unirlas con `bind_rows`?
+8\. Mire las tablas resultantes. ¿Son todas iguales? ¿Podríamos unirlas con `bind_rows`?
 
 
-9\. Cree dos tablas, llámelas `tab_1` y `tab_2` utilizando las entradas 10 y 19.
+9\. [fix change order] Cree dos tablas, llámelas `tab_1` y `tab_2` utilizando las entradas 10 y 19.
 
 
 10\. Utilice una  función `full_join` para combinar estas dos tablas. Antes de hacer esto, deberá corregir el problema del encabezado que falta. También deberá hacer que los nombres coincidan.
 
 
-11\. Después de unir las tablas, verá varias NA. Esto se debe a que algunos equipos están en una tabla y no en la otra. Utilice la función anti_join` para tener una mejor idea de por qué sucede esto.
+11\. Después de unir las tablas, verá varias NA. Esto se debe a que algunos equipos están en una tabla y no en la otra. Utilice la función `anti_join` para tener una mejor idea de por qué sucede esto.
 
 
 12\. Vemos que uno de los problemas es que los Yankees figuran como _N.Y. Yankees_ y _NY Yankees_. En la siguiente sección, aprenderemos enfoques eficientes para solucionar problemas como este. Aquí podemos hacerlo "a mano" de la siguiente manera:
@@ -258,7 +258,7 @@ mutate(Team = ifelse(Team == "N.Y. Yankees", "NY Yankees", Team))
 
 Ahora una las tablas y muestre solo Oakland y los Yankees y las columnas de cálculo de nómina.
 
-13\. Avanzado: extraiga los títulos de las películas que obtuvieron la Mejor Película de este sitio web: [https://m.imdb.com/chart/bestpicture/font>(https://m.imdb.com/chart/bestpicture/)
+13\. [fix] Avanzado: extraiga los títulos de las películas que obtuvieron la Mejor Película de este sitio web: [https://m.imdb.com/chart/bestpicture/font]^(https://m.imdb.com/chart/bestpicture/)
 
 
 
