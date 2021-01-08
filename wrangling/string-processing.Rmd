@@ -5,15 +5,15 @@
 img_path <- "wrangling/img/"
 ```
 
-Uno de los desafíos más comunes del _wrangling_ de datos consiste en extraer datos numéricos contenidos en cadenas de caracteres y convertirlos en las representaciones numéricas requeridas para hacer gráficos, calcular resúmenes o ajustar modelos en R. También, es común tener que procesar texto no organizado y convertirlos en nombres de variables entendibles o variables categóricas. Muchos de los desafíos de procesamiento de cadenas que enfrentan los científicos de datos son únicos y a menudo inesperados. Por lo tanto, es bastante ambicioso escribir una sección completa sobre este tema. Aquí usamos una serie de estudios de casos que nos ayudan a demostrar cómo el procesamiento de cadenas es un paso necesario para muchos desafíos de disputas de datos. [fix eng plural example] Específicamente, describimos el proceso de convertir los datos sin procesar originales  que aún no hemos mostrados, de los que extrajimos los ejemplos `murders`, `heights` y `research_funding_rates` en los _data frames_ que hemos estudiado en este libro.
+Uno de los desafíos más comunes del _wrangling_ de datos consiste en extraer datos numéricos contenidos en cadenas de caracteres y convertirlos en las representaciones numéricas requeridas para hacer gráficos, calcular resúmenes o ajustar modelos en R. También, es común tener que procesar texto no organizado y convertirlos en nombres de variables entendibles o variables categóricas. Muchos de los desafíos de procesamiento de cadenas que enfrentan los científicos de datos son únicos y a menudo inesperados. Por lo tanto, es bastante ambicioso escribir una sección completa sobre este tema. Aquí usamos una serie de estudios de casos que nos ayudan a demostrar cómo el procesamiento de cadenas es un paso necesario para muchos desafíos de disputas de datos. Específicamente, describimos el proceso de convertir los datos sin procesar originales  que aún no hemos mostrados, de los que extrajimos los ejemplos `murders`, `heights` y `research_funding_rates` en los _data frames_ que hemos estudiado en este libro.
 
 Al repasar estos estudios de caso, cubriremos algunas de las tareas más comunes en el procesamiento de cadenas, incluyendo extraer números de cadenas, eliminar caracteres no deseados del texto, encontrar y reemplazar caracteres, extraer partes específicas de cadenas,
 convertir texto de forma libre a formatos más uniformes y dividir cadenas en múltiples valores.
 
 
-Base R incluye funciones para realizar todas estas tareas. Sin embargo, no siguen una convención unificadora, lo que los hace un poco difíciles de memorizar y usar. El paquete __stringr__ básicamente reempaqueta esta funcionalidad, pero utiliza un enfoque más consistente de nombrar funciones y ordenar sus argumentos. Por ejemplo, en __stringr__, todas las funciones de procesamiento de cadenas comienzan con `str_`. Esto significa que si escriben `str_` y presionen _tab_, R se completará automáticamente y mostrará todas las funciones disponibles. Como resultado, no necesariamente tenemos que memorizar todos los nombres de las funciones. Otra ventaja es que en las funciones de este paquete, la cadena que se procesa siempre es el primer argumento, lo que significa que podemos usar el _pipe_ más fácilmente. Por lo tanto, comenzaremos describiendo cómo usar las funciones en el paquete __stringr__.
+Base R incluye funciones para realizar todas estas tareas. Sin embargo, no siguen una convención unificadora, lo que las hace un poco difíciles de memorizar y usar. El paquete __stringr__ básicamente reempaqueta esta funcionalidad, pero utiliza un enfoque más consistente de nombrar funciones y ordenar sus argumentos. Por ejemplo, en __stringr__, todas las funciones de procesamiento de cadenas comienzan con `str_`. Esto significa que si escriben `str_` y presionen _tab_, R se completará automáticamente y mostrará todas las funciones disponibles. Como resultado, no necesariamente tenemos que memorizar todos los nombres de las funciones. Otra ventaja es que en las funciones de este paquete, la cadena que se procesa siempre es el primer argumento, lo que significa que podemos usar el _pipe_ más fácilmente. Por lo tanto, comenzaremos describiendo cómo usar las funciones en el paquete __stringr__.
 
-La mayoría de los ejemplos provendrán del segundo estudio de caso que trata sobre las alturas autoreportadas por los estudiantes y la mayor parte del capítulo está dedicado al aprendizaje de expresiones regulares (_regular expressions_ _regex_ en inglés) y funciones en el paquete __stringr__.
+La mayoría de los ejemplos provendrán del segundo estudio de caso que trata sobre las alturas autoreportadas por los estudiantes y la mayor parte del capítulo está dedicado al aprendizaje de expresiones regulares (_regular expressions_ o _regex_ en inglés) y funciones en el paquete __stringr__.
 
 
 ## El paquete stringr {#stringr}
@@ -26,15 +26,15 @@ En general, las tareas de procesamiento de cadenas se pueden dividir en **detect
 
 Todas estas funciones toman un vector de caracteres como primer argumento. Además, para cada función, las operaciones se vectorizan: la operación se aplica a cada cadena en el vector.
 
-Finalmente, tengan en cuenta que en esta tabla mencionamos _groups_. Estos se explicarán en la Sección \@ref(groups).
+Finalmente, tengan en cuenta que en esta tabla mencionamos _groups_. Estos se explicarán en la Sección \@ref(groups).[fix check below]
 
-el | stringr | Tarea | Descripción | Base R |
+| stringr | Tarea | Descripción | Base R |
 |--------------- |----------|--------------------------------------|-------------|
 | `str_detect` | Detectar | ¿El patrón está en la cadena? | `grepl` |
 | `str_which` | Detectar | Devuelve el índice de entradas que contienen el patrón. | `grep` |
 | `str_subset` | Detectar | Devuelve el subconjunto de cadenas que contienen el patrón. | `grep` con `value = TRUE` |
-| `str_locate` | Localizar | Devuelve las posiciones de la primera aparición del patrón en una cadena. `regexpr` |
-| `str_locate_all` | Localizar | Devuelve la posición de todas las apariciones de patrón en una cadena. | `gregexpr` |
+| `str_locate` | Localizar | Devuelve las posiciones de la primera aparición del patrón en una cadena. |`regexpr` |
+| `str_locate_all` | Localizar | Devuelve la posición de todas las apariciones del patrón en una cadena. | `gregexpr` |
 | `str_view`  | Localizar | Muestra la primera parte de la cadena que coincide con el patrón. |  |
 | `str_view_all` | Localizar | Muéstrame todas las partes de la cadena que coinciden con el patrón. |
 | `str_extract` | Extracto | Extraiga la primera parte de la cadena que coincida con el patrón. |  |
