@@ -39,7 +39,7 @@ Finalmente, tengan en cuenta que en esta tabla mencionamos _groups_. Estos se ex
 | `str_view_all` | Localizar | Muestra todas las partes de la cadena que coinciden con el patrón. |
 | `str_extract` | Extraer | Extrae la primera parte de la cadena que coincida con el patrón. |  |
 `str_extract_all` | Extraer | Extrae todas las partes de la cadena que coincidan con el patrón. |  |
-| `str_match` | Extraer | Extraela primera parte de la cadena que coincida con los grupos y los patrones definidos por los grupos.|
+| `str_match` | Extraer | Extrae la primera parte de la cadena que coincida con los grupos y los patrones definidos por los grupos.|
 | `str_match_all` | Extraer | Extrae todas las partes de la cadena que coincidan con los grupos y los patrones definidos por los grupos. | |
 | `str_sub`| Extraer | Extrae una subcadena.| `substring` |
 | `str_split`| Extraer | Divide una cadena en una lista con partes separadas por patrón.| `strsplit`|
@@ -50,7 +50,7 @@ Finalmente, tengan en cuenta que en esta tabla mencionamos _groups_. Estos se ex
 | `str_replace_all` | Reemplazar | [fix otro que?] Reemplaza todas las partes de una cadena que coincida con un patrón con otro. | `gsub` |
 | `str_to_upper` | Reemplazar | Cambia todos los caracteres a mayúsculas. | `toupper` |
 | `str_to_lower` | Reemplazar | Cambia todos los caracteres a minúsculas. | `tolower` |
-| `str_to_title` | Reemplazar | Cambia el primer carácter a mayúscula y elr esto a minúscula. | |
+| `str_to_title` | Reemplazar | Cambia el primer carácter a mayúscula y el resto esto a minúscula. | |
 | `str_replace_na` | Reemplazar | [fix] Reemplaza todo los `NA`s a un nuevo valor. | |
 | `str_trim` | Reemplazar | Elimina el espacio en blanco del inicio y del final de la cadena. | |
 | `str_c` | Manipular | Une múltiples cadenas. | `paste0` |
@@ -117,7 +117,7 @@ test_1 <- str_replace_all(murders_raw$population, ",", "")
 test_1 <- as.numeric(test_1)
 ```
 
-[fix "entonces" replacement] De ahí/Y podemos usar `mutate_all` para aplicar esta operación a cada columna, ya que no afectará a las columnas sin comas.
+De ahí podemos usar `mutate_all` para aplicar esta operación a cada columna, ya que no afectará a las columnas sin comas.
 
 Resulta que esta operación es tan común que `readr` incluye la función `parse_number` específicamente para eliminar caracteres no numéricos antes de forzar una conversión:
 
@@ -167,7 +167,7 @@ terminamos con muchos `NA`s:
 sum(is.na(x))
 ```
 
-Podemos ver algunas de las entradas que no se [fix] convierten exitosamente/con éxito  utilizando `filter` para mantener solo las entradas que resultan en `NA`s:
+Podemos ver algunas de las entradas que no se convierten correctamente utilizando `filter` para mantener solo las entradas que resultan en `NA`s:
 
 ```{r, warning=FALSE}
 reported_heights %>%
@@ -178,7 +178,7 @@ head(n=10)
 
 Inmediatamente vemos lo que está sucediendo. Algunos de los estudiantes no informaron sus alturas en pulgadas según lo solicitado. Podríamos descartar estos datos y continuar. Sin embargo, muchas de las entradas siguen patrones que, en principio, podemos convertir fácilmente a pulgadas. Por ejemplo, en el resultado anterior, vemos varios casos que usan el formato `x'y''` con `x` y `y` representando pies y pulgadas, respectivamente. Cada uno de estos casos puede ser leído y convertido a pulgadas por un humano, por ejemplo `5'4''` es `5*12 + 4 = 64`. Entonces podríamos arreglar todas las entradas problemáticas _a mano_. Sin embargo, los humanos son propensos a cometer errores, por lo que es preferible un enfoque automatizado. Además, debido a que planeamos continuar recolectando datos, será conveniente escribir código que lo haga automáticamente.
 
-Un primer paso en este tipo de tarea es examinar las entradas problemáticas e intentar definir patrones específicos seguidos de un gran grupo de entradas. Cuanto más grandes sean estos grupos, más entradas podremos arreglar con un solo enfoque programático. Queremos encontrar patrones que puedan describirse con precisión con una regla, [fix] como "un dígito, seguido por un símbolo de pie, seguido por uno o dos dígitos, seguido por un símbolo de pulgadas".
+Un primer paso en este tipo de tarea es examinar las entradas problemáticas e intentar definir patrones específicos seguidos de un gran grupo de entradas. Cuanto más grandes sean estos grupos, más entradas podremos arreglar con un solo enfoque programático. Queremos encontrar patrones que puedan describirse con precisión con una regla, como "un dígito, seguido por un símbolo de pie, seguido por uno o dos dígitos, seguido por un símbolo de pulgadas".
 
 Para buscar dichos patrones, es útil eliminar las entradas que son consistentes con estar en pulgadas y ver solo las entradas problemáticas. Por lo tanto, escribimos una función para hacer esto automáticamente. Mantenemos entradas que resultan en `NA`s al aplicar `as.numeric` o están fuera de un rango de alturas plausibles. Permitimos un rango que cubre aproximadamente el 99.9999% de la población adulta. También usamos `suppressWarnings` para evitar el mensaje de advertencia que conocemos `as.numeric` voluntad nos da.
 
@@ -236,7 +236,7 @@ Una vez que vemos estos grandes grupos siguiendo patrones específicos, podemos 
 
 Al final, esperamos tener un _script_ que haga que los métodos de recolección de datos basados en la web sean robustos para los errores más comunes de los usuarios.
 
-Para lograr nuestro objetivo, utilizaremos una técnica que nos permite detectar con precisión patrones y extraer las partes que queremos: expresiones regulares [fix add: por su apodo en esp?] (_regex_). Pero primero, describimos rápidamente cómo _escapar_ (de la tecla _esc_ o _escape_ en inglés) de la función de ciertos caracteres para que puedan incluirse en cadenas.
+Para lograr nuestro objetivo, utilizaremos una técnica que nos permite detectar con precisión patrones y extraer las partes que queremos: expresiones regulares (_regular expressions_ o _regex_ en inglés). Pero primero, describimos rápidamente cómo _"escaparse"_ ("escapar" viene de la tecla _esc_ o _escape_) de la función de ciertos caracteres para que puedan incluirse en cadenas.
 
 
 ## Cómo _escapar_ al definir cadenas
@@ -269,18 +269,18 @@ En este caso no pueden usar:
 s <- "10""
 ```
 
-porque esto es solo la cadena `10` seguido por una comilla doble. Si escriben esto en R, obtendrán un error porque tiene una comilla doble [fix :unclosed" abierta?] _descubierta_. Para evitar esto, podemos usar las comillas simples:
+porque esto es solo la cadena `10` seguido por una comilla doble. Si escriben esto en R, obtendrán un error porque tiene comillas doble sin cerrar. Para evitar esto, podemos usar las comillas simples:
 
 ```{r}
 s <- '10"'
 ```
 
-Si imprimimos `s`, vemos que las comillas dobles están [fix] _escapeadas_ con la barra invertida `\`.
+Si imprimimos `s`, vemos que escapamos las comillas dobles con la barra invertida `\`.
 ```{r}
 s
 ```
 
-De hecho, [fix check] escapar con la barra diagonal inversa provee una forma de definir la cadena mientras y a la vez seguir utilizando las comillas dobles para definir cadenas:
+De hecho, escapar con la barra diagonal inversa provee una forma de definir la cadena mientras y a la vez seguir utilizando las comillas dobles para definir cadenas:
 
 ```{r}
 s <- "10\""
@@ -312,7 +312,7 @@ s <- "5'10""
 ```
 cierra la cadena después de 10. Tengan en cuenta que si escribimos uno de los fragmentos de código anteriores en R, se atascará esperando que cierren la comilla abierta y tendrán que salir de la ejecución con la tecla _esc_.
 
-En esta situación, necesitamos escapar de la función de las comillas con la barra diagonal invertida `\`. [fix suena raro] Pueden "escapar" de cualquier caracter como este:
+En esta situación, necesitamos escapar de la función de las comillas con la barra diagonal invertida `\`. Pueden escapar cualquiera de los dos de la siguiente manera:
 
 ```{r}
 s <- '5\'10"'
@@ -326,7 +326,7 @@ s <- "5'10\""
 cat(s)
 ```
 
-[fix Las teclas] Los caracteres de escape son algo que a menudo tenemos que usar al procesar cadenas.
+Los caracteres de escape son algo que a menudo tenemos que usar al procesar cadenas.
 
 ## Expresiones regulares
 
@@ -371,7 +371,7 @@ s <- c(yes, no)
 str_detect(s, "cm") | str_detect(s, "inches")
 ```
 
-[Fix aqui falta algo creo?] Sin embargo, no necesitamos hacer esto. La característica principal que distingue la expresión regular _language_ de cadenas sencillas es que podemos usar caracteres especiales. Estos son caracteres con un significado. Comenzamos presentando `|` que significa _o_. Entonces, si queremos saber si `cm` o `inches` aparece en las cadenas, podemos usar la expresión regular `cm|inches`:
+Sin embargo, no necesitamos hacer esto. La característica principal que distingue el lenguaje de las expresiones regulares de cadenas es que podemos usar caracteres especiales. Estos son caracteres con un significado. Comenzamos presentando `|` que significa _o_. Entonces, si queremos saber si `cm` o `inches` aparece en las cadenas, podemos usar la expresión regular `cm|inches`:
 
 ```{r}
 str_detect(s, "cm|inches")
@@ -398,7 +398,7 @@ str_view(s, pattern)
 knitr::include_graphics(file.path(img_path,"str_view-1.png"))
 ```
 
-[fix 'matches'] y `str_view_all` nos muestra todos las coincidencieas, entonces `3'2` tiene dos coincidencias y `5'10` tiene tres.
+[fix 'matches'] y `str_view_all` nos muestra todos las coincidencias, entonces `3'2` tiene dos coincidencias y `5'10` tiene tres.
 
 ```{r, eval=FALSE}
 str_view_all(s, pattern)
@@ -433,14 +433,14 @@ s <- c(yes, no)
 str_detect(s, "[4-7]")
 ```
 
-Sin embargo, es importante saber que en regex todo es un carácter; No hay números. Entonces `4` es el carácter `4` no el número cuatro. Note, por ejemplo, que `[1-20]` **no** significa 1 a 20, significa los caracteres 1 a 2 o el carácter 0. Entonces `[1-20]` simplemente significa la clase de caracteres compuesta por 0, 1 y 2.
+Sin embargo, es importante saber que en _regex_ todo es un carácter; No hay números. Entonces `4` es el carácter `4` no el número cuatro. Note, por ejemplo, que `[1-20]` **no** significa 1 a 20, significa los caracteres 1 a 2 o el carácter 0. Entonces `[1-20]` simplemente significa la clase de caracteres compuesta por 0, 1 y 2.
 
-Tenga en cuenta que los caracteres tienen un orden y los dígitos siguen el orden numérico. Entonces `0` viene antes `1` que viene antes `2` y así. Por la misma razón, podemos definir letras minúsculas como `[a-z]`, letras mayúsculas como `[A-Z]` y `[a-zA-z]` como ambos.
+Tengan en cuenta que los caracteres tienen un orden y los dígitos siguen el orden numérico. Entonces `0` viene antes `1` que viene antes `2` y así. Por la misma razón, podemos definir letras minúsculas como `[a-z]`, letras mayúsculas como `[A-Z]` y `[a-zA-z]` como ambos.
 
 ### Anclas
 
-¿Qué pasa si queremos una coincidencia cuando tenemos exactamente 1 dígito? Esto será útil en nuestro estudio de caso, ya que los pies nunca tienen más de 1 dígito, por lo que una restricción nos ayudará. Una forma de hacer esto con regex es usando _anchors_, que nos permiten definir patrones que deben comenzar o terminar en un lugar específico. Los dos anclajes más comunes son
-`^` y ` $` which represent the beginning and end of a string, respectively. So the pattern `^\\d$`se lee como" inicio de la cadena seguido por un dígito seguido por el final de la cadena ".
+¿Qué pasa si queremos una coincidencia cuando tenemos exactamente 1 dígito? Esto será útil en nuestro estudio de caso, ya que los pies nunca tienen más de 1 dígito, por lo que una restricción nos ayudará. Una forma de hacer esto con _regex_ es usando _anclas_ (_anchors_ en inglés), que nos permiten definir patrones que deben comenzar o terminar en un lugar específico. Las dos anclas más comunes son
+`^` y ` $` que representan el comienzo y el final de una cadena, respectivamente. Entonces el patrón `^\\d$`se lee como "inicio de la cadena seguido por un dígito seguido por el final de la cadena".
 
 Este patrón ahora solo detecta las cadenas con exactamente un dígito:
 
@@ -462,11 +462,11 @@ knitr::include_graphics(file.path(img_path,"str_view-4.png"))
 
 
 
-Los ` 1` no coincide porque no comienza con el dígito sino con un espacio, que realmente no es fácil de ver.
+El ` 1` no coincide porque no comienza con el dígito sino con un espacio, que no es fácil de ver.
 
 ### Cuantificadores
 
-Para la parte de pulgadas, podemos tener uno o dos dígitos. Esto se puede especificar en regex con _quantifiers_. Esto se hace siguiendo el patrón con llaves que contienen la cantidad de veces que se puede repetir la entrada anterior. Usamos un ejemplo para ilustrar. El patrón para uno o dos dígitos es:
+Para la parte de pulgadas, podemos tener uno o dos dígitos. Esto se puede especificar en _regex_ con _cuantificadores_ (_quantifiers_ en inglés). Esto se hace siguiendo el patrón con llaves que contienen la cantidad de veces que se puede repetir la entrada anterior. Usamos un ejemplo para ilustrar. El patrón para uno o dos dígitos es:
 
 ```{r, eval=FALSE}
 pattern <- "^\\d{1,2}$"
@@ -479,7 +479,7 @@ str_view(c(yes, no), pattern)
 knitr::include_graphics(file.path(img_path,"str_view-5.png"))
 ```
 
-En este caso, `123` **no** coincide, pero `12` hace. Entonces, para buscar nuestro patrón de pies y pulgadas, podemos agregar los símbolos para pies `'` y pulgadas `"` después de los dígitos.
+En este caso, `123` **no** coincide, pero `12` sí. Entonces, para buscar nuestro patrón de pies y pulgadas, podemos agregar los símbolos para pies `'` y pulgadas `"` después de los dígitos.
 
 
 Con lo que hemos aprendido, ahora podemos construir un ejemplo para el patrón `x'y\"` con `x` pies y `y` pulgadas.
@@ -489,7 +489,7 @@ pattern <- "^[4-7]'\\d{1,2}\"$"
 ```
 
 
-El patrón ahora se está volviendo complejo, pero puedes mirarlo cuidadosamente y desglosarlo:
+El patrón ahora se está volviendo complejo, pero pueden mirarlo cuidadosamente y desglosarlo:
 
 - `^` = inicio de la cadena
 - `[4-7]` = un dígito, ya sea 4,5,6 o 7
@@ -507,17 +507,17 @@ str_detect(yes, pattern)
 str_detect(no, pattern)
 ```
 
-Por ahora, estamos permitiendo que las pulgadas sean 12 o más grandes. Agregaremos una restricción más tarde ya que la expresión regular para esto es un poco más compleja de lo que estamos listos para mostrar.
+Por ahora, estamos permitiendo que las pulgadas sean 12 o más grandes. Agregaremos una restricción más tarde ya que la expresión regular para esto es un poco más compleja de lo que estamos preparados para mostrar.
 
 ### Espacio en blanco `\s`
 
-Otro problema que tenemos son los espacios. Por ejemplo, nuestro patrón no coincide `5' 4"` porque hay un espacio entre `'` y `4` que nuestro patrón no permite. Los espacios son caracteres y R no los ignora:
+Otro problema que tenemos son los espacios. Por ejemplo, nuestro patrón no coincide con `5' 4"` porque hay un espacio entre `'` y `4` que nuestro patrón no permite. Los espacios son caracteres y R no los ignora:
 
 ```{r}
 identical("Hi", "Hi ")
 ```
 
-En regex, `\s` representa el espacio en blanco Para encontrar patrones como `5' 4`, podemos cambiar nuestro patrón a:
+En _regex_, `\s` representa el espacio en blanco. Para encontrar patrones como `5' 4`, podemos cambiar nuestro patrón a:
 
 ```{r}
 pattern_2 <- "^[4-7]'\\s\\d{1,2}\"$"
@@ -528,7 +528,7 @@ Sin embargo, esto no coincidirá con los patrones sin espacio. Entonces, ¿neces
 
 ### Cuantificadores: `*`, `?`, `+`
 
-Queremos que el patrón permita espacios pero no los requiera. Incluso si hay varios espacios, como en este ejemplo `5' 4`, todavía queremos que coincida. Hay un cuantificador para exactamente este propósito. En regex, el carácter `*` significa cero o más instancias del carácter anterior. Aquí hay un ejemplo:
+Queremos que el patrón permita espacios pero no los requiera. Incluso si hay varios espacios, como en este ejemplo `5' 4`, todavía queremos que coincida. Hay un cuantificador para exactamente este propósito. En _regex_, el carácter `*` significa cero o más instancias del carácter anterior. Aquí hay un ejemplo:
 
 ```{r}
 yes <- c("AB", "A1B", "A11B", "A111B", "A1111B")
@@ -537,9 +537,9 @@ str_detect(yes, "A1*B")
 str_detect(no, "A1*B")
 ```
 
-Lo anterior coincide con la primera cadena que tiene cero 1s y todas las cadenas con uno o más 1. Entonces podemos mejorar nuestro patrón agregando el `*` después del carácter espacial `\s`.
+Lo anterior coincide con la primera cadena que tiene cero 1s y todas las cadenas con un o más 1. Entonces podemos mejorar nuestro patrón agregando el `*` después del carácter espacial `\s`.
 
-Hay otros dos cuantificadores similares. Para ninguno o una vez, podemos usar `?`, y para uno o más, podemos usar `+`. Puedes ver cómo difieren con este ejemplo:
+Hay otros dos cuantificadores similares. Para ninguno o una vez, podemos usar `?`, y para uno o más, podemos usar `+`. Pueden ver cómo difieren con este ejemplo:
 
 ```{r}
 data.frame(string = c("AB", "A1B", "A11B", "A111B", "A1111B"),
@@ -548,11 +548,11 @@ nore_or_once = str_detect(yes, "A1?B"),
 once_or_more = str_detect(yes, "A1+B"))
 ```
 
-Realmente usaremos los tres en nuestro ejemplo de alturas reportadas, pero los veremos en una sección posterior.
+Usaremos los tres en nuestro ejemplo de alturas reportadas, pero los veremos en una sección posterior.
 
 ### No
 
-Para especificar patrones que **no** queremos detectar, podemos usar el `^` símbolo pero solo __dentro__ corchetes. Recuerda que fuera del corchete `^` significa el inicio de la cadena. Entonces, por ejemplo, si queremos detectar dígitos precedidos por algo que no sea una letra, podemos hacer lo siguiente:
+Para especificar patrones que **no** queremos detectar, podemos usar el símbolo `^` pero solo __dentro__ de corchetes. Recuerden que fuera del corchete `^` significa el inicio de la cadena. Entonces, por ejemplo, si queremos detectar dígitos precedidos por algo que no sea una letra, podemos hacer lo siguiente:
 
 ```{r}
 pattern <- "[^a-zA-Z]\\d"
@@ -562,16 +562,15 @@ str_detect(yes, pattern)
 str_detect(no, pattern)
 ```
 
-Otra forma de generar un patrón que busca _todo, excepto_ es usar la mayúscula del carácter especial. Por ejemplo `\\D` significa cualquier cosa que no sea un dígito, `\\S` significa cualquier cosa excepto un espacio, y así sucesivamente.
+Otra forma de generar un patrón que busca _todo excepto_ es usar la mayúscula del carácter especial. Por ejemplo `\\D` significa cualquier cosa que no sea un dígito, `\\S` significa cualquier cosa excepto un espacio, y así sucesivamente.
 
 ### Grupos {#groups}
 
-Los grupos son un aspecto poderoso de la expresión regular que permite la extracción de valores. Los grupos se definen usando paréntesis. No afectan la coincidencia de patrones per se. En cambio, permite que las herramientas identifiquen partes específicas del patrón para que podamos extraerlas.
+Los _grupos_ son un aspecto poderoso de la expresión regular que permite la extracción de valores. Los grupos se definen usando paréntesis. No afectan la coincidencia de patrones [fix ok for 'per se'] en sí mismo. En cambio, permiten que las herramientas identifiquen partes específicas del patrón para que podamos extraerlas.
 
 Queremos cambiar las alturas escritas como `5.6` a `5'6`.
 
-Para evitar cambiar patrones como `70.2`, requeriremos que el primer dígito esté entre 4 y 7 `[4-7]` y que el segundo sea ninguno o más dígitos `\\d*`.
-Comencemos definiendo un patrón simple que coincida con esto:
+Para evitar cambiar patrones como `70.2`, requeriremos que el primer dígito esté entre 4 y 7 `[4-7]` y que el segundo sea ninguno o más dígitos `\\d*`. Comencemos definiendo un patrón sencillo que coincida con esto:
 
 ```{r}
 pattern_without_groups <- "^[4-7],\\d*$"
@@ -583,7 +582,7 @@ Queremos extraer los dígitos para poder formar la nueva versión usando un punt
 pattern_with_groups <- "^([4-7]),(\\d*)$"
 ```
 
-Encapsulamos la parte del patrón que coincide con las partes que queremos conservar para su uso posterior. Agregar grupos no afecta la detección, ya que solo indica que queremos guardar lo que capturan los grupos. Tenga en cuenta que ambos patrones devuelven el mismo resultado cuando se usa `str_detect`:
+Encapsulamos la parte del patrón que coincide con las partes que queremos conservar para su uso posterior. Agregar grupos no afecta la detección, ya que solo indica que queremos guardar lo que capturan los grupos. Tengan en cuenta que ambos patrones devuelven el mismo resultado cuando se usa `str_detect`:
 
 ```{r}
 yes <- c("5,9", "5,11", "6,", "6,1")
@@ -599,7 +598,7 @@ Una vez que definimos los grupos, podemos usar la función `str_match` para extr
 str_match(s, pattern_with_groups)
 ```
 
-Observe que las columnas segunda y tercera contienen pies y pulgadas, respectivamente. La primera columna es la parte de la cadena que coincide con el patrón. Si no se produjo ninguna coincidencia, vemos un `NA`.
+Observen que las segunda y tercera columnas contienen pies y pulgadas, respectivamente. La primera columna es la parte de la cadena que coincide con el patrón. Si no se produjo ninguna coincidencia, vemos un `NA`.
 
 Ahora podemos entender la diferencia entre las funciones. `str_extract` y `str_match`: `str_extract` extrae solo cadenas que coinciden con un patrón, no los valores definidos por grupos:
 
@@ -656,7 +655,7 @@ sum()
 
 Sin embargo, todavía tenemos muchos casos por recorrer.
 
-Tenga en cuenta que en el código anterior, aprovechamos la coherencia __stringr__ y usamos la tubería.
+Tengan en cuenta que en el código anterior, aprovechamos la coherencia __stringr__ y usamos la tubería.
 
 Por ahora, mejoramos nuestro patrón agregando `\\s*` delante y después del símbolo de los pies `'` para permitir espacio entre el símbolo de los pies y los números. Ahora hacemos coincidir algunas entradas más:
 
@@ -679,7 +678,7 @@ Por lo tanto, nuestra estrategia será buscar un patrón muy específico que nos
 
 Otro aspecto poderoso de los grupos es que puede hacer referencia a los valores extraídos en una expresión regular cuando busca y reemplaza.
 
-El carácter especial regex para el `i`-el grupo es `\\i`. Entonces `\\1` es el valor extraído del primer grupo, `\\2` el valor del segundo y así sucesivamente. Como un ejemplo simple, tenga en cuenta que el siguiente código reemplazará una coma con punto, pero solo si está entre dos dígitos:
+El carácter especial _regex_ para el `i`-el grupo es `\\i`. Entonces `\\1` es el valor extraído del primer grupo, `\\2` el valor del segundo y así sucesivamente. Como un ejemplo simple, tengan en cuenta que el siguiente código reemplazará una coma con un punto, pero solo si está entre dos dígitos:
 
 ```{r}
 pattern_with_groups <- "^([4-7]),(\\d*)$"
@@ -721,9 +720,9 @@ str_replace(pattern_with_groups, "\\1'\\2") %>% head
 
 Nuevamente, trataremos el desafío de pulgadas más grandes que doce más tarde.
 
-## Prueba y mejora
+## Probar y mejorar
 
-Desarrollar la expresión regular correcta en el primer intento a menudo es difícil. Prueba y error es un enfoque común para encontrar el patrón de expresiones regulares que satisfaga todas las condiciones deseadas. En las secciones anteriores, hemos desarrollado una potente técnica de procesamiento de cadenas que puede ayudarnos a detectar muchas de las entradas problemáticas. Aquí probaremos nuestro enfoque, buscaremos más problemas y modificaremos nuestro enfoque para posibles mejoras. Escribamos una función que capture todas las entradas que no se pueden convertir en números recordando que algunas están en centímetros (trataremos con ellas más adelante):
+Desarrollar la expresión regular correcta en el primer intento a menudo es difícil. Probar y mejorar es un enfoque común para encontrar el patrón de expresiones regulares que satisfaga todas las condiciones deseadas. En las secciones anteriores, hemos desarrollado una potente técnica de procesamiento de cadenas que puede ayudarnos a detectar muchas de las entradas problemáticas. Aquí probaremos nuestro enfoque, buscaremos más problemas y modificaremos nuestro enfoque para posibles mejoras. Escribamos una función que capture todas las entradas que no se pueden convertir en números recordando que algunas están en centímetros (trataremos con ellas más adelante):
 
 ```{r}
 not_inches_or_cm <- function(x, smallest = 50, tallest = 84){
@@ -791,7 +790,7 @@ Podemos adaptar este código ligeramente para manejar también el caso 2, que cu
 str_replace(s, "^([56])'?$", "\\1'0")
 ```
 
-Aquí solo permitimos 5 y 6, pero no 4 y 7. Esto se debe a que 5 y 6 pies de altura es bastante común, por lo que asumimos que aquellos que escribieron 5 o 6 realmente significaron `60` o `72` pulgadas. Sin embargo, `4` y `7` los pies de altura son tan raros que, aunque aceptamos `84` como entrada válida, suponemos `7` fue ingresado por error.
+Aquí solo permitimos 5 y 6, pero no 4 y 7. Esto se debe a que 5 y 6 pies de altura es bastante común, por lo que asumimos que aquellos que escribieron 5 o 6 en verdad querían decir `60` o `72` pulgadas. Sin embargo, `4` y `7` los pies de altura son tan raros que, aunque aceptamos `84` como entrada válida, suponemos `7` fue ingresado por error.
 
 Podemos usar cuantificadores para tratar el caso **3**. Estas entradas no coinciden porque las pulgadas incluyen decimales y nuestro patrón no lo permite. Necesitamos permitir que el segundo grupo incluya decimales, no solo dígitos. Esto significa que debemos permitir cero o un período `.` entonces cero o más dígitos. Entonces usaremos ambos `?` y `*`.
 También recuerde que, para este caso particular, el período debe escaparse ya que es un carácter especial (significa cualquier carácter excepto el salto de línea). Aquí hay un ejemplo sencillo de cómo podemos usar `*`.
@@ -836,7 +835,7 @@ str_trim("5 ' 9 ")
 
 ## Cambio de letra
 
-Tenga en cuenta que regex distingue entre mayúsculas y minúsculas. A menudo queremos hacer coincidir una palabra independientemente del caso. Un enfoque para hacer esto es cambiar primero todo a minúsculas y luego continuar ignorando mayúsculas y minúsculas. Como ejemplo, tenga en cuenta que una de las entradas escribe números como palabras `Five foot eight inches`. Aunque no es eficiente, podríamos agregar 13 adicionales `str_replace` llamadas para convertir `zero` a `0`, `one` a `1`, y así. Para evitar tener que escribir dos operaciones separadas para `Zero` y `zero`, `One` y `one`, etc., podemos usar el `str_to_lower` función para hacer que todas las obras sean minúsculas primero:
+Tengan en cuenta que _regex_ distingue entre mayúsculas y minúsculas. A menudo queremos hacer coincidir una palabra independientemente del caso. Un enfoque para hacer esto es cambiar primero todo a minúsculas y luego continuar ignorando mayúsculas y minúsculas. Como ejemplo, tengan en cuenta que una de las entradas escribe números como palabras `Five foot eight inches`. Aunque no es eficiente, podríamos agregar 13 adicionales `str_replace` llamadas para convertir `zero` a `0`, `one` a `1`, y así. Para evitar tener que escribir dos operaciones separadas para `Zero` y `zero`, `One` y `one`, etc., podemos usar el `str_to_lower` función para hacer que todas las obras sean minúsculas primero:
 
 ```{r}
 s <- c("Five feet eight inches")
@@ -1095,7 +1094,7 @@ Si examinamos el texto del objeto, notamos que es un vector de caracteres con un
 raw_data_research_funding_rates <- txt[2]
 ```
 
-Los pasos anteriores se pueden omitir realmente porque también incluimos estos datos sin procesar en el paquete __dslabs__:
+Los pasos anteriores se pueden omitir porque también incluimos estos datos sin procesar en el paquete __dslabs__:
 
 ```{r}
 data("raw_data_research_funding_rates")
@@ -1128,7 +1127,7 @@ cat(substr(the_names_1, 1, options()$width))
 cat(substr(the_names_1, options()$width, nchar(the_names_1)))
 ```
 
-Queremos crear un vector con un nombre para cada columna. Usando algunas de las funciones que acabamos de aprender, hacemos esto. Empecemos con `the_names_1`, mostrado anteriormente. Queremos eliminar el espacio inicial y todo lo que sigue a la coma. Utilizamos regex para este último. Entonces podemos obtener los elementos dividiendo cadenas separadas por espacio. Queremos dividir solo cuando hay 2 o más espacios para evitar dividir `Success rates`. Entonces usamos la expresión regular `\\s{2,}`
+Queremos crear un vector con un nombre para cada columna. Usando algunas de las funciones que acabamos de aprender, hacemos esto. Empecemos con `the_names_1`, mostrado anteriormente. Queremos eliminar el espacio inicial y todo lo que sigue a la coma. Utilizamos _regex_ para este último. Entonces podemos obtener los elementos dividiendo cadenas separadas por espacio. Queremos dividir solo cuando hay 2 o más espacios para evitar dividir `Success rates`. Entonces usamos la expresión regular `\\s{2,}`
 
 ```{r}
 the_names_1 <- the_names_1 %>%
@@ -1140,6 +1139,7 @@ the_names_1
 
 
 Ahora veremos `the_names_2`:
+
 ```{r, echo=FALSE}
 cat(substr(the_names_2, 1, options()$width))
 cat(substr(the_names_2, options()$width, nchar(the_names_2)))
@@ -1185,7 +1185,7 @@ identical(research_funding_rates, new_research_funding_rates)
 
 ## Recodificación {#recode}
 
-Otra operación común que involucra cadenas es recodificar los nombres de variables categóricas. Supongamos que tiene nombres realmente largos para sus niveles y los mostrará en diagramas, es posible que desee utilizar versiones más cortas de estos nombres. Por ejemplo, en los vectores de caracteres con nombres de países, es posible que desee cambiar "Estados Unidos de América" a "Estados Unidos" y "Reino Unido" a Reino Unido, y así sucesivamente. Podemos hacer esto con `case_when`, aunque __tidyverse__ ofrece una opción específicamente diseñada para esta tarea: la `recode` función.
+Otra operación común que involucra cadenas es recodificar los nombres de variables categóricas. Supongamos que tienen nombres largos para sus niveles y los mostrarán en diagramas, es posible que deseen utilizar versiones más cortas de estos nombres. Por ejemplo, en los vectores de caracteres con nombres de países, es posible que deseen cambiar "Estados Unidos de América" a "Estados Unidos" y "Reino Unido" a "RU", y así sucesivamente. Podemos hacer esto con `case_when`, aunque __tidyverse__ ofrece una opción específicamente diseñada para esta tarea: la función `recode`.
 
 Aquí hay un ejemplo que muestra cómo cambiar el nombre de los países con nombres largos:
 
@@ -1204,7 +1204,7 @@ ggplot(aes(year, life_expectancy, color = country)) +
 geom_line()
 ```
 
-La trama es lo que queremos, pero gran parte del espacio se desperdicia para acomodar algunos de los nombres largos de los países.
+La gráfica es lo que queremos, pero gran parte del espacio se desperdicia para acomodar algunos de los nombres largos de los países.
 <!--
 ```{r}
 gapminder %>%
@@ -1213,7 +1213,7 @@ filter(str_length(country) >= 12) %>%
 distinct(country)
 ```
 -->
-Tenemos cuatro países con nombres de más de 12 caracteres. Estos nombres aparecen una vez por año en el setde datos Gapminder. Una vez que elegimos los apodos, debemos cambiarlos todos de manera consistente. los `recode` la función se puede utilizar para hacer esto:
+Tenemos cuatro países con nombres de más de 12 caracteres. Estos nombres aparecen una vez por año en el set de datos Gapminder. Una vez que elegimos los apodos, debemos cambiarlos todos de manera consistente. La función `recode` se puede utilizar para hacer esto:
 
 
 ```{r caribbean-with-nicknames}
@@ -1234,9 +1234,9 @@ Hay otras funciones similares en otros paquetes de R, como `recode_factor` y `fc
 
 
 
-1\. Complete todas las lecciones y ejercicios en el tutorial interactivo en línea [https://regexone.com/font>(https://regexone.com/).
+1\. Complete todas las lecciones y ejercicios en el tutorial interactivo en línea [https://regexone.com/font](https://regexone.com/).
 
-2\. En el `extdata` en el directorio del paquete __dslabs__, encontrará un archivo PDF que contiene datos de mortalidad diaria para Puerto Rico del 1 de enero de 2015 al 31 de mayo de 2018. Puede encontrar el archivo de esta manera:
+2\. En el directorio `extdata` del paquete __dslabs__, encontrará un archivo PDF que contiene datos de mortalidad diaria para Puerto Rico del 1 de enero de 2015 al 31 de mayo de 2018. Puede encontrar el archivo de esta manera:
 
 ```{r, eval=FALSE}
 fn <- system.file("extdata", "RD-Mortality-Report_2015-18-180531.pdf",
@@ -1256,10 +1256,10 @@ system("cmd.exe", input = paste("start", fn))
 
 ¿Cuál de las siguientes opciones describe mejor este archivo?
 
-a. Es una Mesa. Extraer los datos será fácil.
-si. Es un informe escrito en prosa. Extraer los datos será imposible.
-c. Es un informe que combina gráficos y tablas. Extraer los datos parece posible.
-re. Muestra gráficos de los datos. Extraer los datos será difícil.
+a. Es una tabla. Extraer los datos será fácil.
+b. Es un informe escrito en prosa. Extraer los datos será imposible.
+c. Es un informe que combina gráficas y tablas. Extraer los datos parece posible.
+d. Muestra gráficas de los datos. Extraer los datos será difícil.
 
 
 3\. Vamos a crear un set de datos ordenado con cada fila que representa una observación. Las variables en este set de datos serán año, mes, día y muertes.
@@ -1271,18 +1271,18 @@ install.packages("pdftools")
 library(pdftools)
 ```
 
-Ahora lee `fn` utilizando la `pdf_text` funcionar y almacenar los resultados en un objeto llamado `txt`. ¿Cuál de las siguientes opciones describe mejor lo que ves en `txt`?
+Ahora lea `fn` utilizando la función `pdf_text`y almacene los resultados en un objeto llamado `txt`. ¿Cuál de las siguientes opciones describe mejor lo que ve en `txt`?
 
 a. Una tabla con los datos de mortalidad.
-si. Una cadena de caracteres de longitud 12. Cada entrada representa el texto en cada página. Los datos de mortalidad están allí en alguna parte.
+b. Una cadena de caracteres de longitud 12. Cada entrada representa el texto en cada página. Los datos de mortalidad están ahí en alguna parte.
 c. Una cadena de caracteres con una entrada que contiene toda la información en el archivo PDF.
-re. Un documento html.
+d. Un documento html.
 
 
-4\. Extraiga la novena página del archivo PDF del objeto `txt`, luego use el `str_split` del paquete __stringr__ para que tenga cada línea en una entrada diferente. Llame a este vector de cadena `s`. Luego mira el resultado y elige el que mejor describa lo que ves.
+4\. Extraiga la novena página del archivo PDF del objeto `txt`, luego use el `str_split` del paquete __stringr__ para que tenga cada línea en una entrada diferente. Llame a este vector de cadena `s`. Luego mire el resultado y eliga el que mejor describa lo que ve.
 
 a. Es una cadena vacía.
-si. Puedo ver la figura que se muestra en la página 1.
+b. Puedo ver la figura que se muestra en la página 1.
 c. Es una mesa ordenada.
 re. ¡Puedo ver la mesa! Pero hay muchas otras cosas de las que debemos deshacernos.
 
@@ -1294,45 +1294,44 @@ re. ¡Puedo ver la mesa! Pero hay muchas otras cosas de las que debemos deshacer
 6\. Vemos que la salida es una lista con un componente. Redefinir `s` ser la primera entrada de la lista. Qué tipo de objeto es `s` y cuantas entradas tiene?
 
 
-7\. Al inspeccionar la cadena que obtuvimos anteriormente, vemos un problema común: espacios en blanco antes y después de los otros caracteres. El recorte es un primer paso común en el procesamiento de cadenas. Estos espacios adicionales eventualmente harán que dividir las cadenas sea difícil, por lo que comenzamos por eliminarlas. Aprendimos sobre el comando `str_trim` que elimina espacios al principio o al final de las cadenas. Use esta función para recortar `s`.
+7\. Al inspeccionar la cadena que obtuvimos anteriormente, vemos un problema común: espacios en blanco antes y después de los otros caracteres. Recortar es un primer paso común en el procesamiento de cadenas. Estos espacios adicionales eventualmente complicarán dividir las cadenas, por lo que comenzamos por eliminarlos. Aprendimos sobre el comando `str_trim` que elimina espacios al principio o al final de las cadenas. Use esta función para recortar `s`.
 
 
 8\. Queremos extraer los números de las cadenas almacenadas en `s`. Sin embargo, hay muchos caracteres no numéricos que se interpondrán en el camino. Podemos eliminarlos, pero antes de hacerlo queremos preservar la cadena con el encabezado de la columna, que incluye la abreviatura del mes.
-Utilizar el `str_which` función para encontrar las filas con un encabezado. Guarde estos resultados en `header_index`. Sugerencia: encuentre la primera cadena que coincida con el patrón `2015` utilizando la `str_which` función.
+Utilice la función `str_which` para encontrar las filas con un encabezado. Guarde estos resultados en `header_index`. Sugerencia: encuentre la primera cadena que coincida con el patrón `2015` utilizando la función `str_which`.
 
 
-9\. Ahora vamos a definir dos objetos: `month` almacenará el mes y `header` almacenará los nombres de columna. Identifique qué fila contiene el encabezado de la tabla. Guarde el contenido de la fila en un objeto llamado `header`, luego use `str_split` para ayudar a definir los dos objetos que necesitamos. Sugerencias: el separador aquí es uno o más espacios. Además, considere usar el `simplify` argumento.
+9\. Ahora vamos a definir dos objetos: `month` almacenará el mes y `header` almacenará los nombres de columna. Identifique qué fila contiene el encabezado de la tabla. Guarde el contenido de la fila en un objeto llamado `header`, luego use `str_split` para ayudar a definir los dos objetos que necesitamos. Sugerencias: el separador aquí es uno o más espacios. Además, considere usar el argumento `simplify`.
 
 
-10\. Observe que hacia el final de la página verá una fila _totals_ seguida de filas con otras estadísticas de resumen. Crea un objeto llamado `tail_index` con el índice de la entrada _totals_.
+10\. Observe que hacia el final de la página verá una fila _totals_ seguida de filas con otras estadísticas de resumen. Cree un objeto llamado `tail_index` con el índice de la entrada _totals_.
 
 
-11\. Debido a que nuestra página PDF incluye gráficos con números, algunas de nuestras filas tienen solo un número (desde el eje y de la gráfica). Utilizar el `str_count` función para crear un objeto `n` con el número de números en cada fila. Sugerencia: puede escribir una expresión regular para un número como este `\\d+`.
+11\. Debido a que nuestra página PDF incluye gráficos con números, algunas de nuestras filas tienen solo un número (desde el eje y de la gráfica). Utilice la función `str_count` para crear un objeto `n` con el número de números en cada fila. Sugerencia: puede escribir una expresión regular para un número como este `\\d+`.
 
 
 12\. Ahora estamos listos para eliminar entradas de filas que sabemos que no necesitamos. La entrada `header_index` y todo antes de que se elimine. Entradas para las cuales `n` es 1 también debe eliminarse, y la entrada `tail_index` y todo lo que viene después debe ser eliminado también.
 
 
-13\. Ahora estamos listos para eliminar todas las entradas no numéricas. Haga esto usando regex y el `str_remove_all` función. Sugerencia: recuerde que en regex, usar la versión en mayúscula de un carácter especial generalmente significa lo contrario. Entonces `\\D` significa "no un dígito". Recuerda que también quieres mantener espacios.
+13\. Ahora estamos listos para eliminar todas las entradas no numéricas. Haga esto usando _regex_ y la función `str_remove_all`. Sugerencia: recuerde que en _regex_, usar la versión en mayúscula de un carácter especial generalmente significa lo contrario. Entonces `\\D` significa "no un dígito". Recuerde que también quiere mantener espacios.
 
 
 
-14\. Para convertir las cadenas en una tabla, use el `str_split_fixed` función. Convertir `s` en una matriz de datos con solo los datos de recuento de días y muertes. Sugerencias: tenga en cuenta que el separador es uno o más espacios. Haz el argumento `n` un valor que limita el número de columnas a los valores en las 4 columnas y la última columna captura todas las cosas adicionales. Luego mantenga solo las primeras cuatro columnas.
+14\. Para convertir las cadenas en una tabla, use la función `str_split_fixed`. Convierta `s` en una matriz de datos con solo los datos de recuento de días y muertes. Sugerencias: tengan en cuenta que el separador es uno o más espacios. Haga el argumento `n` un valor que limita el número de columnas a los valores en las 4 columnas y la última columna captura todas las cosas adicionales. Luego mantenga solo las primeras cuatro columnas.
 
 
 
-15\. Ahora ya casi estás listo para terminar. Agregue nombres de columna a la matriz, incluido uno llamado `day`. Además, agregue una columna con el mes. Llamar al objeto resultante `dat`. Finalmente, asegúrese de que el día sea un número entero, no un carácter. Sugerencia: use solo las primeras cinco columnas.
+15\. Ahora ya casi está listo para terminar. Agregue nombres de columna a la matriz, incluyendo uno llamado `day`. Además, agregue una columna con el mes. Llame al objeto resultante `dat`. Finalmente, asegúrese de que el día es un número entero, no un carácter. Sugerencia: use solo las primeras cinco columnas.
+
+16\. [fix eng to `gather1?] Ahora termine ordenando `tab` con la función de reunir.
 
 
-Dieciséis\. Ahora termine ordenando `tab` con la función de reunir.
+17\. Haga un diagrama de muertes versus día con color para indicar el año. Excluya 2018 ya que no tenemos datos para todo el año.
 
 
-17\. Haz un diagrama de muertes versus día con color para indicar el año. Excluya 2018 ya que no tenemos datos para todo el año.
+18\. Ahora que hemos _wrangled_ estos datos paso a paso, póngalos todos juntos en un fragmento R, usando el _pipe_ tanto como sea posible. Sugerencia: primero defina los índices, luego escriba una línea de código que realice todo el procesamiento de la cadena.
 
 
-18\. Ahora que hemos discutido estos datos paso a paso, póngalos todos juntos en un fragmento R, usando la tubería tanto como sea posible. Sugerencia: primero defina los índices, luego escriba una línea de código que realice todo el procesamiento de la cadena.
-
-
-19\. Avanzado: volvamos al ejemplo de Nómina MLB desde la sección de scraping web. Use lo que aprendió en los capítulos de raspado de la web y procesamiento de cadenas para extraer la nómina de los Yankees de Nueva York, los Medias Rojas de Boston y los Atléticos de Oakland y trazarlos en función del tiempo.
+19\. Avanzado: volvamos al ejemplo de Nómina MLB de la sección de extracción de la web. Use lo que aprendió en los capítulos de extracción de la web y procesamiento de cadenas para extraer la nómina de los Yankees de Nueva York, los Medias Rojas de Boston y los Atléticos de Oakland y graficarlos como una función del tiempo.
 
 

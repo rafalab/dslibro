@@ -2,9 +2,9 @@
 
 ## El tipo de datos de fecha
 
-Hemos descrito tres tipos principales de vectores: numéricos, de caracteres y lógicos. En proyectos de ciencia de datos, a menudo encontramos variables que son fechas. Aunque podemos representar una fecha con una cadena, por ejemplo `November 2, 2017`, una vez que elegimos un día de referencia, conocido como _epoch_, se pueden convertir a números calculando el número de días desde la época. Los lenguajes de computadora usualmente usan el 1 de enero de 1970 como época. Entonces, por ejemplo, el 2 de enero de 2017 es el día 1, el 31 de diciembre de 1969 es el día -1 y el 2 de noviembre de 2017 es el día 17,204.
+Hemos descrito tres tipos principales de vectores: numéricos, de caracteres y lógicos. En proyectos de ciencia de datos, a menudo encontramos variables que son fechas. Aunque podemos representar una fecha con una cadena, por ejemplo `November 2, 2017`, una vez que elegimos un día de referencia, conocido [fix is epoch translated? no ] como _epoch_, se pueden convertir en números calculando el número de días desde la época. Los lenguajes de computadora usualmente usan el 1 de enero de 1970 como época. Entonces, por ejemplo, el 2 de enero de 2017 es el día 1, el 31 de diciembre de 1969 es el día -1 y el 2 de noviembre de 2017 es el día 17,204.
 
-Ahora, ¿cómo debemos representar fechas y horas al analizar los datos en R? Podríamos usar días desde la época, pero es casi imposible de interpretar. Si te digo que es el 2 de noviembre de 2017, sabes lo que esto significa inmediatamente. Si te digo que es el día 17,204, estarás bastante confundido. Problemas similares surgen con los tiempos e incluso pueden aparecer más complicaciones debido a las zonas horarias.
+Ahora, ¿cómo debemos representar fechas y horas al analizar los datos en R? Podríamos usar días desde la época, pero es casi imposible de interpretar. Si les digo que es el 2 de noviembre de 2017, saben lo que esto significa inmediatamente. Si les digo que es el día 17,204, estarán bastante confundidos. Problemas similares surgen con [fix 'times'] los horas e incluso pueden aparecer más complicaciones debido a las zonas horarias.
 
 Por esta razón, R define un tipo de datos solo para fechas y horas. Vimos un ejemplo en los datos de las encuestas:
 
@@ -15,19 +15,19 @@ data("polls_us_election_2016")
 polls_us_election_2016$startdate %>% head
 ```
 
-Estas parecen cuerdas, pero no lo son:
+Estas parecen cadenas, pero no lo son:
 
 ```{r}
 class(polls_us_election_2016$startdate)
 ```
 
-Mira lo que sucede cuando los convertimos a números:
+Miren lo que sucede cuando los convertimos en números:
 
 ```{r}
 as.numeric(polls_us_election_2016$startdate) %>% head
 ```
 
-Los convierte en días desde la época. los `as.Date` la función puede convertir un carácter en una fecha. Entonces, para ver que la época es el día 0, podemos escribir
+Los convierte en días desde la época. La función `as.Date` puede convertir un carácter en una fecha. Entonces, para ver que la época es el día 0, podemos escribir:
 
 ```{r}
 as.Date("1970-01-01") %>% as.numeric
@@ -36,7 +36,7 @@ as.Date("1970-01-01") %>% as.numeric
 Las funciones de trazado, como las de ggplot, conocen el formato de fecha. Esto significa que, por ejemplo, un diagrama de dispersión puede usar la representación numérica para decidir la posición del punto, pero incluye la cadena en las etiquetas:
 
 ```{r rawpolls-vs-time}
-polls_us_election_2016 %>% filter(pollster == "Ipsos" & state =="U.S.") %>%
+polls_us_election_2016 %>% filter(pollster == "Ipsos" & state == "U.S.") %>%
 ggplot(aes(startdate, rawpoll_trump)) +
 geom_line()
 ```
@@ -94,19 +94,19 @@ Por ejemplo, si la cadena es:
 x <- "09/01/02"
 ```
 
-Los `ymd` la función supone que la primera entrada es el año, la segunda es el mes y la tercera es el día, por lo que la convierte a:
+La función `ymd` supone que la primera entrada es el año, la segunda es el mes y la tercera es el día, por lo que la convierte a:
 
 ```{r}
 ymd(x)
 ```
 
-Los `mdy` la función asume que la primera entrada es el mes, luego el día, luego el año:
+La función `mdy` asume que la primera entrada es el mes, luego el día, luego el año:
 
 ```{r}
 mdy(x)
 ```
 
-El paquete _lubridate_ proporciona una función para cada posibilidad:
+El paquete _lubridate_ provee una función para cada posibilidad:
 ```{r}
 ydm(x)
 myd(x)
@@ -114,14 +114,14 @@ dmy(x)
 dym(x)
 ```
 
-El paquete __lubridate__ también es útil para lidiar con los tiempos. En R base, puede obtener la hora actual escribiendo `Sys.time()`. El paquete __lubridate__ proporciona una función un poco más avanzada, `now`, que le permite definir la zona horaria:
+El paquete __lubridate__ también es útil para lidiar con los tiempos. En R base, puede obtener la hora actual escribiendo `Sys.time()`. El paquete __lubridate__ ofrece una función un poco más avanzada, `now`, que le permite definir la zona horaria:
 
 ```{r}
 now()
 now("GMT")
 ```
 
-Puede ver todas las zonas horarias disponibles con `OlsonNames()` función.
+Puede ver todas las zonas horarias disponibles con la función `OlsonNames()`.
 
 También podemos extraer horas, minutos y segundos:
 
@@ -143,7 +143,7 @@ mdy_hms(x)
 
 Este paquete tiene muchas otras funciones útiles. Aquí describimos dos de estos que encontramos particularmente útiles.
 
-Los `make_date` la función se puede utilizar para crear rápidamente un objeto de fecha. Toma tres argumentos: año, mes, día, hora, minuto, segundos y zona horaria predeterminada a los valores de época en la hora UTC. Entonces cree un objeto de fecha que represente, por ejemplo, el 6 de julio de 2019, escribimos:
+La función `make_date` se puede utilizar para crear rápidamente un objeto de fecha. Toma tres argumentos: año, mes, día, hora, minuto, segundos y zona horaria predeterminada a los valores de época en la hora UTC. Entonces cree un objeto de fecha que represente, por ejemplo, el 6 de julio de 2019, escribimos:
 
 ```{r}
 make_date(2019, 7, 6)
@@ -196,10 +196,10 @@ mutate(deaths = as.numeric(deaths))
 })
 ```
 
-1\. Queremos hacer un complot de recuentos de muertes versus fecha. Un primer paso es convertir la variable del mes de caracteres a números. Tenga en cuenta que las abreviaturas de los meses están en spanglish. Utilizar el `recode` función para convertir meses en números y redefinir `tab`.
+1\. Queremos hacer un complot de recuentos de muertes versus fecha. Un primer paso es convertir la variable del mes de caracteres a números. Tenga en cuenta que las abreviaturas de los meses están en spanglish. Utilice la función `recode` para convertir meses en números y redefinir `tab`.
 
 
-2\. Crea una nueva columna `date` con la fecha de cada observación. Sugerencia: use el `make_date` función.
+2\. Crea una nueva columna `date` con la fecha de cada observación. Sugerencia: use la función  `make_date`.
 
 
 3\. Trazar muertes versus fecha.
@@ -209,7 +209,7 @@ mutate(deaths = as.numeric(deaths))
 
 
 
-5\. Vuelva a hacer la trama anterior, pero esta vez las muertes de la trama contra el día del año, por ejemplo, 12 de enero de 2016 y 12 de enero de 2017, son ambos el día 12. Use el color para indicar los diferentes años. Sugerencia: use la función __lubridate__ `yday`.
+5\. Vuelva a hacer la trama anterior, pero esta vez las muertes de la trama contra el día del año, por ejemplo, 12 de enero de 2016 y 12 de enero de 2017, son ambos el día 12. Use el color para indicar los diferentes años. Sugerencia: use la función `yday` de __lubridate__ .
 
 
 
