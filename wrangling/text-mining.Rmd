@@ -1,25 +1,25 @@
-# Extracción de textos
+# Minería de textos
 
-Con la excepción de las etiquetas utilizadas para representar datos categóricos, nos hemos centrado en los datos numéricos. Pero en muchas aplicaciones, los datos comienzan como texto. Ejemplos bien conocidos son el filtrado de spam, la prevención del delito cibernético, la lucha contra el terrorismo y el análisis de sentimientos. En todos estos casos, los datos sin procesar se componen de texto de forma libre. Nuestra tarea es extraer información de estos datos. En esta sección, aprendemos cómo generar resúmenes numéricos útiles a partir de datos de texto a los que podemos aplicar algunas de las poderosas técnicas de visualización y análisis de datos que hemos aprendido.
+Con la excepción de las etiquetas utilizadas para representar datos categóricos, nos hemos enfocado en los datos numéricos. Pero en muchas aplicaciones, los datos comienzan como texto. Ejemplos bien conocidos son el filtrado de spam, la prevención del delito cibernético, la lucha contra el terrorismo y el análisis de sentimientos. En todos estos casos, los datos sin procesar se componen de texto de forma libre. Nuestra tarea es extraer información de estos datos. En esta sección, aprendemos cómo generar resúmenes numéricos útiles a partir de datos de texto a los que podemos aplicar algunas de las poderosas técnicas de visualización y análisis de datos que hemos aprendido.
 
 
 ## Estudio de caso: tuits de Trump
 
-Durante las elecciones presidenciales estadounidenses de 2016, el candidato Donald J. Trump usó su cuenta de Twitter como una forma de comunicarse con los posibles votantes. El 6 de agosto de 2016, Todd Vaziri tuiteó^[https://twitter.com/tvaziri/status/762005541388378112/photo/1] sobre Trump diciendo que "Cada tweet no hiperbólico es de iPhone (su personal). Cada tweet hiperbólico es de Android (de él) ".
-El científico de datos David Robinson realizó un análisis^[http://varianceexplained.org/r/trump-tweets/] para determinar si los datos respaldan esta afirmación. Aquí, revisamos el análisis de David para aprender algunos de los conceptos básicos de la minería de textos. Para obtener más información sobre la minería de texto en R, recomendamos el libro Minería de texto con R^[https://www.tidytextmining.com/] de Julia Silge y David Robinson.
+Durante las elecciones presidenciales estadounidenses de 2016, el candidato Donald J. Trump usó su cuenta de Twitter como una manera de comunicarse con los posibles votantes. El 6 de agosto de 2016, Todd Vaziri tuiteó^[https://twitter.com/tvaziri/status/762005541388378112/photo/1] sobre Trump diciendo que "Cada tweet no hiperbólico es de iPhone (su personal). Cada tweet hiperbólico es de Android (de él) ".
+El científico de datos David Robinson realizó un análisis^[http://varianceexplained.org/r/trump-tweets/] para determinar si los datos respaldan esta afirmación. Aquí, revisamos el análisis de David para aprender algunos de los conceptos básicos de la minería de textos. Para obtener más información sobre la minería de texto en R, recomendamos el libro _Text Mining with R_^[https://www.tidytextmining.com/] de Julia Silge y David Robinson.
 
 ```{r,echo=FALSE}
 set.seed(2002)
 ```
 
-Utilizaremos las siguientes bibliotecas:
+Utilizaremos las siguientes [fix "libraries"?] bibliotecas:
 ```{r, message=FALSE, warning=FALSE}
 library(tidyverse)
 library(lubridate)
 library(scales)
 ```
 
-En general, podemos extraer datos directamente de Twitter usando el paquete __rtweet__. Sin embargo, en este caso, un grupo ya ha compilado datos para nosotros y los ha puesto a disposición en [http://www.trumptwitterarchive.com] (http://www.trumptwitterarchive.com). Podemos obtener los datos de su API JSON usando un script como este:
+En general, podemos extraer datos directamente de Twitter usando el paquete __rtweet__. Sin embargo, en este caso, un grupo ya ha compilado datos para nosotros y los ha puesto a disposición en [http://www.trumptwitterarchive.com](http://www.trumptwitterarchive.com). Podemos obtener los datos de su API JSON usando un _script_ como este:
 
 ```{r, eval=FALSE}
 url <- 'http://www.trumptwitterarchive.com/data/realdonaldtrump/%s.json'
@@ -38,7 +38,7 @@ library(dslabs)
 data("trump_tweets")
 ```
 
-Puede ver el marco de datos con información sobre los tweets escribiendo
+Pueden ver el _data frame_ con información sobre los tuits al escribir:
 
 ```{r, eval=FALSE}
 head(trump_tweets)
@@ -50,19 +50,19 @@ con las siguientes variables incluidas:
 names(trump_tweets)
 ```
 
-El archivo de ayuda `?trump_tweets` proporciona detalles sobre lo que representa cada variable. Los tweets están representados por el `text` variable:
+El archivo de ayuda `?trump_tweets` provee detalles sobre lo que representa cada variable. Los tuits están representados por el variable `text`:
 
 ```{r}
 trump_tweets$text[16413] %>% str_wrap(width = options()$width) %>% cat
 ```
 
-y la variable fuente nos dice qué dispositivo se usó para componer y cargar cada tweet:
+y la variable "fuente _source_ nos dice qué dispositivo se usó para componer y cargar cada tuit:
 
 ```{r}
 trump_tweets %>% count(source) %>% arrange(desc(n)) %>% head(5)
 ```
 
-Estamos interesados en lo que sucedió durante la campaña, por lo que para este análisis nos centraremos en lo que se tuiteó entre el día en que Trump anunció su campaña y el día de las elecciones. Definimos la siguiente tabla que contiene solo los tweets de ese período de tiempo. Tenga en cuenta que usamos `extract` para eliminar el `Twitter for` parte de la fuente y filtrar retweets.
+Estamos interesados en lo que sucedió durante la campaña, por lo que para este análisis nos enfocaremos en lo que se tuiteó entre el día en que Trump anunció su campaña y el día de las elecciones. Definimos la siguiente tabla que contiene solo los tuits de ese período de tiempo. Tengan en cuenta que usamos `extract` para eliminar el `Twitter for` parte de la fuente y filtrar los _retweets_.
 
 ```{r}
 campaign_tweets <- trump_tweets %>%
@@ -74,7 +74,7 @@ filter(!is_retweet) %>%
 arrange(created_at)
 ```
 
-Ahora podemos usar la visualización de datos para explorar la posibilidad de que dos grupos diferentes tuiteen desde estos dispositivos. Para cada tweet, extraeremos la hora, hora de la costa este (EST), se tuiteó y luego calcularemos la proporción de tweets tuiteados a cada hora para cada dispositivo:
+Ahora podemos usar la visualización de datos para explorar la posibilidad de que dos grupos diferentes escribieron los mensajes desde estos dispositivos. Para cada tuit, extraeremos la hora en que se publicó (hora de la costa este o EST por sus siglas en inglés), y luego calcularemos la proporción de tuits tuiteados a cada hora para cada dispositivo:
 
 ```{r tweets-by-time-by-device}
 ds_theme_set()
@@ -94,7 +94,7 @@ labs(x = "Hour of day (EST)", y = "% of tweets", color = "")
 
 Notamos un gran pico para Android en las primeras horas de la mañana, entre las 6 y las 8 de la mañana. Parece haber una clara diferencia en estos patrones. Por lo tanto, asumiremos que dos entidades diferentes están utilizando estos dos dispositivos.
 
-Ahora estudiaremos cómo difieren los tweets cuando comparamos Android con iPhone. Para hacer esto, presentamos el paquete __tidytext__.
+Ahora estudiaremos cómo difieren los tuits cuando comparamos Android con iPhone. Para hacer esto, presentamos el paquete __tidytext__.
 
 
 ## Texto como datos
@@ -105,7 +105,7 @@ El paquete __tidytext__ nos ayuda a convertir texto de forma libre en una tabla 
 library(tidytext)
 ```
 
-La función principal necesaria para lograr esto es `unnest_tokens`. Un token se refiere a una unidad que consideramos como un punto de datos. Los _token_ más comunes serán las palabras, pero también pueden ser caracteres individuales, ngrams, oraciones, líneas o un patrón definido por una expresión regular. Las funciones tomarán un vector de cadenas y extraerán los tokens para que cada uno obtenga una fila en la nueva tabla. Aquí hay un ejemplo simple:
+La función principal necesaria para lograr esto es `unnest_tokens`. Un _token_ se refiere a una unidad que consideramos como un punto de datos. Los _tokens_ más comunes son las palabras, pero también pueden ser caracteres individuales, _ngrams_, oraciones, líneas o un patrón definido por una expresión regular. Las funciones tomarán un vector de cadenas y extraerán los _tokens_ para que cada uno obtenga una fila en la nueva tabla. Aquí hay un ejemplo sencillo:
 
 ```{r}
 poem <- c("Roses are red,", "Violets are blue,",
@@ -116,7 +116,7 @@ example
 example %>% unnest_tokens(word, text)
 ```
 
-Ahora veamos un ejemplo de los tweets. Veremos el tweet número 3008 porque luego nos permitirá ilustrar un par de puntos:
+Ahora veamos un ejemplo de los tuits. Veremos el tuit número 3008 porque luego nos permitirá ilustrar un par de puntos:
 
 ```{r}
 i <- 3008
@@ -126,7 +126,7 @@ unnest_tokens(word, text) %>%
 pull(word)
 ```
 
-Tenga en cuenta que la función intenta convertir tokens en palabras. Para hacer esto, sin embargo, elimina los caracteres que son importantes en el contexto de twitter. A saber, la función elimina todos los `#` y `@`. Un _token_ en el contexto de Twitter no es lo mismo que en el contexto del inglés hablado o escrito. Por esta razón, en lugar de usar las palabras predeterminadas, usamos el `tweets` el token incluye patrones que comienzan con @ y #:
+Noten que la función intenta convertir _tokens_ en palabras. Para hacer esto, sin embargo, elimina los caracteres que son importantes en el contexto de twitter. A saber, la función elimina todos los `#` y `@`. Un _token_ en el contexto de Twitter no es lo mismo que en el contexto del inglés hablado o escrito. Por esta razón, en lugar de usar las palabras predeterminadas, usamos el `tweets` el token incluye patrones que comienzan con @ y #:
 
 
 ```{r, message=FALSE, warning=FALSE}
@@ -141,11 +141,11 @@ Otro ajuste menor que queremos hacer es eliminar los enlaces a las imágenes:
 links <- "https://t.co/[A-Za-z\\d]+|&amp;"
 campaign_tweets[i,] %>%
 mutate(text = str_replace_all(text, links, "")) %>%
-unnest_tokens(word, text, token = "tweets") %>%
+unnest_tokens(word, text, token = "_tweets_") %>%
 pull(word)
 ```
 
-Ahora estamos listos para extraer las palabras de todos nuestros tweets.
+Ahora estamos listos para extraer las palabras de todos nuestros tuits.
 
 ```{r, message=FALSE, warning=FALSE}
 tweet_words <- campaign_tweets %>%
@@ -199,9 +199,9 @@ filter(!word %in% stop_words$word &
 mutate(word = str_replace(word, "^'", ""))
 ```
 
-Ahora que tenemos todas nuestras palabras en una tabla, junto con información sobre qué dispositivo se usó para componer el tweet del que provienen, podemos comenzar a explorar qué palabras son más comunes al comparar Android con iPhone.
+Ahora que tenemos todas nuestras palabras en una tabla, [fix eng too] junto con información sobre qué dispositivo se usó para componer el tuit del que provienen, podemos comenzar a explorar qué palabras son más comunes al comparar Android con iPhone.
 
-Para cada palabra, queremos saber si es más probable que provenga de un tweet de Android o un tweet de iPhone. En la sección \@ref(association-tests) introdujimos el odds ratio como un resumen estadístico útil para cuantificar estas diferencias. Para cada dispositivo y una palabra dada, llamémosla `y`, calculamos las probabilidades o la razón entre la proporción de palabras que son `y` y no `y` y calcule la razón de esas probabilidades. Aquí tendremos muchas proporciones que son 0, así que usamos la corrección 0.5 descrita en la Sección NA.
+Para cada palabra, queremos saber si es más probable que provenga de un tuit de Android o un tuit de iPhone. En la sección \@ref(association-tests) introdujimos el _odds ratio_ o _riesgo relativo_ como un resumen estadístico útil para cuantificar estas diferencias. Para cada dispositivo y una palabra dada, llamémosla `y`, [fix rest of para] calculamos las probabilidades o la razón/riesgo relativo entre la proporción de palabras que son `y` y no `y` y calculamos la razón de esas probabilidades. Aquí tendremos muchas proporciones que son 0, así que usamos la corrección 0.5 descrita en la Sección [fix not NA should be 15.10 fix code] NA.
 
 ```{r}
 android_iphone_or <- tweet_words %>%
@@ -211,18 +211,18 @@ mutate(or = (Android + 0.5)/ (sum(Android) - Android + 0.5)/
 ( (iPhone + 0.5)/ (sum(iPhone) - iPhone + 0.5)))
 ```
 
-Aquí están las razones de probabilidades más altas para Android
+[fix check] Aquí están los riesgos relativos más altos para Android:
 
 ```{r}
 android_iphone_or %>% arrange(desc(or))
 ```
 
-y la parte superior para iPhone:
+y la [fix check] parte superior para iPhone:
 ```{r}
 android_iphone_or %>% arrange(or)
 ```
 
-Dado que varias de estas palabras son palabras generales de baja frecuencia, podemos imponer un filtro basado en la frecuencia total de esta manera:
+Dado que varias de estas palabras son palabras generales de baja frecuencia, podemos imponer un filtro basado en la frecuencia total así:
 
 ```{r}
 android_iphone_or %>% filter(Android+iPhone > 100) %>%
@@ -232,11 +232,11 @@ android_iphone_or %>% filter(Android+iPhone > 100) %>%
 arrange(or)
 ```
 
-Ya vemos un patrón en los tipos de palabras que se twittean más desde un dispositivo que desde el otro. Sin embargo, no estamos interesados en palabras específicas sino en el tono. La afirmación de Vaziri es que los tweets de Android son más hiperbólicos. Entonces, ¿cómo podemos verificar esto con datos? _Hyperbolic_ es un sentimiento difícil de extraer de las palabras, ya que se basa en la interpretación de frases. Sin embargo, las palabras pueden asociarse a sentimientos más básicos como la ira, el miedo, la alegría y la sorpresa. En la siguiente sección, demostramos el análisis básico de sentimientos.
+Ya vemos un patrón en los tipos de palabras que se tuitean más desde un dispositivo que desde otro. Sin embargo, no estamos interesados en palabras específicas sino en el tono. La afirmación de Vaziri es que los tuits de Android son más hiperbólicos. Entonces, ¿cómo podemos verificar esto con datos? _Hyperbólico_ es un sentimiento difícil de extraer de las palabras, ya que se basa en la interpretación de frases. Sin embargo, las palabras pueden asociarse con sentimientos más básicos como la ira, el miedo, la alegría y la sorpresa. En la siguiente sección, demostramos el análisis básico de sentimientos.
 
 ## Análisis de los sentimientos
 
-En el análisis de sentimientos, asignamos una palabra a uno o más "sentimientos". Aunque este enfoque perderá sentimientos dependientes del contexto, como el sarcasmo, cuando se realiza en grandes cantidades de palabras, los resúmenes pueden proporcionar información.
+En el análisis de los sentimientos, asignamos una palabra a uno o más "sentimientos". Aunque este enfoque no siempre indentificará sentimientos que dependen del contexto, como el sarcasmo, cuando se realiza en grandes cantidades de palabras, los resúmenes pueden ofrecer información.
 
 El primer paso en el análisis de sentimientos es asignar un sentimiento a cada palabra. Como demostramos, el paquete __tidytext__ incluye varios mapas o léxicos. También usaremos el paquete __textdata__.
 
@@ -245,19 +245,19 @@ library(tidytext)
 library(textdata)
 ```
 
-Los `bing` léxico divide las palabras en `positive` y `negative` sentimientos Podemos ver esto usando la función _tidytext_ `get_sentiments`:
+El léxico `bing` divide las palabras en sentimientos `positive` y `negative`. Podemos ver esto usando la función `get_sentiments` de _tidytext_:
 
 ```{r, eval=FALSE}
 get_sentiments("bing")
 ```
 
-Los `AFINN` léxico asigna una puntuación entre -5 y 5, con -5 el más negativo y 5 el más positivo. Tenga en cuenta que este léxico debe descargarse la primera vez que llame a la función `get_sentiment`:
+El léxico `AFINN` asigna una puntuación entre -5 y 5, con -5 el más negativo y 5 el más positivo. Tengan en cuenta que este léxico debe descargarse la primera vez que llame a la función `get_sentiment`:
 
 ```{r, eval=FALSE}
 get_sentiments("afinn")
 ```
 
-Los `loughran` y `nrc` los léxicos proporcionan varios sentimientos diferentes. Tenga en cuenta que estos también deben descargarse la primera vez que los use.
+Los léxicos `loughran` y `nrc` ofrecen varios sentimientos diferentes. Noten que estos también deben descargarse la primera vez que los usen.
 
 ```{r}
 get_sentiments("loughran") %>% count(sentiment)
@@ -267,14 +267,14 @@ get_sentiments("loughran") %>% count(sentiment)
 get_sentiments("nrc") %>% count(sentiment)
 ```
 
-Para nuestro análisis, estamos interesados en explorar los diferentes sentimientos de cada tweet, por lo que utilizaremos el `nrc` léxico:
+Para nuestro análisis, estamos interesados en explorar los diferentes sentimientos de cada tuit, por lo que utilizaremos el léxico `nrc`:
 
 ```{r}
 nrc <- get_sentiments("nrc") %>%
 select(word, sentiment)
 ```
 
-Podemos combinar las palabras y sentimientos usando `inner_join`, que solo mantendrá palabras asociadas con un sentimiento. Aquí hay 10 palabras aleatorias extraídas de los tweets:
+Podemos combinar las palabras y los sentimientos usando `inner_join`, que solo mantendrá palabras asociadas con un sentimiento. Aquí tenemos 10 palabras aleatorias extraídas de los tuits:
 
 
 ```{r}
@@ -283,7 +283,7 @@ select(source, word, sentiment) %>%
 sample_n(5)
 ```
 
-Ahora estamos listos para realizar un análisis cuantitativo comparando Android y iPhone comparando los sentimientos de los tweets publicados desde cada dispositivo. Aquí podríamos realizar un análisis de tweet por tweet, asignando un sentimiento a cada tweet. Sin embargo, esto será un desafío ya que cada tweet tendrá varios sentimientos adjuntos, uno por cada palabra que aparezca en el léxico. Con fines ilustrativos, realizaremos un análisis mucho más simple: contaremos y compararemos las frecuencias de cada sentimiento que aparece en cada dispositivo.
+Ahora estamos listos para realizar un análisis cuantitativo comparando los sentimientos de los tuits publicados desde cada dispositivo Android y iPhone. Podríamos realizar un análisis tuit por tuit, asignando un sentimiento a cada tuit. Sin embargo, esto sería un desafío ya que cada tuit tendrá varios sentimientos adjuntos, uno para cada palabra que aparezca en el léxico. Con fines ilustrativos, realizaremos un análisis mucho más sencillo: contaremos y compararemos las frecuencias de cada sentimiento que aparece en cada dispositivo.
 
 
 ```{r}
@@ -295,7 +295,7 @@ mutate(sentiment = replace_na(sentiment, replace = "none"))
 sentiment_counts
 ```
 
-Para cada sentimiento, podemos calcular las probabilidades de estar en el dispositivo: proporción de palabras con sentimiento versus proporción de palabras sin, y luego calcular la razón de probabilidades comparando los dos dispositivos.
+Para cada sentimiento, podemos calcular las probabilidades de estar en el dispositivo: proporción de palabras con sentimiento versus proporción de palabras sin, y luego calcular el riesgo relativo comparando los dos dispositivos.
 
 ```{r}
 sentiment_counts %>%
@@ -305,7 +305,7 @@ or = Android/iPhone) %>%
 arrange(desc(or))
 ```
 
-Así que vemos algunas diferencias y el orden es interesante: ¡los tres sentimientos más grandes son el asco, la ira y lo negativo! ¿Pero son estas diferencias solo por casualidad? ¿Cómo se compara esto si solo estamos asignando sentimientos al azar? Para responder a esta pregunta, podemos calcular, para cada sentimiento, un cociente de probabilidades y un intervalo de confianza, como se define en la Sección \@ref(association-tests). Agregaremos los dos valores que necesitamos para formar una tabla de dos por dos y la razón de posibilidades:
+Así que sí vemos algunas diferencias y el orden es particularmente interesante: ¡los tres sentimientos más grandes son el asco, la ira y lo negativo! ¿Pero estas diferencias son solo por casualidad? ¿Cómo se compara esto si solo estamos asignando sentimientos al azar? Para responder a esta pregunta, podemos calcular, para cada sentimiento, un cociente de probabilidades y un intervalo de confianza, como se define en la Sección \@ref(association-tests). Agregaremos los dos valores que necesitamos para formar una tabla de dos por dos y el riesgo relativo:
 
 ```{r}
 library(broom)
@@ -333,7 +333,7 @@ ylab("Log odds ratio for association between Android and sentiment") +
 coord_flip()
 ```
 
-Vemos que el disgusto, la ira, los sentimientos negativos, la tristeza y el miedo están asociados con el Android de una manera que es difícil de explicar solo por casualidad. Las palabras no asociadas a un sentimiento estaban fuertemente asociadas con la fuente del iPhone, que está de acuerdo con la afirmación original sobre los tweets hiperbólicos.
+Vemos que el disgusto, la ira, los sentimientos negativos, la tristeza y el miedo están asociados con el Android de una manera que es difícil de explicar solo por casualidad. Las palabras no asociadas a un sentimiento estaban fuertemente asociadas con la fuente del iPhone, que está de acuerdo con la afirmación original sobre los tuits hiperbólicos.
 
 Si estamos interesados en explorar qué palabras específicas están impulsando estas diferencias, podemos referirnos a nuestro `android_iphone_or` objeto:
 
@@ -365,46 +365,45 @@ Para obtener más información, nuevamente recomendamos el libro Tidy Text Minin
 ## Ejercicios
 
 
-Project Gutenberg es un archivo digital de libros de dominio público. El paquete R __gutenbergr__ facilita la importación de estos textos en R.
+_Project Gutenberg_ es un archivo digital de libros de dominio público. El paquete R __gutenbergr__ facilita la importación de estos textos en R.
 
-Puede instalar y cargar escribiendo:
+Puede instalar y cargarlo escribiendo:
 
 ```{r, eval=FALSE}
 install.packages("gutenbergr")
 library(gutenbergr)
 ```
 
-Puedes ver los libros que están disponibles así:
+Puede ver los libros que están disponibles así:
 
 ```{r, eval=FALSE}
 gutenberg_metadata
 ```
 
-1\. Utilizar `str_detect` para encontrar la identificación de la novela Orgullo y prejuicio.
+1\. Utilice `str_detect` para encontrar la identificación de la novela _Pride and Prejudice_.
 
 
-2\. Notamos que hay varias versiones. los `gutenberg_works()` la función filtra esta tabla para eliminar réplicas e incluye solo trabajos en inglés. Lea el archivo de ayuda y use esta función para encontrar la ID de _Pride and Prejudice_.
+2\. Notamos que hay varias versiones. La función `gutenberg_works()`filtra esta tabla para eliminar réplicas e incluye solo trabajos en inglés. Lea el archivo de ayuda y use esta función para encontrar la identificación de _Pride and Prejudice_.
 
 
-
-3\. Utilizar el `gutenberg_download` función para descargar el texto de Orgullo y prejuicio. Guárdelo en un objeto llamado `book`.
-
-
-4\. Use el paquete __tidytext__ para crear una tabla ordenada con todas las palabras en el texto. Guarde la tabla en un objeto llamado `words`
+3\. Utilizce la función `gutenberg_download` para descargar el texto de _Pride and Prejudice_. Guárdelo en un objeto llamado `book`.
 
 
-5\. Más adelante haremos una trama de sentimiento versus ubicación en el libro. Para esto, será útil agregar una columna con el número de palabra a la tabla.
+4\. Use el paquete __tidytext__ para crear una tabla ordenada con todas las palabras en el texto. Guarde la tabla en un objeto llamado `words`.
 
 
-6\. Elimine las palabras de parada y los números del `words` objeto. Sugerencia: use el `anti_join`.
+5\. Más adelante haremos una gráfica de sentimiento versus ubicación en el libro. Para esto, será útil agregar una columna con el número de palabra a la tabla.
 
 
-7\. Ahora usa el `AFINN` léxico para asignar un valor de sentimiento a cada palabra.
+6\. Elimine [fix "stop" words] las palabras de parada y los números del objeto `words`. Sugerencia: use el `anti_join`.
 
 
-8\. Haga un diagrama de puntuación de sentimiento versus ubicación en el libro y agregue un suavizador.
+7\. Ahora use el léxico `AFINN` para asignar un valor de sentimiento a cada palabra.
 
 
-9\. Suponga que hay 300 palabras por página. Convierta las ubicaciones en páginas y luego calcule el sentimiento promedio en cada página. Trace ese puntaje promedio por página. Agregue un suavizador que parece pasar por los datos.
+8\. Haga una gráfica de puntuación de sentimiento versus ubicación en el libro y agregue [fix smoother] un suavizador.
+
+
+9\. Suponga que hay 300 palabras por página. Convierta las ubicaciones en páginas y luego calcule el sentimiento promedio en cada página. Grafique ese puntaje promedio por página. Agregue un suavizador que parece pasar por los datos.
 
 
