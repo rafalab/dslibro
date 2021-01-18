@@ -12,7 +12,7 @@ El científico de datos David Robinson realizó un análisis^[http://varianceexp
 set.seed(2002)
 ```
 
-Utilizaremos las siguientes [fix "libraries"?] bibliotecas:
+Utilizaremos los siguientes paquetes:
 ```{r, message=FALSE, warning=FALSE}
 library(tidyverse)
 library(lubridate)
@@ -162,13 +162,13 @@ count(word) %>%
 arrange(desc(n))
 ```
 
-No es sorprendente que estas sean las palabras principales. Las palabras principales no son informativas. El paquete _tidytext_ tiene una base de datos de estas palabras de uso común, denominadas _paras de palabras_, en la minería de texto:
+No es sorprendente que estas sean las palabras principales. Las palabras principales no son informativas. El paquete _tidytext_ tiene una base de datos de estas palabras de uso común, denominadas palabras _stop_, en la minería de texto:
 
 ```{r}
 stop_words
 ```
 
-Si filtramos las filas que representan palabras de detención con `filter(!word %in% stop_words$word)`:
+Si filtramos las filas que representan palabras _stop_ con `filter(!word %in% stop_words$word)`:
 
 ```{r, message=FALSE, warning=FALSE}
 tweet_words <- campaign_tweets %>%
@@ -199,9 +199,9 @@ filter(!word %in% stop_words$word &
 mutate(word = str_replace(word, "^'", ""))
 ```
 
-Ahora que tenemos todas nuestras palabras en una tabla, [fix eng too] junto con información sobre qué dispositivo se usó para componer el tuit del que provienen, podemos comenzar a explorar qué palabras son más comunes al comparar Android con iPhone.
+Ahora que tenemos las palabras en una tabla e información sobre qué dispositivo se usó para componer el tuit del que provienen, podemos comenzar a explorar qué palabras son más comunes al comparar Android con iPhone.
 
-Para cada palabra, queremos saber si es más probable que provenga de un tuit de Android o un tuit de iPhone. En la sección \@ref(association-tests) introdujimos el _odds ratio_ o _riesgo relativo_ como un resumen estadístico útil para cuantificar estas diferencias. Para cada dispositivo y una palabra dada, llamémosla `y`, [fix rest of para] calculamos las probabilidades o la razón/riesgo relativo entre la proporción de palabras que son `y` y no `y` y calculamos la razón de esas probabilidades. Aquí tendremos muchas proporciones que son 0, así que usamos la corrección 0.5 descrita en la Sección [fix not NA should be 15.10 fix code] NA.
+Para cada palabra, queremos saber si es más probable que provenga de un tuit de Android o un tuit de iPhone. En la sección \@ref(association-tests) introdujimos el _odds ratio_ o _riesgo relativo_ como un resumen estadístico útil para cuantificar estas diferencias. Para cada dispositivo y una palabra dada, llamémosla `y`, [fix rest of para] calculamos las probabilidades o la razón/riesgo relativo entre la proporción de palabras que son `y` y no `y` y calculamos la razón de esas probabilidades. Aquí tendremos muchas proporciones que son 0, así que usamos la corrección 0.5 descrita en la Sección \@ref(association-tests).
 
 ```{r}
 android_iphone_or <- tweet_words %>%
@@ -211,13 +211,13 @@ mutate(or = (Android + 0.5)/ (sum(Android) - Android + 0.5)/
 ( (iPhone + 0.5)/ (sum(iPhone) - iPhone + 0.5)))
 ```
 
-[fix check] Aquí están los riesgos relativos más altos para Android:
+Aquí están los riesgos relativos más altos para Android:
 
 ```{r}
 android_iphone_or %>% arrange(desc(or))
 ```
 
-y la [fix check] parte superior para iPhone:
+y los más altos para iPhone:
 ```{r}
 android_iphone_or %>% arrange(or)
 ```
@@ -395,13 +395,13 @@ gutenberg_metadata
 5\. Más adelante haremos una gráfica de sentimiento versus ubicación en el libro. Para esto, será útil agregar una columna con el número de palabra a la tabla.
 
 
-6\. Elimine [fix "stop" words] las palabras de parada y los números del objeto `words`. Sugerencia: use el `anti_join`.
+6\. Elimine las palabras _stop_ y los números del objeto `words`. Sugerencia: use el `anti_join`.
 
 
 7\. Ahora use el léxico `AFINN` para asignar un valor de sentimiento a cada palabra.
 
 
-8\. Haga una gráfica de puntuación de sentimiento versus ubicación en el libro y agregue [fix smoother] un suavizador.
+8\. Haga una gráfica de puntuación de sentimiento versus ubicación en el libro y agregue un suavizador.
 
 
 9\. Suponga que hay 300 palabras por página. Convierta las ubicaciones en páginas y luego calcule el sentimiento promedio en cada página. Grafique ese puntaje promedio por página. Agregue un suavizador que parece pasar por los datos.
