@@ -24,7 +24,7 @@
 <meta name="author" content="Rafael A. Irizarry" />
 
 
-<meta name="date" content="2021-01-13" />
+<meta name="date" content="2021-01-18" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -620,7 +620,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="24" data-path="procesamiento-de-cadenas.html"><a href="procesamiento-de-cadenas.html"><i class="fa fa-check"></i><b>24</b> Procesamiento de cadenas</a><ul>
 <li class="chapter" data-level="24.1" data-path="procesamiento-de-cadenas.html"><a href="procesamiento-de-cadenas.html#stringr"><i class="fa fa-check"></i><b>24.1</b> El paquete stringr</a></li>
 <li class="chapter" data-level="24.2" data-path="procesamiento-de-cadenas.html"><a href="procesamiento-de-cadenas.html#estudio-de-caso-1-datos-de-asesinatos-en-ee.-uu."><i class="fa fa-check"></i><b>24.2</b> Estudio de caso 1: datos de asesinatos en EE. UU.</a></li>
-<li class="chapter" data-level="24.3" data-path="procesamiento-de-cadenas.html"><a href="procesamiento-de-cadenas.html#estudio-de-caso-2-alturas-autoinformadas"><i class="fa fa-check"></i><b>24.3</b> Estudio de caso 2: alturas autoinformadas</a></li>
+<li class="chapter" data-level="24.3" data-path="procesamiento-de-cadenas.html"><a href="procesamiento-de-cadenas.html#estudio-de-caso-2-alturas-autoreportadas"><i class="fa fa-check"></i><b>24.3</b> Estudio de caso 2: alturas autoreportadas</a></li>
 <li class="chapter" data-level="24.4" data-path="procesamiento-de-cadenas.html"><a href="procesamiento-de-cadenas.html#cómo-escapar-al-definir-cadenas"><i class="fa fa-check"></i><b>24.4</b> Cómo <em>escapar</em> al definir cadenas</a></li>
 <li class="chapter" data-level="24.5" data-path="procesamiento-de-cadenas.html"><a href="procesamiento-de-cadenas.html#expresiones-regulares"><i class="fa fa-check"></i><b>24.5</b> Expresiones regulares</a><ul>
 <li class="chapter" data-level="24.5.1" data-path="procesamiento-de-cadenas.html"><a href="procesamiento-de-cadenas.html#las-cadenas-son-una-expresión-regular"><i class="fa fa-check"></i><b>24.5.1</b> Las cadenas son una expresión regular</a></li>
@@ -704,13 +704,13 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb773-7"><a href="unir-tablas.html#cb773-7"></a><span class="co">#&gt; 4     New York              29    59.0  36.5    4.5</span></span>
 <span id="cb773-8"><a href="unir-tablas.html#cb773-8"></a><span class="co">#&gt; 5     Illinois              20    55.8  38.8    5.4</span></span>
 <span id="cb773-9"><a href="unir-tablas.html#cb773-9"></a><span class="co">#&gt; 6 Pennsylvania              20    47.9  48.6    3.6</span></span></code></pre></div>
-<p>Simplemente concatenar estas dos tablas juntas no funcionará ya que el orden de los estados no es el mismo.</p>
+<p>Simplemente concatenar estas dos tablas no funcionará ya que el orden de los estados no es el mismo.</p>
 <div class="sourceCode" id="cb774"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb774-1"><a href="unir-tablas.html#cb774-1"></a><span class="kw">identical</span>(results_us_election_<span class="dv">2016</span><span class="op">$</span>state, murders<span class="op">$</span>state)</span>
 <span id="cb774-2"><a href="unir-tablas.html#cb774-2"></a><span class="co">#&gt; [1] FALSE</span></span></code></pre></div>
 <p>Las funciones <em>join</em>, descritas a continuación, están diseñadas para manejar este desafío.</p>
 <div id="joins" class="section level2">
 <h2><span class="header-section-number">22.1</span> Joins</h2>
-<p>Las funciones <em>join</em> del paquete <strong>dplyr</strong> aseguran que las tablas se combinen para que las filas coincidentes estén juntas. Si conocen SQL, verán que el acercamiento y la sintaxis son muy similares. La idea general es que uno necesita identificar una o más columnas que servirán para emparejar las dos tablas. Entonces se devuelve una nueva tabla con la información combinada. Observen lo que sucede si unimos las dos tablas anteriores por estado usando <code>left_join</code> (eliminaremos la columna <code>others</code>y renombraremos <code>electoral_votes</code> para que las tablas quepen en la página):</p>
+<p>Las funciones <em>join</em> del paquete <strong>dplyr</strong> aseguran que las tablas se combinen de tal forma que las filas que coinciden estén juntas. Si conocen SQL, verán que el acercamiento y la sintaxis son muy similares. La idea general es que uno necesita identificar una o más columnas que servirán para emparejar las dos tablas. Entonces se devuelve una nueva tabla con la información combinada. Observen lo que sucede si unimos las dos tablas anteriores por estado usando <code>left_join</code> (eliminaremos la columna <code>others</code>y renombraremos <code>electoral_votes</code> para que las tablas quepen en la página):</p>
 <div class="sourceCode" id="cb775"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb775-1"><a href="unir-tablas.html#cb775-1"></a>tab &lt;-<span class="st"> </span><span class="kw">left_join</span>(murders, results_us_election_<span class="dv">2016</span>, <span class="dt">by =</span> <span class="st">&quot;state&quot;</span>) <span class="op">%&gt;%</span></span>
 <span id="cb775-2"><a href="unir-tablas.html#cb775-2"></a><span class="kw">select</span>(<span class="op">-</span>others) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">rename</span>(<span class="dt">ev =</span> electoral_votes)</span>
 <span id="cb775-3"><a href="unir-tablas.html#cb775-3"></a><span class="kw">head</span>(tab)</span>
@@ -731,7 +731,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb776-7"><a href="unir-tablas.html#cb776-7"></a><span class="kw">geom_smooth</span>(<span class="dt">method =</span> <span class="st">&quot;lm&quot;</span>, <span class="dt">se =</span> <span class="ot">FALSE</span>)</span></code></pre></div>
 <p><img src="libro_files/figure-html/ev-vs-population-1.png" width="70%" style="display: block; margin: auto;" /></p>
 <p>Vemos que la relación es casi lineal con aproximadamente dos votos electorales para cada millón de personas, pero con estados muy pequeños obteniendo proporciones más altas.</p>
-<p>En la práctica, no siempre ocurre que cada fila de una tabla tenga una fila correspondiente en la otra. Por esta razón, tenemos varias versiones de <em>join</em>. Para ilustrar este reto, tomaremos subconjuntos de las tablas anteriores. Creamos las tablas <code>tab1</code> y <code>tab2</code> para que tengan algunos estados en común pero no todos:</p>
+<p>En la práctica, no siempre ocurre que cada fila de una tabla tiene una fila correspondiente en la otra. Por esta razón, tenemos varias versiones de <em>join</em>. Para ilustrar este reto, tomaremos subconjuntos de las tablas anteriores. Creamos las tablas <code>tab1</code> y <code>tab2</code> para que tengan algunos estados en común pero no todos:</p>
 <div class="sourceCode" id="cb777"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb777-1"><a href="unir-tablas.html#cb777-1"></a>tab_<span class="dv">1</span> &lt;-<span class="st"> </span><span class="kw">slice</span>(murders, <span class="dv">1</span><span class="op">:</span><span class="dv">6</span>) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">select</span>(state, population)</span>
 <span id="cb777-2"><a href="unir-tablas.html#cb777-2"></a>tab_<span class="dv">1</span></span>
 <span id="cb777-3"><a href="unir-tablas.html#cb777-3"></a><span class="co">#&gt;        state population</span></span>
@@ -779,7 +779,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb780-6"><a href="unir-tablas.html#cb780-6"></a><span class="co">#&gt; 4  California   37253956 55</span></span>
 <span id="cb780-7"><a href="unir-tablas.html#cb780-7"></a><span class="co">#&gt; 5 Connecticut         NA  7</span></span>
 <span id="cb780-8"><a href="unir-tablas.html#cb780-8"></a><span class="co">#&gt; 6    Delaware         NA  3</span></span></code></pre></div>
-<p>Ahora los NAs están en la columna de <code>tab_1</code>.</p>
+<p>Ahora los <code>NA</code>s están en la columna de <code>tab_1</code>.</p>
 </div>
 <div id="inner-join" class="section level3">
 <h3><span class="header-section-number">22.1.3</span> Inner join</h3>
@@ -793,7 +793,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </div>
 <div id="full-join" class="section level3">
 <h3><span class="header-section-number">22.1.4</span> Full join</h3>
-<p>Si queremos mantener todas las filas y llenar las partes faltantes con NAs, podemos usar <code>full_join</code>. Pueden pensar en esto como una unión:</p>
+<p>Si queremos mantener todas las filas y llenar las partes faltantes con <code>NA</code>s, podemos usar <code>full_join</code>. Pueden pensar en esto como una unión:</p>
 <div class="sourceCode" id="cb782"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb782-1"><a href="unir-tablas.html#cb782-1"></a><span class="kw">full_join</span>(tab_<span class="dv">1</span>, tab_<span class="dv">2</span>, <span class="dt">by =</span> <span class="st">&quot;state&quot;</span>)</span>
 <span id="cb782-2"><a href="unir-tablas.html#cb782-2"></a><span class="co">#&gt;         state population ev</span></span>
 <span id="cb782-3"><a href="unir-tablas.html#cb782-3"></a><span class="co">#&gt; 1     Alabama    4779736  9</span></span>
@@ -832,7 +832,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <p>Aunque todavía no lo hemos usado en este libro, otra forma común en la que se combinan los sets de datos es pegándolos (<em>binding</em> en inglés). A diferencia de las funciones <em>join</em>, las funciones <em>binding</em> no intentan coincidir con una variable, sino que simplemente combinan sets de datos. Si los sets de datos no coinciden con las dimensiones apropiadas, se obtiene un error.</p>
 <div id="pegando-columnas" class="section level3">
 <h3><span class="header-section-number">22.2.1</span> Pegando columnas</h3>
-<p>La función <em>bind_cols</em> de <strong>dplyr</strong> pega dos objetos convirtiéndolos en columnas en un tibble. Por ejemplo, queremos crear rápidamente un <em>data frame</em> que consista de números que podemos usar.</p>
+<p>La función <em>bind_cols</em> de <strong>dplyr</strong> pega dos objetos convirtiéndolos en columnas en un <em>tibble</em>. Por ejemplo, queremos crear rápidamente un <em>data frame</em> que consiste de números que podemos usar.</p>
 <div class="sourceCode" id="cb785"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb785-1"><a href="unir-tablas.html#cb785-1"></a><span class="kw">bind_cols</span>(<span class="dt">a =</span> <span class="dv">1</span><span class="op">:</span><span class="dv">3</span>, <span class="dt">b =</span> <span class="dv">4</span><span class="op">:</span><span class="dv">6</span>)</span>
 <span id="cb785-2"><a href="unir-tablas.html#cb785-2"></a><span class="co">#&gt; # A tibble: 3 x 2</span></span>
 <span id="cb785-3"><a href="unir-tablas.html#cb785-3"></a><span class="co">#&gt;       a     b</span></span>
@@ -959,7 +959,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb800-2"><a href="unir-tablas.html#cb800-2"></a><span class="kw">setNames</span>(<span class="dv">1</span><span class="op">:</span><span class="dv">12</span>) <span class="op">%&gt;%</span></span>
 <span id="cb800-3"><a href="unir-tablas.html#cb800-3"></a><span class="kw">mutate</span>(<span class="dt">year =</span> <span class="dv">1959</span><span class="op">:</span><span class="dv">1997</span>) <span class="op">%&gt;%</span></span>
 <span id="cb800-4"><a href="unir-tablas.html#cb800-4"></a><span class="kw">gather</span>(month, co2, <span class="op">-</span>year, <span class="dt">convert =</span> <span class="ot">TRUE</span>)</span></code></pre></div>
-<p>Queremos ver si la tendencia mensual está cambiando, por lo que eliminaremos los efectos del año y luego graficaremos los resultados. Primero calcularemos los promedios del año. Utilice <code>group_by</code> y <code>summarize</code> para calcular el co2 promedio de cada año. Guardar en un objeto llamado <code>yearly_avg</code>.</p>
+<p>Queremos ver si la tendencia mensual está cambiando, por lo que eliminaremos los efectos del año y luego graficaremos los resultados. Primero calcularemos los promedios del año. Utilice <code>group_by</code> y <code>summarize</code> para calcular el CO2 promedio de cada año. Guarde en un objeto llamado <code>yearly_avg</code>.</p>
 <p>4. Ahora use la función <code>left_join</code> para agregar el promedio anual al set de datos <code>co2_wide</code>. Luego calcule los residuos: medida de CO2 observada - promedio anual.</p>
 <p>5. Haga un diagrama de las tendencias estacionales por año, pero solo después de eliminar el efecto del año.</p>
 

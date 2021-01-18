@@ -24,7 +24,7 @@
 <meta name="author" content="Rafael A. Irizarry" />
 
 
-<meta name="date" content="2021-01-13" />
+<meta name="date" content="2021-01-18" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -620,7 +620,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="24" data-path="procesamiento-de-cadenas.html"><a href="procesamiento-de-cadenas.html"><i class="fa fa-check"></i><b>24</b> Procesamiento de cadenas</a><ul>
 <li class="chapter" data-level="24.1" data-path="procesamiento-de-cadenas.html"><a href="procesamiento-de-cadenas.html#stringr"><i class="fa fa-check"></i><b>24.1</b> El paquete stringr</a></li>
 <li class="chapter" data-level="24.2" data-path="procesamiento-de-cadenas.html"><a href="procesamiento-de-cadenas.html#estudio-de-caso-1-datos-de-asesinatos-en-ee.-uu."><i class="fa fa-check"></i><b>24.2</b> Estudio de caso 1: datos de asesinatos en EE. UU.</a></li>
-<li class="chapter" data-level="24.3" data-path="procesamiento-de-cadenas.html"><a href="procesamiento-de-cadenas.html#estudio-de-caso-2-alturas-autoinformadas"><i class="fa fa-check"></i><b>24.3</b> Estudio de caso 2: alturas autoinformadas</a></li>
+<li class="chapter" data-level="24.3" data-path="procesamiento-de-cadenas.html"><a href="procesamiento-de-cadenas.html#estudio-de-caso-2-alturas-autoreportadas"><i class="fa fa-check"></i><b>24.3</b> Estudio de caso 2: alturas autoreportadas</a></li>
 <li class="chapter" data-level="24.4" data-path="procesamiento-de-cadenas.html"><a href="procesamiento-de-cadenas.html#cómo-escapar-al-definir-cadenas"><i class="fa fa-check"></i><b>24.4</b> Cómo <em>escapar</em> al definir cadenas</a></li>
 <li class="chapter" data-level="24.5" data-path="procesamiento-de-cadenas.html"><a href="procesamiento-de-cadenas.html#expresiones-regulares"><i class="fa fa-check"></i><b>24.5</b> Expresiones regulares</a><ul>
 <li class="chapter" data-level="24.5.1" data-path="procesamiento-de-cadenas.html"><a href="procesamiento-de-cadenas.html#las-cadenas-son-una-expresión-regular"><i class="fa fa-check"></i><b>24.5.1</b> Las cadenas son una expresión regular</a></li>
@@ -681,18 +681,17 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
             <section class="normal" id="section-">
 <div id="procesamiento-de-cadenas" class="section level1">
 <h1><span class="header-section-number">Capítulo 24</span> Procesamiento de cadenas</h1>
-<p>Uno de los desafíos más comunes del <em>wrangling</em> de datos consiste en extraer datos numéricos contenidos en cadenas de caracteres y convertirlos en las representaciones numéricas requeridas para hacer gráficos, calcular resúmenes o ajustar modelos en R. También, es común tener que procesar texto no organizado y convertirlos en nombres de variables entendibles o variables categóricas. Muchos de los desafíos de procesamiento de cadenas que enfrentan los científicos de datos son únicos y a menudo inesperados. Por lo tanto, es bastante ambicioso escribir una sección completa sobre este tema. Aquí usamos una serie de estudios de casos que nos ayudan a demostrar cómo el procesamiento de cadenas es un paso necesario para muchos desafíos de disputas de datos. Específicamente, describimos el proceso de convertir los datos sin procesar originales que aún no hemos mostrados, de los que extrajimos los ejemplos <code>murders</code>, <code>heights</code> y <code>research_funding_rates</code> en los <em>data frames</em> que hemos estudiado en este libro.</p>
-<p>Al repasar estos estudios de caso, cubriremos algunas de las tareas más comunes en el procesamiento de cadenas, incluyendo extraer números de cadenas, eliminar caracteres no deseados del texto, encontrar y reemplazar caracteres, extraer partes específicas de cadenas,
-convertir texto de forma libre a formatos más uniformes y dividir cadenas en múltiples valores.</p>
+<p>Uno de los desafíos más comunes del <em>wrangling</em> de datos consiste en extraer datos numéricos contenidos en cadenas de caracteres y convertirlos en las representaciones numéricas requeridas para hacer gráficos, calcular resúmenes o ajustar modelos en R. También, es común tener que procesar texto no organizado y convertirlo en nombres de variables entendibles o variables categóricas. Muchos de los desafíos de procesamiento de cadenas que enfrentan los científicos de datos son únicos y a menudo inesperados. Por lo tanto, es bastante ambicioso escribir una sección completa sobre este tema. Aquí usamos una serie de estudios de casos que nos ayudan a demostrar cómo el procesamiento de cadenas es un paso necesario para muchos desafíos de disputas de datos. Específicamente, para los ejemplos <code>murders</code>, <code>heights</code> y <code>research_funding_rates</code>, describimos el proceso de convertir los datos sin procesar originales, que aún no hemos mostrados, en los <em>data frames</em> que hemos estudiado en este libro.</p>
+<p>Al repasar estos estudios de caso, cubriremos algunas de las tareas más comunes en el procesamiento de cadenas, incluyendo cómo extraer números de cadenas, eliminar caracteres no deseados del texto, encontrar y reemplazar caracteres, extraer partes específicas de cadenas, convertir texto de forma libre a formatos más uniformes y dividir cadenas en múltiples valores.</p>
 <p>Base R incluye funciones para realizar todas estas tareas. Sin embargo, no siguen una convención unificadora, lo que las hace un poco difíciles de memorizar y usar. El paquete <strong>stringr</strong> básicamente reempaqueta esta funcionalidad, pero utiliza un enfoque más consistente de nombrar funciones y ordenar sus argumentos. Por ejemplo, en <strong>stringr</strong>, todas las funciones de procesamiento de cadenas comienzan con <code>str_</code>. Esto significa que si escriben <code>str_</code> y presionen <em>tab</em>, R se completará automáticamente y mostrará todas las funciones disponibles. Como resultado, no necesariamente tenemos que memorizar todos los nombres de las funciones. Otra ventaja es que en las funciones de este paquete, la cadena que se procesa siempre es el primer argumento, lo que significa que podemos usar el <em>pipe</em> más fácilmente. Por lo tanto, comenzaremos describiendo cómo usar las funciones en el paquete <strong>stringr</strong>.</p>
 <p>La mayoría de los ejemplos provendrán del segundo estudio de caso que trata sobre las alturas autoreportadas por los estudiantes y la mayor parte del capítulo está dedicado al aprendizaje de expresiones regulares (<em>regular expressions</em> o <em>regex</em> en inglés) y funciones en el paquete <strong>stringr</strong>.</p>
 <div id="stringr" class="section level2">
 <h2><span class="header-section-number">24.1</span> El paquete stringr</h2>
 <div class="sourceCode" id="cb819"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb819-1"><a href="procesamiento-de-cadenas.html#cb819-1"></a><span class="kw">library</span>(tidyverse)</span>
 <span id="cb819-2"><a href="procesamiento-de-cadenas.html#cb819-2"></a><span class="kw">library</span>(stringr)</span></code></pre></div>
-<p>En general, las tareas de procesamiento de cadenas se pueden dividir en <strong>detectar</strong>, <strong>ubicar</strong>, <strong>extraer</strong> o <strong>reemplazar</strong> patrones en cadenas. Veremos varios ejemplos. La siguiente tabla incluye las funciones disponibles en el paquete <strong>stringr</strong>. Las dividimos por tarea. También incluimos el equivalente de base R cuando esté disponible.</p>
+<p>En general, las tareas de procesamiento de cadenas se pueden dividir en <strong>detectar</strong>, <strong>ubicar</strong>, <strong>extraer</strong> o <strong>reemplazar</strong> patrones en cadenas. Veremos varios ejemplos. La siguiente tabla incluye las funciones disponibles en el paquete <strong>stringr</strong>. Las dividimos por tarea. También incluimos el equivalente de base R cuando está disponible.</p>
 <p>Todas estas funciones toman un vector de caracteres como primer argumento. Además, para cada función, las operaciones se vectorizan: la operación se aplica a cada cadena en el vector.</p>
-<p>Finalmente, tengan en cuenta que en esta tabla mencionamos <em>groups</em>. Estos se explicarán en la Sección <a href="procesamiento-de-cadenas.html#groups">24.5.9</a>.[fix check below]</p>
+<p>Finalmente, tengan en cuenta que en esta tabla mencionamos <em>groups</em>. Estos se explicarán en la Sección <a href="procesamiento-de-cadenas.html#groups">24.5.9</a>.</p>
 <table>
 <colgroup>
 <col width="19%" />
@@ -802,19 +801,19 @@ convertir texto de forma libre a formatos más uniformes y dividir cadenas en m�
 <tr class="even">
 <td><code>str_length</code></td>
 <td>Describir</td>
-<td>[fix check eng] Número de caracteres en la cadena.</td>
+<td>Número de caracteres en la cadena.</td>
 <td><code>nchar</code></td>
 </tr>
 <tr class="odd">
 <td><code>str_replace</code></td>
 <td>Reemplazar</td>
-<td>Reemplaza la primera parte de una cadena que coincida con un patrón con otro.</td>
+<td>Reemplaza la primera parte de una cadena que coincide con un patrón con otro patrón.</td>
 <td></td>
 </tr>
 <tr class="even">
 <td><code>str_replace_all</code></td>
 <td>Reemplazar</td>
-<td>[fix otro que?] Reemplaza todas las partes de una cadena que coincida con un patrón con otro.</td>
+<td>Reemplaza todas las partes de una cadena que coincida con un patrón con otro patrón.</td>
 <td><code>gsub</code></td>
 </tr>
 <tr class="odd">
@@ -832,13 +831,13 @@ convertir texto de forma libre a formatos más uniformes y dividir cadenas en m�
 <tr class="odd">
 <td><code>str_to_title</code></td>
 <td>Reemplazar</td>
-<td>Cambia el primer carácter a mayúscula y el resto esto a minúscula.</td>
+<td>Cambia el primer carácter a mayúscula y el resto a minúscula.</td>
 <td></td>
 </tr>
 <tr class="even">
 <td><code>str_replace_na</code></td>
 <td>Reemplazar</td>
-<td>[fix] Reemplaza todo los <code>NA</code>s a un nuevo valor.</td>
+<td>Reemplaza todo los <code>NA</code>s con un nuevo valor.</td>
 <td></td>
 </tr>
 <tr class="odd">
@@ -862,13 +861,13 @@ convertir texto de forma libre a formatos más uniformes y dividir cadenas en m�
 <tr class="even">
 <td><code>str_sort</code></td>
 <td>Manipular</td>
-<td>Pone el vector en orden alfabético.</td>
+<td>Pon el vector en orden alfabético.</td>
 <td><code>sort</code></td>
 </tr>
 <tr class="odd">
 <td><code>str_order</code></td>
 <td>Manipular</td>
-<td>[fix] Índice necesario para organizar el vector en orden alfabético.</td>
+<td>Índice necesario para ordenar el vector alfabéticamente.</td>
 <td><code>order</code></td>
 </tr>
 <tr class="even">
@@ -892,13 +891,13 @@ convertir texto de forma libre a formatos más uniformes y dividir cadenas en m�
 <tr class="odd">
 <td><code>str_wrap</code></td>
 <td>Manipular</td>
-<td>[fix things?] Envuelve cosas en párrafos formateados.</td>
+<td>Poner la cadena en párrafos formateados.</td>
 <td></td>
 </tr>
 <tr class="even">
 <td><code>str_interp</code></td>
 <td>Manipular</td>
-<td>[fix] Interpolación de cadenas.</td>
+<td>Interpolación de cadenas.</td>
 <td><code>sprintf</code></td>
 </tr>
 </tbody>
@@ -952,8 +951,8 @@ convertir texto de forma libre a formatos más uniformes y dividir cadenas en m�
 <span id="cb827-9"><a href="procesamiento-de-cadenas.html#cb827-9"></a><span class="co">#&gt; 6   Colorado    5448819   176         3.2</span></span></code></pre></div>
 <p>Este caso es relativamente sencillo en comparación con los desafíos de procesamiento de cadenas que normalmente enfrentamos en la ciencia de datos. El siguiente ejemplo es bastante complejo y ofrece varios retos que nos permitirán aprender muchas técnicas de procesamiento de cadenas.</p>
 </div>
-<div id="estudio-de-caso-2-alturas-autoinformadas" class="section level2">
-<h2><span class="header-section-number">24.3</span> Estudio de caso 2: alturas autoinformadas</h2>
+<div id="estudio-de-caso-2-alturas-autoreportadas" class="section level2">
+<h2><span class="header-section-number">24.3</span> Estudio de caso 2: alturas autoreportadas</h2>
 <p>El paquete <strong>dslabs</strong> incluye los datos sin procesar de los que se obtuvo el set de datos de alturas. Pueden cargarlo así:</p>
 <div class="sourceCode" id="cb828"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb828-1"><a href="procesamiento-de-cadenas.html#cb828-1"></a><span class="kw">data</span>(reported_heights)</span></code></pre></div>
 <p>Estas alturas se obtuvieron mediante un formulario web en el que se les pedía a los estudiantes que ingresaran sus alturas. Podían ingresar cualquier cosa, pero las instrucciones pedían <em>altura en pulgadas</em>, un número. Recopilamos 1,095 presentaciones, pero desafortunadamente el vector de columna con las alturas reportadas tenía varias entradas no numéricas y como resultado se convirtió en un vector de caracteres:</p>
@@ -984,9 +983,9 @@ convertir texto de forma libre a formatos más uniformes y dividir cadenas en m�
 <span id="cb833-13"><a href="procesamiento-de-cadenas.html#cb833-13"></a><span class="co">#&gt; 8  2014-09-02 15:19:48   Male                   5&#39;11         NA</span></span>
 <span id="cb833-14"><a href="procesamiento-de-cadenas.html#cb833-14"></a><span class="co">#&gt; 9  2014-09-04 00:46:45   Male                  5&#39;9&#39;&#39;         NA</span></span>
 <span id="cb833-15"><a href="procesamiento-de-cadenas.html#cb833-15"></a><span class="co">#&gt; 10 2014-09-04 10:29:44   Male                 5&#39;10&#39;&#39;         NA</span></span></code></pre></div>
-<p>Inmediatamente vemos lo que está sucediendo. Algunos de los estudiantes no informaron sus alturas en pulgadas según lo solicitado. Podríamos descartar estos datos y continuar. Sin embargo, muchas de las entradas siguen patrones que, en principio, podemos convertir fácilmente a pulgadas. Por ejemplo, en el resultado anterior, vemos varios casos que usan el formato <code>x'y''</code> con <code>x</code> y <code>y</code> representando pies y pulgadas, respectivamente. Cada uno de estos casos puede ser leído y convertido a pulgadas por un humano, por ejemplo <code>5'4''</code> es <code>5*12 + 4 = 64</code>. Entonces podríamos arreglar todas las entradas problemáticas <em>a mano</em>. Sin embargo, los humanos son propensos a cometer errores, por lo que es preferible un enfoque automatizado. Además, debido a que planeamos continuar recolectando datos, será conveniente escribir código que lo haga automáticamente.</p>
+<p>Inmediatamente vemos lo que está sucediendo. Algunos de los estudiantes no reportaron sus alturas en pulgadas según lo solicitado. Podríamos descartar estos datos y continuar. Sin embargo, muchas de las entradas siguen patrones que, en principio, podemos convertir fácilmente a pulgadas. Por ejemplo, en el resultado anterior, vemos varios casos que usan el formato <code>x'y''</code> con <code>x</code> y <code>y</code> representando pies y pulgadas, respectivamente. Cada uno de estos casos puede ser leído y convertido a pulgadas por un humano, por ejemplo <code>5'4''</code> es <code>5*12 + 4 = 64</code>. Entonces podríamos arreglar todas las entradas problemáticas <em>a mano</em>. Sin embargo, los humanos son propensos a cometer errores, por lo que es preferible un enfoque automatizado. Además, debido a que planeamos continuar recolectando datos, será conveniente escribir código que lo haga automáticamente.</p>
 <p>Un primer paso en este tipo de tarea es examinar las entradas problemáticas e intentar definir patrones específicos seguidos de un gran grupo de entradas. Cuanto más grandes sean estos grupos, más entradas podremos arreglar con un solo enfoque programático. Queremos encontrar patrones que puedan describirse con precisión con una regla, como “un dígito, seguido por un símbolo de pie, seguido por uno o dos dígitos, seguido por un símbolo de pulgadas”.</p>
-<p>Para buscar dichos patrones, es útil eliminar las entradas que son consistentes con estar en pulgadas y ver solo las entradas problemáticas. Por lo tanto, escribimos una función para hacer esto automáticamente. Mantenemos entradas que resultan en <code>NA</code>s al aplicar <code>as.numeric</code> o están fuera de un rango de alturas plausibles. Permitimos un rango que cubre aproximadamente el 99.9999% de la población adulta. También usamos <code>suppressWarnings</code> para evitar el mensaje de advertencia que conocemos <code>as.numeric</code> voluntad nos da.</p>
+<p>Para buscar dichos patrones, es útil eliminar las entradas que son consistentes con estar en pulgadas y ver solo las entradas problemáticas. Por lo tanto, escribimos una función para hacer esto automáticamente. Mantenemos entradas que resultan en <code>NA</code>s al aplicar <code>as.numeric</code> o están fuera de un rango de alturas plausibles. Permitimos un rango que cubre aproximadamente el 99.9999% de la población adulta. También usamos <code>suppressWarnings</code> para evitar el mensaje de advertencia que sabemos que <code>as.numeric</code> nos da.</p>
 <div class="sourceCode" id="cb834"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb834-1"><a href="procesamiento-de-cadenas.html#cb834-1"></a>not_inches &lt;-<span class="st"> </span><span class="cf">function</span>(x, <span class="dt">smallest =</span> <span class="dv">50</span>, <span class="dt">tallest =</span> <span class="dv">84</span>){</span>
 <span id="cb834-2"><a href="procesamiento-de-cadenas.html#cb834-2"></a>inches &lt;-<span class="st"> </span><span class="kw">suppressWarnings</span>(<span class="kw">as.numeric</span>(x))</span>
 <span id="cb834-3"><a href="procesamiento-de-cadenas.html#cb834-3"></a>ind &lt;-<span class="st"> </span><span class="kw">is.na</span>(inches) <span class="op">|</span><span class="st"> </span>inches <span class="op">&lt;</span><span class="st"> </span>smallest <span class="op">|</span><span class="st"> </span>inches <span class="op">&gt;</span><span class="st"> </span>tallest</span>
@@ -1005,16 +1004,16 @@ convertir texto de forma libre a formatos más uniformes y dividir cadenas en m�
 <pre><code>#&gt; 5.3 5.5 6.5 5.8 5.6 5,3 5.9 6,8 5.5 6.2</code></pre>
 <p>3. Entradas que se informaron en centímetros en lugar de pulgadas. Aquí hay diez ejemplos:</p>
 <pre><code>#&gt; 150 175 177 178 163 175 178 165 165 180</code></pre>
-<p>Una vez que vemos estos grandes grupos siguiendo patrones específicos, podemos desarrollar un plan de ataque. Recuerden que rara vez hay una sola forma de realizar estas tareas. Aquí elegimos una que nos ayuda a enseñar varias técnicas útiles. Pero seguramente hay una forma más eficiente de realizar la tarea.</p>
-<p><strong>Plan de ataque</strong>: convertiremos las entradas que se ajusten a los dos primeros patrones en uno estandarizado. Luego aprovecharemos la estandarización para extraer los pies y pulgadas y convertirlos a pulgadas. Luego definiremos un procedimiento para identificar entradas que estén en centímetros y convertirlas a pulgadas. Después de aplicar estos pasos, verificaremos nuevamente para ver qué entradas no se corrigieron y ver si podemos ajustar nuestro enfoque para que sea más completo.</p>
+<p>Una vez que veamos estos grandes grupos siguiendo patrones específicos, podemos desarrollar un plan de ataque. Recuerden que rara vez hay una sola forma de realizar estas tareas. Aquí elegimos una que nos ayuda a enseñar varias técnicas útiles. Pero seguramente hay una forma más eficiente de realizar la tarea.</p>
+<p><strong>Plan de ataque</strong>: convertiremos las entradas que se ajusten a los dos primeros patrones en una estandarizada. Luego aprovecharemos la estandarización para extraer los pies y pulgadas y convertirlos a pulgadas. Entonces definiremos un procedimiento para identificar entradas que estén en centímetros y convertirlas a pulgadas. Después de aplicar estos pasos, verificaremos nuevamente para ver qué entradas no se corrigieron y ver si podemos ajustar nuestro enfoque para que sea más completo.</p>
 <p>Al final, esperamos tener un <em>script</em> que haga que los métodos de recolección de datos basados en la web sean robustos para los errores más comunes de los usuarios.</p>
-<p>Para lograr nuestro objetivo, utilizaremos una técnica que nos permite detectar con precisión patrones y extraer las partes que queremos: expresiones regulares (<em>regular expressions</em> o <em>regex</em> en inglés). Pero primero, describimos rápidamente cómo <em>“escaparse”</em> (“escapar” viene de la tecla <em>esc</em> o <em>escape</em>) de la función de ciertos caracteres para que puedan incluirse en cadenas.</p>
+<p>Para lograr nuestro objetivo, utilizaremos una técnica que nos permite detectar con precisión patrones y extraer las partes que queremos: expresiones regulares (<em>regular expressions</em> o <em>regex</em> en inglés). Pero primero, describimos rápidamente cómo <em>escaparse</em> (“escapar” viene de la tecla <em>esc</em> o <em>escape</em>) de la función de ciertos caracteres para que puedan incluirse en cadenas.</p>
 </div>
 <div id="cómo-escapar-al-definir-cadenas" class="section level2">
 <h2><span class="header-section-number">24.4</span> Cómo <em>escapar</em> al definir cadenas</h2>
 <p>Para definir cadenas en R, podemos usar comillas dobles:</p>
 <div class="sourceCode" id="cb839"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb839-1"><a href="procesamiento-de-cadenas.html#cb839-1"></a>s &lt;-<span class="st"> &quot;Hello!&quot;</span></span></code></pre></div>
-<p>o comillas sencillas:</p>
+<p>o comillas simples:</p>
 <div class="sourceCode" id="cb840"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb840-1"><a href="procesamiento-de-cadenas.html#cb840-1"></a>s &lt;-<span class="st"> &#39;Hello!&#39;</span></span></code></pre></div>
 <p>Asegúrense de elegir la comilla simple correcta, ya que usar la comilla invertida le dará un error:</p>
 <div class="sourceCode" id="cb841"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb841-1"><a href="procesamiento-de-cadenas.html#cb841-1"></a>s &lt;-<span class="st"> `</span><span class="dt">Hello</span><span class="st">`</span></span></code></pre></div>
@@ -1027,9 +1026,9 @@ En este caso no pueden usar:</p>
 <p>Si imprimimos <code>s</code>, vemos que escapamos las comillas dobles con la barra invertida <code>\</code>.</p>
 <div class="sourceCode" id="cb845"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb845-1"><a href="procesamiento-de-cadenas.html#cb845-1"></a>s</span>
 <span id="cb845-2"><a href="procesamiento-de-cadenas.html#cb845-2"></a><span class="co">#&gt; [1] &quot;10\&quot;&quot;</span></span></code></pre></div>
-<p>De hecho, escapar con la barra diagonal inversa provee una forma de definir la cadena mientras y a la vez seguir utilizando las comillas dobles para definir cadenas:</p>
+<p>De hecho, escapar con la barra diagonal inversa ofrece una forma de definir la cadena y a la vez seguir utilizando las comillas dobles para definir cadenas:</p>
 <div class="sourceCode" id="cb846"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb846-1"><a href="procesamiento-de-cadenas.html#cb846-1"></a>s &lt;-<span class="st"> &quot;10</span><span class="ch">\&quot;</span><span class="st">&quot;</span></span></code></pre></div>
-<p>En R, la función <code>cat</code> nos deja ver como realmente se ve la cadena:</p>
+<p>En R, la función <code>cat</code> nos deja ver como se ve la cadena:</p>
 <div class="sourceCode" id="cb847"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb847-1"><a href="procesamiento-de-cadenas.html#cb847-1"></a><span class="kw">cat</span>(s)</span>
 <span id="cb847-2"><a href="procesamiento-de-cadenas.html#cb847-2"></a><span class="co">#&gt; 10&quot;</span></span></code></pre></div>
 <p>Ahora, ¿qué pasa si queremos que nuestra cadena sea de 5 pies escrita así <code>5'</code>? En este caso, podemos usar las comillas dobles:</p>
@@ -1053,9 +1052,9 @@ En este caso no pueden usar:</p>
 </div>
 <div id="expresiones-regulares" class="section level2">
 <h2><span class="header-section-number">24.5</span> Expresiones regulares</h2>
-<p>Una expresión regular (<em>regex</em>) es una forma de describir patrones específicos de caracteres de texto. Se pueden usar para determinar si una cadena dada coincide con el patrón. Se ha definido un conjunto de reglas para hacer esto de manera eficiente y precisa, y aquí mostramos algunos ejemplos. Podemos aprender más sobre estas reglas leyendo tutoriales detallados<sup>[<a href="https://www.regular-expressions.info/tutorial.html" class="uri">https://www.regular-expressions.info/tutorial.html</a>]</sup>(<a href="http://r4ds.had.co.nz/strings.html#matching-" class="uri">http://r4ds.had.co.nz/strings.html#matching-</a> patrones-con-expresiones-regulares). Esta hoja de referencia de RStudio<a href="#fn90" class="footnote-ref" id="fnref90"><sup>90</sup></a> también es muy útil.</p>
+<p>Una expresión regular (<em>regex</em>) es una forma de describir patrones específicos de caracteres de texto. Se pueden usar para determinar si una cadena dada coincide con el patrón. Se ha definido un conjunto de reglas para hacer esto de manera eficiente y precisa, y aquí mostramos algunos ejemplos. Podemos aprender más sobre estas reglas leyendo tutoriales [fix check] detallados<a href="#fn91" class="footnote-ref" id="fnref91"><sup>91</sup></a>.<a href="#fn92" class="footnote-ref" id="fnref92"><sup>92</sup></a> Esta hoja de referencia de RStudio<a href="#fn93" class="footnote-ref" id="fnref93"><sup>93</sup></a> también es muy útil.</p>
 <p>Los patrones suministrados a las funciones <strong>stringr</strong> pueden ser una expresión regular en lugar de una cadena estándar. Aprenderemos cómo funciona esto a través de una serie de ejemplos.</p>
-<p>A lo largo de esta sección, verá que creamos cadenas para probar nuestra expresión regular. Para hacer esto, definimos patrones que sabemos que deberían coincidir y también patrones que sabemos que no deberían coincidir. Los llamaremos <code>yes</code> y <code>no</code>, respectivamente. Esto nos permite verificar los dos tipos de errores: no coincidir e incorrectamente.</p>
+<p>A lo largo de esta sección, verán que creamos cadenas para probar nuestra expresión regular. Para hacer esto, definimos patrones que sabemos que deberían coincidir y también patrones que sabemos que no deberían coincidir. Los llamaremos <code>yes</code> y <code>no</code>, respectivamente. Esto nos permite verificar los dos tipos de errores: no coincidir o coincidir incorrectamente.</p>
 <div id="las-cadenas-son-una-expresión-regular" class="section level3">
 <h3><span class="header-section-number">24.5.1</span> Las cadenas son una expresión regular</h3>
 <p>Técnicamente, cualquier cadena es una expresión regular, quizás el ejemplo más simple es un solo carácter. Entonces la coma <code>,</code> usado en el siguiente ejemplo de código, es un ejemplo sencillo de una búsqueda con expresiones regulares.</p>
@@ -1088,10 +1087,10 @@ En este caso no pueden usar:</p>
 <p>Aprovechamos esta oportunidad para presentar la función <code>str_view</code>, que es útil para la solución de problemas, ya que nos muestra la primera coincidencia para cada cadena:</p>
 <div class="sourceCode" id="cb859"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb859-1"><a href="procesamiento-de-cadenas.html#cb859-1"></a><span class="kw">str_view</span>(s, pattern)</span></code></pre></div>
 <p><img src="wrangling/img/str_view-1.png" width="70%" style="display: block; margin: auto;" /></p>
-<p>[fix ‘matches’] y <code>str_view_all</code> nos muestra todos las coincidencias, entonces <code>3'2</code> tiene dos coincidencias y <code>5'10</code> tiene tres.</p>
+<p>[fix ‘matches’ ok?] y <code>str_view_all</code> nos muestra todos los patrones que corresponden, entonces <code>3'2</code> tiene dos coincidencias y <code>5'10</code> tiene tres.</p>
 <div class="sourceCode" id="cb860"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb860-1"><a href="procesamiento-de-cadenas.html#cb860-1"></a><span class="kw">str_view_all</span>(s, pattern)</span></code></pre></div>
 <p><img src="wrangling/img/str_view-2.png" width="70%" style="display: block; margin: auto;" /></p>
-<p>Hay muchos otros caracteres especiales. Aprenderemos algunos otros a continuación, pero pueden ver la mayoría o todos en la hoja de referencia<a href="#fn91" class="footnote-ref" id="fnref91"><sup>91</sup></a> mencionada anteriormente.</p>
+<p>Hay muchos otros caracteres especiales. Aprenderemos algunos otros a continuación, pero pueden ver la mayoría o todos en la hoja de referencia<a href="#fn94" class="footnote-ref" id="fnref94"><sup>94</sup></a> mencionada anteriormente.</p>
 </div>
 <div id="clases-de-caracteres" class="section level3">
 <h3><span class="header-section-number">24.5.3</span> Clases de caracteres</h3>
@@ -1104,8 +1103,8 @@ En este caso no pueden usar:</p>
 <span id="cb862-3"><a href="procesamiento-de-cadenas.html#cb862-3"></a>s &lt;-<span class="st"> </span><span class="kw">c</span>(yes, no)</span>
 <span id="cb862-4"><a href="procesamiento-de-cadenas.html#cb862-4"></a><span class="kw">str_detect</span>(s, <span class="st">&quot;[4-7]&quot;</span>)</span>
 <span id="cb862-5"><a href="procesamiento-de-cadenas.html#cb862-5"></a><span class="co">#&gt; [1]  TRUE  TRUE  TRUE  TRUE FALSE FALSE FALSE</span></span></code></pre></div>
-<p>Sin embargo, es importante saber que en <em>regex</em> todo es un carácter; No hay números. Entonces <code>4</code> es el carácter <code>4</code> no el número cuatro. Note, por ejemplo, que <code>[1-20]</code> <strong>no</strong> significa 1 a 20, significa los caracteres 1 a 2 o el carácter 0. Entonces <code>[1-20]</code> simplemente significa la clase de caracteres compuesta por 0, 1 y 2.</p>
-<p>Tengan en cuenta que los caracteres tienen un orden y los dígitos siguen el orden numérico. Entonces <code>0</code> viene antes <code>1</code> que viene antes <code>2</code> y así. Por la misma razón, podemos definir letras minúsculas como <code>[a-z]</code>, letras mayúsculas como <code>[A-Z]</code> y <code>[a-zA-z]</code> como ambos.</p>
+<p>Sin embargo, es importante saber que en <em>regex</em> todo es un carácter; no hay números. Entonces <code>4</code> es el carácter <code>4</code> no el número cuatro. Noten, por ejemplo, que <code>[1-20]</code> <strong>no</strong> significa 1 a 20, significa los caracteres 1 a 2 o el carácter 0. Entonces <code>[1-20]</code> simplemente significa la clase de caracteres compuesta por 0, 1 y 2.</p>
+<p>Tengan en cuenta que los caracteres tienen un orden y los dígitos siguen el orden numérico. Entonces <code>0</code> viene antes de <code>1</code> que viene antes de <code>2</code> y así. Por la misma razón, podemos definir letras minúsculas como <code>[a-z]</code>, letras mayúsculas como <code>[A-Z]</code> y <code>[a-zA-z]</code> como ambas.</p>
 </div>
 <div id="anclas" class="section level3">
 <h3><span class="header-section-number">24.5.4</span> Anclas</h3>
@@ -1122,7 +1121,7 @@ En este caso no pueden usar:</p>
 </div>
 <div id="cuantificadores" class="section level3">
 <h3><span class="header-section-number">24.5.5</span> Cuantificadores</h3>
-<p>Para la parte de pulgadas, podemos tener uno o dos dígitos. Esto se puede especificar en <em>regex</em> con <em>cuantificadores</em> (<em>quantifiers</em> en inglés). Esto se hace siguiendo el patrón con llaves que contienen la cantidad de veces que se puede repetir la entrada anterior. Usamos un ejemplo para ilustrar. El patrón para uno o dos dígitos es:</p>
+<p>Para la parte de pulgadas, podemos tener uno o dos dígitos. Esto se puede especificar en <em>regex</em> con <em>cuantificadores</em> (<em>quantifiers</em> en inglés). Esto se hace siguiendo el patrón con la cantidad de veces que se puede repetir cerrada por llaves. Usemos un ejemplo para ilustrar. El patrón para uno o dos dígitos es:</p>
 <div class="sourceCode" id="cb864"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb864-1"><a href="procesamiento-de-cadenas.html#cb864-1"></a>pattern &lt;-<span class="st"> &quot;^</span><span class="ch">\\</span><span class="st">d{1,2}$&quot;</span></span>
 <span id="cb864-2"><a href="procesamiento-de-cadenas.html#cb864-2"></a>yes &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;1&quot;</span>, <span class="st">&quot;5&quot;</span>, <span class="st">&quot;9&quot;</span>, <span class="st">&quot;12&quot;</span>)</span>
 <span id="cb864-3"><a href="procesamiento-de-cadenas.html#cb864-3"></a>no &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;123&quot;</span>, <span class="st">&quot;a4&quot;</span>, <span class="st">&quot;b&quot;</span>)</span>
@@ -1134,7 +1133,7 @@ En este caso no pueden usar:</p>
 <p>El patrón ahora se está volviendo complejo, pero pueden mirarlo cuidadosamente y desglosarlo:</p>
 <ul>
 <li><code>^</code> = inicio de la cadena</li>
-<li><code>[4-7]</code> = un dígito, ya sea 4,5,6 o 7</li>
+<li><code>[4-7]</code> = un dígito, ya sea 4, 5, 6 o 7</li>
 <li><code>'</code> = símbolo de pies</li>
 <li><code>\\d{1,2}</code> = uno o dos dígitos</li>
 <li><code>\"</code> = símbolo de pulgadas</li>
@@ -1197,9 +1196,9 @@ En este caso no pueden usar:</p>
 </div>
 <div id="groups" class="section level3">
 <h3><span class="header-section-number">24.5.9</span> Grupos</h3>
-<p>Los <em>grupos</em> son un aspecto poderoso de la expresión regular que permite la extracción de valores. Los grupos se definen usando paréntesis. No afectan la coincidencia de patrones [fix ok for ‘per se’] en sí mismo. En cambio, permiten que las herramientas identifiquen partes específicas del patrón para que podamos extraerlas.</p>
+<p>Los <em>grupos</em> son un aspecto poderoso de la expresión regular que permite la extracción de valores. Los grupos se definen usando paréntesis. No afectan la coincidencia de patrones. En cambio, permiten que las herramientas identifiquen partes específicas del patrón para que podamos extraerlas.</p>
 <p>Queremos cambiar las alturas escritas como <code>5.6</code> a <code>5'6</code>.</p>
-<p>Para evitar cambiar patrones como <code>70.2</code>, requeriremos que el primer dígito esté entre 4 y 7 <code>[4-7]</code> y que el segundo sea ninguno o más dígitos <code>\\d*</code>. Comencemos definiendo un patrón sencillo que coincida con esto:</p>
+<p>Para evitar cambiar patrones como <code>70.2</code>, requeriremos que el primer dígito esté entre 4 y 7 <code>[4-7]</code> y que el segundo sea ninguno o uno o más dígitos <code>\\d*</code>. Comencemos definiendo un patrón sencillo que coincida con esto:</p>
 <div class="sourceCode" id="cb872"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb872-1"><a href="procesamiento-de-cadenas.html#cb872-1"></a>pattern_without_groups &lt;-<span class="st"> &quot;^[4-7],</span><span class="ch">\\</span><span class="st">d*$&quot;</span></span></code></pre></div>
 <p>Queremos extraer los dígitos para poder formar la nueva versión usando un punto. Estos son nuestros dos grupos, por lo que los encapsulamos con paréntesis:</p>
 <div class="sourceCode" id="cb873"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb873-1"><a href="procesamiento-de-cadenas.html#cb873-1"></a>pattern_with_groups &lt;-<span class="st"> &quot;^([4-7]),(</span><span class="ch">\\</span><span class="st">d*)$&quot;</span></span></code></pre></div>
@@ -1614,9 +1613,9 @@ Ahora podemos ver qué entradas problemáticas permanecen:</p>
 <span id="cb919-12"><a href="procesamiento-de-cadenas.html#cb919-12"></a><span class="co">#&gt; 7 Earth/life sciences              24.4                14.3</span></span>
 <span id="cb919-13"><a href="procesamiento-de-cadenas.html#cb919-13"></a><span class="co">#&gt; 8     Social sciences              15.3                11.5</span></span>
 <span id="cb919-14"><a href="procesamiento-de-cadenas.html#cb919-14"></a><span class="co">#&gt; 9    Medical sciences              18.8                11.2</span></span></code></pre></div>
-<p>Los datos provienen de un artículo publicado en las Actas de la Academia Nacional de Ciencias (PNAS)<a href="#fn92" class="footnote-ref" id="fnref92"><sup>92</sup></a>, una revista científica ampliamente leída. Sin embargo, los datos no se proporcionan en una hoja de cálculo; Está en una tabla en un documento PDF. Aquí hay una captura de pantalla de la tabla:</p>
+<p>Los datos provienen de un artículo publicado en las Actas de la Academia Nacional de Ciencias (PNAS)<a href="#fn95" class="footnote-ref" id="fnref95"><sup>95</sup></a>, una revista científica ampliamente leída. Sin embargo, los datos no se proporcionan en una hoja de cálculo; Está en una tabla en un documento PDF. Aquí hay una captura de pantalla de la tabla:</p>
 <p><img src="wrangling/img/pnas-table-s1.png" width="60%" style="display: block; margin: auto;" /></p>
-<p>(Fuente: Romy van der Lee y Naomi Ellemers, PNAS 2015 112 (40) 12349-12353<a href="#fn93" class="footnote-ref" id="fnref93"><sup>93</sup></a>.)</p>
+<p>(Fuente: Romy van der Lee y Naomi Ellemers, PNAS 2015 112 (40) 12349-12353<a href="#fn96" class="footnote-ref" id="fnref96"><sup>96</sup></a>.)</p>
 <p>Podríamos extraer los números a mano, pero esto podría conducir a un error humano. En su lugar, podemos intentar cambiar los datos con R. Comenzamos descargando el documento pdf y luego importándolo a R:</p>
 <div class="sourceCode" id="cb920"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb920-1"><a href="procesamiento-de-cadenas.html#cb920-1"></a><span class="kw">library</span>(<span class="st">&quot;pdftools&quot;</span>)</span>
 <span id="cb920-2"><a href="procesamiento-de-cadenas.html#cb920-2"></a>temp_file &lt;-<span class="st"> </span><span class="kw">tempfile</span>()</span>
@@ -1778,7 +1777,7 @@ Utilice la función <code>str_which</code> para encontrar las filas con un encab
 <p>13. Ahora estamos listos para eliminar todas las entradas no numéricas. Haga esto usando <em>regex</em> y la función <code>str_remove_all</code>. Sugerencia: recuerde que en <em>regex</em>, usar la versión en mayúscula de un carácter especial generalmente significa lo contrario. Entonces <code>\\D</code> significa “no un dígito”. Recuerde que también quiere mantener espacios.</p>
 <p>14. Para convertir las cadenas en una tabla, use la función <code>str_split_fixed</code>. Convierta <code>s</code> en una matriz de datos con solo los datos de recuento de días y muertes. Sugerencias: tengan en cuenta que el separador es uno o más espacios. Haga el argumento <code>n</code> un valor que limita el número de columnas a los valores en las 4 columnas y la última columna captura todas las cosas adicionales. Luego mantenga solo las primeras cuatro columnas.</p>
 <p>15. Ahora ya casi está listo para terminar. Agregue nombres de columna a la matriz, incluyendo uno llamado <code>day</code>. Además, agregue una columna con el mes. Llame al objeto resultante <code>dat</code>. Finalmente, asegúrese de que el día es un número entero, no un carácter. Sugerencia: use solo las primeras cinco columnas.</p>
-<p>16. [fix eng to <code>gather1?] Ahora termine ordenando</code>tab` con la función de reunir.</p>
+<p>16. Ahora termine ordenando <code>tab</code> con la función <code>gather</code>.</p>
 <p>17. Haga un diagrama de muertes versus día con color para indicar el año. Excluya 2018 ya que no tenemos datos para todo el año.</p>
 <p>18. Ahora que hemos <em>wrangled</em> estos datos paso a paso, póngalos todos juntos en un fragmento R, usando el <em>pipe</em> tanto como sea posible. Sugerencia: primero defina los índices, luego escriba una línea de código que realice todo el procesamiento de la cadena.</p>
 <p>19. Avanzado: volvamos al ejemplo de Nómina MLB de la sección de extracción de la web. Use lo que aprendió en los capítulos de extracción de la web y procesamiento de cadenas para extraer la nómina de los Yankees de Nueva York, los Medias Rojas de Boston y los Atléticos de Oakland y graficarlos como una función del tiempo.</p>
@@ -1787,11 +1786,13 @@ Utilice la función <code>str_which</code> para encontrar las filas con un encab
 </div>
 <div class="footnotes">
 <hr />
-<ol start="90">
-<li id="fn90"><p><a href="https://www.rstudio.com/wp-content/uploads/2016/09/RegExCheatsheet.pdf" class="uri">https://www.rstudio.com/wp-content/uploads/2016/09/RegExCheatsheet.pdf</a><a href="procesamiento-de-cadenas.html#fnref90" class="footnote-back">↩︎</a></p></li>
-<li id="fn91"><p><a href="https://www.rstudio.com/wp-content/uploads/2016/09/RegExCheatsheet.pdf" class="uri">https://www.rstudio.com/wp-content/uploads/2016/09/RegExCheatsheet.pdf</a><a href="procesamiento-de-cadenas.html#fnref91" class="footnote-back">↩︎</a></p></li>
-<li id="fn92"><p><a href="http://www.pnas.org/content/112/40/12349.abstract" class="uri">http://www.pnas.org/content/112/40/12349.abstract</a><a href="procesamiento-de-cadenas.html#fnref92" class="footnote-back">↩︎</a></p></li>
-<li id="fn93"><p><a href="http://www.pnas.org/content/112/40/12349" class="uri">http://www.pnas.org/content/112/40/12349</a><a href="procesamiento-de-cadenas.html#fnref93" class="footnote-back">↩︎</a></p></li>
+<ol start="91">
+<li id="fn91"><p><a href="https://www.regular-expressions.info/tutorial.html" class="uri">https://www.regular-expressions.info/tutorial.html</a><a href="procesamiento-de-cadenas.html#fnref91" class="footnote-back">↩︎</a></p></li>
+<li id="fn92"><p><a href="http://r4ds.had.co.nz/strings.html#matching-patrones-con-expresiones-regulares" class="uri">http://r4ds.had.co.nz/strings.html#matching-patrones-con-expresiones-regulares</a><a href="procesamiento-de-cadenas.html#fnref92" class="footnote-back">↩︎</a></p></li>
+<li id="fn93"><p><a href="https://www.rstudio.com/wp-content/uploads/2016/09/RegExCheatsheet.pdf" class="uri">https://www.rstudio.com/wp-content/uploads/2016/09/RegExCheatsheet.pdf</a><a href="procesamiento-de-cadenas.html#fnref93" class="footnote-back">↩︎</a></p></li>
+<li id="fn94"><p><a href="https://www.rstudio.com/wp-content/uploads/2016/09/RegExCheatsheet.pdf" class="uri">https://www.rstudio.com/wp-content/uploads/2016/09/RegExCheatsheet.pdf</a><a href="procesamiento-de-cadenas.html#fnref94" class="footnote-back">↩︎</a></p></li>
+<li id="fn95"><p><a href="http://www.pnas.org/content/112/40/12349.abstract" class="uri">http://www.pnas.org/content/112/40/12349.abstract</a><a href="procesamiento-de-cadenas.html#fnref95" class="footnote-back">↩︎</a></p></li>
+<li id="fn96"><p><a href="http://www.pnas.org/content/112/40/12349" class="uri">http://www.pnas.org/content/112/40/12349</a><a href="procesamiento-de-cadenas.html#fnref96" class="footnote-back">↩︎</a></p></li>
 </ol>
 </div>
             </section>
