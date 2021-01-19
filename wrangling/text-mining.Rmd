@@ -31,7 +31,7 @@ orders = "a b! d! H!:M!:S! z!* Y!",
 tz="EST"))
 ```
 
-Para mayor comodidad, incluimos el resultado del código anterior en el paquete __dslabs__:
+Para facilitar el análisis, incluimos el resultado del código anterior en el paquete __dslabs__:
 
 ```{r}
 library(dslabs)
@@ -56,13 +56,13 @@ El archivo de ayuda `?trump_tweets` provee detalles sobre lo que representa cada
 trump_tweets$text[16413] %>% str_wrap(width = options()$width) %>% cat
 ```
 
-y la variable "fuente _source_ nos dice qué dispositivo se usó para componer y cargar cada tuit:
+y la variable _source_ nos dice qué dispositivo se usó para componer y cargar cada tuit:
 
 ```{r}
 trump_tweets %>% count(source) %>% arrange(desc(n)) %>% head(5)
 ```
 
-Estamos interesados en lo que sucedió durante la campaña, por lo que para este análisis nos enfocaremos en lo que se tuiteó entre el día en que Trump anunció su campaña y el día de las elecciones. Definimos la siguiente tabla que contiene solo los tuits de ese período de tiempo. Tengan en cuenta que usamos `extract` para eliminar el `Twitter for` parte de la fuente y filtrar los _retweets_.
+Estamos interesados en lo que sucedió durante la campaña, por lo que para este análisis nos enfocaremos en lo que se tuiteó entre el día en que Trump anunció su campaña y el día de las elecciones. Definimos la siguiente tabla que contiene solo los tuits de ese período de tiempo. Tengan en cuenta que usamos `extract` para eliminar [fix consult] el `Twitter for` parte de _source_ y filtrar los _retweets_.
 
 ```{r}
 campaign_tweets <- trump_tweets %>%
@@ -74,7 +74,7 @@ filter(!is_retweet) %>%
 arrange(created_at)
 ```
 
-Ahora podemos usar la visualización de datos para explorar la posibilidad de que dos grupos diferentes escribieron los mensajes desde estos dispositivos. Para cada tuit, extraeremos la hora en que se publicó (hora de la costa este o EST por sus siglas en inglés), y luego calcularemos la proporción de tuits tuiteados a cada hora para cada dispositivo:
+Ahora podemos usar la visualización de datos para explorar la posibilidad de que dos grupos diferentes hayan escrito los mensajes desde estos dispositivos. Para cada tuit, extraeremos la hora en que se publicó (hora de la costa este de EE.UU. o EST por sus siglas en inglés), y luego calcularemos la proporción de tuits tuiteados a cada hora para cada dispositivo:
 
 ```{r tweets-by-time-by-device}
 ds_theme_set()
@@ -116,7 +116,7 @@ example
 example %>% unnest_tokens(word, text)
 ```
 
-Ahora veamos un ejemplo de los tuits. Veremos el tuit número 3008 porque luego nos permitirá ilustrar un par de puntos:
+Ahora veamos un ejemplo de los tuits. Observemos el tuit número 3008 porque luego nos permitirá ilustrar un par de puntos:
 
 ```{r}
 i <- 3008
@@ -126,7 +126,7 @@ unnest_tokens(word, text) %>%
 pull(word)
 ```
 
-Noten que la función intenta convertir _tokens_ en palabras. Para hacer esto, sin embargo, elimina los caracteres que son importantes en el contexto de twitter. A saber, la función elimina todos los `#` y `@`. Un _token_ en el contexto de Twitter no es lo mismo que en el contexto del inglés hablado o escrito. Por esta razón, en lugar de usar las palabras predeterminadas, usamos el `tweets` el token incluye patrones que comienzan con @ y #:
+Noten que la función intenta convertir _tokens_ en palabras. Para hacer esto, sin embargo, elimina los caracteres que son importantes en el contexto de Twitter. Específicamente, la función elimina todos los `#` y `@`. Un _token_ en el contexto de Twitter no es lo mismo que en el contexto del inglés hablado o escrito. [fix eng too] Por esta razón, en lugar de usar las palabras predeterminadas, el _token_ `tweets` incluye patrones que comienzan con @ y #:
 
 
 ```{r, message=FALSE, warning=FALSE}
@@ -145,7 +145,7 @@ campaign_tweets[i,] %>%
   pull(word)
 ```
 
-Ahora estamos listos para extraer las palabras de todos nuestros tuits.
+Ya estamos listos para extraer las palabras de todos nuestros tuits.
 
 ```{r, message=FALSE, warning=FALSE}
 tweet_words <- campaign_tweets %>%
@@ -154,7 +154,7 @@ tweet_words <- campaign_tweets %>%
 ```
 
 
-Y ahora podemos responder preguntas como "¿cuáles son las palabras más utilizadas?":
+Y ahora podemos responder a preguntas como "¿cuáles son las palabras más utilizadas?":
 
 ```{r}
 tweet_words %>%
@@ -168,7 +168,7 @@ No es sorprendente que estas sean las palabras principales. Las palabras princip
 stop_words
 ```
 
-Si filtramos las filas que representan palabras _stop_ con `filter(!word %in% stop_words$word)`:
+Si filtramos las filas que representan la palabras _stop_ con `filter(!word %in% stop_words$word)`:
 
 ```{r, message=FALSE, warning=FALSE}
 tweet_words <- campaign_tweets %>%
@@ -187,7 +187,7 @@ mutate(word = reorder(word, n)) %>%
 arrange(desc(n))
 ```
 
-Una exploración de las palabras resultantes (que no se muestran aquí) revela un par de características no deseadas en nuestros tokens. Primero, algunos de nuestros tokens son solo números (años, por ejemplo). Queremos eliminarlos y podemos encontrarlos usando la expresión regular `^\d+$`. Segundo, algunos de nuestros tokens provienen de una cita y comienzan con `'`. Queremos eliminar el `'` cuando está al comienzo de una palabra, así que simplemente `str_replace`. Agregamos estas dos líneas al código anterior para generar nuestra tabla final:
+Una exploración de las palabras resultantes (que no se muestran aquí) revela un par de características no deseadas en nuestros tokens. Primero, algunos de nuestros _tokens_ son solo números (años, por ejemplo). Queremos eliminarlos y podemos encontrarlos usando la expresión regular `^\d+$`. Segundo, algunos de nuestros _tokens_ provienen de una cita y comienzan con `'`. Queremos eliminar el `'` cuando está al comienzo de una palabra, así que simplemente [fix add: usamos? check eng] `str_replace`. Agregamos estas dos líneas al código anterior para generar nuestra tabla final:
 
 
 ```{r, message=FALSE, warning=FALSE}
@@ -305,7 +305,7 @@ or = Android/iPhone) %>%
 arrange(desc(or))
 ```
 
-Así que sí vemos algunas diferencias y el orden es particularmente interesante: ¡los tres sentimientos más grandes son el asco, la ira y lo negativo! ¿Pero estas diferencias son solo por casualidad? ¿Cómo se compara esto si solo estamos asignando sentimientos al azar? Para responder a esta pregunta, podemos calcular, para cada sentimiento, un cociente de probabilidades y un intervalo de confianza, como se define en la Sección \@ref(association-tests). Agregaremos los dos valores que necesitamos para formar una tabla de dos por dos y el riesgo relativo:
+Así que sí vemos algunas diferencias y el orden es particularmente interesante: ¡los tres sentimientos más grandes son el asco, la ira y lo negativo! ¿Pero estas diferencias son solo por casualidad? ¿Cómo se compara esto si solo estamos asignando sentimientos al azar? Para responder a esta pregunta, podemos calcular, para cada sentimiento, un riesgo relativo y un intervalo de confianza, como se define en la Sección \@ref(association-tests). Agregaremos los dos valores que necesitamos para formar una tabla de dos por dos y el riesgo relativo:
 
 ```{r}
 library(broom)
@@ -333,9 +333,9 @@ ylab("Log odds ratio for association between Android and sentiment") +
 coord_flip()
 ```
 
-Vemos que el disgusto, la ira, los sentimientos negativos, la tristeza y el miedo están asociados con el Android de una manera que es difícil de explicar solo por casualidad. Las palabras no asociadas a un sentimiento estaban fuertemente asociadas con la fuente del iPhone, que está de acuerdo con la afirmación original sobre los tuits hiperbólicos.
+Vemos que el disgusto, la ira, los sentimientos negativos, la tristeza y el miedo están asociados con el Android de una manera que es difícil de explicar solo por casualidad. Las palabras no asociadas con un sentimiento estaban fuertemente asociadas con la fuente del iPhone, que está de acuerdo con la afirmación original sobre los tuits hiperbólicos.
 
-Si estamos interesados en explorar qué palabras específicas están impulsando estas diferencias, podemos referirnos a nuestro `android_iphone_or` objeto:
+Si estamos interesados en explorar qué palabras específicas están impulsando estas diferencias, podemos referirnos a nuestro objeto `android_iphone_or`:
 
 ```{r}
 android_iphone_or %>% inner_join(nrc) %>%
@@ -343,7 +343,7 @@ filter(sentiment == "disgust" & Android + iPhone > 10) %>%
 arrange(desc(or))
 ```
 
-y podemos hacer un gráfico:
+y podemos hacer una gráfica:
 
 ```{r log-odds-by-word, out.width="100%"}
 android_iphone_or %>% inner_join(nrc, by = "word") %>%
@@ -358,14 +358,14 @@ theme(axis.text.x = element_text(angle = 90, hjust = 1))
 ```
 
 
-Este es solo un ejemplo simple de los muchos análisis que uno puede realizar con tidytext.
+Este es solo un ejemplo sencillo de los muchos análisis que uno puede realizar con __tidytext__.
 Para obtener más información, nuevamente recomendamos el libro Tidy Text Mining^[https://www.tidytextmining.com/].
 
 
 ## Ejercicios
 
 
-_Project Gutenberg_ es un archivo digital de libros de dominio público. El paquete R __gutenbergr__ facilita la importación de estos textos en R.
+_Project Gutenberg_ es un archivo digital de libros de dominio público. El paquete __gutenbergr__ de R facilita la importación de estos textos en R.
 
 Puede instalar y cargarlo escribiendo:
 
@@ -386,16 +386,16 @@ gutenberg_metadata
 2\. Notamos que hay varias versiones. La función `gutenberg_works()`filtra esta tabla para eliminar réplicas e incluye solo trabajos en inglés. Lea el archivo de ayuda y use esta función para encontrar la identificación de _Pride and Prejudice_.
 
 
-3\. Utilizce la función `gutenberg_download` para descargar el texto de _Pride and Prejudice_. Guárdelo en un objeto llamado `book`.
+3\. Utilice la función `gutenberg_download` para descargar el texto de _Pride and Prejudice_. Guárdelo en un objeto llamado `book`.
 
 
 4\. Use el paquete __tidytext__ para crear una tabla ordenada con todas las palabras en el texto. Guarde la tabla en un objeto llamado `words`.
 
 
-5\. Más adelante haremos una gráfica de sentimiento versus ubicación en el libro. Para esto, será útil agregar una columna con el número de palabra a la tabla.
+5\. Más adelante haremos una gráfica de sentimiento versus ubicación en el libro. Para esto, será útil agregar una columna a la tabla con el número de palabra. 
 
 
-6\. Elimine las palabras _stop_ y los números del objeto `words`. Sugerencia: use el `anti_join`.
+6\. Elimine las palabras _stop_ y los números del objeto `words`. Sugerencia: use `anti_join`.
 
 
 7\. Ahora use el léxico `AFINN` para asignar un valor de sentimiento a cada palabra.
