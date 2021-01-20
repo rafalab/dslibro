@@ -24,7 +24,7 @@
 <meta name="author" content="Rafael A. Irizarry" />
 
 
-<meta name="date" content="2021-01-18" />
+<meta name="date" content="2021-01-20" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -698,7 +698,7 @@ El científico de datos David Robinson realizó un análisis<a href="#fn98" clas
 <span id="cb962-5"><a href="minería-de-textos.html#cb962-5"></a><span class="kw">mutate</span>(<span class="dt">created_at =</span> <span class="kw">parse_date_time</span>(created_at,</span>
 <span id="cb962-6"><a href="minería-de-textos.html#cb962-6"></a><span class="dt">orders =</span> <span class="st">&quot;a b! d! H!:M!:S! z!* Y!&quot;</span>,</span>
 <span id="cb962-7"><a href="minería-de-textos.html#cb962-7"></a><span class="dt">tz=</span><span class="st">&quot;EST&quot;</span>))</span></code></pre></div>
-<p>Para mayor comodidad, incluimos el resultado del código anterior en el paquete <strong>dslabs</strong>:</p>
+<p>Para facilitar el análisis, incluimos el resultado del código anterior en el paquete <strong>dslabs</strong>:</p>
 <div class="sourceCode" id="cb963"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb963-1"><a href="minería-de-textos.html#cb963-1"></a><span class="kw">library</span>(dslabs)</span>
 <span id="cb963-2"><a href="minería-de-textos.html#cb963-2"></a><span class="kw">data</span>(<span class="st">&quot;trump_tweets&quot;</span>)</span></code></pre></div>
 <p>Pueden ver el <em>data frame</em> con información sobre los tuits al escribir:</p>
@@ -713,7 +713,7 @@ El científico de datos David Robinson realizó un análisis<a href="#fn98" clas
 <div class="sourceCode" id="cb966"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb966-1"><a href="minería-de-textos.html#cb966-1"></a>trump_tweets<span class="op">$</span>text[<span class="dv">16413</span>] <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">str_wrap</span>(<span class="dt">width =</span> <span class="kw">options</span>()<span class="op">$</span>width) <span class="op">%&gt;%</span><span class="st"> </span>cat</span>
 <span id="cb966-2"><a href="minería-de-textos.html#cb966-2"></a><span class="co">#&gt; Great to be back in Iowa! #TBT with @JerryJrFalwell joining me in</span></span>
 <span id="cb966-3"><a href="minería-de-textos.html#cb966-3"></a><span class="co">#&gt; Davenport- this past winter. #MAGA https://t.co/A5IF0QHnic</span></span></code></pre></div>
-<p>y la variable "fuente <em>source</em> nos dice qué dispositivo se usó para componer y cargar cada tuit:</p>
+<p>y la variable <em>source</em> nos dice qué dispositivo se usó para componer y cargar cada tuit:</p>
 <div class="sourceCode" id="cb967"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb967-1"><a href="minería-de-textos.html#cb967-1"></a>trump_tweets <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">count</span>(source) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">arrange</span>(<span class="kw">desc</span>(n)) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">head</span>(<span class="dv">5</span>)</span>
 <span id="cb967-2"><a href="minería-de-textos.html#cb967-2"></a><span class="co">#&gt;                source     n</span></span>
 <span id="cb967-3"><a href="minería-de-textos.html#cb967-3"></a><span class="co">#&gt; 1  Twitter Web Client 10718</span></span>
@@ -721,7 +721,7 @@ El científico de datos David Robinson realizó un análisis<a href="#fn98" clas
 <span id="cb967-5"><a href="minería-de-textos.html#cb967-5"></a><span class="co">#&gt; 3  Twitter for iPhone  3962</span></span>
 <span id="cb967-6"><a href="minería-de-textos.html#cb967-6"></a><span class="co">#&gt; 4           TweetDeck   468</span></span>
 <span id="cb967-7"><a href="minería-de-textos.html#cb967-7"></a><span class="co">#&gt; 5     TwitLonger Beta   288</span></span></code></pre></div>
-<p>Estamos interesados en lo que sucedió durante la campaña, por lo que para este análisis nos enfocaremos en lo que se tuiteó entre el día en que Trump anunció su campaña y el día de las elecciones. Definimos la siguiente tabla que contiene solo los tuits de ese período de tiempo. Tengan en cuenta que usamos <code>extract</code> para eliminar el <code>Twitter for</code> parte de la fuente y filtrar los <em>retweets</em>.</p>
+<p>Estamos interesados en lo que sucedió durante la campaña, por lo que para este análisis nos enfocaremos en lo que se tuiteó entre el día en que Trump anunció su campaña y el día de las elecciones. Definimos la siguiente tabla que contiene solo los tuits de ese período de tiempo. Tengan en cuenta que usamos <code>extract</code> para eliminar [fix consult] el <code>Twitter for</code> parte de <em>source</em> y filtrar los <em>retweets</em>.</p>
 <div class="sourceCode" id="cb968"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb968-1"><a href="minería-de-textos.html#cb968-1"></a>campaign_tweets &lt;-<span class="st"> </span>trump_tweets <span class="op">%&gt;%</span></span>
 <span id="cb968-2"><a href="minería-de-textos.html#cb968-2"></a><span class="kw">extract</span>(source, <span class="st">&quot;source&quot;</span>, <span class="st">&quot;Twitter for (.*)&quot;</span>) <span class="op">%&gt;%</span></span>
 <span id="cb968-3"><a href="minería-de-textos.html#cb968-3"></a><span class="kw">filter</span>(source <span class="op">%in%</span><span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;Android&quot;</span>, <span class="st">&quot;iPhone&quot;</span>) <span class="op">&amp;</span></span>
@@ -729,7 +729,7 @@ El científico de datos David Robinson realizó un análisis<a href="#fn98" clas
 <span id="cb968-5"><a href="minería-de-textos.html#cb968-5"></a>created_at <span class="op">&lt;</span><span class="st"> </span><span class="kw">ymd</span>(<span class="st">&quot;2016-11-08&quot;</span>)) <span class="op">%&gt;%</span></span>
 <span id="cb968-6"><a href="minería-de-textos.html#cb968-6"></a><span class="kw">filter</span>(<span class="op">!</span>is_retweet) <span class="op">%&gt;%</span></span>
 <span id="cb968-7"><a href="minería-de-textos.html#cb968-7"></a><span class="kw">arrange</span>(created_at)</span></code></pre></div>
-<p>Ahora podemos usar la visualización de datos para explorar la posibilidad de que dos grupos diferentes escribieron los mensajes desde estos dispositivos. Para cada tuit, extraeremos la hora en que se publicó (hora de la costa este o EST por sus siglas en inglés), y luego calcularemos la proporción de tuits tuiteados a cada hora para cada dispositivo:</p>
+<p>Ahora podemos usar la visualización de datos para explorar la posibilidad de que dos grupos diferentes hayan escrito los mensajes desde estos dispositivos. Para cada tuit, extraeremos la hora en que se publicó (hora de la costa este de EE.UU. o EST por sus siglas en inglés), y luego calcularemos la proporción de tuits tuiteados a cada hora para cada dispositivo:</p>
 <div class="sourceCode" id="cb969"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb969-1"><a href="minería-de-textos.html#cb969-1"></a><span class="kw">ds_theme_set</span>()</span>
 <span id="cb969-2"><a href="minería-de-textos.html#cb969-2"></a>campaign_tweets <span class="op">%&gt;%</span></span>
 <span id="cb969-3"><a href="minería-de-textos.html#cb969-3"></a><span class="kw">mutate</span>(<span class="dt">hour =</span> <span class="kw">hour</span>(<span class="kw">with_tz</span>(created_at, <span class="st">&quot;EST&quot;</span>))) <span class="op">%&gt;%</span></span>
@@ -773,7 +773,7 @@ El científico de datos David Robinson realizó un análisis<a href="#fn98" clas
 <span id="cb971-20"><a href="minería-de-textos.html#cb971-20"></a><span class="co">#&gt; 4     2 violets</span></span>
 <span id="cb971-21"><a href="minería-de-textos.html#cb971-21"></a><span class="co">#&gt; 5     2 are    </span></span>
 <span id="cb971-22"><a href="minería-de-textos.html#cb971-22"></a><span class="co">#&gt; # … with 8 more rows</span></span></code></pre></div>
-<p>Ahora veamos un ejemplo de los tuits. Veremos el tuit número 3008 porque luego nos permitirá ilustrar un par de puntos:</p>
+<p>Ahora veamos un ejemplo de los tuits. Observemos el tuit número 3008 porque luego nos permitirá ilustrar un par de puntos:</p>
 <div class="sourceCode" id="cb972"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb972-1"><a href="minería-de-textos.html#cb972-1"></a>i &lt;-<span class="st"> </span><span class="dv">3008</span></span>
 <span id="cb972-2"><a href="minería-de-textos.html#cb972-2"></a>campaign_tweets<span class="op">$</span>text[i] <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">str_wrap</span>(<span class="dt">width =</span> <span class="dv">65</span>) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">cat</span>()</span>
 <span id="cb972-3"><a href="minería-de-textos.html#cb972-3"></a><span class="co">#&gt; Great to be back in Iowa! #TBT with @JerryJrFalwell joining me in</span></span>
@@ -786,7 +786,7 @@ El científico de datos David Robinson realizó un análisis<a href="#fn98" clas
 <span id="cb972-10"><a href="minería-de-textos.html#cb972-10"></a><span class="co">#&gt;  [9] &quot;jerryjrfalwell&quot; &quot;joining&quot;        &quot;me&quot;             &quot;in&quot;            </span></span>
 <span id="cb972-11"><a href="minería-de-textos.html#cb972-11"></a><span class="co">#&gt; [13] &quot;davenport&quot;      &quot;this&quot;           &quot;past&quot;           &quot;winter&quot;        </span></span>
 <span id="cb972-12"><a href="minería-de-textos.html#cb972-12"></a><span class="co">#&gt; [17] &quot;maga&quot;           &quot;https&quot;          &quot;t.co&quot;           &quot;a5if0qhnic&quot;</span></span></code></pre></div>
-<p>Noten que la función intenta convertir <em>tokens</em> en palabras. Para hacer esto, sin embargo, elimina los caracteres que son importantes en el contexto de twitter. A saber, la función elimina todos los <code>#</code> y <code>@</code>. Un <em>token</em> en el contexto de Twitter no es lo mismo que en el contexto del inglés hablado o escrito. Por esta razón, en lugar de usar las palabras predeterminadas, usamos el <code>tweets</code> el token incluye patrones que comienzan con @ y #:</p>
+<p>Noten que la función intenta convertir <em>tokens</em> en palabras. Para hacer esto, sin embargo, elimina los caracteres que son importantes en el contexto de Twitter. Específicamente, la función elimina todos los <code>#</code> y <code>@</code>. Un <em>token</em> en el contexto de Twitter no es lo mismo que en el contexto del inglés hablado o escrito. [fix eng too] Por esta razón, en lugar de usar las palabras predeterminadas, el <em>token</em> <code>tweets</code> incluye patrones que comienzan con @ y #:</p>
 <div class="sourceCode" id="cb973"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb973-1"><a href="minería-de-textos.html#cb973-1"></a>campaign_tweets[i,] <span class="op">%&gt;%</span></span>
 <span id="cb973-2"><a href="minería-de-textos.html#cb973-2"></a><span class="st">  </span><span class="kw">unnest_tokens</span>(word, text, <span class="dt">token =</span> <span class="st">&quot;tweets&quot;</span>) <span class="op">%&gt;%</span></span>
 <span id="cb973-3"><a href="minería-de-textos.html#cb973-3"></a><span class="st">  </span><span class="kw">pull</span>(word)</span>
@@ -811,11 +811,11 @@ El científico de datos David Robinson realizó un análisis<a href="#fn98" clas
 <span id="cb974-9"><a href="minería-de-textos.html#cb974-9"></a><span class="co">#&gt; [10] &quot;joining&quot;         &quot;me&quot;              &quot;in&quot;             </span></span>
 <span id="cb974-10"><a href="minería-de-textos.html#cb974-10"></a><span class="co">#&gt; [13] &quot;davenport&quot;       &quot;this&quot;            &quot;past&quot;           </span></span>
 <span id="cb974-11"><a href="minería-de-textos.html#cb974-11"></a><span class="co">#&gt; [16] &quot;winter&quot;          &quot;#maga&quot;</span></span></code></pre></div>
-<p>Ahora estamos listos para extraer las palabras de todos nuestros tuits.</p>
+<p>Ya estamos listos para extraer las palabras de todos nuestros tuits.</p>
 <div class="sourceCode" id="cb975"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb975-1"><a href="minería-de-textos.html#cb975-1"></a>tweet_words &lt;-<span class="st"> </span>campaign_tweets <span class="op">%&gt;%</span></span>
 <span id="cb975-2"><a href="minería-de-textos.html#cb975-2"></a><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">text =</span> <span class="kw">str_replace_all</span>(text, links, <span class="st">&quot;&quot;</span>)) <span class="op">%&gt;%</span></span>
 <span id="cb975-3"><a href="minería-de-textos.html#cb975-3"></a><span class="st">  </span><span class="kw">unnest_tokens</span>(word, text, <span class="dt">token =</span> <span class="st">&quot;tweets&quot;</span>)</span></code></pre></div>
-<p>Y ahora podemos responder preguntas como “¿cuáles son las palabras más utilizadas?”:</p>
+<p>Y ahora podemos responder a preguntas como “¿cuáles son las palabras más utilizadas?”:</p>
 <div class="sourceCode" id="cb976"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb976-1"><a href="minería-de-textos.html#cb976-1"></a>tweet_words <span class="op">%&gt;%</span></span>
 <span id="cb976-2"><a href="minería-de-textos.html#cb976-2"></a><span class="kw">count</span>(word) <span class="op">%&gt;%</span></span>
 <span id="cb976-3"><a href="minería-de-textos.html#cb976-3"></a><span class="kw">arrange</span>(<span class="kw">desc</span>(n))</span>
@@ -1332,7 +1332,7 @@ El científico de datos David Robinson realizó un análisis<a href="#fn98" clas
 <span id="cb977-8"><a href="minería-de-textos.html#cb977-8"></a><span class="co">#&gt; 4 about SMART  </span></span>
 <span id="cb977-9"><a href="minería-de-textos.html#cb977-9"></a><span class="co">#&gt; 5 above SMART  </span></span>
 <span id="cb977-10"><a href="minería-de-textos.html#cb977-10"></a><span class="co">#&gt; # … with 1,144 more rows</span></span></code></pre></div>
-<p>Si filtramos las filas que representan palabras <em>stop</em> con <code>filter(!word %in% stop_words$word)</code>:</p>
+<p>Si filtramos las filas que representan la palabras <em>stop</em> con <code>filter(!word %in% stop_words$word)</code>:</p>
 <div class="sourceCode" id="cb978"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb978-1"><a href="minería-de-textos.html#cb978-1"></a>tweet_words &lt;-<span class="st"> </span>campaign_tweets <span class="op">%&gt;%</span></span>
 <span id="cb978-2"><a href="minería-de-textos.html#cb978-2"></a><span class="kw">mutate</span>(<span class="dt">text =</span> <span class="kw">str_replace_all</span>(text, links, <span class="st">&quot;&quot;</span>)) <span class="op">%&gt;%</span></span>
 <span id="cb978-3"><a href="minería-de-textos.html#cb978-3"></a><span class="kw">unnest_tokens</span>(word, text, <span class="dt">token =</span> <span class="st">&quot;tweets&quot;</span>) <span class="op">%&gt;%</span></span>
@@ -1354,7 +1354,7 @@ El científico de datos David Robinson realizó un análisis<a href="#fn98" clas
 <span id="cb979-14"><a href="minería-de-textos.html#cb979-14"></a><span class="co">#&gt; 8                 crooked 205</span></span>
 <span id="cb979-15"><a href="minería-de-textos.html#cb979-15"></a><span class="co">#&gt; 9                   trump 195</span></span>
 <span id="cb979-16"><a href="minería-de-textos.html#cb979-16"></a><span class="co">#&gt; 10                   cruz 159</span></span></code></pre></div>
-<p>Una exploración de las palabras resultantes (que no se muestran aquí) revela un par de características no deseadas en nuestros tokens. Primero, algunos de nuestros tokens son solo números (años, por ejemplo). Queremos eliminarlos y podemos encontrarlos usando la expresión regular <code>^\d+$</code>. Segundo, algunos de nuestros tokens provienen de una cita y comienzan con <code>'</code>. Queremos eliminar el <code>'</code> cuando está al comienzo de una palabra, así que simplemente <code>str_replace</code>. Agregamos estas dos líneas al código anterior para generar nuestra tabla final:</p>
+<p>Una exploración de las palabras resultantes (que no se muestran aquí) revela un par de características no deseadas en nuestros tokens. Primero, algunos de nuestros <em>tokens</em> son solo números (años, por ejemplo). Queremos eliminarlos y podemos encontrarlos usando la expresión regular <code>^\d+$</code>. Segundo, algunos de nuestros <em>tokens</em> provienen de una cita y comienzan con <code>'</code>. Queremos eliminar el <code>'</code> cuando está al comienzo de una palabra, así que simplemente [fix add: usamos? check eng] <code>str_replace</code>. Agregamos estas dos líneas al código anterior para generar nuestra tabla final:</p>
 <div class="sourceCode" id="cb980"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb980-1"><a href="minería-de-textos.html#cb980-1"></a>tweet_words &lt;-<span class="st"> </span>campaign_tweets <span class="op">%&gt;%</span></span>
 <span id="cb980-2"><a href="minería-de-textos.html#cb980-2"></a><span class="kw">mutate</span>(<span class="dt">text =</span> <span class="kw">str_replace_all</span>(text, links, <span class="st">&quot;&quot;</span>)) <span class="op">%&gt;%</span></span>
 <span id="cb980-3"><a href="minería-de-textos.html#cb980-3"></a><span class="kw">unnest_tokens</span>(word, text, <span class="dt">token =</span> <span class="st">&quot;tweets&quot;</span>) <span class="op">%&gt;%</span></span>
@@ -2027,7 +2027,7 @@ El científico de datos David Robinson realizó un análisis<a href="#fn98" clas
 <span id="cb993-15"><a href="minería-de-textos.html#cb993-15"></a><span class="co">#&gt; 9         trust  0.0596 0.0595 1.001</span></span>
 <span id="cb993-16"><a href="minería-de-textos.html#cb993-16"></a><span class="co">#&gt; 10     positive  0.0895 0.0912 0.981</span></span>
 <span id="cb993-17"><a href="minería-de-textos.html#cb993-17"></a><span class="co">#&gt; 11         none  1.1805 1.5698 0.752</span></span></code></pre></div>
-<p>Así que sí vemos algunas diferencias y el orden es particularmente interesante: ¡los tres sentimientos más grandes son el asco, la ira y lo negativo! ¿Pero estas diferencias son solo por casualidad? ¿Cómo se compara esto si solo estamos asignando sentimientos al azar? Para responder a esta pregunta, podemos calcular, para cada sentimiento, un cociente de probabilidades y un intervalo de confianza, como se define en la Sección <a href="inference.html#association-tests">15.10</a>. Agregaremos los dos valores que necesitamos para formar una tabla de dos por dos y el riesgo relativo:</p>
+<p>Así que sí vemos algunas diferencias y el orden es particularmente interesante: ¡los tres sentimientos más grandes son el asco, la ira y lo negativo! ¿Pero estas diferencias son solo por casualidad? ¿Cómo se compara esto si solo estamos asignando sentimientos al azar? Para responder a esta pregunta, podemos calcular, para cada sentimiento, un riesgo relativo y un intervalo de confianza, como se define en la Sección <a href="inference.html#association-tests">15.10</a>. Agregaremos los dos valores que necesitamos para formar una tabla de dos por dos y el riesgo relativo:</p>
 <div class="sourceCode" id="cb994"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb994-1"><a href="minería-de-textos.html#cb994-1"></a><span class="kw">library</span>(broom)</span>
 <span id="cb994-2"><a href="minería-de-textos.html#cb994-2"></a>log_or &lt;-<span class="st"> </span>sentiment_counts <span class="op">%&gt;%</span></span>
 <span id="cb994-3"><a href="minería-de-textos.html#cb994-3"></a><span class="kw">mutate</span>(<span class="dt">log_or =</span> <span class="kw">log</span>((Android<span class="op">/</span><span class="st"> </span>(<span class="kw">sum</span>(Android) <span class="op">-</span><span class="st"> </span>Android))<span class="op">/</span></span>
@@ -2060,8 +2060,8 @@ El científico de datos David Robinson realizó un análisis<a href="#fn98" clas
 <span id="cb995-6"><a href="minería-de-textos.html#cb995-6"></a><span class="kw">ylab</span>(<span class="st">&quot;Log odds ratio for association between Android and sentiment&quot;</span>) <span class="op">+</span></span>
 <span id="cb995-7"><a href="minería-de-textos.html#cb995-7"></a><span class="kw">coord_flip</span>()</span></code></pre></div>
 <p><img src="libro_files/figure-html/tweets-log-odds-ratio-1.png" width="70%" style="display: block; margin: auto;" /></p>
-<p>Vemos que el disgusto, la ira, los sentimientos negativos, la tristeza y el miedo están asociados con el Android de una manera que es difícil de explicar solo por casualidad. Las palabras no asociadas a un sentimiento estaban fuertemente asociadas con la fuente del iPhone, que está de acuerdo con la afirmación original sobre los tuits hiperbólicos.</p>
-<p>Si estamos interesados en explorar qué palabras específicas están impulsando estas diferencias, podemos referirnos a nuestro <code>android_iphone_or</code> objeto:</p>
+<p>Vemos que el disgusto, la ira, los sentimientos negativos, la tristeza y el miedo están asociados con el Android de una manera que es difícil de explicar solo por casualidad. Las palabras no asociadas con un sentimiento estaban fuertemente asociadas con la fuente del iPhone, que está de acuerdo con la afirmación original sobre los tuits hiperbólicos.</p>
+<p>Si estamos interesados en explorar qué palabras específicas están impulsando estas diferencias, podemos referirnos a nuestro objeto <code>android_iphone_or</code>:</p>
 <div class="sourceCode" id="cb996"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb996-1"><a href="minería-de-textos.html#cb996-1"></a>android_iphone_or <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">inner_join</span>(nrc) <span class="op">%&gt;%</span></span>
 <span id="cb996-2"><a href="minería-de-textos.html#cb996-2"></a><span class="kw">filter</span>(sentiment <span class="op">==</span><span class="st"> &quot;disgust&quot;</span> <span class="op">&amp;</span><span class="st"> </span>Android <span class="op">+</span><span class="st"> </span>iPhone <span class="op">&gt;</span><span class="st"> </span><span class="dv">10</span>) <span class="op">%&gt;%</span></span>
 <span id="cb996-3"><a href="minería-de-textos.html#cb996-3"></a><span class="kw">arrange</span>(<span class="kw">desc</span>(or))</span>
@@ -2087,7 +2087,7 @@ El científico de datos David Robinson realizó un análisis<a href="#fn98" clas
 <span id="cb996-23"><a href="minería-de-textos.html#cb996-23"></a><span class="co">#&gt; 18 dishonest      36     32 0.960   disgust</span></span>
 <span id="cb996-24"><a href="minería-de-textos.html#cb996-24"></a><span class="co">#&gt; 19     dying       6      6 0.855   disgust</span></span>
 <span id="cb996-25"><a href="minería-de-textos.html#cb996-25"></a><span class="co">#&gt; 20 terrorism       9      9 0.855   disgust</span></span></code></pre></div>
-<p>y podemos hacer un gráfico:</p>
+<p>y podemos hacer una gráfica:</p>
 <div class="sourceCode" id="cb997"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb997-1"><a href="minería-de-textos.html#cb997-1"></a>android_iphone_or <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">inner_join</span>(nrc, <span class="dt">by =</span> <span class="st">&quot;word&quot;</span>) <span class="op">%&gt;%</span></span>
 <span id="cb997-2"><a href="minería-de-textos.html#cb997-2"></a><span class="kw">mutate</span>(<span class="dt">sentiment =</span> <span class="kw">factor</span>(sentiment, <span class="dt">levels =</span> log_or<span class="op">$</span>sentiment)) <span class="op">%&gt;%</span></span>
 <span id="cb997-3"><a href="minería-de-textos.html#cb997-3"></a><span class="kw">mutate</span>(<span class="dt">log_or =</span> <span class="kw">log</span>(or)) <span class="op">%&gt;%</span></span>
@@ -2098,12 +2098,12 @@ El científico de datos David Robinson realizó un análisis<a href="#fn98" clas
 <span id="cb997-8"><a href="minería-de-textos.html#cb997-8"></a><span class="kw">geom_bar</span>(<span class="dt">stat=</span><span class="st">&quot;identity&quot;</span>, <span class="dt">show.legend =</span> <span class="ot">FALSE</span>) <span class="op">+</span></span>
 <span id="cb997-9"><a href="minería-de-textos.html#cb997-9"></a><span class="kw">theme</span>(<span class="dt">axis.text.x =</span> <span class="kw">element_text</span>(<span class="dt">angle =</span> <span class="dv">90</span>, <span class="dt">hjust =</span> <span class="dv">1</span>))</span></code></pre></div>
 <p><img src="libro_files/figure-html/log-odds-by-word-1.png" width="100%" style="display: block; margin: auto;" /></p>
-<p>Este es solo un ejemplo simple de los muchos análisis que uno puede realizar con tidytext.
+<p>Este es solo un ejemplo sencillo de los muchos análisis que uno puede realizar con <strong>tidytext</strong>.
 Para obtener más información, nuevamente recomendamos el libro Tidy Text Mining<a href="#fn100" class="footnote-ref" id="fnref100"><sup>100</sup></a>.</p>
 </div>
 <div id="ejercicios-43" class="section level2">
 <h2><span class="header-section-number">26.4</span> Ejercicios</h2>
-<p><em>Project Gutenberg</em> es un archivo digital de libros de dominio público. El paquete R <strong>gutenbergr</strong> facilita la importación de estos textos en R.</p>
+<p><em>Project Gutenberg</em> es un archivo digital de libros de dominio público. El paquete <strong>gutenbergr</strong> de R facilita la importación de estos textos en R.</p>
 <p>Puede instalar y cargarlo escribiendo:</p>
 <div class="sourceCode" id="cb998"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb998-1"><a href="minería-de-textos.html#cb998-1"></a><span class="kw">install.packages</span>(<span class="st">&quot;gutenbergr&quot;</span>)</span>
 <span id="cb998-2"><a href="minería-de-textos.html#cb998-2"></a><span class="kw">library</span>(gutenbergr)</span></code></pre></div>
@@ -2111,10 +2111,10 @@ Para obtener más información, nuevamente recomendamos el libro Tidy Text Minin
 <div class="sourceCode" id="cb999"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb999-1"><a href="minería-de-textos.html#cb999-1"></a>gutenberg_metadata</span></code></pre></div>
 <p>1. Utilice <code>str_detect</code> para encontrar la identificación de la novela <em>Pride and Prejudice</em>.</p>
 <p>2. Notamos que hay varias versiones. La función <code>gutenberg_works()</code>filtra esta tabla para eliminar réplicas e incluye solo trabajos en inglés. Lea el archivo de ayuda y use esta función para encontrar la identificación de <em>Pride and Prejudice</em>.</p>
-<p>3. Utilizce la función <code>gutenberg_download</code> para descargar el texto de <em>Pride and Prejudice</em>. Guárdelo en un objeto llamado <code>book</code>.</p>
+<p>3. Utilice la función <code>gutenberg_download</code> para descargar el texto de <em>Pride and Prejudice</em>. Guárdelo en un objeto llamado <code>book</code>.</p>
 <p>4. Use el paquete <strong>tidytext</strong> para crear una tabla ordenada con todas las palabras en el texto. Guarde la tabla en un objeto llamado <code>words</code>.</p>
-<p>5. Más adelante haremos una gráfica de sentimiento versus ubicación en el libro. Para esto, será útil agregar una columna con el número de palabra a la tabla.</p>
-<p>6. Elimine las palabras <em>stop</em> y los números del objeto <code>words</code>. Sugerencia: use el <code>anti_join</code>.</p>
+<p>5. Más adelante haremos una gráfica de sentimiento versus ubicación en el libro. Para esto, será útil agregar una columna a la tabla con el número de palabra.</p>
+<p>6. Elimine las palabras <em>stop</em> y los números del objeto <code>words</code>. Sugerencia: use <code>anti_join</code>.</p>
 <p>7. Ahora use el léxico <code>AFINN</code> para asignar un valor de sentimiento a cada palabra.</p>
 <p>8. Haga una gráfica de puntuación de sentimiento versus ubicación en el libro y agregue un suavizador.</p>
 <p>9. Suponga que hay 300 palabras por página. Convierta las ubicaciones en páginas y luego calcule el sentimiento promedio en cada página. Grafique ese puntaje promedio por página. Agregue un suavizador que parece pasar por los datos.</p>
