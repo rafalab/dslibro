@@ -22,7 +22,7 @@ knitr::include_graphics(file.path(img_path,"murders-data-wiki-page.png"))
 
 Desafortunadamente, no hay un enlace a un archivo de datos. Para crear el _data frame_ que se carga cuando escribimos `data(murders)`, tuvimos que hacer un poco de _extracción de la web_ (_web scraping_ o _web harvesting_ en inglés).
 
-_Extracción de la web_ es el término que se usa para describir el proceso de extracción de datos de un sitio web. La razón por la que podemos hacer esto es porque la información utilizada por un navegador para representar páginas web se recibe como un archivo de texto de un servidor. El texto es un código escrito en lenguaje de marcado de hipertexto (HTML). Todos los navegadores tienen una manera de mostrar el código html de una página, cada uno diferente. En Chrome, pueden usar Control-U en una PC y comando + alt + U en una Mac. Verán algo como esto:
+_Extracción de la web_ es el término que se usa para describir el proceso de extracción de datos de un sitio web. La razón por la que podemos hacer esto es porque la información utilizada por un navegador para representar páginas web se recibe como un archivo de texto de un servidor. El texto es un código escrito en lenguaje de marcado de hipertexto (_hyper text markup language_ o HTML por sus siglas en inglés). Todos los navegadores tienen una manera de mostrar el código HTML de una página, cada uno diferente. En Chrome, pueden usar Control-U en una PC y comando + alt + U en una Mac. Verán algo como esto:
 
 ```{r, echo=FALSE}
 knitr::include_graphics(file.path(img_path,"html-code.png"))
@@ -30,7 +30,7 @@ knitr::include_graphics(file.path(img_path,"html-code.png"))
 
 ## HTML
 
-Debido a que este código es accesible, podemos descargar el archivo HTML, importarlo a R y luego escribir programas para extraer la información que necesitamos de la página. Sin embargo, al mirar el código HTML, esto puede parecer una tarea desalentadora. Pero le mostraremos algunas herramientas convenientes para facilitar el proceso. Para tener una idea de cómo funciona, aquí hay algunas líneas de código de la página de Wikipedia que provee los datos de asesinatos en Estados Unidos:
+Debido a que este código es accesible, podemos descargar el archivo HTML, importarlo a R y luego escribir programas para extraer la información que necesitamos de la página. Sin embargo, al mirar el código HTML, esto puede parecer una tarea desalentadora. Pero le mostraremos algunas herramientas convenientes para facilitar el proceso. Para tener una idea de cómo funciona, aquí hay unas líneas de código de la página de Wikipedia que provee los datos de asesinatos en Estados Unidos:
 
 ```
 <table class="wikitable sortable">
@@ -68,7 +68,7 @@ title="List of U.S. states and territories by population">Population</a><br/>
 <tr>
 ```
 
-Pueden ver los datos, excepto que los valores de datos están rodeados por un código html como `<td>`. También podemos ver un patrón de cómo se almacenan. Si conocen HTML, pueden escribir programas que aprovechan el conocimiento de estos patrones para extraer lo que queremos. Además, nos aprovechamos de _Cascading Style Sheets_ (CSS), un lenguaje ampliamente utilizado para hacer que las páginas web se vean "bonitas". Discutimos más sobre esto en la Sección \@ref(css-selectors).
+Pueden ver los datos, excepto que los valores de datos están rodeados por un código HTML como `<td>`. También podemos ver un patrón de cómo se almacenan. Si conocen HTML, pueden escribir programas que aprovechan el conocimiento de estos patrones para extraer lo que queremos. Además, nos aprovechamos de _Cascading Style Sheets_ (CSS), un lenguaje ampliamente utilizado para hacer que las páginas web se vean "bonitas". Discutimos más sobre esto en la Sección \@ref(css-selectors).
 
 Aunque ofrecemos herramientas que permiten extraer datos sin conocer HTML, como científicos de datos es bastante útil aprender algo de HTML y CSS. Esto no solo mejora sus habilidades de extracción, sino que puede ser útil si están creando una página web para exhibir su trabajo. Hay muchos cursos y tutoriales en línea para aprenderlos. Dos ejemplos son Codeacademy^[https://www.codecademy.com/learn/learn-html] y W3schools^[https://www.w3schools.com/].
 
@@ -103,14 +103,14 @@ Podemos ver todo el código que define la página web descargada usando la funci
 html_text(h)
 ```
 
-No mostramos el resultado aquí porque incluye miles de caracteres, pero si lo miramos, podemos ver que los datos que buscamos se almacenan en una tabla HTML. Pueden ver esto en esta línea del código HTML anterior: `<table class="wikitable sortable">`. Las diferentes partes de un documento HTML, a menudo definidas con un mensaje entre`<` y `>`, se conocen como _nodos_ (_nodes_ en inglés). El paquete __rvest__ incluye funciones para extraer nodos de un documento HTML: `html_nodes` extrae todos los nodos de diferentes tipos y `html_node` extrae el primero. Para extraer las tablas del código html usamos:
+No mostramos el resultado aquí porque incluye miles de caracteres, pero si lo miramos, podemos ver que los datos que buscamos se almacenan en una tabla HTML. Pueden ver esto en esta línea del código HTML anterior: `<table class="wikitable sortable">`. Las diferentes partes de un documento HTML, a menudo definidas con un mensaje entre`<` y `>`, se conocen como _nodos_ (_nodes_ en inglés). El paquete __rvest__ incluye funciones para extraer nodos de un documento HTML: `html_nodes` extrae todos los nodos de diferentes tipos y `html_node` extrae el primero. Para extraer las tablas del código HTML usamos:
 
 
 ```{r}
 tab <- h %>% html_nodes("table")
 ```
 
-Ahora, en lugar de toda la página web, solo tenemos el código html para las tablas de la página:
+Ahora, en lugar de toda la página web, solo tenemos el código HTML para las tablas de la página:
 
 ```{r}
 tab
@@ -123,7 +123,7 @@ tab[[1]]
 ```
 
 
-Esto claramente no es un set de datos _tidy_, ni siquiera un _data frame_. En el código anterior, definitivamente podemos ver un patrón y escribir código para extraer solo los datos es muy factible. De hecho, __rvest__ incluye una función solo para convertir tablas HTML en _data frames_:
+Esto claramente no es un set de datos _tidy_, ni siquiera un _data frame_. En el código anterior, claramente podemos ver un patrón y es muy factible escribir código para extraer solo los datos. De hecho, __rvest__ incluye una función solo para convertir tablas HTML en _data frames_:
 
 
 ```{r}
@@ -148,11 +148,11 @@ El aspecto por defecto de una página web hecha con el HTML más básico es poco
 Si queremos obtener datos de una página web y conocemos un selector que es único para la parte de la página que contiene estos datos, podemos usar la función `html_nodes`. Sin embargo, saber qué selector puede ser bastante complicado.
 De hecho, la complejidad de las páginas web ha aumentado a medida que se vuelven más sofisticadas. Para algunas de los más avanzadas, parece casi imposible encontrar los nodos que definen un dato en particular. Sin embargo, SelectorGadget lo hace posible.
 
-SelectorGadget^[http://selectorgadget.com/] es un _software_ que les permite determinar de manera interactiva qué selector CSS necesitan para extraer componentes específicos de la página web. Si van a extraer datos que no son tablas de páginas html, les recomendamos que lo instalen. Está disponible una extensión de Chrome que les permite encender el _gadget_ y luego, al hacer clic en la página, resalta partes y les muestra el selector que necesitan para extraer estas partes. Hay varias demostraciones de cómo hacer esto, incluyendo la del autor de la viñeta __rvest__, Hadley Wickham, y otros tutoriales que se basen en esa viñeta^[https://cran.r-project.org/web/packages/rvest/vignettes/selectorgadget.html] y otros tutoriales basados en la [fix check] viñeta^[https://stat4701.github.io/edav/2015/04/02/rvest_tutorial/] ^[https://www.analyticsvidhya.com/blog/2017/03/beginners-guide-on-web-scraping-in-r-using-rvest-with-hands-on-knowledge/].
+SelectorGadget^[http://selectorgadget.com/] es un _software_ que les permite determinar de manera interactiva qué selector CSS necesitan para extraer componentes específicos de la página web. Si van a extraer datos que no son tablas de páginas html, les recomendamos que lo instalen. Está disponible una extensión de Chrome que les permite encender el _gadget_ y luego, al hacer clic en la página, resalta partes y les muestra el selector que necesitan para extraer estas partes. Hay varias demostraciones de cómo hacer esto, incluyendo la del autor de la viñeta __rvest__, Hadley Wickham, y otros tutoriales que se basen en esa viñeta^[https://cran.r-project.org/web/packages/rvest/vignettes/selectorgadget.html] y otros tutoriales basados en la viñeta^[https://stat4701.github.io/edav/2015/04/02/rvest_tutorial/] ^[https://www.analyticsvidhya.com/blog/2017/03/beginners-guide-on-web-scraping-in-r-using-rvest-with-hands-on-knowledge/].
 
 ## JSON
 
-Compartir datos en Internet se ha vuelto cada vez más común. Desafortunadamente, los proveedores usan diferentes formatos, lo que añade dificultad para los científicos de datos reorganizar los datos en R. Sin embargo, hay algunos estándares que también se están volviendo más comunes. Actualmente, un formato que se está adoptando ampliamente es la Notación de Objetos JavaScript o JSON por sus siglas en inglés. Debido a que este formato es muy general, no se parece en nada a una hoja de cálculo. Este archivo JSON se parece más al código que usamos para definir una lista. Aquí un ejemplo de información almacenada en formato JSON:
+Compartir datos en Internet se ha vuelto cada vez más común. Desafortunadamente, los proveedores usan diferentes formatos, lo que añade dificultad para los científicos de datos reorganizar los datos en R. Sin embargo, hay algunos estándares que también se están volviendo más comunes. Actualmente, un formato que se está adoptando ampliamente es la Notación de Objetos JavaScript (_JavaScript Object Notation_ o JSON por sus siglas en inglés). Debido a que este formato es muy general, no se parece en nada a una hoja de cálculo. Este archivo JSON se parece más al código que usamos para definir una lista. Aquí un ejemplo de información almacenada en formato JSON:
 
 ```{r, echo=FALSE}
 library(jsonlite)
@@ -190,7 +190,7 @@ Pueden aprender mucho más examinando tutoriales y archivos de ayuda del paquete
 
 1\. Visite la siguiente página web: [https://web.archive.org/web/20181024132313/http://www.stevetheump.com/Payrolls.htmfont](https://web.archive.org/web/20181024132313/http://www.stevetheump.com/Payrolls.htm)
 
-Observe que hay varias tablas. Digamos que estamos interesados en comparar las nóminas de los equipos a lo largo de los años. Los siguientes ejercicios nos llevan por los pasos necesarios para hacer esto.
+Observe que hay varias tablas. Digamos que estamos interesados en comparar las nóminas de los equipos a lo largo de los años. Los siguientes ejercicios nos lleva por lo pasos necesarios para hacer esto.
 
 Comience aplicando lo que aprendió e importe el sitio web a un objeto llamado `h`.
 
@@ -200,7 +200,7 @@ Comience aplicando lo que aprendió e importe el sitio web a un objeto llamado `
 html_text(h)
 ```
 
-El siguiente paso es extraer las tablas. Para esto, podemos usar la función `html_nodes`. Aprendimos que las tablas en html están asociadas con el nodo `table`. Utilice la función `html_nodes` y el nodo `table` para extraer la primera tabla. Almacénelo en un objeto `nodes`.
+El siguiente paso es extraer las tablas. Para esto, podemos usar la función `html_nodes`. Aprendimos que las tablas en HTML están asociadas con el nodo `table`. Utilice la función `html_nodes` y el nodo `table` para extraer la primera tabla. Almacénelo en un objeto `nodes`.
 
 
 
@@ -215,7 +215,7 @@ Si el contenido de este objeto es una tabla html, podemos usar la función `html
 
 4\. Repita lo anterior para los primeros 4 componentes de `nodes`. ¿Cuáles de las siguientes son tablas de cálculo de nómina?
 
-a. Todos ellos.
+a. Todas.
 b. 1
 c. 2
 d. 2-4
@@ -224,14 +224,14 @@ d. 2-4
 5\. Repita lo anterior para los 3 __últimos__ componentes de `nodes`. ¿Cuál de los siguientes es cierto?
 
 a. La última entrada en `nodes` muestra el promedio de todos los equipos a lo largo del tiempo, no la nómina por equipo.
-b. Las tres son tablas de cáculo de nómina por equipo.
-c. Las tres son como la primera entrada, no una tabla de cáculo de nómina.
+b. Las tres son tablas de cálculo de nómina por equipo.
+c. Las tres son como la primera entrada, no una tabla de cálculo de nómina.
 d. Todas las anteriores.
 
-6\. Hemos aprendido que la primera y la última entrada de `nodes` no son tablas de cáculo de nómina. Redefina `nodes` para que estas dos se eliminen.
+6\. Hemos aprendido que la primera y la última entrada de `nodes` no son tablas de cálculo de nómina. Redefina `nodes` para que estas dos se eliminen.
 
 
-7\. Vimos en el análisis anterior que el primer nodo de la tabla realmente no es una tabla. Esto sucede a veces en html porque las tablas se usan para hacer que el texto se vea de cierta manera, en lugar de almacenar valores numéricos. Elimine el primer componente y luego use `sapply` y `html_table` para convertir cada nodo en `nodes` en una tabla. Tenga en cuenta que en este caso `sapply` devolverá una lista de tablas. También puede usar `lapply` para asegurar que se aplique una lista.
+7\. Vimos en el análisis anterior que el primer nodo de la tabla realmente no es una tabla. Esto sucede a veces en HTML porque las tablas se usan para hacer que el texto se vea de cierta manera, en lugar de almacenar valores numéricos. Elimine el primer componente y luego use `sapply` y `html_table` para convertir cada nodo en `nodes` en una tabla. Tenga en cuenta que en este caso `sapply` devolverá una lista de tablas. También puede usar `lapply` para asegurar que se aplique una lista.
 
 
 
@@ -257,7 +257,7 @@ mutate(Team = ifelse(Team == "N.Y. Yankees", "NY Yankees", Team))
 
 Ahora una las tablas y muestre solo Oakland y los Yankees y las columnas de cálculo de nómina.
 
-13\. Avanzado: extraiga los títulos de las películas que obtuvieron la Mejor Película de este sitio web: [https://m.imdb.com/chart/bestpicture/font](https://m.imdb.com/chart/bestpicture/)
+13\. Avanzado. Extraiga los títulos de las películas que ganaron el premio de la Mejor Película de este sitio web: [https://m.imdb.com/chart/bestpicture/font](https://m.imdb.com/chart/bestpicture/)
 
 
 
