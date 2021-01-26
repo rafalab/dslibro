@@ -1,6 +1,6 @@
 # Minería de textos
 
-Con la excepción de las etiquetas utilizadas para representar datos categóricos, nos hemos enfocado en los datos numéricos. Pero en muchas aplicaciones, los datos comienzan como texto. Ejemplos bien conocidos son el filtrado de spam, la prevención del delito cibernético, la lucha contra el terrorismo y el análisis de sentimientos. En todos estos casos, los datos sin procesar se componen de texto de forma libre. Nuestra tarea es extraer información de estos datos. En esta sección, aprendemos cómo generar resúmenes numéricos útiles a partir de datos de texto a los que podemos aplicar algunas de las poderosas técnicas de visualización y análisis de datos que hemos aprendido.
+Con la excepción de las etiquetas utilizadas para representar datos categóricos, nos hemos enfocado en los datos numéricos. Pero en muchas aplicaciones, los datos comienzan como texto. Ejemplos bien conocidos son el filtrado de spam, la prevención del delito cibernético, la lucha contra el terrorismo y el análisis de sentimiento (también conocido como minería de opinión). En todos estos casos, los datos sin procesar se componen de texto de forma libre. Nuestra tarea es extraer información de estos datos. En esta sección, aprendemos cómo generar resúmenes numéricos útiles a partir de datos de texto a los que podemos aplicar algunas de las poderosas técnicas de visualización y análisis de datos que hemos aprendido.
 
 
 ## Estudio de caso: tuits de Trump
@@ -62,7 +62,7 @@ y la variable _source_ nos dice qué dispositivo se usó para componer y cargar 
 trump_tweets %>% count(source) %>% arrange(desc(n)) %>% head(5)
 ```
 
-Estamos interesados en lo que sucedió durante la campaña, por lo que para este análisis nos enfocaremos en lo que se tuiteó entre el día en que Trump anunció su campaña y el día de las elecciones. Definimos la siguiente tabla que contiene solo los tuits de ese período de tiempo. Tengan en cuenta que usamos `extract` para eliminar [fix consult] el `Twitter for` parte de _source_ y filtrar los _retweets_.
+Estamos interesados en lo que sucedió durante la campaña, por lo que para este análisis nos enfocaremos en lo que se tuiteó entre el día en que Trump anunció su campaña y el día de las elecciones. Definimos la siguiente tabla que contiene solo los tuits de ese período de tiempo. Tengan en cuenta que usamos `extract` para eliminar la parte `Twitter for` de _source_ y filtrar los _retweets_.
 
 ```{r}
 campaign_tweets <- trump_tweets %>%
@@ -126,7 +126,7 @@ unnest_tokens(word, text) %>%
 pull(word)
 ```
 
-Noten que la función intenta convertir _tokens_ en palabras. Para hacer esto, sin embargo, elimina los caracteres que son importantes en el contexto de Twitter. Específicamente, la función elimina todos los `#` y `@`. Un _token_ en el contexto de Twitter no es lo mismo que en el contexto del inglés hablado o escrito. [fix eng too] Por esta razón, en lugar de usar las palabras predeterminadas, el _token_ `tweets` incluye patrones que comienzan con @ y #:
+Noten que la función intenta convertir _tokens_ en palabras. Para hacer esto, sin embargo, elimina los caracteres que son importantes en el contexto de Twitter. Específicamente, la función elimina todos los `#` y `@`. Un _token_ en el contexto de Twitter no es lo mismo que en el contexto del inglés hablado o escrito. Por esta razón, en lugar de usar el valor predeterminado, `words`, usamos el _token_ `tweets` que incluye patrones que comienzan con `@` y `#`:
 
 
 ```{r, message=FALSE, warning=FALSE}
@@ -187,7 +187,7 @@ mutate(word = reorder(word, n)) %>%
 arrange(desc(n))
 ```
 
-Una exploración de las palabras resultantes (que no se muestran aquí) revela un par de características no deseadas en nuestros tokens. Primero, algunos de nuestros _tokens_ son solo números (años, por ejemplo). Queremos eliminarlos y podemos encontrarlos usando la expresión regular `^\d+$`. Segundo, algunos de nuestros _tokens_ provienen de una cita y comienzan con `'`. Queremos eliminar el `'` cuando está al comienzo de una palabra, así que simplemente [fix add: usamos? check eng] `str_replace`. Agregamos estas dos líneas al código anterior para generar nuestra tabla final:
+Una exploración de las palabras resultantes (que no se muestran aquí) revela un par de características no deseadas en nuestros tokens. Primero, algunos de nuestros _tokens_ son solo números (años, por ejemplo). Queremos eliminarlos y podemos encontrarlos usando la expresión regular `^\d+$`. Segundo, algunos de nuestros _tokens_ provienen de una cita y comienzan con `'`. Queremos eliminar el `'` cuando está al comienzo de una palabra, así que simplemente usamos `str_replace`. Agregamos estas dos líneas al código anterior para generar nuestra tabla final:
 
 
 ```{r, message=FALSE, warning=FALSE}
@@ -201,7 +201,7 @@ mutate(word = str_replace(word, "^'", ""))
 
 Ahora que tenemos las palabras en una tabla e información sobre qué dispositivo se usó para componer el tuit del que provienen, podemos comenzar a explorar qué palabras son más comunes al comparar Android con iPhone.
 
-Para cada palabra, queremos saber si es más probable que provenga de un tuit de Android o un tuit de iPhone. En la sección \@ref(association-tests) introdujimos el _riesgo relativo_ (_odds ratio_ en inglés) como un resumen estadístico útil para cuantificar estas diferencias. Para cada dispositivo y una palabra dada, llamémosla `y`, [fix rest of para] calculamos las probabilidades o la razón/riesgo relativo entre la proporción de palabras que son `y` y no `y` y calculamos la razón de esas probabilidades. Aquí tendremos muchas proporciones que son 0, así que usamos la corrección 0.5 descrita en la Sección \@ref(association-tests).
+Para cada palabra, queremos saber si es más probable que provenga de un tuit de Android o un tuit de iPhone. En la sección \@ref(association-tests) introdujimos el _riesgo relativo_ (_odds ratio_ en inglés) como un resumen estadístico útil para cuantificar estas diferencias. Para cada dispositivo y una palabra dada, llamémosla `y`, calculamos el riesgo relativo. Aquí tendremos muchas proporciones que son 0, así que usamos la corrección 0.5 descrita en la Sección \@ref(association-tests).
 
 ```{r}
 android_iphone_or <- tweet_words %>%
@@ -232,13 +232,13 @@ android_iphone_or %>% filter(Android+iPhone > 100) %>%
 arrange(or)
 ```
 
-Ya vemos un patrón en los tipos de palabras que se tuitean más desde un dispositivo que desde otro. Sin embargo, no estamos interesados en palabras específicas sino en el tono. La afirmación de Vaziri es que los tuits de Android son más hiperbólicos. Entonces, ¿cómo podemos verificar esto con datos? [fix] _Hyperbólico_/_Hipérbole_ es un sentimiento difícil de extraer de las palabras, ya que se basa en la interpretación de frases. No obstante, las palabras pueden asociarse con sentimientos más básicos como la ira, el miedo, la alegría y la sorpresa. En la siguiente sección, demostramos el análisis básico de sentimientos.
+Ya vemos un patrón en los tipos de palabras que se tuitean más desde un dispositivo que desde otro. Sin embargo, no estamos interesados en palabras específicas sino en el tono. La afirmación de Vaziri es que los tuits de Android son más hiperbólicos. Entonces, ¿cómo podemos verificar esto con datos? _Hipérbole_ es un sentimiento difícil de extraer de las palabras, ya que se basa en la interpretación de frases. No obstante, las palabras pueden asociarse con sentimientos más básicos como la ira, el miedo, la alegría y la sorpresa. En la siguiente sección, demostramos el análisis básico de sentimientos.
 
-## Análisis de los sentimientos
+## Análisis de sentimiento
 
-En el análisis de los sentimientos, asignamos una palabra a uno o más "sentimientos". Aunque este enfoque no siempre indentificará sentimientos que dependen del contexto, como el sarcasmo, cuando se realiza en grandes cantidades de palabras, los resúmenes pueden ofrecer información.
+En el análisis de sentimiento, asignamos una palabra a uno o más "sentimientos". Aunque este enfoque no siempre indentificará sentimientos que dependen del contexto, como el sarcasmo, cuando se realiza en grandes cantidades de palabras, los resúmenes pueden ofrecer información.
 
-El primer paso en el análisis de sentimientos es asignar un sentimiento a cada palabra. Como demostramos, el paquete __tidytext__ incluye varios mapas o léxicos. También usaremos el paquete __textdata__.
+El primer paso en el análisis de sentimiento es asignar un sentimiento a cada palabra. Como demostramos, el paquete __tidytext__ incluye varios mapas o léxicos. También usaremos el paquete __textdata__.
 
 ```{r, message=FALSE, warning=FALSE}
 library(tidytext)
