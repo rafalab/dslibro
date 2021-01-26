@@ -1,10 +1,10 @@
-# Analizando fechas y horas
+# Cómo leer y procesar fechas y horas
 
 ## El tipo de datos de fecha
 
 Hemos descrito tres tipos principales de vectores: numéricos, de caracteres y lógicos. En proyectos de ciencia de datos, a menudo encontramos variables que son fechas. Aunque podemos representar una fecha con una cadena, por ejemplo `November 2, 2017`, una vez que elegimos un día de referencia, conocido como la _época Unix_ (_epoch_ en inglés), se pueden convertir en números calculando el número de días desde la época Unix. Los lenguajes de computadora usualmente usan el 1 de enero de 1970 como la época Unix. Entonces, por ejemplo, el 2 de enero de 2017 es el día 1, el 31 de diciembre de 1969 es el día -1 y el 2 de noviembre de 2017 es el día 17,204.
 
-Ahora, ¿cómo debemos representar fechas y horas al analizar los datos en R? Podríamos usar días desde la _época Unix_, pero es casi imposible de interpretar. Si les digo que es el 2 de noviembre de 2017, saben lo que esto significa inmediatamente. Si les digo que es el día 17,204, estarán bastante confundidos. Problemas similares surgen con [fix 'times'] los horas e incluso pueden aparecer más complicaciones debido a las zonas horarias.
+Ahora, ¿cómo debemos representar fechas y horas al analizar los datos en R? Podríamos usar días desde la _época Unix_, pero es casi imposible de interpretar. Si les digo que es el 2 de noviembre de 2017, saben lo que esto significa inmediatamente. Si les digo que es el día 17,204, estarán bastante confundidos. Problemas similares surgen con [fix ok for 'times'] los horas e incluso pueden aparecer más complicaciones debido a las zonas horarias.
 
 Por esta razón, R define un tipo de datos solo para fechas y horas. Vimos un ejemplo en los datos de las encuestas:
 
@@ -33,7 +33,7 @@ Los convierte en días desde la época Unix. La función `as.Date` puede convert
 as.Date("1970-01-01") %>% as.numeric
 ```
 
-Funciones que grafican, como las de ggplot, conocen el formato de fecha. Esto significa que, por ejemplo, un diagrama de dispersión puede usar la representación numérica para decidir la posición del punto, pero incluye la cadena en las etiquetas:
+Funciones que grafican, como las de __ggplot__, conocen el formato de fecha. Esto significa que, por ejemplo, un diagrama de dispersión puede usar la representación numérica para decidir la posición del punto, pero incluye la cadena en las etiquetas:
 
 ```{r rawpolls-vs-time}
 polls_us_election_2016 %>% filter(pollster == "Ipsos" & state == "U.S.") %>%
@@ -75,7 +75,7 @@ month(dates, label = TRUE)
 ```
 
 
-Otro conjunto útil de funciones son los _parsers_ que convierten cadenas en fechas. La [fix] función `ymd` asume que las fechas están en el formato AAAA-MM-DD e intenta analizar lo mejor posible.
+Otro conjunto útil de funciones son los _parsers_ que convierten cadenas en fechas. La función `ymd` supone que las fechas están en el formato AAAA-MM-DD e intenta leer y procesar (_parse_ en inglés) lo mejor posible.
 
 ```{r}
 x <- c(20090101, "2009-01-02", "2009 01 03", "2009-1-4",
@@ -85,7 +85,7 @@ ymd(x)
 
 Otra complicación proviene del hecho de que las fechas a menudo vienen en diferentes formatos en los que el orden de año, mes y día son diferentes. El formato preferido es mostrar año (con los cuatro dígitos), mes (dos dígitos) y luego día, o lo que se llama ISO 8601. Específicamente usamos AAAA-MM-DD para que si ordenamos la cadena, estará ordenado por fecha. Pueden ver que la función `ymd` los devuelve en este formato.
 
-Pero, ¿qué pasa si encuentraN fechas como "01/09/02"? Esto podría ser el 1 de septiembre de 2002 o el 2 de enero de 2009 o el 9 de enero de 2002. En estos casos, examinar todo el vector de fechas los ayudará a determinar qué formato es por proceso de eliminación. Una vez que sepan, pueden usar los muchos [fix "prases" 'diferentes analisis'?] análisis ofrecidos por __lubridate__.
+Pero, ¿qué pasa si encuentran fechas como "01/09/02"? Esto podría ser el 1 de septiembre de 2002 o el 2 de enero de 2009 o el 9 de enero de 2002. En estos casos, examinar todo el vector de fechas los ayudará a determinar qué formato es por proceso de eliminación. Una vez que sepan, pueden usar los muchos _parsers_ ofrecidos por __lubridate__.
 
 Por ejemplo, si la cadena es:
 
@@ -105,7 +105,7 @@ La función `mdy` supone que la primera entrada es el mes, luego el día, luego 
 mdy(x)
 ```
 
-El paquete _lubridate_ ofrece una función para cada posibilidad:
+El paquete __lubridate__ ofrece una función para cada posibilidad:
 ```{r}
 ydm(x)
 myd(x)
@@ -130,7 +130,7 @@ now() %>% minute()
 now() %>% second()
 ```
 
-El paquete también incluye una función para analizar cadenas en tiempos, así como analizadores para objetos de tiempo que incluyen fechas:
+El paquete también incluye una función para analizar cadenas en tiempos, así como _parsers_ para objetos de tiempo que incluyen fechas:
 
 
 ```{r}
@@ -168,7 +168,7 @@ qplot(week, margin, data = .)
 ## Ejercicios
 
 
-En la sección de ejercicio anterior, depuramos datos de un archivo PDF que contiene estadísticas vitales de Puerto Rico. Hicimos esto para el mes de septiembre. A continuación incluimos un código que lo hace durante los 12 meses.
+En la sección de ejercicios anterior, depuramos datos de un archivo PDF que contiene estadísticas vitales de Puerto Rico. Hicimos esto para el mes de septiembre. A continuación incluimos un código que lo hace durante los 12 meses.
 
 ```{r, eval=FALSE}
 library(tidyverse)
@@ -215,7 +215,7 @@ mutate(deaths = as.numeric(deaths))
 6\. Vuelva a hacer la gráfica anterior pero, esta vez, use dos colores diferentes para antes y después del 20 de septiembre de 2017.
 
 
-7\. Avanzado: rehaga el gráfico anterior, pero esta vez muestre el mes en el eje x. Sugerencia: cree una variable con la fecha de un año determinado. Luego use la función  `scale_x_date` para mostrar solo los meses.
+7\. Avanzado: rehaga la gráfica anterior, pero esta vez muestre el mes en el eje-x. Sugerencia: cree una variable con la fecha de un año determinado. Luego use la función `scale_x_date` para mostrar solo los meses.
 
 8\. Rehaga las muertes versus el día pero con promedios semanales. Sugerencia: use la función `round_date`.
 

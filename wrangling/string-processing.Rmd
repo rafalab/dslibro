@@ -1010,13 +1010,13 @@ library(purrr)
 map(x, function(y) y[1]) %>% head(2)
 ```
 
-Sin embargo, debido a que esta es una tarea tan común, __purrr__ provee un acceso directo. Si el segundo argumento recibe un número entero en lugar de una función, supondrá que queremos esa entrada. Entonces, el código anterior se puede escribir de manera más eficiente de esta manera:
+Sin embargo, debido a que esta es una tarea tan común, __purrr__ provee un acceso directo. Si el segundo argumento recibe un número entero en lugar de una función, supondrá que queremos esa entrada. Entonces, el código anterior se puede escribir de manera más eficiente así:
 
 ```{r, eval=FALSE}
 map(x, 1)
 ```
 
-Para forzar `map` a devolver un vector de caracteres en lugar de una lista, podemos usar `map_chr`. Similar, `map_int` devuelve enteros. Entonces, para crear nuestro _data frame_, podemos usar:
+Para forzar `map` a devolver un vector de caracteres en lugar de una lista, podemos usar `map_chr`. Asimismo, `map_int` devuelve enteros. Entonces, para crear nuestro _data frame_, podemos usar:
 
 ```{r}
 dat <- tibble(map_chr(x, 1),
@@ -1029,7 +1029,7 @@ setNames(col_names)
 dat %>% head
 ```
 
-Si exploran más el paquete __purrr__, aprenderán que es posible realizar lo anterior con el siguiente código, que es más eficiente:
+Si exploran el paquete __purrr__, aprenderán que es posible realizar lo anterior con el siguiente código, que es más eficiente:
 
 ```{r}
 dat <- x %>%
@@ -1040,7 +1040,7 @@ as_tibble()
 ```
 
 
-Resulta que podemos evitar todo el trabajo que se muestra arriba después de la llamada a `str_split`. Específicamente, si sabemos que los datos que estamos extrayendo se pueden representar como una tabla, podemos usar el argumento `simplify=TRUE` y `str_split` devuelve una matriz en lugar de una lista:
+Resulta que podemos evitar todo el trabajo que mostramos arriba después de la llamada a `str_split`. Específicamente, si sabemos que los datos que estamos extrayendo se pueden representar como una tabla, podemos usar el argumento `simplify=TRUE` y `str_split` devuelve una matriz en lugar de una lista:
 
 ```{r}
 x <- str_split(lines, ",", simplify = TRUE)
@@ -1054,7 +1054,7 @@ head(5)
 
 ## Estudio de caso 3: extracción de tablas de un PDF
 
-Uno de los  sets de datos proporcionados en __dslabs__ muestra las tasas de financiación científica por género en los Países Bajos:
+Uno de los sets de datos proporcionados en __dslabs__ muestra las tasas de financiación científica por género en los Países Bajos:
 
 ```{r}
 library(dslabs)
@@ -1064,7 +1064,7 @@ select("discipline", "success_rates_men", "success_rates_women")
 ```
 
 
-Los datos provienen de un artículo publicado en las Actas de la Academia Nacional de Ciencias (PNAS)^[http://www.pnas.org/content/112/40/12349.abstract], una revista científica ampliamente leída. Sin embargo, los datos no se proporcionan en una hoja de cálculo; Está en una tabla en un documento PDF. Aquí hay una captura de pantalla de la tabla:
+Los datos provienen de un artículo publicado en las Actas de la Academia Nacional de Ciencias (PNAS)^[http://www.pnas.org/content/112/40/12349.abstract], una revista científica ampliamente leída. Sin embargo, los datos no se proveen en una hoja de cálculo, sino en una tabla en un documento PDF. Aquí hay una captura de pantalla de la tabla:
 
 ```{r, echo=FALSE, out.width="60%"}
 knitr::include_graphics(file.path(img_path, "pnas-table-s1.png"))
@@ -1072,7 +1072,7 @@ knitr::include_graphics(file.path(img_path, "pnas-table-s1.png"))
 
 (Fuente: Romy van der Lee y Naomi Ellemers, PNAS 2015 112 (40) 12349-12353^[http://www.pnas.org/content/112/40/12349].)
 
-Podríamos extraer los números a mano, pero esto podría conducir a un error humano. En su lugar, podemos intentar cambiar los datos con R. Comenzamos descargando el documento pdf y luego importándolo a R:
+Podríamos extraer los números a mano, pero esto podría conducir a errores humanos. En su lugar, podemos intentar cambiar los datos con R. Comenzamos descargando el documento pdf y luego importándolo a R:
 
 ```{r, eval=FALSE}
 library("pdftools")
@@ -1097,7 +1097,7 @@ data("raw_data_research_funding_rates")
 ```
 
 Examinando el objeto `raw_data_research_funding_rates`
-vemos que es una cadena larga y cada línea de la página, incluidas las filas de la tabla, están separadas por el símbolo de nueva línea: `\n`. Por lo tanto, podemos crear una lista con las líneas del texto como elementos de la siguiente manera:
+vemos que es una cadena larga y cada línea de la página, incluyendo las filas de la tabla, están separadas por el símbolo de nueva línea: `\n`. Por lo tanto, podemos crear una lista con las líneas del texto como elementos así:
 
 ```{r}
 tab <- str_split(raw_data_research_funding_rates, "\n")
@@ -1109,7 +1109,7 @@ Debido a que comenzamos con solo un elemento en la cadena, terminamos con una li
 tab <- tab[[1]]
 ```
 
-Mediante el examen `tab` vemos que la información para los nombres de columna es la tercera y cuarta entrada:
+Al examinar `tab`, vemos que la información para los nombres de columna son la tercera y cuarta entrada:
 
 ```{r}
 the_names_1 <- tab[3]
@@ -1123,7 +1123,7 @@ cat(substr(the_names_1, 1, options()$width))
 cat(substr(the_names_1, options()$width, nchar(the_names_1)))
 ```
 
-Queremos crear un vector con un nombre para cada columna. Usando algunas de las funciones que acabamos de aprender, hacemos esto. Empecemos con `the_names_1`, mostrado anteriormente. Queremos eliminar el espacio inicial y todo lo que sigue a la coma. Utilizamos _regex_ para este último. Entonces podemos obtener los elementos dividiendo cadenas separadas por espacio. Queremos dividir solo cuando hay 2 o más espacios para evitar dividir `Success rates`. Entonces usamos la expresión regular `\\s{2,}`
+[fix check para] Queremos crear un vector con un nombre para cada columna. Usando algunas de las funciones que acabamos de aprender, podemos hacerlo. Empecemos con `the_names_1`, mostrado anteriormente. Queremos eliminar el espacio inicial y todo lo que sigue a la coma. Utilizamos _regex_ para este último. Entonces podemos obtener los elementos dividiendo cadenas separadas por espacio. Queremos dividir solo cuando hay 2 o más espacios para no dividir `Success rates`. Entonces usamos la expresión regular `\\s{2,}`:
 
 ```{r}
 the_names_1 <- the_names_1 %>%
@@ -1134,14 +1134,14 @@ the_names_1
 ```
 
 
-Ahora veremos `the_names_2`:
+Ahora examinaremos `the_names_2`:
 
 ```{r, echo=FALSE}
 cat(substr(the_names_2, 1, options()$width))
 cat(substr(the_names_2, options()$width, nchar(the_names_2)))
 ```
 
-Aquí queremos recortar el espacio inicial y luego dividirlo por espacio como lo hicimos para la primera línea:
+Aquí queremos podar el espacio inicial y luego dividirlo por espacio como lo hicimos para la primera línea:
 
 ```{r}
 the_names_2 <- the_names_2 %>%
@@ -1161,7 +1161,7 @@ str_replace_all("\\s", "_")
 the_names
 ```
 
-Ahora estamos listos para obtener los datos reales. Al examinar el `tab` objeto, notamos que la información está en las líneas 6 a 14. Podemos usar `str_split` de nuevo para lograr nuestro objetivo:
+Ahora estamos listos para obtener [fix ok?] los datos reales. Al examinar el objeto `tab`, notamos que la información está en las líneas 6 a 14. Podemos usar `str_split` de nuevo para lograr nuestro objetivo:
 
 ```{r}
 new_research_funding_rates <- tab[6:14] %>%
@@ -1181,7 +1181,7 @@ identical(research_funding_rates, new_research_funding_rates)
 
 ## Recodificación {#recode}
 
-Otra operación común que involucra cadenas es recodificar los nombres de variables categóricas. Supongamos que tienen nombres largos para sus niveles y los mostrarán en diagramas, es posible que deseen utilizar versiones más cortas de estos nombres. Por ejemplo, en los vectores de caracteres con nombres de países, es posible que deseen cambiar "Estados Unidos de América" a "Estados Unidos" y "Reino Unido" a "RU", y así sucesivamente. Podemos hacer esto con `case_when`, aunque __tidyverse__ ofrece una opción específicamente diseñada para esta tarea: la función `recode`.
+Otra operación común que involucra cadenas es recodificar los nombres de variables categóricas. Supongamos que tienen nombres largos para sus niveles y los mostrarán en diagramas, es posible que deseen utilizar versiones más cortas de estos nombres. Por ejemplo, en los vectores de caracteres con nombres de países, es posible que quieran cambiar "Estados Unidos de América" a "Estados Unidos" y "Reino Unido" a "RU", y así sucesivamente. Podemos hacer esto con `case_when`, aunque __tidyverse__ ofrece una opción específicamente diseñada para esta tarea: la función `recode`.
 
 Aquí hay un ejemplo que muestra cómo cambiar el nombre de los países con nombres largos:
 
@@ -1232,7 +1232,7 @@ Hay otras funciones similares en otros paquetes de R, como `recode_factor` y `fc
 
 1\. Complete todas las lecciones y ejercicios en el tutorial interactivo en línea [https://regexone.com/font](https://regexone.com/).
 
-2\. En el directorio `extdata` del paquete __dslabs__, encontrará un archivo PDF que contiene datos de mortalidad diaria para Puerto Rico del 1 de enero de 2015 al 31 de mayo de 2018. Puede encontrar el archivo de esta manera:
+2\. En el directorio `extdata` del paquete __dslabs__, encontrará un archivo PDF que contiene datos de mortalidad diaria para Puerto Rico del 1 de enero de 2015 al 31 de mayo de 2018. Puede encontrar el archivo así:
 
 ```{r, eval=FALSE}
 fn <- system.file("extdata", "RD-Mortality-Report_2015-18-180531.pdf",
@@ -1258,7 +1258,7 @@ c. Es un informe que combina gráficas y tablas. Extraer los datos parece posibl
 d. Muestra gráficas de los datos. Extraer los datos será difícil.
 
 
-3\. Vamos a crear un set de datos ordenado con cada fila que representa una observación. Las variables en este set de datos serán año, mes, día y muertes.
+3\. Vamos a crear un set de datos ordenado con cada fila representando una observación. Las variables en este set de datos serán año, mes, día y muertes.
 Comience instalando y cargando el paquete __pdftools__:
 
 
@@ -1267,7 +1267,7 @@ install.packages("pdftools")
 library(pdftools)
 ```
 
-Ahora lea `fn` utilizando la función `pdf_text`y almacene los resultados en un objeto llamado `txt`. ¿Cuál de las siguientes opciones describe mejor lo que ve en `txt`?
+Ahora _read-in_ `fn` utilizando la función `pdf_text`y almacene los resultados en un objeto llamado `txt`. ¿Cuál de las siguientes opciones describe mejor lo que ve en `txt`?
 
 a. Una tabla con los datos de mortalidad.
 b. Una cadena de caracteres de longitud 12. Cada entrada representa el texto en cada página. Los datos de mortalidad están ahí en alguna parte.
@@ -1279,18 +1279,17 @@ d. Un documento html.
 
 a. Es una cadena vacía.
 b. Puedo ver la figura que se muestra en la página 1.
-c. Es una mesa ordenada.
-re. ¡Puedo ver la mesa! Pero hay muchas otras cosas de las que debemos deshacernos.
+c. Es una tabla _tidy_.
+d. ¡Puedo ver la tabla! Pero hay muchas otras cosas de las que debemos deshacernos.
 
 
-
-5\. Qué tipo de objeto es `s` y cuantas entradas tiene?
-
-
-6\. Vemos que la salida es una lista con un componente. Redefinir `s` ser la primera entrada de la lista. Qué tipo de objeto es `s` y cuantas entradas tiene?
+5\. ¿Qué tipo de objeto es `s` y cuántas entradas tiene?
 
 
-7\. Al inspeccionar la cadena que obtuvimos anteriormente, vemos un problema común: espacios en blanco antes y después de los otros caracteres. Recortar es un primer paso común en el procesamiento de cadenas. Estos espacios adicionales eventualmente complicarán dividir las cadenas, por lo que comenzamos por eliminarlos. Aprendimos sobre el comando `str_trim` que elimina espacios al principio o al final de las cadenas. Use esta función para recortar `s`.
+6\. Vemos que el _output_ es una lista con un componente. Redefina `s` para que sea la primera entrada de la lista. ¿Qué tipo de objeto es `s` y cuántas entradas tiene?
+
+
+7\. Al inspeccionar la cadena que obtuvimos anteriormente, vemos un problema común: espacios en blanco antes y después de los otros caracteres. Podar es un primer paso común en el procesamiento de cadenas. Estos espacios adicionales eventualmente complicarán dividir las cadenas, por lo que comenzamos por eliminarlos. Aprendimos sobre el comando `str_trim` que elimina espacios al principio o al final de las cadenas. Use esta función para podar `s`.
 
 
 8\. Queremos extraer los números de las cadenas almacenadas en `s`. Sin embargo, hay muchos caracteres no numéricos que se interpondrán en el camino. Podemos eliminarlos, pero antes de hacerlo queremos preservar la cadena con el encabezado de la columna, que incluye la abreviatura del mes.
@@ -1303,31 +1302,31 @@ Utilice la función `str_which` para encontrar las filas con un encabezado. Guar
 10\. Observe que hacia el final de la página verá una fila _totals_ seguida de filas con otras estadísticas de resumen. Cree un objeto llamado `tail_index` con el índice de la entrada _totals_.
 
 
-11\. Debido a que nuestra página PDF incluye gráficos con números, algunas de nuestras filas tienen solo un número (desde el eje y de la gráfica). Utilice la función `str_count` para crear un objeto `n` con el número de números en cada fila. Sugerencia: puede escribir una expresión regular para un número como este `\\d+`.
+11\. Debido a que nuestra página PDF incluye gráficos con números, algunas de nuestras filas tienen solo un número (desde el eje-y de la gráfica). Utilice la función `str_count` para crear un objeto `n` con el número de números en cada fila. Sugerencia: escriba una expresión regular para un número como este `\\d+`.
 
 
-12\. Ahora estamos listos para eliminar entradas de filas que sabemos que no necesitamos. La entrada `header_index` y todo antes de que se elimine. Entradas para las cuales `n` es 1 también debe eliminarse, y la entrada `tail_index` y todo lo que viene después debe ser eliminado también.
+12\. Ahora estamos listos para eliminar entradas de filas que sabemos que no necesitamos. La entrada `header_index` y todo lo que viene antes se debe eliminar. Entradas para las cuales `n` es 1 también deben eliminarse, y la entrada `tail_index` y todo lo que viene después se deben eliminar también.
 
 
 13\. Ahora estamos listos para eliminar todas las entradas no numéricas. Haga esto usando _regex_ y la función `str_remove_all`. Sugerencia: recuerde que en _regex_, usar la versión en mayúscula de un carácter especial generalmente significa lo contrario. Entonces `\\D` significa "no un dígito". Recuerde que también quiere mantener espacios.
 
 
 
-14\. Para convertir las cadenas en una tabla, use la función `str_split_fixed`. Convierta `s` en una matriz de datos con solo los datos de recuento de días y muertes. Sugerencias: tengan en cuenta que el separador es uno o más espacios. Haga el argumento `n` un valor que limita el número de columnas a los valores en las 4 columnas y la última columna captura todas las cosas adicionales. Luego mantenga solo las primeras cuatro columnas.
+14\. Para convertir las cadenas en una tabla, use la función `str_split_fixed`. Convierta `s` en una matriz de datos con solo los datos de recuento de días y muertes. Sugerencias: recuerde que el separador es uno o más espacios. [fix check sent] Haga el argumento `n` un valor que limita el número de columnas a los valores en las 4 columnas y la última columna captura todas las cosas adicionales. Luego mantenga solo las primeras cuatro columnas.
 
 
 
-15\. Ahora ya casi está listo para terminar. Agregue nombres de columna a la matriz, incluyendo uno llamado `day`. Además, agregue una columna con el mes. Llame al objeto resultante `dat`. Finalmente, asegúrese de que el día es un número entero, no un carácter. Sugerencia: use solo las primeras cinco columnas.
+15\. Ahora ya casi ha terminado. Agregue nombres de columna a la matriz, incluyendo uno llamado `day`. Además, agregue una columna con el mes. Llame al objeto resultante `dat`. Finalmente, asegúrese de que el día es un número entero, no un carácter. Sugerencia: use solo las primeras cinco columnas.
 
-16\. Ahora termine ordenando `tab` con la función `gather`.
+16\. [fix] Ahora termine _tyding_ `tab` con la función `gather`.
 
 
 17\. Haga un diagrama de muertes versus día con color para indicar el año. Excluya 2018 ya que no tenemos datos para todo el año.
 
 
-18\. Ahora que hemos _wrangled_ estos datos paso a paso, póngalos todos juntos en un fragmento R, usando el _pipe_ tanto como sea posible. Sugerencia: primero defina los índices, luego escriba una línea de código que realice todo el procesamiento de la cadena.
+18\. Ahora que hemos _wrangled_ estos datos paso a paso, póngalos todos juntos en un fragmento R, [fix check ok] usando el _pipe_ lo mas posible. Sugerencia: primero defina los índices, luego escriba una línea de código que realice todo el procesamiento de la cadena.
 
 
-19\. Avanzado: volvamos al ejemplo de Nómina MLB de la sección de extracción de la web. Use lo que aprendió en los capítulos de extracción de la web y procesamiento de cadenas para extraer la nómina de los Yankees de Nueva York, los Medias Rojas de Boston y los Atléticos de Oakland y graficarlos como una función del tiempo.
+19\. Avanzado: volvamos al ejemplo de Nómina MLB de la sección "Extracción de la web". Use lo que aprendió en los capítulos de extracción de la web y procesamiento de cadenas para extraer la nómina de los Yankees de Nueva York, las Medias Rojas de Boston y los Atléticos de Oakland y grafíquelos como una función del tiempo.
 
 
