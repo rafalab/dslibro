@@ -74,7 +74,7 @@ filter(!is_retweet) %>%
 arrange(created_at)
 ```
 
-Ahora podemos usar la visualización de datos para explorar la posibilidad de que dos grupos diferentes hayan escrito los mensajes desde estos dispositivos. Para cada tuit, extraeremos la hora en que se publicó (hora de la costa este de EE.UU. o EST por sus siglas en inglés), y luego calcularemos la proporción de tuits tuiteados a cada hora para cada dispositivo:
+Ahora podemos usar la visualización de datos para explorar la posibilidad de que dos grupos diferentes hayan escrito los mensajes desde estos dispositivos. Para cada tuit, extraeremos la hora en que se publicó (hora de la costa este de EE.UU. o EST por sus siglas en inglés), y luego calcularemos la proporción de tuits tuiteada a cada hora para cada dispositivo:
 
 ```{r tweets-by-time-by-device}
 ds_theme_set()
@@ -201,7 +201,7 @@ mutate(word = str_replace(word, "^'", ""))
 
 Ahora que tenemos las palabras en una tabla e información sobre qué dispositivo se usó para componer el tuit del que provienen, podemos comenzar a explorar qué palabras son más comunes al comparar Android con iPhone.
 
-Para cada palabra, queremos saber si es más probable que provenga de un tuit de Android o un tuit de iPhone. En la sección \@ref(association-tests) introdujimos el _odds ratio_ o _riesgo relativo_ como un resumen estadístico útil para cuantificar estas diferencias. Para cada dispositivo y una palabra dada, llamémosla `y`, [fix rest of para] calculamos las probabilidades o la razón/riesgo relativo entre la proporción de palabras que son `y` y no `y` y calculamos la razón de esas probabilidades. Aquí tendremos muchas proporciones que son 0, así que usamos la corrección 0.5 descrita en la Sección \@ref(association-tests).
+Para cada palabra, queremos saber si es más probable que provenga de un tuit de Android o un tuit de iPhone. En la sección \@ref(association-tests) introdujimos el _riesgo relativo_ (_odds ratio_ en inglés) como un resumen estadístico útil para cuantificar estas diferencias. Para cada dispositivo y una palabra dada, llamémosla `y`, [fix rest of para] calculamos las probabilidades o la razón/riesgo relativo entre la proporción de palabras que son `y` y no `y` y calculamos la razón de esas probabilidades. Aquí tendremos muchas proporciones que son 0, así que usamos la corrección 0.5 descrita en la Sección \@ref(association-tests).
 
 ```{r}
 android_iphone_or <- tweet_words %>%
@@ -232,7 +232,7 @@ android_iphone_or %>% filter(Android+iPhone > 100) %>%
 arrange(or)
 ```
 
-Ya vemos un patrón en los tipos de palabras que se tuitean más desde un dispositivo que desde otro. Sin embargo, no estamos interesados en palabras específicas sino en el tono. La afirmación de Vaziri es que los tuits de Android son más hiperbólicos. Entonces, ¿cómo podemos verificar esto con datos? _Hyperbólico_ es un sentimiento difícil de extraer de las palabras, ya que se basa en la interpretación de frases. Sin embargo, las palabras pueden asociarse con sentimientos más básicos como la ira, el miedo, la alegría y la sorpresa. En la siguiente sección, demostramos el análisis básico de sentimientos.
+Ya vemos un patrón en los tipos de palabras que se tuitean más desde un dispositivo que desde otro. Sin embargo, no estamos interesados en palabras específicas sino en el tono. La afirmación de Vaziri es que los tuits de Android son más hiperbólicos. Entonces, ¿cómo podemos verificar esto con datos? [fix] _Hyperbólico_/_Hipérbole_ es un sentimiento difícil de extraer de las palabras, ya que se basa en la interpretación de frases. No obstante, las palabras pueden asociarse con sentimientos más básicos como la ira, el miedo, la alegría y la sorpresa. En la siguiente sección, demostramos el análisis básico de sentimientos.
 
 ## Análisis de los sentimientos
 
@@ -295,7 +295,7 @@ mutate(sentiment = replace_na(sentiment, replace = "none"))
 sentiment_counts
 ```
 
-Para cada sentimiento, podemos calcular las probabilidades de estar en el dispositivo: proporción de palabras con sentimiento versus proporción de palabras sin, y luego calcular el riesgo relativo comparando los dos dispositivos.
+Para cada sentimiento, podemos calcular las probabilidades de estar en el dispositivo: proporción de palabras con sentimiento versus proporción de palabras sin. Entonces calculamos el riesgo relativo comparando los dos dispositivos.
 
 ```{r}
 sentiment_counts %>%
@@ -359,22 +359,20 @@ theme(axis.text.x = element_text(angle = 90, hjust = 1))
 
 
 Este es solo un ejemplo sencillo de los muchos análisis que uno puede realizar con __tidytext__.
-Para obtener más información, nuevamente recomendamos el libro Tidy Text Mining^[https://www.tidytextmining.com/].
+Para obtener más información, nuevamente recomendamos el libro _Tidy Text Mining_^[https://www.tidytextmining.com/].
 
 
 ## Ejercicios
 
 
-_Project Gutenberg_ es un archivo digital de libros de dominio público. El paquete __gutenbergr__ de R facilita la importación de estos textos en R.
-
-Puede instalar y cargarlo escribiendo:
+_Project Gutenberg_ es un archivo digital de libros de dominio público. El paquete __gutenbergr__ de R facilita la importación de estos textos en R. Puede instalar y cargarlo escribiendo:
 
 ```{r, eval=FALSE}
 install.packages("gutenbergr")
 library(gutenbergr)
 ```
 
-Puede ver los libros que están disponibles así:
+Los libros que están disponibles se pueden ver así:
 
 ```{r, eval=FALSE}
 gutenberg_metadata
