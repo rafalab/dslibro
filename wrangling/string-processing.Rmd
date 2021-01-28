@@ -10,7 +10,7 @@ Uno de los desafíos más comunes del _wrangling_ de datos consiste en extraer d
 Al repasar estos estudios de caso, cubriremos algunas de las tareas más comunes en el procesamiento de cadenas, incluyendo cómo extraer números de cadenas, eliminar caracteres no deseados del texto, encontrar y reemplazar caracteres, extraer partes específicas de cadenas, convertir texto de forma libre a formatos más uniformes y dividir cadenas en múltiples valores.
 
 
-Base R incluye funciones para realizar todas estas tareas. Sin embargo, no siguen una convención unificadora, lo que las hace un poco difíciles de memorizar y usar. El paquete __stringr__ básicamente reempaqueta esta funcionalidad, pero utiliza un enfoque más consistente de nombrar funciones y ordenar sus argumentos. Por ejemplo, en __stringr__, todas las funciones de procesamiento de cadenas comienzan con `str_`. Esto significa que si escriben `str_` y presionan _tab_, R se completará automáticamente y mostrará todas las funciones disponibles. Como resultado, no necesariamente tenemos que memorizar todos los nombres de las funciones. Otra ventaja es que en las funciones de este paquete, la cadena que se procesa siempre es el primer argumento, lo que significa que podemos usar el _pipe_ más fácilmente. Por lo tanto, comenzaremos describiendo cómo usar las funciones en el paquete __stringr__.
+Base R incluye funciones para realizar todas estas tareas. Sin embargo, no siguen una convención unificadora, lo que las hace un poco difíciles de memorizar y usar. El paquete __stringr__ básicamente reempaqueta esta funcionalidad, pero utiliza un enfoque más consistente de nombrar funciones y ordenar sus argumentos. Por ejemplo, en __stringr__, todas las funciones de procesamiento de cadenas comienzan con `str_`. Esto significa que si escriben `str_` y presionan _tab_, R se completará automáticamente y mostrará todas las funciones disponibles. Como resultado, no [fix quitar 'necesariamente'] necesariamente tenemos que memorizar todos los nombres de las funciones. Otra ventaja es que en las funciones de este paquete, la cadena que se procesa siempre es el primer argumento, lo que significa que podemos usar el _pipe_ más fácilmente. Por lo tanto, comenzaremos describiendo cómo usar las funciones en el paquete __stringr__.
 
 La mayoría de los ejemplos provendrán del segundo estudio de caso que trata sobre las alturas autoreportadas por los estudiantes y la mayor parte del capítulo se dedica al aprendizaje de expresiones regulares (_regular expressions_ o _regex_ en inglés) y funciones en el paquete __stringr__.
 
@@ -21,7 +21,7 @@ La mayoría de los ejemplos provendrán del segundo estudio de caso que trata so
 library(tidyverse)
 library(stringr)
 ```
-En general, las tareas de procesamiento de cadenas se pueden dividir en **detectar**, **ubicar**, **extraer** o **reemplazar** patrones en cadenas. Veremos varios ejemplos. La siguiente tabla incluye las funciones disponibles en el paquete __stringr__. Las dividimos por tarea. También incluimos el equivalente de base R cuando está disponible.
+En general, las tareas de procesamiento de cadenas se pueden dividir en **detectar**, **localizar**, **extraer** o **reemplazar** patrones en cadenas. Veremos varios ejemplos. La siguiente tabla incluye las funciones disponibles en el paquete __stringr__. Las dividimos por tarea. También incluimos el equivalente de base R cuando está disponible.
 
 Todas estas funciones toman un vector de caracteres como primer argumento. Además, para cada función, las operaciones se vectorizan: la operación se aplica a cada cadena en el vector.
 
@@ -142,7 +142,7 @@ El paquete __dslabs__ incluye el set de datos sin procesar del cual se obtuvo el
 data(reported_heights)
 ```
 
-Estas alturas se obtuvieron mediante un formulario web en el que se les pedía a los estudiantes que ingresaran sus alturas. Podían ingresar cualquier cosa, pero las instrucciones pedían _altura en pulgadas_, un número. [fix] Recopilamos `r prettyNum(nrow(reported_heights), big.mark=",")` presentaciones, pero desafortunadamente el vector de columna con las alturas reportadas tenía varias entradas no numéricas y como resultado se convirtió en un vector de caracteres:
+Estas alturas se obtuvieron mediante un formulario web en el que se les pidió a estudiantes que ingresaran sus alturas. Podían ingresar cualquier cosa, pero las instrucciones pedían _altura en pulgadas_, un número. Recopilamos `r prettyNum(nrow(reported_heights), big.mark=",")` respuestas, pero desafortunadamente el vector de columna con las alturas reportadas tenía varias entradas no numéricas y como resultado se convirtió en un vector de caracteres:
 
 ```{r}
 class(reported_heights$height)
@@ -177,9 +177,9 @@ head(n=10)
 
 Inmediatamente vemos lo que está sucediendo. Algunos de los estudiantes no reportaron sus alturas en pulgadas según lo solicitado. Podríamos descartar estos datos y continuar. Sin embargo, muchas de las entradas siguen patrones que, en principio, podemos convertir fácilmente a pulgadas. Por ejemplo, en el resultado anterior, vemos varios casos que usan el formato `x'y''` con `x` y `y` representando pies y pulgadas, respectivamente. Cada uno de estos casos puede ser leído y convertido a pulgadas por un humano, por ejemplo `5'4''` es `5*12 + 4 = 64`. Entonces podríamos arreglar todas las entradas problemáticas _a mano_. Sin embargo, los humanos son propensos a cometer errores, por lo que es preferible un enfoque automatizado. Además, debido a que planeamos continuar recolectando datos, será conveniente escribir código que lo haga automáticamente.
 
-Un primer paso en este tipo de tarea es examinar las entradas problemáticas e intentar definir patrones específicos seguidos de un gran grupo de entradas. Cuanto más grandes sean estos grupos, más entradas podremos arreglar con un solo enfoque programático. Queremos encontrar patrones que puedan describirse con precisión con una regla, como "un dígito, seguido por un símbolo de pie, seguido por uno o dos dígitos, seguido por un símbolo de pulgadas".
+Un primer paso en este tipo de tarea es examinar las entradas problemáticas e intentar definir patrones específicos seguidos por un gran grupo de entradas. Cuanto más grandes sean estos grupos, más entradas podremos arreglar con un solo enfoque programático. Queremos encontrar patrones que puedan describirse con precisión con una regla, como "un dígito, seguido por un símbolo de pie, seguido por uno o dos dígitos, seguido por un símbolo de pulgadas".
 
-Para buscar dichos patrones, es útil eliminar las entradas que son consistentes con estar en pulgadas y ver solo las entradas problemáticas. Por lo tanto, escribimos una función para hacer esto automáticamente. Mantenemos entradas que resultan en `NA`s al aplicar `as.numeric` o están fuera de un rango de alturas plausibles. Permitimos un rango que cubre aproximadamente el 99.9999% de la población adulta. También usamos `suppressWarnings` para evitar el mensaje de advertencia que sabemos que `as.numeric` nos da.
+Para buscar dichos patrones, es útil eliminar las entradas que son consistentes con estar en pulgadas y ver solo las entradas problemáticas. Por lo tanto, escribimos una función para hacer esto automáticamente. Mantenemos entradas que resultan en `NA`s al aplicar `as.numeric` o que están fuera de un rango de alturas plausibles. Permitimos un rango que cubre aproximadamente el 99.9999% de la población adulta. También usamos `suppressWarnings` para evitar el mensaje de advertencia que sabemos que `as.numeric` nos da.
 
 ```{r, echo=FALSE, eval=FALSE}
 alpha <- 1/ 10^6
@@ -204,7 +204,7 @@ length(problems)
 ```
 
 
-Ahora podemos ver todos los casos simplemente imprimiéndolos. No hacemos eso aquí porque hay `length(problems)`, pero después de examinarlos cuidadosamente, vemos que se pueden usar tres patrones para definir tres grandes grupos dentro de estas excepciones.
+Ahora podemos ver todos los casos simplemente imprimiéndolos. No hacemos eso aquí porque hay `length(problems)`, pero después de examinarlos cuidadosamente, vemos que podemos usar tres patrones para definir tres grandes grupos dentro de estas excepciones.
 
 1\. Un patrón de la forma `x'y` o `x' y''` o `x'y"` con `x` y `y` representando pies y pulgadas, respectivamente. Aquí hay diez ejemplos:
 
@@ -229,13 +229,13 @@ ind <- ind[!is.na(ind)]
 problems[ind] %>% head(n=10) %>% cat
 ```
 
-Una vez que veamos estos grandes grupos siguiendo patrones específicos, podemos desarrollar un plan de ataque. Recuerden que rara vez hay una sola forma de realizar estas tareas. Aquí elegimos una que nos ayuda a enseñar varias técnicas útiles, aunque seguramente hay una forma más eficiente de realizar la tarea.
+Una vez que veamos que estos grupos grandes siguen patrones específicos, podemos desarrollar un plan de ataque. Recuerden que raras veces hay una sola forma de realizar estas tareas. Aquí elegimos una que nos ayuda a enseñar varias técnicas útiles, aunque seguramente hay una forma más eficiente de realizar la tarea.
 
-**Plan de ataque**: convertiremos las entradas que se ajusten a los dos primeros patrones en una estandarizada. Luego aprovecharemos la estandarización para extraer los pies y pulgadas y convertirlos a pulgadas. Entonces definiremos un procedimiento para identificar entradas que estén en centímetros y convertirlas a pulgadas. Después de aplicar estos pasos, verificaremos nuevamente para ver qué entradas no se corrigieron y ver si podemos ajustar nuestro enfoque para que sea más completo.
+**Plan de ataque**: convertiremos las entradas que se ajustan a los dos primeros patrones en una estandarizada. Luego aprovecharemos la estandarización para extraer los pies y pulgadas y convertirlos a pulgadas. Entonces definiremos un procedimiento para identificar entradas que están en centímetros y convertirlas a pulgadas. Después de aplicar estos pasos, verificaremos nuevamente para ver qué entradas no se corrigieron y ver si podemos ajustar nuestro enfoque para que sea más completo.
 
 Al final, esperamos tener un _script_ que haga que los métodos de recolección de datos basados en la web sean robustos para los errores más comunes de los usuarios.
 
-Para lograr nuestro objetivo, utilizaremos una técnica que nos permite detectar con precisión patrones y extraer las partes que queremos: expresiones regulares (_regular expressions_ o _regex_ en inglés). Pero primero, describimos rápidamente cómo _escaparse_ ("escapar" viene de la tecla _esc_ o _escape_) de la función de ciertos caracteres para que puedan incluirse en cadenas.
+Para lograr nuestro objetivo, utilizaremos una técnica que nos permite detectar con precisión patrones y extraer las partes que queremos: expresiones regulares. Pero primero, describimos rápidamente cómo _escaparse_ ("escapar" viene de la tecla _esc_ o _escape_) de la función de ciertos caracteres para que puedan incluirse en cadenas.
 
 
 ## Cómo _escapar_ al definir cadenas
@@ -261,7 +261,7 @@ s <- `Hello`
 Error: object 'Hello' not found
 ```
 
-Ahora, ¿qué sucede si la cadena que queremos definir incluye comillas dobles? Por ejemplo, si queremos escribir 10 pulgadas así `10"`?
+Ahora, ¿qué sucede si la cadena que queremos definir incluye comillas dobles? Por ejemplo, si queremos escribir 10 pulgadas así: `10"`?
 En este caso no pueden usar:
 
 ```{r, eval=FALSE}
@@ -291,7 +291,7 @@ En R, la función `cat` nos permite ver como se ve la cadena:
 cat(s)
 ```
 
-Ahora, ¿qué pasa si queremos que nuestra cadena sea de 5 pies escrita así `5'`? En ese caso, podemos usar las comillas dobles:
+Ahora, ¿qué pasa si queremos que nuestra cadena sea de 5 pies escrita así: `5'`? En ese caso, podemos usar las comillas dobles:
 
 ```{r}
 s <- "5'"
@@ -329,10 +329,10 @@ Los caracteres de escape son algo que a menudo tenemos que usar al procesar cade
 
 ## Expresiones regulares
 
-Una expresión regular (_regex_) es una forma de describir patrones específicos de caracteres de texto. Se pueden usar para determinar si una cadena dada corresponde con el patrón. Se ha definido un conjunto de reglas para hacer esto de manera eficiente y precisa, y aquí mostramos algunos ejemplos. Podemos aprender más sobre estas reglas leyendo tutoriales  detallados^[https://www.regular-expressions.info/tutorial.html] ^[http://r4ds.had.co.nz/strings.html#matching-patrones-con-expresiones-regulares]. La hoja de referencia de RStudio^[https://www.rstudio.com/wp-content/uploads/2016/09/RegExCheatsheet.pdf] también es muy útil.
+Una expresión regular es una forma de describir patrones específicos de caracteres de texto. Se pueden usar para determinar si una cadena dada corresponde con el patrón. Se ha definido un conjunto de reglas para hacer esto de manera eficiente y precisa, y aquí mostramos algunos ejemplos. Podemos aprender más sobre estas reglas leyendo tutoriales  detallados^[https://www.regular-expressions.info/tutorial.html] ^[http://r4ds.had.co.nz/strings.html#matching-patrones-con-expresiones-regulares]. La hoja de referencia de RStudio^[https://www.rstudio.com/wp-content/uploads/2016/09/RegExCheatsheet.pdf] también es muy útil.
 
 
-[fix] Los patrones suministrados a las funciones __stringr__ pueden ser una expresión regular en lugar de una cadena estándar. Aprenderemos cómo funciona esto a través de una serie de ejemplos.
+Los patrones suministrados a las funciones __stringr__ pueden ser una expresión regular en lugar de una cadena estándar. Aprenderemos cómo funciona esto a través de una serie de ejemplos.
 
 A lo largo de esta sección, verán que creamos cadenas para probar nuestra expresión regular. Para hacer esto, definimos patrones que sabemos deben corresponder y también patrones que sabemos no deben corresponder. Los llamaremos `yes` y `no`, respectivamente. Esto nos permite verificar los dos tipos de errores: no corresponder o corresponder incorrectamente.
 
@@ -397,7 +397,7 @@ str_view(s, pattern)
 knitr::include_graphics(file.path(img_path,"str_view-1.png"))
 ```
 
-y `str_view_all` nos muestra todos los patrones que corresponden, entonces `3'2` tiene dos equivalencias y `5'10` tiene tres.
+y `str_view_all` nos muestra todos los patrones que corresponden. Entonces, `3'2` tiene dos equivalencias y `5'10` tiene tres.
 
 ```{r, eval=FALSE}
 str_view_all(s, pattern)
@@ -565,7 +565,7 @@ Otra forma de generar un patrón que busca _todo excepto_ es usar la mayúscula 
 
 ### Grupos {#groups}
 
-Los _grupos_ son un aspecto poderoso de la expresión regular que permite la extracción de valores. Los grupos se definen usando paréntesis. No afectan las equivalencias de patrones. En cambio, permiten que las herramientas identifiquen partes específicas del patrón para que podamos extraerlas.
+Los _grupos_ son un aspecto poderoso de la expresión regular que permiten la extracción de valores. Los grupos se definen usando paréntesis. No afectan las equivalencias de patrones. En cambio, permiten que las herramientas identifiquen partes específicas del patrón para que podamos extraerlas.
 
 Queremos cambiar las alturas escritas como `5.6` a `5'6`.
 
@@ -654,7 +654,7 @@ sum()
 
 Sin embargo, todavía nos faltan muchos casos.
 
-Tengan en cuenta que en el código anterior, [fix] aprovechamos la coherencia __stringr__ y usamos el _pipe_.
+Noten que en el código anterior, aprovechamos la consistencia de __stringr__ y usamos el _pipe_. 
 
 Por ahora, mejoramos nuestro patrón agregando `\\s*` delante y después del símbolo de los pies `'` para permitir espacio entre el símbolo de los pies y los números. Ahora encontraremos más equivalencias:
 
@@ -674,9 +674,9 @@ El segundo grupo grande de entradas problemáticas tienen las formas `x.y`, `x,y
 
 ### Buscar y reemplazar usando grupos
 
-Otro aspecto poderoso de los grupos es que puede hacer referencia a los valores extraídos en una expresión regular cuando buscan y reemplazan.
+Otro aspecto poderoso de los grupos es que uno puede hacer referencia a los valores extraídos en una expresión regular cuando busca y reemplaza.
 
-El carácter especial _regex_ para el grupo en el lugar `i` es `\\i`. Entonces `\\1` es el valor extraído del primer grupo, `\\2` el valor del segundo y así sucesivamente. Como un ejemplo simple, tengan en cuenta que el siguiente código reemplazará una coma con un punto, pero solo si está entre dos dígitos:
+El carácter especial _regex_ para el grupo en el lugar `i` es `\\i`. Entonces `\\1` es el valor extraído del primer grupo, `\\2` el valor del segundo y así sucesivamente. Como un ejemplo sencillo, tengan en cuenta que el siguiente código reemplazará una coma con un punto, pero solo si está entre dos dígitos:
 
 ```{r}
 pattern_with_groups <- "^([4-7]),(\\d*)$"
@@ -720,7 +720,7 @@ Lidiaremos con el desafío de pulgadas-más-grandes-que-doce más tarde.
 
 ## Probar y mejorar
 
-Desarrollar la expresión regular correcta en el primer intento a menudo es difícil. Probar y mejorar es un enfoque común para encontrar el patrón de expresiones regulares que satisface todas las condiciones deseadas. En las secciones anteriores, hemos desarrollado una potente técnica de procesamiento de cadenas que puede ayudarnos a detectar muchas de las entradas problemáticas. Aquí probaremos nuestro enfoque, buscaremos más problemas y modificaremos nuestro enfoque para posibles mejoras. Escribamos una función que identifique todas las entradas que no se pueden convertir en números recordando que algunas están en centímetros (nos encargaremos de arreglar esas más adelante):
+Desarrollar la expresión regular correcta en el primer intento a menudo es difícil. Probar y mejorar es un enfoque común para encontrar el patrón de expresiones regulares que satisface todas las condiciones deseadas. En las secciones anteriores, hemos desarrollado una potente técnica de procesamiento de cadenas que puede ayudarnos a detectar muchas de las entradas problemáticas. Aquí probaremos nuestro enfoque, buscaremos más problemas y modificaremos nuestro enfoque para posibles mejoras. Escribamos una función que identifique todas las entradas que no se pueden convertir en números, recordando que algunas están en centímetros (nos encargaremos de arreglar esas más adelante):
 
 ```{r}
 not_inches_or_cm <- function(x, smallest = 50, tallest = 84){
@@ -737,7 +737,7 @@ pull(height)
 length(problems)
 ```
 
-Veamos qué proporción de estos se ajusta a nuestro patrón después de los pasos de procesamiento que desarrollamos anteriormente:
+Veamos qué proporción de estas se ajusta a nuestro patrón después de los pasos de procesamiento que desarrollamos anteriormente:
 
 ```{r}
 converted <- problems %>%
@@ -765,7 +765,7 @@ Surgen cuatro patrones claros:
 
 Aunque no es tan común, también vemos los siguientes problemas:
 
-5. Algunas entradas están en metros y algunas usan decimales europeos: `1.6`, `1,70`.
+5. Algunas entradas están en metros y algunas usan formatos europeos: `1.6`, `1,70`.
 6. Dos estudiantes añadieron `cm`.
 7. Un estudiante deletreó los números: `Five foot eight inches`.
 
