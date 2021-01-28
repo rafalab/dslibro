@@ -10,7 +10,7 @@ Uno de los desafíos más comunes del _wrangling_ de datos consiste en extraer d
 Al repasar estos estudios de caso, cubriremos algunas de las tareas más comunes en el procesamiento de cadenas, incluyendo cómo extraer números de cadenas, eliminar caracteres no deseados del texto, encontrar y reemplazar caracteres, extraer partes específicas de cadenas, convertir texto de forma libre a formatos más uniformes y dividir cadenas en múltiples valores.
 
 
-Base R incluye funciones para realizar todas estas tareas. Sin embargo, no siguen una convención unificadora, lo que las hace un poco difíciles de memorizar y usar. El paquete __stringr__ básicamente reempaqueta esta funcionalidad, pero utiliza un enfoque más consistente de nombrar funciones y ordenar sus argumentos. Por ejemplo, en __stringr__, todas las funciones de procesamiento de cadenas comienzan con `str_`. Esto significa que si escriben `str_` y presionan _tab_, R se completará automáticamente y mostrará todas las funciones disponibles. Como resultado, no [fix quitar 'necesariamente'] necesariamente tenemos que memorizar todos los nombres de las funciones. Otra ventaja es que en las funciones de este paquete, la cadena que se procesa siempre es el primer argumento, lo que significa que podemos usar el _pipe_ más fácilmente. Por lo tanto, comenzaremos describiendo cómo usar las funciones en el paquete __stringr__.
+Base R incluye funciones para realizar todas estas tareas. Sin embargo, no siguen una convención unificadora, lo que las hace un poco difíciles de memorizar y usar. El paquete __stringr__ básicamente reempaqueta esta funcionalidad, pero utiliza un enfoque más consistente de nombrar funciones y ordenar sus argumentos. Por ejemplo, en __stringr__, todas las funciones de procesamiento de cadenas comienzan con `str_`. Esto significa que si escriben `str_` y presionan _tab_, R se completará automáticamente y mostrará todas las funciones disponibles. Como resultado, no tenemos que memorizar todos los nombres de las funciones. Otra ventaja es que en las funciones de este paquete, la cadena que se procesa siempre es el primer argumento, lo que significa que podemos usar el _pipe_ más fácilmente. Por lo tanto, comenzaremos describiendo cómo usar las funciones en el paquete __stringr__.
 
 La mayoría de los ejemplos provendrán del segundo estudio de caso que trata sobre las alturas autoreportadas por los estudiantes y la mayor parte del capítulo se dedica al aprendizaje de expresiones regulares (_regular expressions_ o _regex_ en inglés) y funciones en el paquete __stringr__.
 
@@ -780,7 +780,7 @@ s <- c(yes, no)
 str_replace(s, "^([4-7])$", "\\1'0")
 ```
 
-El patrón dice que tiene que comenzar ( `^`) con un dígito entre 4 y 7 y terminar ahí ( `$`). El paréntesis define el grupo que pasamos como `\\1` para generar la cadena de expresiones regulares de reemplazo.
+El patrón dice que tiene que comenzar (`^`) con un dígito entre 4 y 7 y terminar ahí (`$`). El paréntesis define el grupo que pasamos como `\\1` para generar la cadena de expresiones regulares de reemplazo.
 
 Podemos adaptar este código ligeramente para manejar también el caso 2, que cubre la entrada `5'`. Notem que `5'` se deja intacto. Esto es porque el extra `'` hace que el patrón no corresponda ya que tenemos que terminar con un 5 o 6. Queremos permitir que el 5 o 6 sea seguido por un signo de 0 o 1 pie. Entonces podemos simplemente agregar `'{0,1}` después de la `'` para hacer esto. Sin embargo, podemos usar el carácter especial, `?`, que significa ninguna o una vez. Como vimos anteriormente, esto es diferente a `*`, que significa ninguna o más. Ahora vemos que el cuarto caso también se convierte:
 
@@ -788,7 +788,7 @@ Podemos adaptar este código ligeramente para manejar también el caso 2, que cu
 str_replace(s, "^([56])'?$", "\\1'0")
 ```
 
-Aquí solo permitimos 5 y 6, pero no 4 y 7. Esto se debe a que 5 y 6 pies de altura es bastante común, por lo que asumimos que aquellos que escribieron 5 o 6 en verdad querían decir `60` o `72` pulgadas. Sin embargo, `4` y `7` pies de altura son tan raros que, aunque aceptamos `84` como una entrada válida, suponemos que `7` fue ingresado por error.
+Aquí solo permitimos 5 y 6, pero no 4 y 7. Esto se debe a que medir 5 y 6 pies de altura es bastante común, por lo que asumimos que aquellos que escribieron 5 o 6 en verdad querían decir `60` o `72` pulgadas. Sin embargo, medir 4 y 7 pies de altura es tan raro que, aunque aceptamos `84` como una entrada válida, ya que suponemos que `7` fue ingresado por error.
 
 Podemos usar cuantificadores para tratar el caso 3. Estas entradas no corresponden porque las pulgadas incluyen decimales y nuestro patrón no lo permite. Necesitamos permitir que el segundo grupo incluya decimales, no solo dígitos. Esto significa que debemos permitir cero o un punto `.`, entonces cero o más dígitos. Entonces usaremos ambos `?` y `*`. También recuerden que, para este caso particular, el punto debe escaparse ya que es un carácter especial (significa cualquier carácter excepto el salto de línea). Aquí hay un ejemplo sencillo de cómo podemos usar `*`.
 
@@ -897,7 +897,7 @@ En la sección \@ref(separate) aprendimos sobre la función `separate`, que se p
 tab %>% separate(x, c("feet", "inches"), sep = "'")
 ```
 
-La función `extract` del paquete __tidyr__ nos permite usar grupos _regex_ para extraer los valores deseados. Aquí está el equivalente al código anterior usando `separate`, pero ahora usando `extract`:
+La función `extract` del paquete __tidyr__ nos permite usar grupos _regex_ para extraer los valores deseados. Aquí está el equivalente al código anterior [fix eng too 'que usa `separate`] usando `separate`, pero ahora usando `extract`:
 
 ```{r}
 library(tidyr)
@@ -972,7 +972,7 @@ Una observación final es que si miramos a los estudiantes más bajos de nuestro
 new_heights %>% arrange(height) %>% head(n=7)
 ```
 
-Vemos alturas de 53, 54 y 55. En los originales, también tenemos 51 y 52. Estas alturas tan bajas son raras y es probable que los estudiantes realmente querían decir `5'1`, `5'2`, `5'3`, `5'4` y `5'5`. Debido a que no estamos completamente seguros, los dejaremos según lo reportado. El objeto `new_heights` contiene nuestra solución final para este caso de estudio.
+[fix i added functionl check eng] Vemos alturas de `53`, `54` y `55`. En los originales, también tenemos `51` y `52`. Estas alturas tan bajas son raras y es probable que los estudiantes realmente querían decir `5'1`, `5'2`, `5'3`, `5'4` y `5'5`. Debido a que no estamos completamente seguros, los dejaremos según lo reportado. El objeto `new_heights` contiene nuestra solución final para este caso de estudio.
 
 ## División de cadenas
 
@@ -1072,7 +1072,7 @@ knitr::include_graphics(file.path(img_path, "pnas-table-s1.png"))
 
 (Fuente: Romy van der Lee y Naomi Ellemers, PNAS 2015 112 (40) 12349-12353^[http://www.pnas.org/content/112/40/12349].)
 
-Podríamos extraer los números a mano, pero esto podría conducir a errores humanos. En su lugar, podemos intentar cambiar los datos con R. Comenzamos descargando el documento pdf y luego importándolo a R:
+Podríamos extraer los números a mano, pero esto podría conducir a errores humanos. En su lugar, podemos intentar cambiar los datos con R. Comenzamos descargando el documento PDF y luego importándolo a R:
 
 ```{r, eval=FALSE}
 library("pdftools")
@@ -1255,7 +1255,7 @@ system("cmd.exe", input = paste("start", fn))
 a. Es una tabla. Extraer los datos será fácil.
 b. Es un informe escrito en prosa. Extraer los datos será imposible.
 c. Es un informe que combina gráficos y tablas. Extraer los datos parece posible.
-d. Muestra gráficas de los datos. Extraer los datos será difícil.
+d. Muestra gráficos de los datos. Extraer los datos será difícil.
 
 
 3\. Vamos a crear un set de datos ordenado con cada fila representando una observación. Las variables en este set de datos serán año, mes, día y muertes.
@@ -1275,7 +1275,7 @@ c. Una cadena de caracteres con una entrada que contiene toda la información en
 d. Un documento html.
 
 
-4\. Extraiga la novena página del archivo PDF del objeto `txt`, luego use el `str_split` del paquete __stringr__ para que tenga cada línea en una entrada diferente. Llame a este vector de cadena `s`. Luego mire el resultado y eliga el que mejor describa lo que ve.
+4\. Extraiga la novena página del archivo PDF del objeto `txt`. Luego use el `str_split` del paquete __stringr__ para que tenga cada línea en una entrada diferente. Llame a este vector de cadena `s`. Entonces mire el resultado y elija el que mejor describa lo que ve.
 
 a. Es una cadena vacía.
 b. Puedo ver la figura que se muestra en la página 1.
@@ -1296,7 +1296,7 @@ d. ¡Puedo ver la tabla! Pero hay muchas otras cosas de las que debemos deshacer
 Utilice la función `str_which` para encontrar las filas con un encabezado. Guarde estos resultados en `header_index`. Sugerencia: encuentre la primera cadena que corresponda con el patrón `2015` utilizando la función `str_which`.
 
 
-9\. Ahora vamos a definir dos objetos: `month` almacenará el mes y `header` almacenará los nombres de columna. Identifique qué fila contiene el encabezado de la tabla. Guarde el contenido de la fila en un objeto llamado `header`, luego use `str_split` para ayudar a definir los dos objetos que necesitamos. Sugerencias: el separador aquí es uno o más espacios. Además, considere usar el argumento `simplify`.
+9\. Ahora vamos a definir dos objetos: `month` almacenará el mes y `header` almacenará los nombres de columna. Identifique qué fila contiene el encabezado de la tabla. Guarde el contenido de la fila en un objeto llamado `header`. Luego use `str_split` para ayudar a definir los dos objetos que necesitamos. Sugerencias: el separador aquí es uno o más espacios. Además, considere usar el argumento `simplify`.
 
 
 10\. Observe que hacia el final de la página verá una fila _totals_ seguida de filas con otras estadísticas de resumen. Cree un objeto llamado `tail_index` con el índice de la entrada _totals_.
