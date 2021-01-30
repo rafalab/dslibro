@@ -1,0 +1,466 @@
+# Ejemplos de algoritmos
+
+Hay docenas de algoritmos de aprendizaje automático. Aquí proporcionamos algunos ejemplos que abarcan enfoques bastante diferentes. A lo largo del capítulo usaremos los dos datos de dígitos predictores presentados en la Sección \@ref(two-or-seven) para demostrar cómo funcionan los algoritmos.
+
+```{r warning=FALSE, message=FALSE}
+library(tidyverse)
+library(dslabs)
+library(caret)
+data("mnist_27")
+```
+
+
+## Regresión lineal
+
+La regresión lineal puede considerarse un algoritmo de aprendizaje automático. En la sección \@ref(two-or-seven) demostramos cómo la regresión lineal puede ser demasiado rígida para ser útil. Esto es generalmente cierto, pero para algunos desafíos funciona bastante bien. También sirve como un enfoque de línea de base: si no puede vencerlo con un enfoque más complejo, probablemente desee apegarse a la regresión lineal. Para establecer rápidamente la conexión entre la regresión y el aprendizaje automático, reformularemos el estudio de Galton con alturas, un resultado continuo.
+
+```{r, message=FALSE, warning=FALSE}
+library(HistData)
+
+set.seed(1983)
+galton_heights <- GaltonFamilies %>%
+filter(gender == "male") %>%
+group_by(family) %>%
+sample_n(1) %>%
+ungroup() %>%
+select(father, childHeight) %>%
+rename(son = childHeight)
+```
+
+Supongamos que tiene la tarea de construir un algoritmo de aprendizaje automático que prediga la altura del hijo $Y$ usando la altura del padre $X$. Generemos conjuntos de pruebas y entrenamiento:
+
+```{r, message=FALSE, warning=FALSE}
+y <- galton_heights$son
+test_index <- createDataPartition(y, times = 1, p = 0.5, list = FALSE)
+
+train_set <- galton_heights %>% slice(-test_index)
+test_set <- galton_heights %>% slice(test_index)
+```
+
+En este caso, si solo estuviéramos ignorando la altura del padre y adivinando la altura del hijo, adivinaríamos la altura promedio de los hijos.
+
+```{r}
+m <- mean(train_set$son)
+m
+```
+
+Nuestra pérdida al cuadrado es:
+
+```{r}
+mean((m - test_set$son)^2)
+```
+
+¿Podemos hacerlo mejor? En el capítulo de regresión, aprendimos que si el par $(X,Y)$ siga una distribución normal bivariada, la expectativa condicional (lo que queremos estimar) es equivalente a la línea de regresión:
+
+$$
+f(x) = \mbox{E}( Y \mid X= x ) = \beta_0 + \beta_1 x
+$$
+
+En la sección \@ref(lse) introdujimos los mínimos cuadrados como método para estimar la pendiente $\beta_0$ e interceptar $\beta_1$:
+
+```{r}
+fit <- lm(son ~ father, data = train_set)
+fit$coef
+```
+
+Esto nos da una estimación de la expectativa condicional:
+
+$$ \hat{f}(x) = 52 + 0.25 x $$
+
+
+Podemos ver que esto realmente proporciona una mejora sobre nuestro enfoque de adivinanzas.
+
+```{r}
+y_hat <- fit$coef[1] + fit$coef[2]*test_set$father
+mean((y_hat - test_set$son)^2)
+```
+
+
+### Los `predict` función
+
+Los `predict` la función es muy útil para aplicaciones de aprendizaje automático. Esta función toma un objeto ajustado de funciones como `lm` o `glm` (aprendemos sobre `glm` pronto) y un marco de datos con los nuevos predictores para los cuales predecir. Entonces, en nuestro ejemplo actual, usaríamos `predict` me gusta esto:
+
+```{r}
+y_hat <- predict(fit, test_set)
+```
+
+Utilizando `predict`, podemos obtener los mismos resultados que obtuvimos anteriormente:
+
+```{r}
+y_hat <- predict(fit, test_set)
+mean((y_hat - test_set$son)^2)
+```
+
+`predict` no siempre devuelve objetos del mismo tipo; depende del tipo de objeto que se le envíe. Para conocer los detalles, debe mirar el archivo de ayuda específico para el tipo de objeto de ajuste que se está utilizando. los `predict` es en realidad un tipo especial de función en R (llamada función genérica) que llama a otras funciones según el tipo de objeto que recibe. Así que si `predict` recibe un objeto que sale de la `lm` función, llamará `predict.lm`. Si recibe un objeto que sale de `glm` llama `predict.glm`. Estas dos funciones son similares pero diferentes. Puede obtener más información sobre las diferencias leyendo los archivos de ayuda:
+
+```{r, eval=FALSE}
+?predict.lm
+?predict.glm
+```
+
+Hay muchas otras versiones de `predict` y muchos algoritmos de aprendizaje automático tienen una `predict` función.
+
+
+## Ejercicios
+
+1\. Cree un conjunto de datos con el siguiente código.
+
+```{r, eval=FALSE}
+n <- 100
+Sigma <- 9*matrix(c(1.0, 0.5, 0.5, 1.0), 2, 2)
+dat <- MASS::mvrnorm(n = 100, c(69, 69), Sigma) %>%
+data.frame() %>% setNames(c("x", "y"))
+```
+
+Use el paquete __caret__ para particionar en un conjunto de prueba y entrenamiento del mismo tamaño. Entrene un modelo lineal e informe el RMSE. Repita este ejercicio 100 veces y haga un histograma de los RMSE e informe el promedio y la desviación estándar. Sugerencia: adapte el código mostrado anteriormente así:
+
+```{r, eval=FALSE}
+y <- dat$y
+test_index <- createDataPartition(y, times = 1, p = 0.5, list = FALSE)
+train_set <- dat %>% slice(-test_index)
+test_set <- dat %>% slice(test_index)
+fit <- lm(y ~ x, data = train_set)
+y_hat <- fit$coef[1] + fit$coef[2]*test_set$x
+mean((y_hat - test_set$y)^2)
+```
+
+y ponerlo dentro de una llamada a `replicate`.
+
+
+2\. Ahora repetiremos lo anterior pero usando conjuntos de datos más grandes. Repita el ejercicio 1 pero para conjuntos de datos con `n <- c(100, 500, 1000, 5000, 10000)`. Guarde la desviación promedio y estándar de RMSE de las 100 repeticiones. Sugerencia: use el `sapply` o `map` funciones
+
+
+3\. Describa lo que observa con el RMSE a medida que aumenta el tamaño del conjunto de datos.
+
+a. En promedio, el RMSE no cambia mucho ya que `n` se hace más grande, mientras que la variabilidad de RMSE disminuye.
+si. Debido a la ley de los grandes números, el RMSE disminuye: más datos, estimaciones más precisas.
+re. `n = 10000` no es lo suficientemente grande. Para ver una disminución en RMSE, necesitamos hacerla más grande.
+re. El RMSE no es una variable aleatoria.
+
+
+4\. Ahora repita el ejercicio 1, pero esta vez haga la correlación entre `x` y `y` más grande cambiando `Sigma` me gusta esto:
+
+
+```{r, eval=FALSE}
+n <- 100
+Sigma <- 9*matrix(c(1, 0.95, 0.95, 1), 2, 2)
+dat <- MASS::mvrnorm(n = 100, c(69, 69), Sigma) %>%
+data.frame() %>% setNames(c("x", "y"))
+```
+
+Repita el ejercicio y observe lo que le sucede al RMSE ahora.
+
+
+5\. ¿Cuál de las siguientes explica mejor por qué el RMSE en el ejercicio 4 es mucho más bajo que el ejercicio 1?
+
+a. Es solo suerte. Si lo hacemos nuevamente, será más grande.
+si. El teorema del límite central nos dice que el RMSE es normal.
+c. Cuando aumentamos la correlación entre `x` y `y`, `x` tiene más poder predictivo y, por lo tanto, proporciona una mejor estimación de `y`. Esta correlación tiene un efecto mucho mayor en RMSE que `n`. Grande `n` simplemente proporcione estimaciones más precisas de los coeficientes del modelo lineal.
+re. Ambos son ejemplos de regresión, por lo que el RMSE tiene que ser el mismo.
+
+
+6\. Cree un conjunto de datos con el siguiente código:
+
+```{r, eval=FALSE}
+n <- 1000
+Sigma <- matrix(c(1, 3/4, 3/4, 3/4, 1, 0, 3/4, 0, 1), 3, 3)
+dat <- MASS::mvrnorm(n = 100, c(0, 0, 0), Sigma) %>%
+data.frame() %>% setNames(c("y", "x_1", "x_2"))
+```
+
+Tenga en cuenta que `y` está correlacionado con ambos `x_1` y `x_2`, pero los dos predictores son independientes entre sí.
+```{r, eval=FALSE}
+cor(dat)
+```
+
+Use el paquete __caret__ para particionar en un conjunto de prueba y entrenamiento del mismo tamaño. Compare el RMSE cuando use solo `x_1`, sólo `x_2`, y ambos `x_1` y `x_2`. Entrene un modelo lineal e informe el RMSE.
+
+
+7\. Repita el ejercicio 6 pero ahora cree un ejemplo en el que `x_1` y `x_2` están altamente correlacionados:
+
+```{r, eval=FALSE}
+n <- 1000
+Sigma <- matrix(c(1.0, 0.75, 0.75, 0.75, 1.0, 0.95, 0.75, 0.95, 1.0), 3, 3)
+dat <- MASS::mvrnorm(n = 100, c(0, 0, 0), Sigma) %>%
+data.frame() %>% setNames(c("y", "x_1", "x_2"))
+```
+
+Use el paquete __caret__ para particionar en un conjunto de prueba y entrenamiento del mismo tamaño. Compare el RMSE cuando use solo `x_1`, sólo `x_2`, y ambos `x_1` y `x_2` Entrene un modelo lineal e informe el RMSE.
+
+8\. Compare los resultados en 6 y 7 y elija la declaración con la que está de acuerdo:
+
+a. Agregar predictores adicionales puede mejorar sustancialmente RMSE, pero no cuando están altamente correlacionados con otro predictor.
+si. Agregar predictores adicionales mejora las predicciones por igual en ambos ejercicios.
+c. Agregar predictores adicionales da como resultado un ajuste excesivo.
+re. A menos que incluyamos todos los predictores, no tenemos poder de predicción.
+
+
+## Regresión logística
+
+El enfoque de regresión puede extenderse a datos categóricos. En esta sección, primero ilustramos cómo, para datos binarios, uno simplemente puede asignar valores numéricos de 0 y 1 a los resultados $y$ y aplique la regresión como si los datos fueran continuos. Luego señalaremos una limitación con este enfoque e introduciremos _regresión logística_ como una solución. La regresión logística es un caso específico de un conjunto de _modelos lineales generalizados_. Para ilustrar la regresión logística, la aplicaremos a nuestro ejemplo sexual de predicción anterior:
+
+```{r, echo=FALSE}
+library(dslabs)
+data("heights")
+
+y <- heights$height
+set.seed(2)
+test_index <- createDataPartition(y, times = 1, p = 0.5, list = FALSE)
+train_set <- heights %>% slice(-test_index)
+test_set <- heights %>% slice(test_index)
+```
+
+Si definimos el resultado $Y$ como 1 para mujeres y 0 para hombres, y $X$ como la altura, nos interesa la probabilidad condicional:
+
+$$
+\mbox{Pr}( Y = 1 \mid X = x)
+$$
+
+Como ejemplo, proporcionemos una predicción para un estudiante que mide 66 pulgadas de alto. ¿Cuál es la probabilidad condicional de ser mujer si tienes 66 pulgadas de alto? En nuestro conjunto de datos, podemos estimar esto redondeando a la pulgada más cercana y calculando:
+
+```{r}
+train_set %>%
+filter(round(height)==66) %>%
+summarize(y_hat = mean(sex=="Female"))
+```
+
+Para construir un algoritmo de predicción, queremos estimar la proporción de la población femenina para cualquier altura dada $X=x$, que escribimos como la probabilidad condicional descrita anteriormente: $\mbox{Pr}( Y = 1 | X=x)$. Veamos cómo se ve esto para varios valores de $x$ (eliminaremos estratos de $x$ con pocos puntos de datos):
+
+```{r height-and-sex-conditional-probabilities}
+heights %>%
+mutate(x = round(height)) %>%
+group_by(x) %>%
+filter(n() >= 10) %>%
+summarize(prop = mean(sex == "Female")) %>%
+ggplot(aes(x, prop)) +
+geom_point()
+```
+
+Dado que los resultados de la gráfica anterior parecen cercanos a los lineales, y es el único enfoque que conocemos actualmente, intentaremos la regresión. Asumimos que:
+
+$$p(x) = \mbox{Pr}( Y = 1 | X=x) = \beta_0 + \beta_1 x$$
+
+Nota: porque $p_0(x) = 1 - p_1(x)$, solo estimaremos $p_1(x)$ y soltar el $_1$ índice.
+
+Si convertimos los factores a 0s y 1s, podemos estimar $\beta_0$ y $\beta_1$ con mínimos cuadrados.
+
+```{r}
+lm_fit <- mutate(train_set, y = as.numeric(sex == "Female")) %>%
+lm(y ~ height, data = .)
+```
+
+
+Una vez que tengamos estimaciones $\hat{\beta}_0$ y $\hat{\beta}_1$, podemos obtener una predicción real. Nuestra estimación de la probabilidad condicional. $p(x)$ es:
+
+$$
+\hat{p}(x) = \hat{\beta}_0+ \hat{\beta}_1 x
+$$
+
+Para formar una predicción, definimos una _decisión de decisión_: predecir hembra si $\hat{p}(x) > 0.5$. Podemos comparar nuestras predicciones con los resultados usando:
+
+```{r}
+p_hat <- predict(lm_fit, test_set)
+y_hat <- ifelse(p_hat > 0.5, "Female", "Male") %>% factor()
+confusionMatrix(y_hat, test_set$sex)[["Accuracy"]]
+```
+
+Vemos que este método funciona sustancialmente mejor que adivinar.
+
+### Modelos lineales generalizados
+
+La función $\beta_0 + \beta_1 x$ puede tomar cualquier valor, incluidos negativos y valores mayores que 1. De hecho, la estimación $\hat{p}(x)$ calculado en la sección de regresión lineal se vuelve negativo en alrededor de 76 pulgadas.
+
+```{r regression-prediction}
+heights %>%
+mutate(x = round(height)) %>%
+group_by(x) %>%
+filter(n() >= 10) %>%
+summarize(prop = mean(sex == "Female")) %>%
+ggplot(aes(x, prop)) +
+geom_point() +
+geom_abline(intercept = lm_fit$coef[1], slope = lm_fit$coef[2])
+```
+
+El rango es:
+
+```{r}
+range(p_hat)
+```
+
+Pero estamos estimando una probabilidad: $\mbox{Pr}( Y = 1 \mid X = x)$ que está restringido entre 0 y 1.
+
+La idea de los modelos lineales generalizados (GLM) es 1) definir una distribución de $Y$ eso es consistente con sus posibles resultados y
+2) encuentra una función $g$ así que eso $g(\mbox{Pr}( Y = 1 \mid X = x))$ se puede modelar como una combinación lineal de predictores.
+La regresión logística es el GLM más utilizado. Es una extensión de regresión lineal que asegura que la estimación de $\mbox{Pr}( Y = 1 \mid X = x)$ está entre 0 y 1. Este enfoque utiliza la transformación _logística_ introducida en la Sección \@ref(logit):
+
+$$ g(p) = \log \frac{p}{1-p}$$
+
+Esta transformación logística convierte la probabilidad en probabilidades de registro. Como se discutió en la conferencia de visualización de datos, las probabilidades nos dicen cuánto más probable es que algo suceda en comparación con no suceder. $p=0.5$ significa que las probabilidades son de 1 a 1, por lo tanto, las probabilidades son 1. Si $p=0.75$, las probabilidades son de 3 a 1. Una buena característica de esta transformación es que convierte las probabilidades en simétricas alrededor de 0. Aquí hay una gráfica de $g(p)$ versus $p$:
+
+```{r p-versus-logistic-of-p, echo=FALSE}
+p <- seq(0.01,.99,len=100)
+qplot(p, log( p/(1-p) ), geom="line")
+```
+
+Con _regresión logística_, modelamos la probabilidad condicional directamente con:
+
+$$
+g\left\{ \mbox{Pr}(Y = 1 \mid X=x) \right\} = \beta_0 + \beta_1 x
+$$
+
+
+Con este modelo, ya no podemos usar mínimos cuadrados. En su lugar, calculamos la _estimación de probabilidad máxima_ (MLE). Puede obtener más información sobre este concepto en un libro de texto de teoría estadística^[http://www.amazon.com/Mathematical-Statistics-Analysis-Available-Enhanced/dp/0534399428].
+
+En R, podemos ajustar el modelo de regresión logística con la función `glm`: modelos lineales generalizados. Esta función es más general que la regresión logística, por lo que debemos especificar el modelo que queremos a través de `family` parámetro:
+
+```{r}
+glm_fit <- train_set %>%
+mutate(y = as.numeric(sex == "Female")) %>%
+glm(y ~ height, data=., family = "binomial")
+```
+
+Podemos obtener predicciones usando la función de predicción:
+
+```{r}
+p_hat_logit <- predict(glm_fit, newdata = test_set, type = "response")
+```
+
+Cuando usas `predict` con un `glm` objeto, tenemos que especificar que queremos `type="response"` si queremos las probabilidades condicionales, ya que el valor predeterminado es devolver los valores transformados logísticos.
+
+Este modelo se ajusta a los datos un poco mejor que la línea:
+
+```{r conditional-prob-glm-fit, echo=FALSE }
+tmp <- heights %>%
+mutate(x = round(height)) %>%
+group_by(x) %>%
+filter(n() >= 10) %>%
+summarize(prop = mean(sex == "Female"))
+logistic_curve <- data.frame(x = seq(min(tmp$x), max(tmp$x))) %>%
+mutate(p_hat = plogis(glm_fit$coef[1] + glm_fit$coef[2]*x))
+tmp %>%
+ggplot(aes(x, prop)) +
+geom_point() +
+geom_line(data = logistic_curve,
+mapping = aes(x, p_hat), lty = 2)
+```
+
+Porque tenemos un estimado $\hat{p}(x)$, podemos obtener predicciones:
+
+```{r}
+y_hat_logit <- ifelse(p_hat_logit > 0.5, "Female", "Male") %>% factor
+confusionMatrix(y_hat_logit, test_set$sex)[["Accuracy"]]
+```
+
+Las predicciones resultantes son similares. Esto se debe a que las dos estimaciones de $p(x)$ son mayores que 1/2 en aproximadamente la misma región de x:
+
+```{r glm-prediction}
+data.frame(x = seq(min(tmp$x), max(tmp$x))) %>%
+mutate(logistic = plogis(glm_fit$coef[1] + glm_fit$coef[2]*x),
+regression = lm_fit$coef[1] + lm_fit$coef[2]*x) %>%
+gather(method, p_x, -x) %>%
+ggplot(aes(x, p_x, color = method)) +
+geom_line() +
+geom_hline(yintercept = 0.5, lty = 5)
+```
+
+Las regresiones lineales y logísticas proporcionan una estimación de la expectativa condicional:
+
+$$
+\mbox{E}(Y \mid X=x)
+$$
+que en el caso de datos binarios es equivalente a la probabilidad condicional:
+
+$$
+\mbox{Pr}(Y = 1 \mid X = x)
+$$
+
+
+### Regresión logística con más de un predictor
+
+En esta sección aplicamos la regresión logística a los dos o siete datos introducidos en la Sección \@ref(two-or-seven). En este caso, estamos interesados en estimar una probabilidad condicional que depende de dos variables. El modelo de regresión logística estándar en este caso supondrá que
+
+$$
+g\{p(x_1, x_2)\}= g\{\mbox{Pr}(Y=1 \mid X_1=x_1 , X_2 = x_2)\} =
+\beta_0 + \beta_1 x_1 + \beta_2 x_2
+$$
+con $g(p) = \log \frac{p}{1-p}$ la función logística descrita en la sección anterior. Para ajustar el modelo usamos el siguiente código:
+
+```{r}
+fit_glm <- glm(y ~ x_1 + x_2, data=mnist_27$train, family = "binomial")
+p_hat_glm <- predict(fit_glm, mnist_27$test)
+y_hat_glm <- factor(ifelse(p_hat_glm > 0.5, 7, 2))
+confusionMatrix(y_hat_glm, mnist_27$test$y)$overall["Accuracy"]
+```
+
+Comparando con los resultados que obtuvimos en la Sección \@ref(two-or-seven), vemos que la regresión logística funciona de manera similar a la regresión.
+Esto no es sorprendente, dado que la estimación de $\hat{p}(x_1, x_2)$ se ve similar también:
+
+```{r, echo=FALSE}
+# We use this function to plot the estimated conditional probabilities
+plot_cond_prob <- function(p_hat=NULL){
+tmp <- mnist_27$true_p
+if(!is.null(p_hat)){
+tmp <- mutate(tmp, p=p_hat)
+}
+tmp %>% ggplot(aes(x_1, x_2, z=p, fill=p)) +
+geom_raster(show.legend = FALSE) +
+scale_fill_gradientn(colors=c("#F8766D","white","#00BFC4")) +
+stat_contour(breaks=c(0.5),color="black")
+}
+```
+
+```{r logistic-p-hat}
+p_hat <- predict(fit_glm, newdata = mnist_27$true_p, type = "response")
+mnist_27$true_p %>% mutate(p_hat = p_hat) %>%
+ggplot(aes(x_1, x_2, z=p_hat, fill=p_hat)) +
+geom_raster() +
+scale_fill_gradientn(colors=c("#F8766D","white","#00BFC4")) +
+stat_contour(breaks=c(0.5), color="black")
+```
+
+Al igual que la regresión, la regla de decisión es una línea, un hecho que puede corroborarse matemáticamente desde
+
+$$
+g^{-1}(\hat{\beta}_0 + \hat{\beta}_1 x_1 + \hat{\beta}_2 x_2) = 0.5 \implies
+\hat{\beta}_0 + \hat{\beta}_1 x_1 + \hat{\beta}_2 x_2 = g(0.5) = 0 \implies
+x_2 = -\hat{\beta}_0/\hat{\beta}_2 -\hat{\beta}_1/\hat{\beta}_2 x_1
+$$
+
+Así $x_2$ es una función lineal de $x_1$. Esto implica que, al igual que la regresión, nuestro enfoque de regresión logística no tiene ninguna posibilidad de capturar la naturaleza no lineal de la verdadera $p(x_1,x_2)$. Una vez que pasemos a ejemplos más complejos, veremos que la regresión lineal y la regresión lineal generalizada son limitadas y no lo suficientemente flexibles como para ser útiles para la mayoría de los desafíos de aprendizaje automático. Las nuevas técnicas que aprendemos son esencialmente enfoques para estimar la probabilidad condicional de una manera que sea más flexible.
+
+## Ejercicios
+
+1\. Defina el siguiente conjunto de datos:
+
+```{r, eval = FALSE}
+make_data <- function(n = 1000, p = 0.5,
+mu_0 = 0, mu_1 = 2,
+sigma_0 = 1, sigma_1 = 1){
+y <- rbinom(n, 1, p)
+f_0 <- rnorm(n, mu_0, sigma_0)
+f_1 <- rnorm(n, mu_1, sigma_1)
+x <- ifelse(y == 1, f_1, f_0)
+test_index <- createDataPartition(y, times = 1, p = 0.5, list = FALSE)
+list(train = data.frame(x = x, y = as.factor(y)) %>%
+slice(-test_index),
+test = data.frame(x = x, y = as.factor(y)) %>%
+slice(test_index))
+}
+dat <- make_data()
+```
+
+Tenga en cuenta que hemos definido una variable `x` eso es predictivo de un resultado binario `y`.
+
+```{r, eval=FALSE}
+dat$train %>% ggplot(aes(x, color = y)) + geom_density()
+```
+
+Compare la precisión de la regresión lineal y la regresión logística.
+
+
+2\. Repita la simulación del ejercicio 1 100 veces y compare la precisión promedio para cada método y observe que dan prácticamente la misma respuesta.
+
+
+3\. Genere 25 conjuntos de datos diferentes cambiando la diferencia entre las dos clases: `delta <- seq(0, 3, len = 25)`. Trazado de precisión versus `delta`.
+
+

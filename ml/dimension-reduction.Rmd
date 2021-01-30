@@ -1,0 +1,530 @@
+## Reducción de dimensiones
+
+```{r, echo=FALSE}
+rafalib::mypar()
+```
+
+Un desafío típico de aprendizaje automático incluirá una gran cantidad de predictores, lo que hace que la visualización sea algo desafiante. Hemos mostrado métodos para visualizar datos univariados y emparejados, pero las gráficas que revelan relaciones entre muchas variables son más complicadas en dimensiones más altas. Por ejemplo, para comparar cada una de las 784 características en nuestro ejemplo de predicción de dígitos, tendríamos que crear, por ejemplo, 306,936 diagramas de dispersión. La creación de un único diagrama de dispersión de los datos es imposible debido a la alta dimensionalidad.
+
+Aquí describimos técnicas poderosas útiles para el análisis exploratorio de datos, entre otras cosas, generalmente conocidas como _dimension reducción_. La idea general es reducir la dimensión del conjunto de datos mientras se conservan características importantes, como la distancia entre características u observaciones. Con menos dimensiones, la visualización se vuelve más factible. La técnica detrás de todo, la descomposición de valores singulares, también es útil en otros contextos. El análisis de componentes principales (PCA) es el enfoque que mostraremos. Antes de aplicar PCA a conjuntos de datos de alta dimensión, motivaremos las ideas detrás con un ejemplo simple.
+
+### Preservando la distancia
+
+Consideramos un ejemplo con alturas gemelas. Algunas parejas son adultas, otras son niños. Aquí simulamos 100 puntos bidimensionales que representan el número de desviaciones estándar que cada individuo tiene respecto a la altura media. Cada punto es un par de gemelos. Utilizamos el `mvrnorm` función del paquete __MASS__ para simular datos normales bivariados.
+
+```{r, message=FALSE}
+set.seed(1988)
+library(MASS)
+n <- 100
+Sigma <- matrix(c(9, 9 * 0.9, 9 * 0.92, 9 * 1), 2, 2)
+x <- rbind(mvrnorm(n/ 2, c(69, 69), Sigma),
+mvrnorm(n/ 2, c(55, 55), Sigma))
+```
+
+Un diagrama de dispersión revela rápidamente que la correlación es alta y que hay dos grupos de gemelos, los adultos (puntos superiores derechos) y los niños (puntos inferiores izquierdos):
+
+<!--
+```{r simulated-twin-heights, fig.width=3, fig.height=3, echo=FALSE, message=FALSE, out.width="50%"}
+lim <- c(48, 78)
+rafalib::mypar()
+plot(x, xlim=lim, ylim=lim)
+```
+-->
+
+```{r distance-illustration, fig.width=3, fig.height=3, echo=FALSE, out.width="40%"}
+rafalib::mypar()
+plot(x, xlim=lim, ylim=lim)
+lines(x[c(1, 2),], col = "blue", lwd = 2)
+lines(x[c(2, 51),], col = "red", lwd = 2)
+points(x[c(1, 2, 51),], pch = 16)
+```
+
+Nuestras características son $N$ puntos bidimensionales, las dos alturas y, con fines ilustrativos, actuaremos como si visualizar dos dimensiones fuera demasiado difícil. Por lo tanto, queremos reducir las dimensiones de dos a uno, pero aún así poder comprender características importantes de los datos, por ejemplo, que las observaciones se agrupan en dos grupos: adultos y niños.
+
+Consideremos un desafío específico: queremos un resumen unidimensional de nuestros predictores a partir del cual podamos aproximar la distancia entre dos observaciones. En la figura anterior, mostramos la distancia entre la observación 1 y 2 (azul) y la observación 1 y 51 (rojo). Tenga en cuenta que la línea azul es más corta, lo que implica que 1 y 2 están más cerca.
+
+Podemos calcular estas distancias usando `dist`:
+```{r}
+d <- dist(x)
+as.matrix(d)[1, 2]
+as.matrix(d)[2, 51]
+```
+
+Esta distancia se basa en dos dimensiones y necesitamos una aproximación de distancia basada en una sola.
+
+Comencemos con el enfoque ingenuo de simplemente eliminar una de las dos dimensiones. Comparemos las distancias reales con la distancia calculada solo con la primera dimensión:
+
+```{r}
+z <- x[,1]
+```
+
+Aquí están las distancias aproximadas versus las distancias originales:
+```{r one-dim-approx-to-dist, echo = FALSE, fig.width=3, fig.height=3, out.width="40%"}
+rafalib::mypar()
+plot(dist(x), dist(z))
+abline(0,1, col = "red")
+```
+
+La trama se ve casi igual si usamos la segunda dimensión. Obtenemos una subestimación general. Esto es de esperarse porque estamos agregando más cantidades positivas en el cálculo de la distancia a medida que aumentamos el número de dimensiones. Si en cambio usamos un promedio, como este
+
+$$\sqrt{ \frac{1}{2} \sum_{j=1}^2 (X_{i,j}-X_{i,j})^2 },$$
+
+entonces la subestimación desaparece. Dividimos la distancia por $\sqrt{2}$ para lograr la corrección.
+
+```{r distance-approx-1, echo = FALSE, fig.width=3, fig.height=3, out.width="40%"}
+rafalib::mypar()
+plot(dist(x)/ sqrt(2), dist(z))
+abline(0, 1, col = "red")
+```
+
+
+En realidad, esto funciona bastante bien y obtenemos una diferencia típica de:
+
+```{r}
+sd(dist(x) - dist(z)*sqrt(2))
+```
+
+Ahora, ¿podemos elegir un resumen unidimensional que haga que esta aproximación sea aún mejor?
+
+Si miramos hacia atrás al diagrama de dispersión anterior y visualizamos una línea entre cualquier par de puntos, la longitud de esta línea es la distancia entre los dos puntos. Estas líneas tienden a ir a lo largo de la dirección de la diagonal. Tenga en cuenta que si en su lugar trazamos la diferencia frente al promedio:
+
+```{r}
+z <- cbind((x[,2] + x[,1])/2, x[,2] - x[,1])
+```
+
+podemos ver cómo la distancia entre puntos se explica principalmente por la primera dimensión: el promedio.
+
+```{r rotation, fig.width=3, fig.height=3, echo=FALSE, out.width="40%"}
+rafalib::mypar()
+plot(z, xlim=lim, ylim = lim - mean(lim))
+lines(z[c(1,2),], col = "blue", lwd = 2)
+lines(z[c(2,51),], col = "red", lwd = 2)
+points(z[c(1,2,51),], pch = 16)
+```
+
+Esto significa que podemos ignorar la segunda dimensión y no perder demasiada información. Si la línea es completamente plana, no perdemos ninguna información. Usando la primera dimensión de esta matriz transformada obtenemos una aproximación aún mejor:
+
+```{r distance-approx-2, echo=FALSE, fig.width=3, fig.height=3, out.width="40%"}
+rafalib::mypar()
+plot(dist(x), dist(z[,1])*sqrt(2))
+abline(0,1, col = "red")
+```
+
+con la diferencia típica mejorada en aproximadamente un 35%:
+
+```{r}
+sd(dist(x) - dist(z[,1])*sqrt(2))
+```
+
+Más tarde aprendemos que `z[,1]` es el primer componente principal de la matriz `x`.
+
+### Transformaciones lineales (avanzado)
+
+Tenga en cuenta que cada fila de $X$ fue transformado usando una transformación lineal. Para cualquier fila $i$, la primera entrada fue:
+
+$$Z_{i,1} = a_{1,1} X_{i,1} + a_{2,1} X_{i,2}$$
+
+con $a_{1,1} = 0.5$ y $a_{2,1} = 0.5$.
+
+La segunda entrada también fue una transformación lineal:
+
+$$Z_{i,2} = a_{1,2} X_{i,1} + a_{2,2} X_{i,2}$$
+
+con $a_{1,2} = 1$ y $a_{2,2} = -1$.
+
+También podemos usar la transformación lineal para obtener $X$ de regreso de $Z$:
+
+$$X_{i,1} = b_{1,1} Z_{i,1} + b_{2,1} Z_{i,2}$$
+
+con $b_{1,2} = 1$ y $b_{2,1} = 0.5$ y
+
+$$X_{i,2} = b_{2,1} Z_{i,1} + b_{2,2} Z_{i,2}$$
+
+con $b_{2,1} = 1$ y $a_{1,2} = -0.5$.
+
+Si está familiarizado con el álgebra lineal, podemos escribir la operación que acabamos de realizar de esta manera:
+
+$$
+Z = X A
+\mbox{ with }
+A = \,
+\begin{pmatrix}
+1/2&1\\
+1/2&-1\\
+\end{pmatrix}.
+$$
+
+
+Y que podemos transformar de nuevo simplemente multiplicando por $A^{-1}$ como sigue:
+
+$$
+X = Z A^{-1}
+\mbox{ with }
+A^{-1} = \,
+\begin{pmatrix}
+1&1\\
+1/2&-1/2\\
+\end{pmatrix}.
+$$
+
+La reducción de dimensiones a menudo se puede describir como la aplicación de una transformación $A$ a una matriz $X$ con muchas columnas que mueven la información contenida en $X$ a las primeras columnas de $Z=AX$, manteniendo solo estas pocas columnas informativas, reduciendo así la dimensión de los vectores contenidos en las filas.
+
+### Transformaciones ortogonales (avanzado)
+
+Tenga en cuenta que dividimos lo anterior por $\sqrt{2}$ para tener en cuenta las diferencias en las dimensiones al comparar una distancia de 2 dimensiones con una distancia de 1 dimensión. De hecho, podemos garantizar que las escalas de distancia sigan siendo las mismas si volvemos a escalar las columnas de $A$ para asegurar que la suma de cuadrados es 1
+
+$$a_{1,1}^2 + a_{2,1}^2 = 1\mbox{ and } a_{1,2}^2 + a_{2,2}^2=1,$$
+
+y que la correlación de las columnas es 0:
+
+$$
+a_{1,1} a_{1,2} + a_{2,1} a_{2,2} = 0.
+$$
+
+Recuerde que si las columnas están centradas para tener un promedio de 0, entonces la suma de los cuadrados es equivalente a la varianza o desviación estándar al cuadrado.
+
+En nuestro ejemplo, para lograr la ortogonalidad, multiplicamos el primer conjunto de coeficientes (primera columna de $A$) por $\sqrt{2}$ y el segundo por $1/\sqrt{2}$, entonces obtenemos la misma distancia exacta si usamos ambas dimensiones:
+
+```{r}
+z[,1] <- (x[,1] + x[,2])/ sqrt(2)
+z[,2] <- (x[,2] - x[,1])/ sqrt(2)
+```
+
+Esto nos da una transformación que preserva la distancia entre dos puntos:
+
+```{r}
+max(dist(z) - dist(x))
+```
+<!--
+```{r orthogonal-transformation, fig.width=3, fig.height=3, echo=FALSE}
+rafalib::mypar()
+plot(dist(x), dist(z))
+abline(0, 1, col = "red")
+```
+-->
+
+y una aproximación mejorada si usamos solo la primera dimensión:
+
+```{r}
+sd(dist(x) - dist(z[,1]))
+```
+
+En este caso $Z$ se llama rotación ortogonal de $X$: conserva las distancias entre filas.
+
+Tenga en cuenta que al usar la transformación anterior podemos resumir la distancia entre dos pares de gemelos con una sola dimensión. Por ejemplo, exploración de datos unidimensionales de la primera dimensión de $Z$ muestra claramente que hay dos grupos, adultos y niños:
+
+```{r twins-pc-1-hist, message=FALSE, warning=FALSE}
+library(tidyverse)
+qplot(z[,1], bins = 20, color = I("black"))
+```
+
+Redujimos con éxito el número de dimensiones de dos a uno con muy poca pérdida de información.
+
+La razón por la que pudimos hacer esto es porque las columnas de $X$ estaban muy correlacionados:
+
+```{r}
+cor(x[,1], x[,2])
+```
+
+y la transformación produjo columnas no correlacionadas con información "independiente" en cada columna:
+
+```{r}
+cor(z[,1], z[,2])
+```
+
+Una forma en que esta información puede ser útil en una aplicación de aprendizaje automático es que podemos reducir la complejidad de un modelo utilizando solo $Z_1$ en lugar de ambos $X_1$ y $X_2$.
+
+En realidad, es común obtener datos con varios predictores altamente correlacionados. En estos casos, PCA, que describimos a continuación, puede ser bastante útil para reducir la complejidad del modelo que se está ajustando.
+
+### Análisis de componentes principales
+
+En el cálculo anterior, la variabilidad total en nuestros datos puede definirse como la suma de la suma de los cuadrados de las columnas. Suponemos que las columnas están centradas, por lo que esta suma es equivalente a la suma de las varianzas de cada columna:
+
+$$
+v_1 + v_2, \mbox{ with } v_1 = \frac{1}{N}\sum_{i=1}^N X_{i,1}^2 \mbox{ and } v_2 = \frac{1}{N}\sum_{i=1}^N X_{i,2}^2
+$$
+
+Podemos calcular $v_1$ y $v_2$ utilizando:
+```{r}
+colMeans(x^2)
+```
+
+y podemos mostrar matemáticamente que si aplicamos una transformación ortogonal como la anterior, la variación total sigue siendo la misma:
+
+```{r}
+sum(colMeans(x^2))
+sum(colMeans(z^2))
+```
+
+Sin embargo, mientras que la variabilidad en las dos columnas de `X` es casi lo mismo, en la versión transformada $Z$ el 99% de la variabilidad se incluye solo en la primera dimensión:
+
+```{r}
+v <- colMeans(z^2)
+v/sum(v)
+```
+
+El _primer componente principal (PC) _ de una matriz $X$ es la transformación ortogonal lineal de $X$ eso maximiza esta variabilidad. La función `prcomp` proporciona esta información:
+
+```{r}
+pca <- prcomp(x)
+pca$rotation
+```
+
+Tenga en cuenta que la primera PC es casi la misma que la proporcionada por el $(X_1 + X_2)/ \sqrt{2}$ utilizamos anteriormente (excepto quizás por un cambio de signo que es arbitrario).
+
+La función PCA devuelve la rotación necesaria para transformar $X$ para que la variabilidad de las columnas disminuya de más variable a menos (se accede con ` $rotation`) as well as the resulting new matrix (accessed with `$ x`). Por defecto las columnas de $X$ están primero centrados.
+
+Entonces, usando la multiplicación matricial que se muestra arriba, tenemos que lo siguiente es lo mismo (demostrado por una diferencia entre elementos esencialmente cero):
+
+```{r}
+a <- sweep(x, 2, colMeans(x))
+b <- pca$x %*% t(pca$rotation)
+max(abs(a - b))
+```
+
+La rotación es ortogonal, lo que significa que lo inverso es su transposición. Entonces también tenemos que estos dos son idénticos:
+
+```{r}
+a <- sweep(x, 2, colMeans(x)) %*% pca$rotation
+b <- pca$x
+max(abs(a - b))
+```
+
+Podemos visualizarlos para ver cómo el primer componente resume los datos. En el gráfico a continuación, el rojo representa valores altos y valores negativos azules (más adelante aprendemos por qué llamamos a estos pesos y patrones):
+
+
+```{r illustrate-pca-twin-heights, echo=FALSE, height = 5, out.width="70%"}
+illustrate_pca <- function(x, flip=1,
+pad = round((nrow(x)/2-ncol(x))*1/4),
+cex = 5, center = TRUE){
+rafalib::mypar(1,5)
+## flip is because PCA chooses arbitrary sign for loadings and PC
+colors = rev(RColorBrewer::brewer.pal(9, "RdBu"))
+
+pca <- prcomp(x, center = center)
+if(center) z <- t(x) - rowMeans(t(x))
+
+cols <- 1:ncol(x)
+rows <- 1:nrow(x)
+image(cols, rows, z[,rev(1:ncol(z))], xaxt = "n", yaxt = "n",
+xlab="", ylab="", main= "X", col = colors)
+abline(h=rows + 0.5, v = cols + 0.5)
+
+rafalib::nullplot(xaxt="n",yaxt="n",bty="n")
+text(0.5, 0.5, "=", cex = cex)
+
+z <- flip*t(pca$x)
+image(cols, rows, z[,rev(1:ncol(z))], xaxt = "n", yaxt = "n",xlab="",ylab="", main= "Weights", col = colors)
+abline(h=rows + 0.5, v = cols + 0.5)
+
+rafalib::nullplot(xaxt="n",yaxt="n",bty="n")
+text(0.5, 0.5, "x", cex = cex)
+
+z <- flip*pca$rotation
+nz <- cbind(matrix(NA, ncol(z), pad), z, matrix(NA, ncol(z), pad))
+rows <- 1:ncol(nz)
+image(cols, rows, nz[,rev(1:ncol(nz))], xaxt = "n", yaxt = "n", bty = "n", xlab="",ylab="", col = colors)
+abline(h = pad+0:ncol(z)+1/2)
+lines(c(ncol(z)/2+0.5,ncol(z)/2+1/2),c(pad,pad+ncol(z))+0.5)
+text(ncol(z)/2+0.5, pad+ncol(z)+2 , expression(bold(Pattern^T)), font=2)
+}
+rafalib::mypar(1,1)
+illustrate_pca(x, flip = -1)
+```
+
+Resulta que podemos encontrar esta transformación lineal no solo para dos dimensiones sino también para matrices de cualquier dimensión $p$.
+
+Para una matriz multidimensional con $X$ con $p$ columnas, podemos encontrar una transformación que crea $Z$ que conserva la distancia entre filas, pero con la varianza de las columnas en orden decreciente. La segunda columna es el segundo componente principal, la tercera columna es el tercer componente principal, y así sucesivamente. Como en nuestro ejemplo, si después de un cierto número de columnas, digamos $k$, las variaciones de las columnas de $Z_j$, $j>k$ son muy pequeños, significa que estas dimensiones tienen poco que contribuir a la distancia y podemos aproximar la distancia entre dos puntos con solo $k$ dimensiones. Si $k$ es mucho más pequeño que $p$, entonces podemos lograr un resumen muy eficiente de nuestros datos.
+
+
+### Ejemplo de Iris
+
+Los datos del iris son un ejemplo ampliamente utilizado en los cursos de análisis de datos. Incluye cuatro medidas botánicas relacionadas con tres especies de flores:
+
+```{r}
+names(iris)
+```
+
+Si imprime `iris$Species` verá que los datos están ordenados por especie.
+
+Calculemos la distancia entre cada observación. Puede ver claramente las tres especies con una especie muy diferente de las otras dos:
+
+```{r, eval=FALSE}
+x <- iris[,1:4] %>% as.matrix()
+d <- dist(x)
+image(as.matrix(d), col = rev(RColorBrewer::brewer.pal(9, "RdBu")))
+```
+
+```{r iris-distances, fig.width = 4, fig.height = 4, out.width="50%", echo=FALSE}
+rafalib::mypar()
+x <- iris[,1:4] %>% as.matrix()
+d <- dist(x)
+image(as.matrix(d), col = rev(RColorBrewer::brewer.pal(9, "RdBu")))
+```
+
+
+Nuestros predictores aquí tienen cuatro dimensiones, pero tres están muy correlacionadas:
+
+```{r}
+cor(x)
+```
+
+Si aplicamos PCA, deberíamos poder aproximar esta distancia con solo dos dimensiones, comprimiendo las dimensiones altamente correlacionadas. Utilizando la `summary` función podemos ver la variabilidad explicada por cada PC:
+
+
+```{r}
+pca <- prcomp(x)
+summary(pca)
+```
+
+Las dos primeras dimensiones representan el 97% de la variabilidad. Por lo tanto, deberíamos poder aproximar muy bien la distancia con dos dimensiones. Podemos visualizar los resultados de PCA:
+
+```{r illustrate-pca-twin-heights-iris, echo=FALSE, fig.height = 6, out.width="70%"}
+rafalib::mypar()
+illustrate_pca(x)
+```
+
+Y vea que el primer patrón es la longitud del sépalo, la longitud del pétalo y el ancho del pétalo (rojo) en una dirección y el ancho del sépalo (azul) en la otra. El segundo patrón es la longitud del sépalo y el ancho del pétalo en una dirección (azul) y la longitud y el ancho del pétalo en la otra (rojo). Puede ver en los pesos que la primera PC1 controla la mayor parte de la variabilidad y separa claramente el primer tercio de las muestras (setosa) de los dos tercios (versicolor y virginica). Si observa la segunda columna de las pesas, observa que separa algo versicolor (rojo) de virginica (azul).
+
+Podemos ver esto mejor al trazar las dos primeras PC con el color que representa la especie:
+
+
+```{r iris-pca}
+data.frame(pca$x[,1:2], Species=iris$Species) %>%
+ggplot(aes(PC1,PC2, fill = Species))+
+geom_point(cex=3, pch=21) +
+coord_fixed(ratio = 1)
+```
+
+Vemos que las dos primeras dimensiones preservan la distancia:
+
+```{r dist-approx-4, message = FALSE, fig.height = 3, fig.width = 3, out.width="50%"}
+d_approx <- dist(pca$x[, 1:2])
+qplot(d, d_approx) + geom_abline(color="red")
+```
+
+Este ejemplo es más realista que el primer ejemplo artificial que utilizamos, ya que mostramos cómo podemos visualizar los datos usando dos dimensiones cuando los datos eran de cuatro dimensiones.
+
+### Ejemplo de MNIST
+
+El ejemplo de dígitos escritos tiene 784 características. ¿Hay espacio para la reducción de datos? ¿Podemos crear algoritmos simples de aprendizaje automático con menos funciones?
+
+Carguemos los datos:
+```{r}
+library(dslabs)
+if(!exists("mnist")) mnist <- read_mnist()
+```
+
+Debido a que los píxeles son tan pequeños, esperamos que los píxeles cercanos entre sí en la cuadrícula estén correlacionados, lo que significa que la reducción de dimensión debería ser posible.
+
+
+Probemos PCA y exploremos la variación de las PC. Esto tomará unos segundos ya que es una matriz bastante grande.
+
+```{r, cache=TRUE}
+col_means <- colMeans(mnist$test$images)
+pca <- prcomp(mnist$train$images)
+```
+
+```{r mnist-pca-variance-explained}
+pc <- 1:ncol(mnist$test$images)
+qplot(pc, pca$sdev)
+```
+
+Podemos ver que las primeras PC ya explican un gran porcentaje de la variabilidad:
+
+```{r}
+summary(pca)$importance[,1:5]
+```
+
+Y con solo mirar las dos primeras PC vemos información sobre la clase. Aquí hay una muestra aleatoria de 2,000 dígitos:
+
+```{r mnist-pca-1-2-scatter}
+data.frame(PC1 = pca$x[,1], PC2 = pca$x[,2],
+label=factor(mnist$train$label)) %>%
+sample_n(2000) %>%
+ggplot(aes(PC1, PC2, fill=label))+
+geom_point(cex=3, pch=21)
+```
+
+También podemos ver las combinaciones lineales en la cuadrícula para tener una idea de lo que se está ponderando:
+
+```{r mnist-pca-1-4, echo = FALSE, out.width="100%", fig.width=6, fig.height=1.75}
+library(RColorBrewer)
+tmp <- lapply( c(1:4,781:784), function(i){
+expand.grid(Row=1:28, Column=1:28) %>%
+mutate(id=i, label=paste0("PC",i),
+value = pca$rotation[,i])
+})
+tmp <- Reduce(rbind, tmp)
+
+tmp %>% filter(id<5) %>%
+ggplot(aes(Row, Column, fill=value)) +
+geom_raster() +
+scale_y_reverse() +
+scale_fill_gradientn(colors = brewer.pal(9, "RdBu")) +
+facet_wrap(~label, nrow = 1)
+```
+
+Las PC de menor varianza aparecen relacionadas con la variabilidad sin importancia en las esquinas:
+
+```{r mnist-pca-last,, echo = FALSE, out.width="100%", fig.width=6, fig.height=1.75}
+tmp %>% filter(id>5) %>%
+ggplot(aes(Row, Column, fill=value)) +
+geom_raster() +
+scale_y_reverse() +
+scale_fill_gradientn(colors = brewer.pal(9, "RdBu")) +
+facet_wrap(~label, nrow = 1)
+```
+
+Ahora apliquemos la transformación que aprendimos con los datos de entrenamiento a los datos de prueba, reduzca la dimensión y ejecute knn en solo un pequeño número de dimensiones.
+
+Intentamos 36 dimensiones ya que esto explica aproximadamente el 80% de los datos. Primero ajuste el modelo:
+
+```{r}
+library(caret)
+k <- 36
+x_train <- pca$x[,1:k]
+y <- factor(mnist$train$labels)
+fit <- knn3(x_train, y)
+```
+
+Ahora transforma el conjunto de prueba:
+```{r}
+x_test <- sweep(mnist$test$images, 2, col_means) %*% pca$rotation
+x_test <- x_test[,1:k]
+```
+
+Y estamos listos para predecir y ver cómo lo hacemos:
+```{r}
+y_hat <- predict(fit, x_test, type = "class")
+confusionMatrix(y_hat, factor(mnist$test$labels))$overall["Accuracy"]
+```
+
+Con solo 36 dimensiones, obtenemos una precisión muy superior a 0,95.
+
+## Ejercicios
+
+1\. Queremos explorar el `tissue_gene_expression` predictores al trazarlos.
+
+
+```{r, eval=FALSE}
+data("tissue_gene_expression")
+dim(tissue_gene_expression$x)
+```
+
+Queremos tener una idea de qué observaciones son cercanas entre sí, pero
+los predictores son de 500 dimensiones, por lo que es difícil trazar. Trace los dos primeros componentes principales con un color que represente el tipo de tejido.
+
+
+2\. Los predictores para cada observación se miden en el mismo dispositivo y procedimiento experimental. Esto introduce sesgos que pueden afectar a todos los predictores de una observación. Para cada observación, calcule el promedio en todos los predictores y luego grafique esto contra la primera PC con el color que representa el tejido. Informe la correlación.
+
+
+
+3\. Vemos una asociación con la primera PC y los promedios de observación. Vuelva a hacer la PCA pero solo después de quitar el centro.
+
+
+4\. Para las primeras 10 PC, haga un diagrama de caja que muestre los valores para cada tejido.
+
+
+5\. Trace el porcentaje de varianza explicado por el número de PC. Sugerencia: use el `summary` función.
+
