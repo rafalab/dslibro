@@ -6,7 +6,7 @@ Con la excepción de las etiquetas utilizadas para representar datos categórico
 ## Estudio de caso: tuits de Trump
 
 Durante las elecciones presidenciales estadounidenses de 2016, el candidato Donald J. Trump usó su cuenta de Twitter como una manera de comunicarse con los posibles votantes. El 6 de agosto de 2016, Todd Vaziri tuiteó^[https://twitter.com/tvaziri/status/762005541388378112/photo/1] sobre Trump diciendo que "Cada tweet no hiperbólico es de iPhone (su personal). Cada tweet hiperbólico es de Android (de él) ".
-El científico de datos David Robinson realizó un análisis^[http://varianceexplained.org/r/trump-tweets/] para determinar si los datos respaldan esta afirmación. Aquí, revisamos el análisis de David para aprender algunos de los conceptos básicos de la minería de textos. Para obtener más información sobre la minería de texto en R, recomendamos el libro _Text Mining with R_^[https://www.tidytextmining.com/] de Julia Silge y David Robinson.
+El científico de datos David Robinson realizó un análisis^[http://varianceexplained.org/r/trump-tweets/] para determinar si los datos respaldan esta afirmación. Aquí, revisamos el análisis de David para aprender algunos de los conceptos básicos de la minería de textos. Para obtener más información sobre la minería de textos en R, recomendamos el libro _Text Mining with R_^[https://www.tidytextmining.com/] de Julia Silge y David Robinson.
 
 ```{r,echo=FALSE}
 set.seed(2002)
@@ -116,7 +116,7 @@ example
 example %>% unnest_tokens(word, text)
 ```
 
-Ahora veamos un ejemplo de los tuits. Observemos el tuit número 3008 porque luego nos permitirá ilustrar un par de puntos:
+Ahora consideremos un ejemplo de los tuits. Observen el tuit número 3008 porque luego nos permitirá ilustrar un par de puntos:
 
 ```{r}
 i <- 3008
@@ -162,7 +162,7 @@ count(word) %>%
 arrange(desc(n))
 ```
 
-No es sorprendente que estas sean las palabras principales. Las palabras principales no son informativas. El paquete _tidytext_ tiene una base de datos de estas palabras de uso común, denominadas palabras _stop_, en la minería de texto:
+No es sorprendente que estas sean las palabras principales. Las palabras principales no son informativas. El paquete _tidytext_ tiene una base de datos de estas palabras de uso común, denominadas palabras _stop_, en la minería de textos:
 
 ```{r}
 stop_words
@@ -199,7 +199,7 @@ filter(!word %in% stop_words$word &
 mutate(word = str_replace(word, "^'", ""))
 ```
 
-Ahora que tenemos las palabras en una tabla e información sobre qué dispositivo se usó para componer el tuit del que provienen, podemos comenzar a explorar qué palabras son más comunes al comparar Android con iPhone.
+Ahora que tenemos las palabras en una tabla e información sobre qué dispositivo se usó para componer el tuit, podemos comenzar a explorar qué palabras son más comunes al comparar Android con iPhone.
 
 Para cada palabra, queremos saber si es más probable que provenga de un tuit de Android o un tuit de iPhone. En la sección \@ref(association-tests) introdujimos el _riesgo relativo_ (_odds ratio_ en inglés) como un resumen estadístico útil para cuantificar estas diferencias. Para cada dispositivo y una palabra dada, llamémosla `y`, calculamos el riesgo relativo. Aquí tendremos muchas proporciones que son 0, así que usamos la corrección 0.5 descrita en la Sección \@ref(association-tests).
 
@@ -251,7 +251,7 @@ El léxico `bing` divide las palabras en sentimientos `positive` y `negative`. P
 get_sentiments("bing")
 ```
 
-El léxico `AFINN` asigna una puntuación entre -5 y 5, con -5 el más negativo y 5 el más positivo. Tengan en cuenta que este léxico debe descargarse la primera vez que llame a la función `get_sentiment`:
+El léxico `AFINN` asigna una puntuación entre -5 y 5, con -5 el más negativo y 5 el más positivo. Tengan en cuenta que este léxico debe descargarse la primera vez que llamen a la función `get_sentiment`:
 
 ```{r, eval=FALSE}
 get_sentiments("afinn")
@@ -305,7 +305,7 @@ or = Android/iPhone) %>%
 arrange(desc(or))
 ```
 
-Así que sí vemos algunas diferencias y el orden es particularmente interesante: ¡los tres sentimientos más grandes son el asco, la ira y lo negativo! ¿Pero estas diferencias son solo por casualidad? ¿Cómo se compara esto si solo estamos asignando sentimientos al azar? Para responder a esta pregunta, podemos calcular, para cada sentimiento, un riesgo relativo y un intervalo de confianza, como se define en la Sección \@ref(association-tests). Agregaremos los dos valores que necesitamos para formar una tabla de dos por dos y el riesgo relativo:
+Sí vemos algunas diferencias y el orden es particularmente interesante: ¡los tres sentimientos más grandes son el asco, la ira y lo negativo! ¿Pero estas diferencias son solo por casualidad? ¿Cómo se compara esto si solo estamos asignando sentimientos al azar? Para responder a esta pregunta, podemos calcular, para cada sentimiento, un riesgo relativo y un intervalo de confianza, como se define en la Sección \@ref(association-tests). Agregaremos los dos valores que necesitamos para formar una tabla de dos por dos y el riesgo relativo:
 
 ```{r}
 library(broom)
@@ -333,7 +333,7 @@ ylab("Log odds ratio for association between Android and sentiment") +
 coord_flip()
 ```
 
-Vemos que el disgusto, la ira, los sentimientos negativos, la tristeza y el miedo están asociados con el Android de una manera que es difícil de explicar solo por casualidad. Las palabras no asociadas con un sentimiento estaban fuertemente asociadas con la fuente del iPhone, que está de acuerdo con la afirmación original sobre los tuits hiperbólicos.
+Vemos que el disgusto, la ira, los sentimientos negativos, la tristeza y el miedo están asociados con el Android de una manera que es difícil de explicar solo por casualidad. Las palabras no asociadas con un sentimiento estaban fuertemente asociadas con el iPhone, que está de acuerdo con la afirmación original sobre los tuits hiperbólicos.
 
 Si estamos interesados en explorar qué palabras específicas están impulsando estas diferencias, podemos referirnos a nuestro objeto `android_iphone_or`:
 
@@ -372,7 +372,7 @@ install.packages("gutenbergr")
 library(gutenbergr)
 ```
 
-Los libros que están disponibles se pueden ver así:
+Los libros disponibles se pueden ver así:
 
 ```{r, eval=FALSE}
 gutenberg_metadata
@@ -381,7 +381,7 @@ gutenberg_metadata
 1\. Utilice `str_detect` para encontrar la identificación de la novela _Pride and Prejudice_.
 
 
-2\. Notamos que hay varias versiones. La función `gutenberg_works()`filtra esta tabla para eliminar réplicas e incluye solo trabajos en inglés. Lea el archivo de ayuda y use esta función para encontrar la identificación de _Pride and Prejudice_.
+2\. Observe que hay varias versiones. La función `gutenberg_works()`filtra esta tabla para eliminar réplicas e incluye solo trabajos en inglés. Lea el archivo de ayuda y use esta función para encontrar la identificación de _Pride and Prejudice_.
 
 
 3\. Utilice la función `gutenberg_download` para descargar el texto de _Pride and Prejudice_. Guárdelo en un objeto llamado `book`.
