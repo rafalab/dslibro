@@ -1,0 +1,474 @@
+## Modelos generativos
+
+Hemos descrito cómo, cuando se usa la pérdida al cuadrado, las expectativas/ probabilidades condicionales proporcionan el mejor enfoque para desarrollar una regla de decisión. En un caso binario, el error verdadero más pequeño que podemos lograr está determinado por la regla de Bayes, que es una regla de decisión basada en la probabilidad condicional verdadera:
+
+$$
+p(\mathbf{x}) = \mbox{Pr}(Y=1 \mid \mathbf{X}=\mathbf{x})
+$$
+
+Hemos descrito varios enfoques para estimar $p(\mathbf{x})$. En todos estos enfoques, estimamos la probabilidad condicional directamente y no consideramos la distribución de los predictores. En el aprendizaje automático, estos se denominan enfoques _discriminativos_.
+
+Sin embargo, el teorema de Bayes nos dice que conocer la distribución de los predictores $\mathbf{X}$ puede ser útil. Métodos que modelan la distribución conjunta de $Y$ y $\mathbf{X}$ se denominan _modelos generativos_ (modelamos cómo todos los datos, $\mathbf{X}$ y $Y$, son generadas). Comenzamos describiendo el modelo generativo más general, Naive Bayes, y luego procedemos a describir dos casos específicos, el análisis discriminante cuadrático (QDA) y el análisis discriminante lineal (LDA).
+
+### Naive Bayes
+
+Recordemos que la regla de Bayes nos dice que podemos reescribir $p(\mathbf{x})$ me gusta esto:
+
+$$
+p(\mathbf{x}) = \mbox{Pr}(Y=1|\mathbf{X}=\mathbf{x}) = \frac{f_{\mathbf{X}|Y=1}(\mathbf{x}) \mbox{Pr}(Y=1)}
+{ f_{\mathbf{X}|Y=0}(\mathbf{x})\mbox{Pr}(Y=0) + f_{\mathbf{X}|Y=1}(\mathbf{x})\mbox{Pr}(Y=1) }
+$$
+
+
+con $f_{\mathbf{X}|Y=1}$ y $f_{\mathbf{X}|Y=0}$ representando las funciones de distribución del predictor $\mathbf{X}$ para las dos clases $Y=1$ y $Y=0$. La fórmula implica que si podemos estimar estas distribuciones condicionales de los predictores, podemos desarrollar una poderosa regla de decisión. Sin embargo, este es un gran _si_. A medida que avanzamos, encontraremos ejemplos en los que $\mathbf{X}$ tiene muchas dimensiones y no tenemos mucha información sobre la distribución. En estos casos, Naive Bayes será prácticamente imposible de implementar. Sin embargo, hay casos en los que tenemos un pequeño número de predictores (no más de 2) y muchas categorías en las que los modelos generativos pueden ser bastante poderosos. Describimos dos ejemplos específicos y utilizamos nuestros estudios de caso descritos anteriormente para ilustrarlos.
+
+Comencemos con un caso muy simple y poco interesante, pero ilustrativo: el ejemplo relacionado con la predicción del sexo desde la altura.
+
+```{r, warning=FALSE, message=FALSE}
+library(tidyverse)
+library(caret)
+
+library(dslabs)
+data("heights")
+
+y <- heights$height
+set.seed(1995)
+test_index <- createDataPartition(y, times = 1, p = 0.5, list = FALSE)
+train_set <- heights %>% slice(-test_index)
+test_set <- heights %>% slice(test_index)
+```
+
+En este caso, el enfoque de Naive Bayes es particularmente apropiado porque sabemos que la distribución normal es una buena aproximación para las distribuciones condicionales de altura dada el sexo para ambas clases. $Y=1$ (hembra) y $Y=0$ (masculino). Esto implica que podemos aproximar las distribuciones condicionales $f_{X|Y=1}$ y $f_{X|Y=0}$ simplemente estimando promedios y desviaciones estándar de los datos:
+
+```{r}
+params <- train_set %>%
+group_by(sex) %>%
+summarize(avg = mean(height), sd = sd(height))
+params
+```
+
+La prevalencia, que denotaremos con $\pi = \mbox{Pr}(Y=1)$, puede estimarse a partir de los datos con:
+
+```{r}
+pi <- train_set %>% summarize(pi=mean(sex=="Female")) %>% pull(pi)
+pi
+```
+
+Ahora podemos usar nuestras estimaciones de desviación promedio y estándar para obtener una regla real:
+
+```{r}
+x <- test_set$height
+
+f0 <- dnorm(x, params$avg[2], params$sd[2])
+f1 <- dnorm(x, params$avg[1], params$sd[1])
+
+p_hat_bayes <- f1*pi/ (f1*pi + f0*(1 - pi))
+```
+
+Nuestra estimación ingenua de Bayes $\hat{p}(x)$ se parece mucho a nuestra estimación de regresión logística:
+
+```{r conditional-prob-glm-fit-2, echo=FALSE }
+tmp <- heights %>%
+mutate(x = round(height)) %>%
+group_by(x) %>%
+filter(n() >= 10) %>%
+summarize(prob = mean(sex == "Female"))
+naive_bayes_curve <- data.frame(x = seq(min(tmp$x), max(tmp$x))) %>%
+mutate(p_hat = dnorm(x, params$avg[1], params$sd[1])*pi/
+(dnorm(x, params$avg[1], params$sd[1])*pi +
+dnorm(x, params$avg[2], params$sd[2])*(1-pi)))
+tmp %>%
+ggplot(aes(x, prob)) +
+geom_point() +
+geom_line(data = naive_bayes_curve,
+mapping = aes(x, p_hat), lty = 3)
+```
+
+
+De hecho, podemos mostrar que el enfoque de Naive Bayes es matemáticamente similar a la predicción de regresión logística. Sin embargo, dejamos la demostración a un texto más avanzado, como los Elementos del aprendizaje estadístico^[https://web.stanford.edu/~hastie/Papers/ESLII.pdf]. Podemos ver que son similares empíricamente al comparar las dos curvas resultantes.
+
+
+### Controlando la prevalencia
+
+Una característica útil del enfoque Naive Bayes es que incluye un parámetro para tener en cuenta las diferencias en la prevalencia. Usando nuestra muestra, estimamos $f_{X|Y=1}$, $f_{X|Y=0}$ y $\pi$. Si usamos sombreros para denotar las estimaciones, podemos escribir $\hat{p}(x)$ como:
+
+$$
+\hat{p}(x)= \frac{\hat{f}_{X|Y=1}(x) \hat{\pi}}
+{ \hat{f}_{X|Y=0}(x)(1-\hat{\pi}) + \hat{f}_{X|Y=1}(x)\hat{\pi} }
+$$
+
+Como discutimos anteriormente, nuestra muestra tiene una prevalencia mucho menor, `r signif(pi,2)`, que la población general. Entonces si usamos la regla $\hat{p}(x)>0.5$ para predecir las mujeres, nuestra precisión se verá afectada debido a la baja sensibilidad:
+
+```{r}
+y_hat_bayes <- ifelse(p_hat_bayes > 0.5, "Female", "Male")
+sensitivity(data = factor(y_hat_bayes), reference = factor(test_set$sex))
+```
+
+Nuevamente, esto se debe a que el algoritmo da más peso a la especificidad para tener en cuenta la baja prevalencia:
+
+```{r}
+specificity(data = factor(y_hat_bayes), reference = factor(test_set$sex))
+```
+
+Esto se debe principalmente al hecho de que $\hat{\pi}$ es sustancialmente menor que 0.5, por lo que tendemos a predecir `Male` más a menudo. Tiene sentido que un algoritmo de aprendizaje automático haga esto en nuestra muestra porque tenemos un mayor porcentaje de hombres. Pero si tuviéramos que extrapolar esto a una población general, nuestra precisión general se vería afectada por la baja sensibilidad.
+
+El enfoque Naive Bayes nos da una forma directa de corregir esto, ya que simplemente podemos forzar $\hat{\pi}$ ser el valor que queramos que sea. Entonces, para equilibrar la especificidad y la sensibilidad, en lugar de cambiar el límite en la regla de decisión, simplemente podríamos cambiar $\hat{\pi}$ a 0.5 así:
+
+```{r}
+p_hat_bayes_unbiased <- f1 * 0.5/ (f1 * 0.5 + f0 * (1 - 0.5))
+y_hat_bayes_unbiased <- ifelse(p_hat_bayes_unbiased> 0.5, "Female", "Male")
+```
+
+Tenga en cuenta la diferencia de sensibilidad con un mejor equilibrio:
+
+```{r}
+sensitivity(factor(y_hat_bayes_unbiased), factor(test_set$sex))
+specificity(factor(y_hat_bayes_unbiased), factor(test_set$sex))
+```
+
+La nueva regla también nos da un límite muy intuitivo entre 66-67, que es aproximadamente la mitad de las alturas promedio de hombres y mujeres:
+
+```{r naive-with-good-prevalence}
+qplot(x, p_hat_bayes_unbiased, geom = "line") +
+geom_hline(yintercept = 0.5, lty = 2) +
+geom_vline(xintercept = 67, lty = 2)
+```
+
+### Análisis discriminante cuadrático
+
+El Análisis Discriminante Cuadrático (QDA) es una versión de Naive Bayes en la cual asumimos que las distribuciones $p_{\mathbf{X}|Y=1}(x)$ y $p_{\mathbf{X}|Y=0}(\mathbf{x})$ son multivariantes normales. El ejemplo simple que describimos en la sección anterior es en realidad QDA. Veamos ahora un caso un poco más complicado: el ejemplo 2 o 7.
+
+```{r}
+data("mnist_27")
+```
+
+En este caso, tenemos dos predictores, por lo que suponemos que cada uno es bivariado normal. Esto implica que necesitamos estimar dos promedios, dos desviaciones estándar y una correlación para cada caso. $Y=1$ y $Y=0$. Una vez que tengamos estos, podemos aproximar las distribuciones $f_{X_1,X_2|Y=1}$ y $f_{X_1, X_2|Y=0}$. Podemos estimar fácilmente los parámetros a partir de los datos:
+
+```{r}
+params <- mnist_27$train %>%
+group_by(y) %>%
+summarize(avg_1 = mean(x_1), avg_2 = mean(x_2),
+sd_1= sd(x_1), sd_2 = sd(x_2),
+r = cor(x_1, x_2))
+params
+```
+
+Aquí proporcionamos una forma visual de mostrar el enfoque. Trazamos los datos y usamos diagramas de contorno para dar una idea de cómo son las dos densidades normales estimadas (mostramos la curva que representa una región que incluye el 95% de los puntos):
+
+```{r qda-explained}
+mnist_27$train %>% mutate(y = factor(y)) %>%
+ggplot(aes(x_1, x_2, fill = y, color=y)) +
+geom_point(show.legend = FALSE) +
+stat_ellipse(type="norm", lwd = 1.5)
+```
+
+Esto define la siguiente estimación de $f(x_1, x_2)$.
+
+Podemos usar el `train` función del paquete __caret__ para ajustarse al modelo y obtener predictores:
+
+```{r}
+library(caret)
+train_qda <- train(y ~ ., method = "qda", data = mnist_27$train)
+```
+
+Vemos que obtenemos una precisión relativamente buena:
+
+```{r}
+y_hat <- predict(train_qda, mnist_27$test)
+confusionMatrix(y_hat, mnist_27$test$y)$overall["Accuracy"]
+```
+
+La probabilidad condicional estimada parece relativamente buena, aunque no encaja tan bien como los suavizadores del núcleo:
+
+```{r, echo=FALSE}
+plot_cond_prob <- function(p_hat=NULL){
+tmp <- mnist_27$true_p
+if(!is.null(p_hat)){
+tmp <- mutate(tmp, p=p_hat)
+}
+tmp %>% ggplot(aes(x_1, x_2, z=p, fill=p)) +
+geom_raster(show.legend = FALSE) +
+scale_fill_gradientn(colors=c("#F8766D","white","#00BFC4")) +
+stat_contour(breaks=c(0.5),color="black")
+}
+```
+
+```{r qda-estimate, echo=FALSE, out.width="100%", warning=FALSE, message=FALSE}
+library(gridExtra)
+p1 <- plot_cond_prob() + ggtitle("True conditional probability")
+
+p2 <- plot_cond_prob(predict(train_qda, newdata = mnist_27$true_p, type="prob")[,2]) +
+ggtitle("QDA")
+
+grid.arrange(p2, p1, nrow = 1)
+```
+
+Una razón por la que QDA no funciona tan bien como los métodos del núcleo es quizás porque la suposición de normalidad no es válida. Aunque para los 2 parece razonable, para los 7 parece estar apagado. Observe la ligera curvatura en los puntos para los 7:
+
+```{r qda-does-not-fit, out.width="100%"}
+mnist_27$train %>% mutate(y = factor(y)) %>%
+ggplot(aes(x_1, x_2, fill = y, color=y)) +
+geom_point(show.legend = FALSE) +
+stat_ellipse(type="norm") +
+facet_wrap(~y)
+```
+
+
+QDA puede funcionar bien aquí, pero se vuelve más difícil de usar a medida que aumenta el número de predictores. Aquí tenemos 2 predictores y tuvimos que calcular 4 medias, 4 DE y 2 correlaciones. ¿Cuántos parámetros tendríamos si en lugar de 2 predictores tuviéramos 10?
+El principal problema proviene de la estimación de correlaciones para 10 predictores. Con 10, tenemos 45 correlaciones para cada clase. En general, la fórmula es $K\times p(p-1)/2$, que se hace grande rápidamente. Una vez que el número de parámetros se acerca al tamaño de nuestros datos, el método se vuelve poco práctico debido al sobreajuste.
+
+
+### Análisis discriminante lineal
+
+Una solución relativamente simple para el problema de tener demasiados parámetros es asumir que la estructura de correlación es la misma para todas las clases, lo que reduce el número de parámetros que necesitamos estimar.
+
+En este caso, calcularíamos solo un par de desviaciones estándar y una correlación,
+<!--so the parameters would look something like this:
+
+```{r}
+params <- mnist_27$train %>%
+group_by(y) %>%
+summarize(avg_1 = mean(x_1), avg_2 = mean(x_2),
+sd_1= sd(x_1), sd_2 = sd(x_2),
+r = cor(x_1,x_2))
+
+params <- params %>% mutate(sd_1 = mean(sd_1), sd_2=mean(sd_2), r=mean(r))
+params
+```
+-->
+y las distribuciones se ven así:
+
+```{r lda-explained, echo=FALSE}
+tmp <- lapply(1:2, function(i){
+with(params[i,], MASS::mvrnorm(1000, mu = c(avg_1, avg_2), Sigma = matrix(c(sd_1^2, sd_1*sd_2*r, sd_1*sd_2*r, sd_2^2), 2, 2))) %>%
+as.data.frame() %>%
+setNames(c("x_1", "x_2")) %>%
+mutate(y = factor(c(2,7)[i]))
+})
+tmp <- do.call(rbind, tmp)
+mnist_27$train %>% mutate(y = factor(y)) %>%
+ggplot() +
+geom_point(aes(x_1, x_2, color=y), show.legend = FALSE) +
+stat_ellipse(aes(x_1, x_2, color = y), data = tmp, type="norm", lwd = 1.5)
+```
+
+Ahora el tamaño de las elipses y el ángulo son los mismos. Esto se debe a que tienen las mismas desviaciones y correlaciones estándar.
+
+Podemos ajustar el modelo LDA usando __caret__:
+
+```{r}
+train_lda <- train(y ~ ., method = "lda", data = mnist_27$train)
+y_hat <- predict(train_lda, mnist_27$test)
+confusionMatrix(y_hat, mnist_27$test$y)$overall["Accuracy"]
+```
+
+Cuando forzamos esta suposición, podemos mostrar matemáticamente que el límite es una línea, al igual que con la regresión logística. Por esta razón, llamamos al método análisis lineal discriminante (LDA). Del mismo modo, para QDA, podemos mostrar que el límite debe ser una función cuadrática.
+
+```{r lda-estimate, echo=FALSE, out.width="100%"}
+train_lda <- train(y ~ ., method = "lda", data = mnist_27$train)
+
+p1 <- plot_cond_prob() + ggtitle("True conditional probability")
+
+p2 <- plot_cond_prob(predict(train_lda, newdata = mnist_27$true_p, type="prob")[,2]) +
+ggtitle("LDA")
+
+grid.arrange(p2, p1, nrow=1)
+```
+
+En el caso de LDA, la falta de flexibilidad no nos permite capturar la no linealidad en la verdadera función de probabilidad condicional.
+
+### Conexión a distancia
+
+La densidad normal es:
+
+$$
+p(x) = \frac{1}{\sqrt{2\pi} \sigma} \exp\left\{ - \frac{(x-\mu)^2}{\sigma^2}\right\}
+$$
+
+Si eliminamos la constante $1/(\sqrt{2\pi} \sigma)$ y luego tomamos el registro, obtenemos:
+
+$$
+- \frac{(x-\mu)^2}{\sigma^2}
+$$
+
+que es el negativo de una distancia al cuadrado escalada por la desviación estándar. Para dimensiones superiores, lo mismo es cierto, excepto que la escala es más compleja e implica correlaciones.
+
+## Estudio de caso: más de tres clases
+
+Podemos generar un ejemplo con tres categorías como esta:
+```{r}
+if(!exists("mnist")) mnist <- read_mnist()
+set.seed(3456)
+index_127 <- sample(which(mnist$train$labels %in% c(1,2,7)), 2000)
+y <- mnist$train$labels[index_127]
+x <- mnist$train$images[index_127,]
+index_train <- createDataPartition(y, p=0.8, list = FALSE)
+## get the quadrants
+row_column <- expand.grid(row=1:28, col=1:28)
+upper_left_ind <- which(row_column$col <= 14 & row_column$row <= 14)
+lower_right_ind <- which(row_column$col > 14 & row_column$row > 14)
+## binarize the values. Above 200 is ink, below is no ink
+x <- x > 200
+## proportion of pixels in lower right quadrant
+x <- cbind(rowSums(x[ ,upper_left_ind])/rowSums(x),
+rowSums(x[ ,lower_right_ind])/rowSums(x))
+##save data
+train_set <- data.frame(y = factor(y[index_train]),
+x_1 = x[index_train,1], x_2 = x[index_train,2])
+test_set <- data.frame(y = factor(y[-index_train]),
+x_1 = x[-index_train,1], x_2 = x[-index_train,2])
+```
+
+Aquí están los datos de entrenamiento:
+
+```{r mnist-27-training-data}
+train_set %>% ggplot(aes(x_1, x_2, color=y)) + geom_point()
+```
+
+Podemos usar el paquete __caret__ para entrenar el modelo QDA:
+
+```{r}
+train_qda <- train(y ~ ., method = "qda", data = train_set)
+```
+
+Ahora estimamos tres probabilidades condicionales (aunque tienen que sumar 1):
+
+```{r}
+predict(train_qda, test_set, type = "prob") %>% head()
+```
+
+Nuestras predicciones son una de las tres clases:
+
+```{r}
+predict(train_qda, test_set) %>% head()
+```
+
+La matriz de confusión es, por lo tanto, una tabla de 3 por 3:
+
+```{r}
+confusionMatrix(predict(train_qda, test_set), test_set$y)$table
+```
+
+La precisión es `r caret::confusionMatrix(predict(train_qda, test_set), test_set$y)$general["Precision"]`
+
+Tenga en cuenta que para la sensibilidad y especificidad, tenemos un par de valores para **cada** clase. Para definir estos términos, necesitamos un resultado binario. Por lo tanto, tenemos tres columnas: una para cada clase como positivos y las otras dos como negativas.
+
+Para visualizar qué partes de la región se llaman 1, 2 y 7 ahora necesitamos tres colores:
+
+```{r three-classes-plot, echo=FALSE}
+GS <- 150
+new_x <- expand.grid(x_1 = seq(min(train_set$x_1), max(train_set$x_1), len=GS),
+x_2 = seq(min(train_set$x_2), max(train_set$x_2), len=GS))
+new_x %>% mutate(y_hat = predict(train_qda, new_x)) %>%
+ggplot(aes(x_1, x_2, color = y_hat, z = as.numeric(y_hat))) +
+geom_point(size = 0.5, pch = 16) +
+stat_contour(breaks=c(1.5, 2.5),color="black") +
+guides(colour = guide_legend(override.aes = list(size=2)))
+```
+
+
+```{r, echo=FALSE}
+train_lda <- train(y ~ ., method = "lda", data = train_set)
+```
+
+La precisión para LDA,
+`r caret::confusionMatrix(predict(train_lda, test_set), test_set$y)$general["Precision"] `,
+es mucho peor porque el modelo es más rígido. Así es como se ve la regla de decisión:
+
+```{r lda-too-rigid, echo=FALSE}
+new_x %>% mutate(y_hat = predict(train_lda, new_x)) %>%
+ggplot(aes(x_1, x_2, color = y_hat, z = as.numeric(y_hat))) +
+geom_point(size = 0.5, pch = 16) +
+stat_contour(breaks=c(1.5, 2.5),color="black") +
+guides(colour = guide_legend(override.aes = list(size=2)))
+```
+
+Los resultados para kNN
+
+```{r}
+train_knn <- train(y ~ ., method = "knn", data = train_set,
+tuneGrid = data.frame(k = seq(15, 51, 2)))
+```
+
+son mucho mejores con una precisión de
+`r caret::confusionMatrix(predict(train_knn, test_set), test_set$y)$general["Precision"]`. La regla de decisión se ve así:
+
+```{r three-classes-knn-better, echo=FALSE}
+new_x %>% mutate(y_hat = predict(train_knn, new_x)) %>%
+ggplot(aes(x_1, x_2, color = y_hat, z = as.numeric(y_hat))) +
+geom_point(size = 0.5, pch = 16) +
+stat_contour(breaks=c(1.5, 2.5),color="black") +
+guides(colour = guide_legend(override.aes = list(size=2)))
+```
+
+Tenga en cuenta que una de las limitaciones de los modelos generativos aquí se debe a la falta de ajuste del supuesto normal, en particular para la clase 1.
+
+```{r three-classes-lack-of-fit}
+train_set %>% mutate(y = factor(y)) %>%
+ggplot(aes(x_1, x_2, fill = y, color=y)) +
+geom_point(show.legend = FALSE) +
+stat_ellipse(type="norm")
+```
+
+Los modelos generativos pueden ser muy potentes, pero solo cuando somos capaces de aproximar con éxito la distribución conjunta de predictores condicionados en cada clase.
+
+
+## Ejercicios
+
+
+Vamos a aplicar LDA y QDA a la `tissue_gene_expression` conjunto de datos Comenzaremos con ejemplos simples basados en este conjunto de datos y luego desarrollaremos un ejemplo realista.
+
+
+1\. Cree un conjunto de datos con solo las clases "cerebelo" e "hipocampo" (dos partes del cerebro) y una matriz de predicción con 10 columnas seleccionadas al azar.
+
+```{r, eval=FALSE}
+set.seed(1993)
+data("tissue_gene_expression")
+tissues <- c("cerebellum", "hippocampus")
+ind <- which(tissue_gene_expression$y %in% tissues)
+y <- droplevels(tissue_gene_expression$y[ind])
+x <- tissue_gene_expression$x[ind, ]
+x <- x[, sample(ncol(x), 10)]
+```
+
+Utilizar el `train` función para estimar la precisión de LDA.
+
+
+2\. En este caso, LDA se ajusta a dos distribuciones normales de 10 dimensiones. Mire el modelo ajustado mirando el `finalModel` componente del resultado del tren. Observe que hay un componente llamado `means` eso incluye la estimación `means` de ambas distribuciones. Trace los vectores medios uno contra el otro y determine qué predictores (genes) parecen estar impulsando el algoritmo.
+
+
+3\. Repita los ejercicios 1 con QDA. ¿Tiene una mayor precisión que LDA?
+
+
+4\. ¿Los mismos predictores (genes) impulsan el algoritmo? Haz un diagrama como en el ejercicio 2.
+
+
+5\. Una cosa que vemos en la gráfica anterior es que el valor de los predictores se correlaciona en ambos grupos: algunos predictores son bajos en ambos grupos, mientras que otros son altos en ambos grupos. El valor medio de cada predictor, `colMeans(x)`, no es informativo ni útil para la predicción, y a menudo para fines de interpretación es útil centrar o escalar cada columna. Esto se puede lograr con el `preProcessing` argumento en `train`. Vuelva a ejecutar LDA con `preProcessing = "scale"`. Tenga en cuenta que la precisión no cambia, pero vea cómo es más fácil identificar los predictores que difieren más entre los grupos en la gráfica realizada en el ejercicio 4.
+
+
+
+6\. En los ejercicios anteriores vimos que ambos enfoques funcionaron bien. Grafique los valores predictores para los dos genes con las mayores diferencias entre los dos grupos en un diagrama de dispersión para ver cómo parecen seguir una distribución bivariada como se supone por los enfoques LDA y QDA. Colorea los puntos por el resultado.
+
+
+7\. Ahora vamos a aumentar un poco la complejidad del desafío: consideraremos todos los tipos de tejidos.
+
+```{r, eval=FALSE}
+set.seed(1993)
+data("tissue_gene_expression")
+y <- tissue_gene_expression$y
+x <- tissue_gene_expression$x
+x <- x[, sample(ncol(x), 10)]
+```
+
+¿Qué precisión obtienes con LDA?
+
+
+
+8\. Vemos que los resultados son ligeramente peores. Utilizar el `confusionMatrix` función para aprender qué tipo de errores estamos cometiendo.
+
+
+9\. Trace una imagen de los centros de las siete distribuciones normales de 10 dimensiones.
+
+
+
+

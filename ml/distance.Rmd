@@ -1,0 +1,208 @@
+## Distancia
+
+Muchos de los análisis que realizamos con datos de alta dimensión se relacionan directa o indirectamente con la distancia. La mayoría de las técnicas de agrupamiento y aprendizaje automático se basan en la capacidad de definir la distancia entre observaciones, utilizando características o predictores.
+
+### Distancia euclidiana
+
+Como revisión, definamos la distancia entre dos puntos, $A$ y $B$, en un plano cartesiano.
+
+```{r euclidean-distance, echo=FALSE, out.width="35%"}
+rafalib::mypar()
+plot(c(0,1,1),c(0,0,1),pch=16,cex=2,xaxt="n",yaxt="n",xlab="",ylab="",bty="n",xlim=c(-0.25,1.25),ylim=c(-0.25,1.25))
+lines(c(0,1,1,0),c(0,0,1,0))
+text(0,.2,expression(paste('(A'[x]*',A'[y]*')')),cex=1.5)
+text(1,1.2,expression(paste('(B'[x]*',B'[y]*')')),cex=1.5)
+text(-0.1,0,"A",cex=2)
+text(1.1,1,"B",cex=2)
+```
+
+La distancia euclidiana entre $A$ y $B$ es simple:
+
+$$
+\mbox{dist}(A,B) = \sqrt{ (A_x-B_x)^2 + (A_y-B_y)^2}
+$$
+
+Esta definición se aplica al caso de una dimensión, en la que la distancia entre dos números es simplemente el valor absoluto de su diferencia. Entonces, si nuestros dos números unidimensionales son $A$ y $B$, la distancia es:
+
+$$
+\mbox{dist}(A,B) = \sqrt{ (A - B)^2 } = | A - B |
+$$
+
+
+
+### Distancia en dimensiones superiores
+
+Anteriormente presentamos un conjunto de datos de entrenamiento con mediciones de matriz de características para 784 características. Con fines ilustrativos, veremos una muestra aleatoria de 2s y 7s.
+
+```{r, warning=FALSE, message=FALSE}
+library(tidyverse)
+library(dslabs)
+
+if(!exists("mnist")) mnist <- read_mnist()
+
+set.seed(1995)
+ind <- which(mnist$train$labels %in% c(2,7)) %>% sample(500)
+x <- mnist$train$images[ind,]
+y <- mnist$train$labels[ind]
+```
+
+Los predictores están en `x` y las etiquetas en `y`.
+
+A los fines de, por ejemplo, suavizado, estamos interesados en describir la distancia entre observaciones; En este caso, dígitos. Más adelante, con el fin de seleccionar características, también podríamos estar interesados en encontrar píxeles que se comporten de manera similar en todas las muestras.
+
+Para definir la distancia, necesitamos saber qué son los puntos, ya que la distancia matemática se calcula entre puntos. Con datos de alta dimensión, los puntos ya no están en el plano cartesiano. En cambio, los puntos están en dimensiones más altas. Ya no podemos visualizarlos y necesitamos pensar de manera abstracta. Por ejemplo, predictores $\mathbf{X}_i$ se definen como un punto en el espacio dimensional 784: $\mathbf{X}_i = (x_{i,1},\dots,x_{i,784})^\top$.
+
+Una vez que definimos los puntos de esta manera, la distancia euclidiana se define de manera muy similar a la de dos dimensiones. Por ejemplo, la distancia entre los predictores para dos observaciones, digamos observaciones $i=1$ y $i=2$, es:
+
+$$
+\mbox{dist}(1,2) = \sqrt{ \sum_{j=1}^{784} (x_{1,j}-x_{2,j })^2 }
+$$
+
+Este es solo un número no negativo, tal como lo es para dos dimensiones.
+
+### Ejemplo de distancia euclidiana
+
+Las etiquetas para las tres primeras observaciones son:
+
+```{r}
+y[1:3]
+```
+
+Los vectores de predictores para cada una de estas observaciones son:
+
+```{r}
+x_1 <- x[1,]
+x_2 <- x[2,]
+x_3 <- x[3,]
+```
+
+Los primeros dos números son siete y el tercero es un 2. Esperamos las distancias entre el mismo número:
+
+```{r}
+sqrt(sum((x_1 - x_2)^2))
+```
+
+ser más pequeño que entre diferentes números:
+
+```{r}
+sqrt(sum((x_1 - x_3)^2))
+sqrt(sum((x_2 - x_3)^2))
+```
+
+Como se esperaba, los 7 están más cerca uno del otro.
+
+Una forma más rápida de calcular esto es usar álgebra matricial:
+
+```{r}
+sqrt(crossprod(x_1 - x_2))
+sqrt(crossprod(x_1 - x_3))
+sqrt(crossprod(x_2 - x_3))
+```
+
+También podemos calcular **todas** las distancias a la vez de manera relativamente rápida utilizando la función `dist`, que calcula la distancia entre cada fila y produce un objeto de clase `dist`:
+
+
+```{r}
+d <- dist(x)
+class(d)
+```
+
+Hay varias funciones relacionadas con el aprendizaje automático en R que toman objetos de clase `dist` como entrada Para acceder a las entradas usando índices de fila y columna, necesitamos forzarlo en una matriz. Podemos ver la distancia que calculamos arriba de esta manera:
+
+```{r}
+as.matrix(d)[1:3,1:3]
+```
+
+Podemos ver rápidamente una imagen de estas distancias usando este código:
+
+```{r distance-image, fig.width = 4, fig.height = 4, eval=FALSE}
+image(as.matrix(d))
+```
+Si ordenamos esta distancia por las etiquetas, podemos ver que, en general, los dos están más cerca uno del otro y los sietes están más cerca el uno del otro:
+
+```{r eval=FALSE}
+image(as.matrix(d)[order(y), order(y)])
+```
+
+```{r diatance-image-ordered, fig.width = 4, fig.height = 4, out.width="50%", echo=FALSE}
+rafalib::mypar()
+image(as.matrix(d)[order(y), order(y)])
+```
+
+Una cosa que notamos aquí es que parece haber más uniformidad en la forma en que se dibujan los sietes, ya que parecen estar más cercanos (más rojos) a otros sietes que los dos a otros dos.
+
+### Espacio predictor {#predictor-space}
+
+_Predictor space_ es un concepto que a menudo se usa para describir algoritmos de aprendizaje automático. El término espacio se refiere a una definición matemática que no describimos en detalle aquí. En cambio, proporcionamos una explicación simplificada para ayudar a comprender el término espacio predictivo cuando se usa en el contexto de algoritmos de aprendizaje automático.
+
+El espacio del predictor puede considerarse como la colección de todos los posibles vectores de predictores que deben considerarse para el desafío de aprendizaje automático en cuestión. Cada miembro del espacio se conoce como _point_. Por ejemplo, en el conjunto de datos 2 o 7, el espacio predictivo consta de todos los pares $(x_1, x_2)$ tal que ambos $x_1$ y $x_2$ están dentro de 0 y 1. Este espacio en particular puede representarse gráficamente como un cuadrado. En el conjunto de datos MNIST, el espacio predictivo consta de todos los vectores dimensionales 784 con cada elemento vectorial un número entero entre 0 y 256. Un elemento esencial de un espacio predictor es que necesitamos definir una función que proporcione la distancia entre dos puntos. En la mayoría de los casos usamos la distancia euclidiana, pero hay otras posibilidades. Un caso particular en el que no podemos simplemente usar la distancia euclidiana es cuando tenemos predictores categóricos.
+
+Definir un espacio predictivo es útil en el aprendizaje automático porque hacemos cosas como definir vecindarios de puntos, como lo requieren muchas técnicas de suavizado. Por ejemplo, podemos definir un vecindario como todos los puntos que están dentro de 2 unidades de un centro predefinido. Si los puntos son bidimensionales y usamos la distancia euclidiana, esta vecindad se representa gráficamente como un círculo con radio 2. En tres dimensiones, la vecindad es una esfera. Pronto aprenderemos sobre algoritmos que dividen el espacio en regiones que no se superponen y luego hacen diferentes predicciones para cada región utilizando los datos de la región.
+
+
+
+
+### Distancia entre predictores
+
+
+También podemos calcular distancias entre predictores. Si $N$ es el número de observaciones, la distancia entre dos predictores, digamos 1 y 2, es:
+
+$$
+\mbox{dist}(1,2) = \sqrt{ \sum_{i=1}^{N} (x_{i,1}-x_{i,2})^2 }
+$$
+
+Para calcular la distancia entre todos los pares de los predictores 784, primero podemos transponer la matriz y luego usar `dist`:
+```{r}
+d <- dist(t(x))
+dim(as.matrix(d))
+```
+
+<!--
+Una cosa interesante a tener en cuenta aquí es que si elegimos un predictor (un píxel), podemos ver qué píxeles están cerca. Es decir, el par de píxeles tiene tinta en las mismas imágenes (pequeña distancia) o no (gran distancia). La distancia entre, por ejemplo, y todos los demás píxeles viene dada por:
+
+```{r}
+d_492 <- as.matrix(d)[492,]
+```
+
+Ahora podemos ver el patrón espacial de estas distancias con el siguiente código:
+
+```{r distnace-rows, fig.width = 4, fig.height = 4}
+image(1:28, 1:28, matrix(d_492, 28, 28))
+```
+
+No es sorprendente que los puntos físicamente cercanos estén matemáticamente más cerca.
+-->
+
+## Ejercicios
+
+
+1\. Cargue el siguiente conjunto de datos:
+
+```{r, eval=FALSE}
+data("tissue_gene_expression")
+```
+
+Este conjunto de datos incluye una matriz `x`
+
+```{r, eval=FALSE}
+dim(tissue_gene_expression$x)
+```
+
+con la expresión génica medida en 500 genes para 189 muestras biológicas que representan siete tejidos diferentes. El tipo de tejido se almacena en `y`
+
+```{r, eval=FALSE}
+table(tissue_gene_expression$y)
+```
+
+Calcule la distancia entre cada observación y almacénela en un objeto `d`.
+
+
+2\. Compare la distancia entre las dos primeras observaciones (ambos cerebelos), la 39 y la 40 (ambos colones) y la 73 y 74 (ambos endometrios). Vea si las observaciones del mismo tipo de tejido están más próximas entre sí.
+
+
+3\. Vemos que, de hecho, las observaciones del mismo tipo de tejido están más próximas entre sí en los seis ejemplos de tejido que acabamos de examinar. Haz un diagrama de todas las distancias usando el `image` función para ver si este patrón es general. Sugerencia: convertir `d` a una matriz primero.
+
+
+
+
+

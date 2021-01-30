@@ -1,0 +1,610 @@
+## Árboles de clasificación y regresión (CART)
+
+```{r, echo=FALSE}
+img_path <- "ml/img"
+```
+
+### La maldición de la dimensionalidad
+
+Describimos cómo los métodos como LDA y QDA no deben usarse con muchos predictores $p$ porque el número de parámetros que necesitamos estimar se vuelve demasiado grande. Por ejemplo, con el ejemplo de dígitos $p=784$, tendríamos más de 600,000 parámetros con LDA, y lo multiplicaríamos por el número de clases para QDA. Los métodos de kernel como kNN o regresión local no tienen parámetros de modelo para estimar. Sin embargo, también se enfrentan a un desafío cuando se utilizan predictores múltiples debido a lo que se conoce como la "maldición de la dimensionalidad". La dimensión aquí se refiere al hecho de que cuando tenemos $p$ predictores, la distancia entre dos observaciones se calcula en $p$-dimensional espacio.
+
+Una forma útil de comprender la maldición de la dimensionalidad es considerar qué tan grande tenemos que hacer un espacio/ vecindario/ ventana para incluir un porcentaje dado de los datos. Recuerde que con vecindarios más grandes, nuestros métodos pierden flexibilidad.
+
+Por ejemplo, supongamos que tenemos un predictor continuo con puntos igualmente espaciados en el intervalo [0,1] y queremos crear ventanas que incluyan 1/10 de datos. Entonces es fácil ver que nuestras ventanas tienen que ser de tamaño 0.1:
+
+```{r curse-of-dim, echo=FALSE, out.width="50%", fig.height=1.5}
+rafalib::mypar()
+x <- seq(0,1,len=100)
+y <- rep(1, 100)
+plot(x,y, xlab="",ylab="", cex=0.25, yaxt="n", xaxt="n",type="n")
+lines(x[c(15,35)], y[c(15,35)], col="blue",lwd=3)
+points(x,y, cex = 0.25)
+points(x[25],y[25],col="blue", cex = 0.5, pch=4)
+text(x[c(15,35)], y[c(15,35)], c("[","]"))
+```
+
+Ahora, para dos predictores, si decidimos mantener el vecindario igual de pequeño, 10% para cada dimensión, incluimos solo 1 punto. Si queremos incluir el 10% de los datos, entonces necesitamos aumentar el tamaño de cada lado del cuadrado para $\sqrt{.10} \approx .316$:
+
+```{r curse-of-dim-2, echo=FALSE, fig.width=7, fig.height=3.5, out.width="50%",}
+rafalib::mypar(1,2)
+tmp <- expand.grid(1:10, 1:10)
+x <- tmp[,1]
+y <- tmp[,2]
+plot(x,y, xlab="",ylab="", cex=0.25, yaxt="n", xaxt="n",type="n")
+polygon(c(x[25]-0.5, x[25]-0.5, x[25]+0.5, x[25]+0.5),
+c(y[25]-0.5, y[25]+0.5, y[25]+0.5, y[25]-0.5), col="blue")
+points(x,y, cex = 0.25)
+points(x[25],y[25], cex = 0.5, pch=4)
+
+plot(x,y, xlab="",ylab="", cex=0.25, yaxt="n", xaxt="n",type="n")
+polygon(c(x[25]-sqrt(10)/2, x[25]-sqrt(10)/2, x[25]+sqrt(10)/2, x[25]+sqrt(10)/2),
+c(y[25]-sqrt(10)/2, y[25]+sqrt(10)/2, y[25]+sqrt(10)/2, y[25]-sqrt(10)/2),
+col="blue")
+points(x,y, cex = 0.25)
+points(x[25],y[25], cex = 0.5, pch=4)
+```
+
+Usando la misma lógica, si queremos incluir el 10% de los datos en un espacio tridimensional, entonces el lado de cada cubo es $\sqrt[3]{.10} \approx 0.464$.
+En general, incluir el 10% de los datos en un caso con $p$ dimensiones, necesitamos un intervalo con cada lado del tamaño $\sqrt[p]{.10}$ del total. Esta proporción se acerca a 1 rápidamente, y si la proporción es 1 significa que incluimos todos los datos y ya no estamos suavizando.
+
+```{r curse-of-dim-4, message=FALSE, message=FALSE}
+library(tidyverse)
+p <- 1:100
+qplot(p, .1^(1/p), ylim = c(0,1))
+```
+
+Cuando llegamos a 100 predictores, el vecindario ya no es muy local, ya que cada lado cubre casi todo el conjunto de datos.
+
+Aquí observamos un conjunto de métodos elegantes y versátiles que se adaptan a dimensiones más altas y también permiten que estas regiones tomen formas más complejas mientras producen modelos que son interpretables. Estos son métodos muy populares, conocidos y estudiados. Nos concentraremos en los árboles de regresión y decisión y su extensión a bosques aleatorios.
+
+### CARRERA motivación
+
+Para motivar esta sección, utilizaremos un nuevo conjunto de datos.
+eso incluye el desglose de la composición del aceite de oliva en 8 ácidos grasos:
+
+```{r}
+library(tidyverse)
+library(dslabs)
+data("olive")
+names(olive)
+```
+
+Con fines ilustrativos, intentaremos predecir la región utilizando los valores de composición de ácidos grasos como predictores.
+
+```{r}
+table(olive$region)
+```
+
+Quitamos el `area` columna porque no lo usaremos como predictor.
+
+```{r}
+olive <- select(olive, -area)
+```
+
+Intentemos prontamente pronosticar la región usando kNN:
+
+```{r olive-knn, warning=FALSE, message=FALSE}
+library(caret)
+fit <- train(region ~ ., method = "knn",
+tuneGrid = data.frame(k = seq(1, 15, 2)),
+data = olive)
+ggplot(fit)
+```
+
+Vemos que usando solo un vecino, podemos predecir relativamente bien. Sin embargo, un poco de exploración de datos revela que deberíamos poder hacerlo aún mejor. Por ejemplo, si observamos la distribución de cada predictor estratificado por región, vemos que el eicosenoico solo está presente en el sur de Italia y que el linoleico separa el norte de Italia de Cerdeña.
+
+```{r olive-eda, fig.height=3, fig.width=6}
+olive %>% gather(fatty_acid, percentage, -region) %>%
+ggplot(aes(region, percentage, fill = region)) +
+geom_boxplot() +
+facet_wrap(~fatty_acid, scales = "free", ncol = 4) +
+theme(axis.text.x = element_blank(), legend.position="bottom")
+```
+
+¡Esto implica que deberíamos ser capaces de construir un algoritmo que prediga perfectamente! Podemos ver esto claramente al trazar los valores para eicosenoico y linoleico.
+
+```{r olive-two-predictors}
+olive %>%
+ggplot(aes(eicosenoic, linoleic, color = region)) +
+geom_point() +
+geom_vline(xintercept = 0.065, lty = 2) +
+geom_segment(x = -0.2, y = 10.54, xend = 0.065, yend = 10.54,
+color = "black", lty = 2)
+```
+
+En la sección \@ref(predictor-space) definimos espacios predictores. El espacio predictivo aquí consiste en puntos de ocho dimensiones con valores entre 0 y 100. En la gráfica anterior, mostramos el espacio definido por los dos predictores eicosenoico y linoleico y, a simple vista,
+podemos construir una regla de predicción que particione el espacio del predictor para que cada partición contenga solo resultados de una categoría. Esto a su vez se puede utilizar para definir un algoritmo con una precisión perfecta. Específicamente, definimos la siguiente regla de decisión. Si el eicosenoico es mayor que 0.065, prediga el sur de Italia. Si no, entonces si linoleico es más grande que $10.535$, predicen Cerdeña, y si es más bajo, predicen el norte de Italia. Podemos dibujar este árbol de decisión así:
+
+```{r olive-tree, echo=FALSE, warning=FALSE, message=FALSE, fig.height=4.5, out.width="50%"}
+library(caret)
+library(rpart)
+rafalib::mypar()
+train_rpart <- train(region ~ ., method = "rpart", data = olive)
+
+plot(train_rpart$finalModel, margin = 0.1)
+text(train_rpart$finalModel, cex = 0.75)
+```
+
+Los árboles de decisión como este se usan a menudo en la práctica. Por ejemplo, para decidir sobre el riesgo de una persona de un mal resultado después de un ataque cardíaco, los médicos usan lo siguiente:
+
+```{r, echo=FALSE, out.width="50%"}
+# source https://www.researchgate.net/profile/Douglas_Walton/publication/228297479/figure/fig1/AS:301828123185152@1448972840090/Decision-Tree-for-Heart-Attack-Victim-adapted-from-Gigerenzer-et-al-1999-4.png
+knitr::include_graphics(file.path(img_path,"Decision-Tree-for-Heart-Attack-Victim-adapted-from-Gigerenzer-et-al-1999-4.png"))
+```
+
+(Fuente: Walton 2010 Informal Logic, Vol. 30, No. 2, pp. 159-184^[https://papers.ssrn.com/sol3/Delivery.cfm/SSRN_ID1759289_code1486039.pdf?abstractid=1759289&amp;mirid=1&amp;type=2 ].)
+
+Un árbol es básicamente un diagrama de flujo de preguntas de sí o no. La idea general de los métodos que estamos describiendo es definir un algoritmo que use datos para crear estos árboles con predicciones en los extremos, conocidos como _nodes_.
+Los árboles de regresión y decisión operan prediciendo una variable de resultado $Y$ dividiendo los predictores.
+
+
+### Árboles de regresión
+
+Cuando el resultado es continuo, llamamos al método un árbol _regresión_. Para introducir árboles de regresión, utilizaremos los datos de la encuesta de 2008 utilizados en secciones anteriores para describir la idea básica de cómo construimos estos algoritmos. Al igual que con otros algoritmos de aprendizaje automático, intentaremos estimar la expectativa condicional $f(x) = \mbox{E}(Y | X = x)$ con $Y$ el margen de la encuesta y $x$ el dia.
+
+```{r polls-2008-again}
+data("polls_2008")
+qplot(day, margin, data = polls_2008)
+```
+
+La idea general aquí es construir un árbol de decisión y, al final de cada _nodo_, obtener un predictor $\hat{y}$. Una forma matemática de describir esto es decir que estamos dividiendo el espacio predictivo en $J$ regiones no superpuestas, $R_1, R_2, \ldots, R_J$, y luego para cualquier predictor $x$ que cae dentro de la región $R_j$, estimar $f(x)$ con el promedio de las observaciones de entrenamiento $y_i$ para el cual el predictor asociado $x_i$ también está en $R_j$.
+
+¿Pero cómo decidimos la partición? $R_1, R_2, \ldots, R_J$ y como elegimos $J$? Aquí es donde el algoritmo se vuelve un poco complicado.
+
+Los árboles de regresión crean particiones recursivamente. Comenzamos el algoritmo con una partición, el espacio predictor completo. En nuestro primer ejemplo simple, este espacio es el intervalo [-155, 1]. Pero después del primer paso tendremos dos particiones. Después del segundo paso, dividiremos una de estas particiones en dos y tendremos tres particiones, luego cuatro, luego cinco, y así sucesivamente. Describimos cómo elegimos la partición para una partición adicional, y cuándo parar, más adelante.
+
+Una vez que seleccionamos una partición $\mathbf{x}$ para dividir para crear las nuevas particiones, encontramos un predictor $j$ y valor $s$ que definen dos nuevas particiones, que llamaremos $R_1(j,s)$ y $R_2(j,s)$, que divide nuestras observaciones en la partición actual preguntando si $x_j$ es mayor que $s$:
+
+$$
+R_1(j,s) = \{\mathbf{x} \mid x_j < s\} \mbox{ and } R_2(j,s) = \{\mathbf{x} \mid x_j \geq s\}
+$$
+
+En nuestro ejemplo actual solo tenemos un predictor, por lo que siempre elegiremos $j=1$, pero en general este no será el caso. Ahora, después de definir las nuevas particiones. $R_1$ y $R_2$ y decidimos detener la partición, calculamos predictores tomando el promedio de todas las observaciones $y$ para lo cual el asociado $\mathbf{x}$ es en $R_1$ y $R_2$. Nos referimos a estos dos como $\hat{y}_{R_1}$ y $\hat{y}_{R_2}$ respectivamente.
+
+Pero como elegimos $j$ y $s$? Básicamente encontramos el par que minimiza la suma residual del cuadrado (RSS):
+$$
+\sum_{i:\, x_i \in R_1(j,s)} (y_i - \hat{y}_{R_1})^2 +
+\sum_{i:\, x_i \in R_2(j,s)} (y_i - \hat{y}_{R_2})^2
+$$
+
+
+Esto se aplica recursivamente a las nuevas regiones. $R_1$ y $R_2$. Describimos cómo nos detenemos más tarde, pero una vez que terminamos de dividir el espacio del predictor en regiones, en cada región se realiza una predicción utilizando las observaciones en esa región.
+
+Echemos un vistazo a lo que hace este algoritmo en los datos de la encuesta de elecciones presidenciales de 2008. Utilizaremos el `rpart` funcionar en el paquete __rpart__.
+
+```{r}
+library(rpart)
+fit <- rpart(margin ~ ., data = polls_2008)
+```
+
+Aquí, solo hay un predictor. Por lo tanto, no tenemos que decidir qué predictor $j$ para dividir, simplemente tenemos que decidir qué valor $s$ solíamos dividirnos. Podemos ver visualmente dónde se hicieron las divisiones:
+
+
+```{r, eval=FALSE}
+plot(fit, margin = 0.1)
+text(fit, cex = 0.75)
+```
+
+```{r polls-2008-tree, fig.height=5, out.width="60%", echo=FALSE}
+rafalib::mypar()
+plot(fit, margin = 0.1)
+text(fit, cex = 0.75)
+```
+
+La primera división se realiza el día 39.5. Una de esas regiones se divide en el día 86.5. Las dos nuevas particiones resultantes se dividen en los días 49.5 y 117.5, respectivamente, y así sucesivamente. Terminamos con 8 particiones. La estimación final $\hat{f}(x)$ se ve como esto:
+
+```{r polls-2008-tree-fit}
+polls_2008 %>%
+mutate(y_hat = predict(fit)) %>%
+ggplot() +
+geom_point(aes(day, margin)) +
+geom_step(aes(day, y_hat), col="red")
+```
+
+Tenga en cuenta que el algoritmo dejó de particionar a las 8. Ahora explicamos cómo se toma esta decisión.
+
+Primero necesitamos definir el término _parámetro de complejidad_ (cp). Cada vez que dividimos y definimos dos nuevas particiones, nuestro conjunto de entrenamiento RSS disminuye. Esto se debe a que con más particiones, nuestro modelo tiene más flexibilidad para adaptarse a los datos de entrenamiento. De hecho, si divide hasta que cada punto sea su propia partición, entonces RSS baja hasta 0 ya que el promedio de un valor es el mismo valor. Para evitar esto, el algoritmo establece un mínimo de cuánto debe mejorar el RSS para que se agregue otra partición. Este parámetro se conoce como _parámetro de complejidad_ (cp). El RSS debe mejorar por un factor de cp para que se agregue la nueva partición. Por lo tanto, los valores grandes de cp obligarán al algoritmo a detenerse antes, lo que resulta en menos nodos.
+
+Sin embargo, cp no es el único parámetro utilizado para decidir si debemos particionar una partición actual o no. Otro parámetro común es el número mínimo de observaciones requeridas en una partición antes de dividirla más. El argumento usado en el `rpart` la función es `minsplit` y el valor predeterminado es 20. El `rpart` la implementación de árboles de regresión también permite a los usuarios determinar un número mínimo de observaciones en cada nodo. El argumento es `minbucket` y por defecto a `round(minsplit/3)`.
+
+Como se esperaba, si establecemos `cp = 0` y `minsplit = 2`, nuestra predicción es lo más flexible posible y nuestro predictor son nuestros datos originales:
+
+```{r polls-2008-tree-over-fit}
+fit <- rpart(margin ~ ., data = polls_2008,
+control = rpart.control(cp = 0, minsplit = 2))
+polls_2008 %>%
+mutate(y_hat = predict(fit)) %>%
+ggplot() +
+geom_point(aes(day, margin)) +
+geom_step(aes(day, y_hat), col="red")
+```
+
+Intuitivamente, sabemos que este no es un buen enfoque, ya que generalmente dará como resultado un entrenamiento excesivo. Estas `cp`, `minsplit` y `minbucket`, se pueden usar tres parámetros para controlar la variabilidad de los predictores finales. Cuanto más grandes son estos valores, más datos se promedian para calcular un predictor y, por lo tanto, reducir la variabilidad. El inconveniente es que restringe la flexibilidad.
+
+Entonces, ¿cómo elegimos estos parámetros? Podemos usar validación cruzada, descrita en el Capítulo \@ref(cross-validation), al igual que con cualquier parámetro de ajuste. Aquí hay un ejemplo del uso de validación cruzada para elegir cp.
+
+```{r polls-2008-tree-train}
+library(caret)
+train_rpart <- train(margin ~ .,
+method = "rpart",
+tuneGrid = data.frame(cp = seq(0, 0.05, len = 25)),
+data = polls_2008)
+ggplot(train_rpart)
+```
+
+Para ver el árbol resultante, accedemos al `finalModel` y trazarlo:
+
+
+```{r, eval=FALSE}
+plot(train_rpart$finalModel, margin = 0.1)
+text(train_rpart$finalModel, cex = 0.75)
+```
+
+```{r polls-2008-final-model, fig.height=5, out.width="80%", echo=FALSE}
+rafalib::mypar()
+plot(train_rpart$finalModel, margin = 0.1)
+text(train_rpart$finalModel, cex = 0.75)
+```
+
+Y debido a que solo tenemos un predictor, en realidad podemos trazar $\hat{f}(x)$:
+
+```{r polls-2008-final-fit}
+polls_2008 %>%
+mutate(y_hat = predict(train_rpart)) %>%
+ggplot() +
+geom_point(aes(day, margin)) +
+geom_step(aes(day, y_hat), col="red")
+```
+
+Tenga en cuenta que si ya tenemos un árbol y queremos aplicar un valor de cp más alto, podemos usar el `prune` función. Llamamos a esto _poda_ un árbol porque estamos cortando particiones que no cumplen con un `cp` criterio. Anteriormente creamos un árbol que usaba un `cp = 0` y lo guardé en `fit`. Podemos podarlo así:
+
+```{r polls-2008-prune}
+pruned_fit <- prune(fit, cp = 0.01)
+```
+
+
+### Árboles de clasificación (decisión)
+
+Los árboles de clasificación, o árboles de decisión, se usan en problemas de predicción donde el resultado es categórico. Utilizamos el mismo principio de partición con algunas diferencias para tener en cuenta el hecho de que ahora estamos trabajando con un resultado categórico.
+
+La primera diferencia es que formamos predicciones calculando qué clase es la más común entre las observaciones del conjunto de entrenamiento dentro de la partición, en lugar de tomar el promedio en cada partición (ya que no podemos tomar el promedio de las categorías).
+
+El segundo es que ya no podemos usar RSS para elegir la partición. Si bien podríamos utilizar el enfoque ingenuo de buscar particiones que minimicen el error de entrenamiento, los enfoques de mejor desempeño utilizan métricas más sofisticadas. Dos de los más populares son el _Gini Index_y_Entropy_.
+
+En un escenario perfecto, los resultados en cada una de nuestras particiones son todos de la misma categoría, ya que esto permitirá una precisión perfecta. El _Gini Index_ será 0 en este escenario, y se hará más grande a medida que nos desviamos de este escenario. Para definir el índice de Gini, definimos $\hat{p}_{j,k}$ como la proporción de observaciones en partición $j$ que son de clase $k$. El índice de Gini se define como
+
+$$
+\mbox{Gini}(j) = \sum_{k=1}^K \hat{p}_{j,k}(1-\hat{p}_{j,k})
+$$
+
+Si estudia la fórmula cuidadosamente, verá que de hecho es 0 en el escenario perfecto descrito anteriormente.
+
+_Entropía_ es una cantidad muy similar, definida como
+
+$$
+\mbox{entropy}(j) = -\sum_{k=1}^K \hat{p}_{j,k}\log(\hat{p}_{j,k}), \mbox{ with } 0 \times \log(0) \mbox{ defined as }0
+$$
+
+Veamos cómo funciona un árbol de clasificación en el ejemplo de dígitos que examinamos antes:
+
+```{r, echo=FALSE}
+library(dslabs)
+data("mnist_27")
+```
+
+```{r, echo=FALSE}
+plot_cond_prob <- function(p_hat=NULL){
+tmp <- mnist_27$true_p
+if(!is.null(p_hat)){
+tmp <- mutate(tmp, p=p_hat)
+}
+tmp %>% ggplot(aes(x_1, x_2, z=p, fill=p)) +
+geom_raster(show.legend = FALSE) +
+scale_fill_gradientn(colors=c("#F8766D","white","#00BFC4")) +
+stat_contour(breaks=c(0.5),color="black")
+}
+```
+
+Podemos usar este código para ejecutar el algoritmo y trazar el árbol resultante:
+```{r mnist-27-tree}
+train_rpart <- train(y ~ .,
+method = "rpart",
+tuneGrid = data.frame(cp = seq(0.0, 0.1, len = 25)),
+data = mnist_27$train)
+plot(train_rpart)
+```
+
+La precisión lograda por este enfoque es mejor que la que obtuvimos con la regresión, pero no es tan buena como la que obtuvimos con los métodos del núcleo:
+
+```{r}
+y_hat <- predict(train_rpart, mnist_27$test)
+confusionMatrix(y_hat, mnist_27$test$y)$overall["Accuracy"]
+```
+
+La gráfica de la probabilidad condicional estimada nos muestra las limitaciones de los árboles de clasificación:
+
+```{r rf-cond-prob, echo=FALSE, out.width="100%", warning=FALSE, message=FALSE}
+library(gridExtra)
+p1 <- plot_cond_prob() + ggtitle("True conditional probability")
+
+p2 <- plot_cond_prob(predict(train_rpart, newdata = mnist_27$true_p, type = "prob")[,2]) +
+ggtitle("Decision Tree")
+
+grid.arrange(p2, p1, nrow=1)
+```
+
+Tenga en cuenta que con los árboles de decisión, es difícil suavizar los límites ya que cada partición crea una discontinuidad.
+
+Los árboles de clasificación tienen ciertas ventajas que los hacen muy útiles. Son altamente interpretables, incluso más que los modelos lineales. Son fáciles de visualizar (si son lo suficientemente pequeños). Finalmente, pueden modelar procesos de decisión humanos y no requieren el uso de predictores ficticios para variables categóricas. Por otro lado, el enfoque a través de particiones recursivas puede sobreentrenar fácilmente y, por lo tanto, es un poco más difícil de entrenar que, por ejemplo, la regresión lineal o kNN. Además, en términos de precisión, rara vez es el método de mejor rendimiento ya que no es muy flexible y es muy inestable a los cambios en los datos de entrenamiento. Los bosques aleatorios, explicados a continuación, mejoran varias de estas deficiencias.
+
+## Bosques al azar
+
+Los bosques aleatorios son un enfoque de aprendizaje automático **muy popular** que aborda las deficiencias de los árboles de decisión utilizando una idea inteligente. El objetivo es mejorar el rendimiento de la predicción y reducir la inestabilidad mediante el promedio de árboles de decisión múltiple (un bosque de árboles construido con aleatoriedad). Tiene dos características que ayudan a lograr esto.
+
+El primer paso es _agotstrap aggregation_o_bagging_. La idea general es generar muchos predictores, cada uno utilizando árboles de regresión o clasificación, y luego formando una predicción final basada en la predicción promedio de todos estos árboles. Para asegurar que los árboles individuales no sean iguales, utilizamos el bootstrap para inducir aleatoriedad. Estas dos características combinadas explican el nombre: el bootstrap hace que los árboles individuales sean **aleatorios** diferentes, y la combinación de árboles es el **bosque**. Los pasos específicos son los siguientes.
+
+1\. Construir $B$ árboles de decisión utilizando el conjunto de entrenamiento. Nos referimos a los modelos equipados como $T_1, T_2, \dots, T_B$. Luego explicamos cómo nos aseguramos de que sean diferentes.
+
+2\. Para cada observación en el conjunto de prueba, forme una predicción $\hat{y}_j$ usando el árbol $T_j$.
+
+3\. Para resultados continuos, forme una predicción final con el promedio $\hat{y} = \frac{1}{B} \sum_{j=1}^B \hat{y}_j$. Para la clasificación de datos categóricos, prediga $\hat{y}$ con voto mayoritario (clase más frecuente entre $\hat{y}_1, \dots, \hat{y}_T$).
+
+Entonces, ¿cómo obtenemos diferentes árboles de decisión de un solo conjunto de entrenamiento? Para esto, usamos la aleatoriedad de dos maneras que explicamos en los pasos a continuación. Dejar $N$ sea el número de observaciones en el conjunto de entrenamiento. Crear $T_j, \, j=1,\ldots,B$ del conjunto de entrenamiento hacemos lo siguiente:
+
+1\. Crear un conjunto de entrenamiento de bootstrap por muestreo $N$ observaciones del conjunto de entrenamiento **con reemplazo**. Esta es la primera forma de inducir aleatoriedad.
+
+2\. Una gran cantidad de características es típica en los desafíos de aprendizaje automático. A menudo, muchas características pueden ser informativas, pero incluirlas todas en el modelo puede resultar en un sobreajuste. La segunda forma en que los bosques aleatorios inducen la aleatoriedad es seleccionando aleatoriamente las características que se incluirán en la construcción de cada árbol. Se selecciona un subconjunto aleatorio diferente para cada árbol. Esto reduce la correlación entre los árboles en el bosque, mejorando así la precisión de la predicción.
+
+Para ilustrar cómo los primeros pasos pueden dar como resultado estimaciones más uniformes, demostraremos ajustando un bosque aleatorio a
+los datos de las encuestas de 2008. Utilizaremos el `randomForest` función en el paquete __randomForest__:
+
+```{r polls-2008-rf, message=FALSE, warning=FALSE}
+library(randomForest)
+fit <- randomForest(margin~., data = polls_2008)
+```
+
+Tenga en cuenta que si aplicamos la función `plot` al objeto resultante, almacenado en `fit`, vemos cómo cambia la tasa de error de nuestro algoritmo a medida que agregamos árboles.
+
+```{r, eval=FALSE}
+rafalib::mypar()
+plot(fit)
+```
+
+```{r more-trees-better-fit, echo=FALSE}
+rafalib::mypar()
+plot(fit)
+```
+
+Podemos ver que en este caso, la precisión mejora a medida que agregamos más árboles hasta unos 30 árboles donde la precisión se estabiliza.
+
+La estimación resultante para este bosque aleatorio puede verse así:
+
+```{r polls-2008-rf-fit}
+polls_2008 %>%
+mutate(y_hat = predict(fit, newdata = polls_2008)) %>%
+ggplot() +
+geom_point(aes(day, margin)) +
+geom_line(aes(day, y_hat), col="red")
+```
+
+Observe que la estimación aleatoria del bosque es mucho más uniforme que lo que logramos con el árbol de regresión en la sección anterior. Esto es posible porque el promedio de muchas funciones de paso puede ser suave. Podemos ver esto examinando visualmente cómo cambia la estimación a medida que agregamos más árboles. En la siguiente figura, verá cada una de las muestras de bootstrap para varios valores de $b$ y para cada uno vemos el árbol que se ajusta en gris, los árboles anteriores que se ajustaron en gris más claro, y el resultado de promediar todos los árboles estimados hasta ese punto.
+
+```{r rf-animation, echo=FALSE, out.width="100%"}
+library(rafalib)
+set.seed(1)
+ntrees <- 50
+XLIM <- range(polls_2008$day)
+YLIM <- range(polls_2008$margin)
+
+if(!file.exists(file.path(img_path,"rf.gif"))){
+sum <- rep(0,nrow(polls_2008))
+res <- vector("list", ntrees)
+animation::saveGIF({
+for(i in 0:ntrees){
+mypar(1,1)
+if(i==0){
+with(polls_2008, plot(day, margin, pch = 1, main = "Data", xlim=XLIM,
+ylim=YLIM,
+xlab = "Days", ylab="Obama - McCain"))
+} else{
+ind <- sort(sample(1:nrow(polls_2008), replace = TRUE))
+tmp <- polls_2008[ind,]
+fit <- rpart(margin~day, data = tmp)
+pred <- predict(fit, newdata = tmp)
+res[[i]] <- tibble(day = tmp$day, margin=pred)
+pred <- predict(fit, newdata = polls_2008)
+sum <- sum+pred
+avg <- sum/i
+with(tmp, plot(day,margin, pch=1, xlim=XLIM, ylim=YLIM, type="n",
+xlab = "Days", ylab="Obama - McCain",
+main=ifelse(i==1, paste(i, "tree"),paste(i, "trees"))))
+for(j in 1:i){
+with(res[[j]], lines(day, margin, type="s", col="grey", lty=2))
+}
+with(tmp, points(day,margin, pch=1))
+with(res[[i]], lines(day, margin, type="s",col="azure4",lwd=2))
+lines(polls_2008$day, avg, lwd=3, col="blue")
+}
+}
+for(i in 1:5){
+mypar(1,1)
+with(polls_2008, plot(day, margin, pch = 1, main="Final", xlim=XLIM, ylim=YLIM,
+xlab = "Days", ylab="Obama - McCain"))
+lines(polls_2008$day, avg, lwd=3, col="blue")
+}
+}, movie.name = "ml/img/rf.gif", ani.loop=0, ani.delay =50)
+}
+
+if(knitr::is_html_output()){
+knitr::include_graphics(file.path(img_path,"rf.gif"))
+} else {
+sum <- rep(0,nrow(polls_2008))
+res <- vector("list", ntrees)
+
+mypar(2,3)
+show <- c(1, 5, 25, 50)
+for(i in 0:ntrees){
+if(i==0){
+with(polls_2008, plot(day, margin, pch = 1, main = "Data", xlim=XLIM,
+ylim=YLIM,
+xlab = "Days", ylab="Obama - McCain"))
+} else{
+ind <- sort(sample(1:nrow(polls_2008), replace = TRUE))
+tmp <- polls_2008[ind,]
+fit <- rpart(margin~day, data = tmp)
+pred <- predict(fit, newdata = tmp)
+res[[i]] <- tibble(day = tmp$day, margin=pred)
+pred <- predict(fit, newdata = polls_2008)
+sum <- sum+pred
+avg <- sum/i
+if(i %in% show){
+with(tmp, plot(day,margin, pch=1, xlim=XLIM, ylim=YLIM, type="n",
+xlab = "Days", ylab="Obama - McCain",
+main=ifelse(i==1, paste(i, "tree"),paste(i, "trees"))))
+for(j in 1:i){
+with(res[[j]], lines(day, margin, type="s", col="grey", lty=2))
+}
+with(tmp, points(day,margin, pch=1))
+with(res[[i]], lines(day, margin, type="s",col="azure4",lwd=2))
+lines(polls_2008$day, avg, lwd=3, col="blue")
+}
+}
+}
+with(polls_2008, plot(day, margin, pch = 1, main="Final", xlim=XLIM, ylim=YLIM,
+xlab = "Days", ylab="Obama - McCain"))
+lines(polls_2008$day, avg, lwd=3, col="blue")
+}
+```
+
+
+Aquí está el ajuste aleatorio del bosque para nuestro ejemplo de dígitos basado en dos predictores:
+
+```{r mnits-27-rf-fit}
+library(randomForest)
+train_rf <- randomForest(y ~ ., data=mnist_27$train)
+
+confusionMatrix(predict(train_rf, mnist_27$test),
+mnist_27$test$y)$overall["Accuracy"]
+```
+
+Así es como se ven las probabilidades condicionales:
+
+```{r cond-prob-rf, echo = FALSE, out.width="100%"}
+p1 <- plot_cond_prob() + ggtitle("True conditional probability")
+
+p2 <- plot_cond_prob(predict(train_rf, newdata = mnist_27$true_p, type = "prob")[,2]) +
+ggtitle("Random Forest")
+
+grid.arrange(p2, p1, nrow=1)
+```
+
+La visualización de la estimación muestra que, aunque obtenemos una alta precisión, parece que hay margen de mejora al hacer que la estimación sea más uniforme. Esto podría lograrse cambiando el parámetro que controla el número mínimo de puntos de datos en los nodos del árbol. Cuanto mayor sea este mínimo, más suave será la estimación final. Podemos entrenar los parámetros del bosque aleatorio. A continuación, utilizamos el paquete __caret__ para optimizar el tamaño mínimo del nodo. Debido a que este no es uno de los parámetros que el paquete __caret__ optimiza por defecto, escribiremos nuestro propio código:
+
+```{r acc-versus-nodesize, cache=TRUE}
+nodesize <- seq(1, 51, 10)
+acc <- sapply(nodesize, function(ns){
+train(y ~ ., method = "rf", data = mnist_27$train,
+tuneGrid = data.frame(mtry = 2),
+nodesize = ns)$results$Accuracy
+})
+qplot(nodesize, acc)
+```
+
+Ahora podemos ajustar el bosque aleatorio con el tamaño de nodo mínimo optimizado a todos los datos de entrenamiento y evaluar el rendimiento en los datos de prueba.
+
+```{r}
+train_rf_2 <- randomForest(y ~ ., data=mnist_27$train,
+nodesize = nodesize[which.max(acc)])
+
+confusionMatrix(predict(train_rf_2, mnist_27$test),
+mnist_27$test$y)$overall["Accuracy"]
+```
+
+El modelo seleccionado mejora la precisión y proporciona una estimación más uniforme.
+
+```{r cond-prob-final-rf, echo=FALSE, out.width="100%"}
+p1 <- plot_cond_prob() + ggtitle("True conditional probability")
+
+p2 <- plot_cond_prob(predict(train_rf_2, newdata = mnist_27$true_p, type="prob")[,2]) +
+ggtitle("Random Forest")
+
+grid.arrange(p2, p1, nrow=1)
+```
+
+
+Tenga en cuenta que podemos evitar escribir nuestro propio código utilizando otras implementaciones de bosque aleatorias como se describe en el manual __caret__^[http://topepo.github.io/caret/available-models.html].
+
+
+El bosque aleatorio funciona mejor en todos los ejemplos que hemos considerado. Sin embargo, una desventaja de los bosques aleatorios es que perdemos interpretabilidad. Un enfoque que ayuda con la interpretabilidad es examinar _importancia variable_.
+Para definir _importancia variable_ contamos con qué frecuencia se usa un predictor en los árboles individuales. Puede obtener más información sobre _variable importancia_ en un libro de aprendizaje automático avanzado^[https://web.stanford.edu/~hastie/Papers/ESLII.pdf]. El paquete __caret__ incluye la función `varImp` que extrae importancia variable de cualquier modelo en el que se implementa el cálculo. Damos un ejemplo de cómo usamos la importancia variable en la siguiente sección.
+
+
+## Ejercicios
+
+1\. Cree un conjunto de datos simple donde el resultado crezca 0.75 unidades en promedio por cada aumento en un predictor:
+
+```{r, eval=FALSE}
+n <- 1000
+sigma <- 0.25
+x <- rnorm(n, 0, 1)
+y <- 0.75 * x + rnorm(n, 0, sigma)
+dat <- data.frame(x = x, y = y)
+```
+
+Utilizar `rpart` para ajustar un árbol de regresión y guardar el resultado en `fit`.
+
+
+2\. Trace el árbol final para que pueda ver dónde ocurrieron las particiones.
+
+
+3\. Haz un diagrama de dispersión de `y` versus `x` junto con los valores predichos basados en el ajuste.
+
+
+4\. Ahora modele con un bosque aleatorio en lugar de un árbol de regresión usando `randomForest` del paquete __randomForest__, y rehaga el diagrama de dispersión con la línea de predicción.
+
+
+5\. Usa la función `plot` para ver si el bosque aleatorio ha convergido o si necesitamos más árboles.
+
+
+6\. Parece que los valores predeterminados para el bosque aleatorio dan como resultado una estimación demasiado flexible (no uniforme). Vuelva a ejecutar el bosque aleatorio pero esta vez con `nodesize` establecido en 50 y `maxnodes` establecido en 25. Rehace la trama.
+
+7\. Vemos que esto produce resultados más suaves. Usemos el `train` función para ayudarnos a elegir estos valores. Del manual __caret__^[https://topepo.github.io/caret/available-models.html] vemos que no podemos ajustar el `maxnodes` parámetro o el `nodesize` discusión con `randomForest`, así que usaremos el paquete __Rborist__ y ajustaremos el `minNode` argumento. Utilizar el `train` función para probar valores `minNode <- seq(5, 250, 25)`. Vea qué valor minimiza el RMSE estimado.
+
+
+8\. Haz un diagrama de dispersión junto con la predicción del modelo mejor ajustado.
+
+
+9\. Utilizar el `rpart` función para ajustar un árbol de clasificación a la `tissue_gene_expression` conjunto de datos Utilizar el `train` función para estimar la precisión. Poner a prueba o probar `cp` valores de `seq(0, 0.05, 0.01)`. Trace la precisión para informar los resultados del mejor modelo.
+
+
+10\. Estudie la matriz de confusión para el árbol de clasificación de mejor ajuste. ¿Qué observas que sucede con la placenta?
+
+
+11\. Tenga en cuenta que las placentas se llaman endometrio con más frecuencia que la placenta. Tenga en cuenta también que la cantidad de placentas es solo seis y que, de forma predeterminada, `rpart` requiere 20 observaciones antes de dividir un nodo. Por lo tanto, no es posible con estos parámetros tener un nodo en el que las placentas sean la mayoría. Vuelva a ejecutar el análisis anterior, pero esta vez permita `rpart` dividir cualquier nodo usando el argumento `control = rpart.control(minsplit = 0)`. ¿Aumenta la precisión? Mira la matriz de confusión de nuevo.
+
+
+
+12\. Trace el árbol del modelo de mejor ajuste obtenido en el ejercicio 11.
+
+
+13\. Podemos ver que con solo seis genes, podemos predecir el tipo de tejido. Ahora veamos si podemos hacerlo aún mejor con un bosque aleatorio. Utilizar el `train` función y el `rf` método para entrenar un bosque aleatorio. Pruebe valores de `mtry` que van desde, al menos, `seq(50, 200, 25)`. Qué `mtry` valor maximiza la precisión? Para permitir pequeños `nodesize` para crecer como lo hicimos con los árboles de clasificación, use el siguiente argumento: `nodesize = 1`. Esto tardará varios segundos en ejecutarse. Si desea probarlo, intente usar valores más pequeños con `ntree`. Establecer la semilla a 1990.
+
+
+14\. Usa la función `varImp` en la salida de `train` y guárdelo en un objeto llamado `imp`.
+
+
+15\. Los `rpart` el modelo que ejecutamos anteriormente produjo un árbol que utilizaba solo seis predictores. Extraer los nombres de los predictores no es sencillo, pero se puede hacer. Si la salida de la llamada al tren fue `fit_rpart`, podemos extraer los nombres así:
+
+```{r, eval=FALSE}
+ind <- !(fit_rpart$finalModel$frame$var == "<leaf>")
+tree_terms <-
+fit_rpart$finalModel$frame$var[ind] %>%
+unique() %>%
+as.character()
+tree_terms
+```
+
+¿Cuál es la importancia variable en la llamada aleatoria del bosque para estos predictores? ¿Dónde se clasifican?
+
+
+Dieciséis\. Avanzado: extraiga los 50 predictores principales según la importancia, tome un subconjunto de `x` con solo estos predictores y aplicar la función `heatmap` para ver cómo se comportan estos genes a través de los tejidos. Vamos a presentar el `heatmap` función en el capítulo \@ref(clustering).

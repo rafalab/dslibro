@@ -1,0 +1,1149 @@
+## Sistemas de recomendación
+
+Los sistemas de recomendación utilizan clasificaciones que _users_han dado_items_ para hacer recomendaciones específicas. Las compañías que venden muchos productos a muchos clientes y permiten que estos clientes califiquen sus productos, como Amazon, pueden recopilar conjuntos de datos masivos que pueden usarse para predecir qué calificación otorgará un usuario en particular a un artículo específico. Los elementos para los que se predice una calificación alta para un usuario determinado se recomiendan a ese usuario.
+
+Netflix utiliza un sistema de recomendación para predecir cuántas _estrellas_ dará un usuario a una película específica. Una estrella sugiere que no es una buena película, mientras que cinco estrellas sugiere que es una película excelente. Aquí, proporcionamos los conceptos básicos de cómo se hacen estas recomendaciones, motivados por algunos de los enfoques adoptados por los ganadores de los _Netflix challenge_.
+
+En octubre de 2006, Netflix ofreció un desafío a la comunidad de ciencia de datos: mejorar nuestro algoritmo de recomendación en un 10% y ganar un millón de dólares. En septiembre de 2009
+los ganadores fueron anunciados^[http://bits.blogs.nytimes.com/2009/09/21/netflix-awards-1-million-prize-and-starts-a-new-contest/]. Puede leer un buen resumen de cómo se creó el algoritmo ganador aquí: [http://blog.echen.me/2011/10/24/winning-the-netflix-prize-a-summary/font>(http://blog.echen.me/2011/10/24/winning-the-netflix-prize-a-summary/)
+y una explicación más detallada aquí:
+[http://www.netflixprize.com/assets/GrandPrize2009_BPC_BellKor.pdffont>(http://www.netflixprize.com/assets/GrandPrize2009_BPC_BellKor.pdf). Ahora le mostraremos algunas de las estrategias de análisis de datos utilizadas por el equipo ganador.
+
+### Datos de lente de película
+
+Los datos de Netflix no están disponibles públicamente, pero el laboratorio de investigación de GroupLens^[https://grouplens.org/] generó su propia base de datos con más de 20 millones de calificaciones para más de 27,000 películas de más de 138,000 usuarios. Ponemos a disposición un pequeño subconjunto de estos datos a través del paquete __dslabs__:
+
+```{r, warning=FALSE, message=FALSE}
+library(tidyverse)
+library(dslabs)
+data("movielens")
+```
+
+Podemos ver que esta tabla está en formato ordenado con miles de filas:
+
+```{r}
+movielens %>% as_tibble()
+```
+
+Cada fila representa una calificación dada por un usuario a una película.
+
+Podemos ver la cantidad de usuarios únicos que proporcionaron calificaciones y cuántas películas únicas fueron calificadas:
+
+
+```{r}
+movielens %>%
+summarize(n_users = n_distinct(userId),
+n_movies = n_distinct(movieId))
+```
+
+Si multiplicamos esos dos números, obtenemos un número mayor de 5 millones, sin embargo, nuestra tabla de datos tiene aproximadamente 100,000 filas. Esto implica que no todos los usuarios calificaron todas las películas. Por lo tanto, podemos pensar en estos datos como una matriz muy grande, con usuarios en las filas y películas en las columnas, con muchas celdas vacías. los `gather` la función nos permite convertirlo a este formato, pero si lo probamos para toda la matriz, se bloqueará R. Vamos a mostrar la matriz para siete usuarios y cuatro películas.
+
+```{r, echo=FALSE}
+keep <- movielens %>%
+count(movieId) %>%
+top_n(4, n) %>%
+pull(movieId)
+
+tab <- movielens %>%
+filter(movieId%in%keep) %>%
+filter(userId %in% c(13:20)) %>%
+select(userId, title, rating) %>%
+mutate(title = str_remove(title, ", The"),
+title = str_remove(title, ":.*")) %>%
+spread(title, rating)
+
+if(knitr::is_html_output()){
+knitr::kable(tab, "html") %>%
+kableExtra::kable_styling(bootstrap_options = "striped", full_width = FALSE)
+} else{
+knitr::kable(tab, "latex", booktabs = TRUE) %>%
+kableExtra::kable_styling(font_size = 8)
+}
+```
+
+Puede pensar en la tarea de un sistema de recomendación como completar el `NA` s en la tabla de arriba. Para ver qué tan dispersa es la matriz, aquí está la matriz para una muestra aleatoria de 100 películas y 100 usuarios con amarillo que indica una combinación de usuario/ película para la que tenemos una calificación.
+
+```{r sparsity-of-movie-recs, echo=FALSE, fig.width=3, fig.height=3, out.width="40%"}
+users <- sample(unique(movielens$userId), 100)
+rafalib::mypar()
+movielens %>% filter(userId %in% users) %>%
+select(userId, movieId, rating) %>%
+mutate(rating = 1) %>%
+spread(movieId, rating) %>% select(sample(ncol(.), 100)) %>%
+as.matrix() %>% t(.) %>%
+image(1:100, 1:100,. , xlab="Movies", ylab="Users")
+```
+
+Este desafío de aprendizaje automático es más complicado que lo que hemos estudiado hasta ahora porque cada resultado $Y$ tiene un conjunto diferente de predictores. Para ver esto, tenga en cuenta que si estamos prediciendo la calificación de la película $i$ por usuario $u$, en principio, todas las otras clasificaciones relacionadas con la película $i$ y por usuario $u$ pueden usarse como predictores, pero diferentes usuarios califican diferentes películas y un número diferente de películas. Además, podemos usar información de otras películas que hemos determinado que son similares a las películas. $i$ o de usuarios que se consideran similares al usuario $u$. En esencia, toda la matriz se puede utilizar como predictores para cada celda.
+
+Veamos algunas de las propiedades generales de los datos para comprender mejor los desafíos.
+
+Lo primero que notamos es que algunas películas se califican más que otras. A continuación se muestra la distribución. Esto no debería sorprendernos dado que hay películas de gran éxito vistas por millones y películas artísticas e independientes vistas por unos pocos. Nuestra segunda observación es que algunos usuarios son más activos que otros en la calificación de películas:
+
+```{r movie-id-and-user-hists, echo=FALSE, fig.width=6, fig.height=3}
+p1 <- movielens %>%
+count(movieId) %>%
+ggplot(aes(n)) +
+geom_histogram(bins = 30, color = "black") +
+scale_x_log10() +
+ggtitle("Movies")
+
+p2 <- movielens %>%
+count(userId) %>%
+ggplot(aes(n)) +
+geom_histogram(bins = 30, color = "black") +
+scale_x_log10() +
+ggtitle("Users")
+gridExtra::grid.arrange(p1, p2, ncol = 2)
+```
+
+
+### Sistemas de recomendación como un desafío de aprendizaje automático
+
+Para ver cómo se trata de un tipo de aprendizaje automático, tenga en cuenta que necesitamos construir un algoritmo con los datos que hemos recopilado que luego se aplicarán fuera de nuestro control, a medida que los usuarios busquen recomendaciones de películas. Así que creemos un conjunto de pruebas para evaluar la precisión de los modelos que implementamos.
+
+```{r, message=FALSE, warning=FALSE}
+library(caret)
+set.seed(755)
+test_index <- createDataPartition(y = movielens$rating, times = 1, p = 0.2,
+list = FALSE)
+train_set <- movielens[-test_index,]
+test_set <- movielens[test_index,]
+```
+
+Para asegurarnos de que no incluimos usuarios y películas en el conjunto de prueba que no aparecen en el conjunto de entrenamiento, eliminamos estas entradas usando el `semi_join` función:
+
+```{r}
+test_set <- test_set %>%
+semi_join(train_set, by = "movieId") %>%
+semi_join(train_set, by = "userId")
+```
+
+
+### Función de pérdida {#netflix-loss-function}
+
+El desafío de Netflix usó la pérdida de error típica: decidieron un ganador basado en el error cuadrático medio residual (RMSE) en un conjunto de prueba. Definimos $y_{u,i}$ como la calificación de la película $i$ por usuario $u$ y denotar nuestra predicción con $\hat{y}_{u,i}$. El RMSE se define entonces como:
+
+$$
+\mbox{RMSE} = \sqrt{\frac{1}{N} \sum_{u,i}^{} \left( \hat{y}_{u,i} - y_{u,i} \right)^2 }
+$$
+con $N$ es el número de combinaciones de usuario/ película y la suma que ocurre en todas estas combinaciones.
+
+Recuerde que podemos interpretar el RMSE de manera similar a una desviación estándar: es el error típico que cometemos al predecir una calificación de película. Si este número es mayor que 1, significa que nuestro error típico es mayor que una estrella, lo cual no es bueno.
+
+Escribamos una función que calcule el RMSE para vectores de clasificaciones y sus predictores correspondientes:
+
+```{r}
+RMSE <- function(true_ratings, predicted_ratings){
+sqrt(mean((true_ratings - predicted_ratings)^2))
+}
+```
+
+### Un primer modelo
+
+Comencemos construyendo el sistema de recomendación más simple posible: predecimos la misma calificación para todas las películas, independientemente del usuario. ¿Qué número debería ser esta predicción? Podemos usar un enfoque basado en modelos para responder a esto. Un modelo que asume la misma calificación para todas las películas y usuarios con todas las diferencias explicadas por la variación aleatoria se vería así:
+
+
+$$
+Y_{u,i} = \mu + \varepsilon_{u,i}
+$$
+
+con $\varepsilon_{i,u}$ errores independientes muestreados de la misma distribución centrada en 0 y $\mu$ la calificación "verdadera" para todas las películas. Sabemos que la estimación que minimiza el RMSE es la estimación de mínimos cuadrados de $\mu$ y, en este caso, es el promedio de todas las calificaciones:
+
+```{r}
+mu_hat <- mean(train_set$rating)
+mu_hat
+```
+
+Si predecimos todas las calificaciones desconocidas con $\hat{\mu}$ obtenemos el siguiente RMSE:
+
+```{r}
+naive_rmse <- RMSE(test_set$rating, mu_hat)
+naive_rmse
+```
+
+Tenga en cuenta que si conecta cualquier otro número, obtendrá un RMSE más alto. Por ejemplo:
+
+```{r}
+predictions <- rep(3, nrow(test_set))
+RMSE(test_set$rating, predictions)
+```
+
+
+Al observar la distribución de calificaciones, podemos visualizar que esta es la desviación estándar de esa distribución. Obtenemos un RMSE de aproximadamente 1. Para ganar el gran premio de $ 1,000,000, un equipo participante tuvo que obtener un RMSE de aproximadamente 0.857. ¡Así que definitivamente podemos hacerlo mejor!
+
+A medida que avanzamos, compararemos diferentes enfoques. Comencemos creando una tabla de resultados con este enfoque ingenuo:
+
+```{r}
+rmse_results <- tibble(method = "Just the average", RMSE = naive_rmse)
+```
+
+### Modelado de efectos de películas
+
+Sabemos por experiencia que algunas películas generalmente tienen una calificación más alta que otras. Esta
+la intuición, que las diferentes películas se clasifican de manera diferente, se confirma por los datos. Podemos aumentar nuestro modelo anterior agregando el término $b_i$ para representar la clasificación promedio de la película $i$:
+
+$$
+Y_{u,i} = \mu + b_i + \varepsilon_{u,i}
+$$
+
+Los libros de texto de estadísticas se refieren a $b$ s como efectos. Sin embargo, en los documentos de desafío de Netflix, se refieren a ellos como "sesgo", por lo tanto, el $b$ notación.
+
+De nuevo podemos usar mínimos cuadrados para estimar el $b_i$ de la siguiente manera:
+
+```{r, eval=FALSE}
+fit <- lm(rating ~ as.factor(movieId), data = movielens)
+```
+
+Porque hay miles de $b_i$ a medida que cada película obtiene una, la `lm()` la función será muy lenta aquí. Por lo tanto, no recomendamos ejecutar el código anterior. Pero en esta situación particular, sabemos que los mínimos cuadrados estiman $\hat{b}_i$ es solo el promedio de $Y_{u,i} - \hat{\mu}$ para cada película $i$. Entonces podemos calcularlos de esta manera (dejaremos caer el NA notación en el código para representar estimaciones en el futuro):
+
+```{r}
+mu <- mean(train_set$rating)
+movie_avgs <- train_set %>%
+group_by(movieId) %>%
+summarize(b_i = mean(rating - mu))
+```
+
+Podemos ver que estas estimaciones varían sustancialmente:
+
+```{r movie-effects}
+qplot(b_i, data = movie_avgs, bins = 10, color = I("black"))
+```
+
+Recuerda $\hat{\mu}=3.5$ entonces un $b_i = 1.5$ implica una calificación perfecta de cinco estrellas.
+
+Veamos cuánto mejora nuestra predicción una vez que usamos $\hat{y}_{u,i} = \hat{\mu} + \hat{b}_i$:
+
+```{r}
+predicted_ratings <- mu + test_set %>%
+left_join(movie_avgs, by='movieId') %>%
+pull(b_i)
+RMSE(predicted_ratings, test_set$rating)
+```
+
+```{r echo=FALSE}
+model_1_rmse <- RMSE(predicted_ratings, test_set$rating)
+rmse_results <- bind_rows(rmse_results,
+tibble(method="Movie Effect Model",
+RMSE = model_1_rmse))
+```
+
+Ya vemos una mejora. ¿Pero podemos hacerlo mejor?
+
+### Efectos de usuario
+
+Calculemos la calificación promedio para el usuario $u$ para aquellos que han calificado más de 100 películas:
+
+```{r user-effect-hist}
+train_set %>%
+group_by(userId) %>%
+summarize(b_u = mean(rating)) %>%
+filter(n()>=100) %>%
+ggplot(aes(b_u)) +
+geom_histogram(bins = 30, color = "black")
+```
+
+Tenga en cuenta que existe una variabilidad sustancial entre los usuarios
+también: algunos usuarios son muy irritables y otros adoran cada película.
+Esto implica que una mejora adicional de nuestro modelo puede ser:
+
+$$
+Y_{u,i} = \mu + b_i + b_u + \varepsilon_{u,i}
+$$
+
+dónde $b_u$ es un efecto específico del usuario. Ahora si un usuario malhumorado (negativo $b_u$) califica una gran película (positiva $b_i$), los efectos se contrarrestan y podemos predecir correctamente que este usuario le dio a esta gran película un 3 en lugar de un 5.
+
+Para ajustar este modelo, podríamos usar nuevamente `lm` me gusta esto:
+
+```{r, eval = FALSE}
+lm(rating ~ as.factor(movieId) + as.factor(userId))
+```
+
+pero, por las razones descritas anteriormente, no lo haremos. En cambio, calcularemos una aproximación calculando $\hat{\mu}$ y $\hat{b}_i$ y estimar $\hat{b}_u$ como el promedio de $y_{u,i} - \hat{\mu} - \hat{b}_i$:
+
+```{r}
+user_avgs <- train_set %>%
+left_join(movie_avgs, by='movieId') %>%
+group_by(userId) %>%
+summarize(b_u = mean(rating - mu - b_i))
+```
+
+Ahora podemos construir predictores y ver cuánto mejora el RMSE:
+
+```{r}
+predicted_ratings <- test_set %>%
+left_join(movie_avgs, by='movieId') %>%
+left_join(user_avgs, by='userId') %>%
+mutate(pred = mu + b_i + b_u) %>%
+pull(pred)
+RMSE(predicted_ratings, test_set$rating)
+```
+
+```{r echo=FALSE}
+model_2_rmse <- RMSE(predicted_ratings, test_set$rating)
+rmse_results <- bind_rows(rmse_results,
+tibble(method="Movie + User Effects Model",
+RMSE = model_2_rmse))
+```
+
+## Ejercicios
+
+1\. Carga el `movielens` datos.
+
+```{r, eval=FALSE}
+data("movielens")
+```
+
+Calcule el número de calificaciones para cada película y luego compárelo con el año en que salió la película. Use la transformación de raíz cuadrada en los recuentos.
+
+
+2\. Vemos que, en promedio, las películas que salieron después de 1993 obtienen más calificaciones. También vemos que con las películas más nuevas, a partir de 1993, el número de calificaciones disminuye con el año: cuanto más reciente es una película, menos tiempo han tenido los usuarios para calificarla.
+
+Entre las películas que salieron en 1993 o más tarde, ¿cuáles son las 25 películas con más calificaciones por año? También informe su calificación promedio.
+
+
+3\. De la tabla construida en el ejemplo anterior, vemos que las películas mejor calificadas tienden a tener calificaciones superiores al promedio. Esto no es sorprendente: más personas miran películas populares. Para confirmar esto, estratifique las películas posteriores a 1993 por calificaciones por año y calcule sus calificaciones promedio. Haga un gráfico de calificación promedio versus calificaciones por año y muestre una estimación de la tendencia.
+
+
+
+4\. En el ejercicio anterior, vemos que cuanto más se califica una película, mayor es la calificación. Suponga que está haciendo un análisis predictivo en el que necesita completar las calificaciones faltantes con algún valor. ¿Cuál de las siguientes estrategias usarías?
+
+a. Complete los valores faltantes con la calificación promedio de todas las películas.
+si. Complete los valores faltantes con 0.
+c. Complete el valor con un valor más bajo que el promedio ya que la falta de calificación está asociada con calificaciones más bajas. Pruebe diferentes valores y evalúe la predicción en un conjunto de prueba.
+re. Ninguna de las anteriores.
+
+
+5\. Los `movielens` el conjunto de datos también incluye una marca de tiempo. Esta variable representa el tiempo y los datos en los que se proporcionó la calificación. Las unidades son segundos desde el 1 de enero de 1970. Cree una nueva columna `date` con la fecha Sugerencia: use el `as_datetime` funcionen en el paquete __lubridate__.
+
+
+
+6\. Calcule la calificación promedio de cada semana y calcule este promedio contra el día. Sugerencia: use el `round_date` funcionar ante ti `group_by`.
+
+
+7\. La trama muestra alguna evidencia de un efecto temporal. Si definimos $d_{u,i}$ como el día para el usuario $u$ calificación de la película $i$, cuál de los siguientes modelos es el más apropiado:
+
+
+a. $Y_{u,i} = \mu + b_i + b_u + d_{u,i} + \varepsilon_{u,i}$.
+si. $Y_{u,i} = \mu + b_i + b_u + d_{u,i}\beta + \varepsilon_{u,i}$.
+c. $Y_{u,i} = \mu + b_i + b_u + d_{u,i}\beta_i + \varepsilon_{u,i}$.
+re. $Y_{u,i} = \mu + b_i + b_u + f(d_{u,i}) + \varepsilon_{u,i}$, con $f$ una función suave de $d_{u,i}$.
+
+
+8\. Los `movielens` los datos también tienen un `genres` columna. Esta columna incluye todos los géneros que se aplican a la película. Algunas películas pertenecen a varios géneros. Defina una categoría como cualquier combinación que aparezca en esta columna. Mantenga solo categorías con más de 1,000 calificaciones. Luego calcule el error promedio y estándar para cada categoría. Trace estos como diagramas de barras de error.
+
+
+9\. La trama muestra una fuerte evidencia de un efecto de género. Si definimos $g_{u,i}$ como el género para el usuario $u$ calificación de la película $i$, cuál de los siguientes modelos es el más apropiado:
+
+
+a. $Y_{u,i} = \mu + b_i + b_u + d_{u,i} + \varepsilon_{u,i}$.
+si. $Y_{u,i} = \mu + b_i + b_u + d_{u,i}\beta + \varepsilon_{u,i}$.
+c. $Y_{u,i} = \mu + b_i + b_u + \sum_{k=1}^K x_{u,i} \beta_k + \varepsilon_{u,i}$, con $x^k_{u,i} = 1$ si $g_{u,i}$ es genero $k$.
+re. $Y_{u,i} = \mu + b_i + b_u + f(d_{u,i}) + \varepsilon_{u,i}$, con $f$ una función suave de $d_{u,i}$.
+
+
+
+
+## Regularización
+
+### Motivación
+
+A pesar de la gran variación de película a película, nuestra mejora en RMSE fue solo del 5%. Exploremos dónde cometimos errores en nuestro primer modelo, usando solo efectos de película $b_i$. Aquí están los 10 errores más grandes:
+
+
+```{r}
+test_set %>%
+left_join(movie_avgs, by='movieId') %>%
+mutate(residual = rating - (mu + b_i)) %>%
+arrange(desc(abs(residual))) %>%
+slice(1:10) %>%
+pull(title)
+```
+
+Todo esto parece películas oscuras. Muchos de ellos tienen grandes predicciones. Echemos un vistazo a las 10 peores y mejores películas basadas en $\hat{b}_i$. Primero, creemos una base de datos que se conecte `movieId` al título de la película:
+
+```{r}
+movie_titles <- movielens %>%
+select(movieId, title) %>%
+distinct()
+```
+
+Aquí están las 10 mejores películas según nuestra estimación:
+
+```{r}
+movie_avgs %>% left_join(movie_titles, by="movieId") %>%
+arrange(desc(b_i)) %>%
+slice(1:10) %>%
+pull(title)
+```
+
+Y aquí están los 10 peores:
+
+```{r}
+movie_avgs %>% left_join(movie_titles, by="movieId") %>%
+arrange(b_i) %>%
+slice(1:10) %>%
+pull(title)
+```
+
+Todos parecen ser bastante oscuros. Veamos con qué frecuencia son calificados.
+
+```{r}
+train_set %>% count(movieId) %>%
+left_join(movie_avgs, by="movieId") %>%
+left_join(movie_titles, by="movieId") %>%
+arrange(desc(b_i)) %>%
+slice(1:10) %>%
+pull(n)
+
+train_set %>% count(movieId) %>%
+left_join(movie_avgs) %>%
+left_join(movie_titles, by="movieId") %>%
+arrange(b_i) %>%
+slice(1:10) %>%
+pull(n)
+```
+
+Las supuestas películas "mejores" y "peores" fueron calificadas por muy pocos usuarios, en la mayoría de los casos solo 1. Estas películas eran en su mayoría oscuras. Esto se debe a que con solo unos pocos usuarios, tenemos más incertidumbre. Por lo tanto, mayores estimaciones de $b_i$, negativo o positivo, son más probables.
+
+Estas son estimaciones ruidosas en las que no debemos confiar,
+especialmente cuando se trata de predicciones. Grandes errores pueden
+aumentar nuestro RMSE, por lo que preferimos ser conservadores
+cuando no estoy seguro
+
+En secciones anteriores, calculamos el error estándar y construimos intervalos de confianza para tener en cuenta los diferentes niveles de incertidumbre. Sin embargo, al hacer predicciones, necesitamos un número, una predicción, no un intervalo. Para esto, presentamos el concepto de regularización.
+
+La regularización nos permite penalizar grandes estimaciones que
+se forman utilizando pequeños tamaños de muestra. Tiene puntos en común con el
+Enfoque bayesiano que redujo las predicciones descritas en la Sección \@ref(bayesian-statistics).
+
+### Mínimos cuadrados penalizados
+
+La idea general detrás de la regularización es restringir la variabilidad total de los tamaños del efecto. ¿Por qué esto ayuda? Considere un caso en el que tenemos película $i=1$ con 100 valoraciones de usuarios y 4 películas $i=2,3,4,5$ con solo una calificación de usuario. Tenemos la intención de ajustar el modelo
+
+$$
+Y_{u,i} = \mu + b_i + \varepsilon_{u,i}
+$$
+
+Supongamos que sabemos que la calificación promedio es, digamos, $\mu = 3$. Si usamos mínimos cuadrados, la estimación para el primer efecto de película $b_1$ es el promedio de las 100 calificaciones de los usuarios, $1/100 \sum_{i=1}^{100} (Y_{i,1} - \mu)$, que esperamos sea bastante preciso. Sin embargo, la estimación para las películas 2, 3, 4 y 5 será simplemente la desviación observada de la calificación promedio $\hat{b}_i = Y_{u,i} - \hat{\mu}$ que es una estimación basada en un solo número, por lo que no será precisa en absoluto. Tenga en cuenta que estas estimaciones hacen el error $Y_{u,i} - \mu + \hat{b}_i$ igual a 0 para $i=2,3,4,5$, pero este es un caso de sobreentrenamiento. De hecho, ignorando al único usuario y adivinando que las películas 2,3,4 y 5 son solo películas promedio ( $b_i = 0$) podría proporcionar una mejor predicción. La idea general de la regresión penalizada es controlar la variabilidad total de los efectos de la película: $\sum_{i=1}^5 b_i^2$. Específicamente, en lugar de minimizar la ecuación de mínimos cuadrados, minimizamos una ecuación que agrega una penalización:
+
+$$\frac{1}{N} \sum_{u,i} \left(y_{u,i} - \mu - b_i\right)^2 + \lambda \sum_{i} b_i^2$$
+El primer término es solo mínimos cuadrados y el segundo es una penalización que aumenta cuando muchos $b_i$ son grandes. Usando el cálculo podemos mostrar que los valores de $b_i$ que minimizan esta ecuación son:
+
+$$
+\hat{b}_i(\lambda) = \frac{1}{\lambda + n_i} \sum_{u=1}^{n_i} \left(Y_{u,i} - \hat{\mu}\right)
+$$
+
+dónde $n_i$ es la cantidad de clasificaciones hechas para la película $i$. Este enfoque tendrá el efecto deseado: cuando nuestro tamaño de muestra $n_i$ es muy grande, un caso que nos dará una estimación estable, luego la penalización $\lambda$ es efectivamente ignorado desde $n_i+\lambda \approx n_i$. Sin embargo, cuando el $n_i$ es pequeño, entonces la estimación $\hat{b}_i(\lambda)$ se encoge hacia 0. El más grande $\lambda$, cuanto más nos encogemos.
+
+Calculemos estas estimaciones regularizadas de $b_i$ utilizando
+$\lambda=3$. Más adelante, veremos por qué elegimos 3.
+
+```{r}
+lambda <- 3
+mu <- mean(train_set$rating)
+movie_reg_avgs <- train_set %>%
+group_by(movieId) %>%
+summarize(b_i = sum(rating - mu)/(n()+lambda), n_i = n())
+```
+
+Para ver cómo se reducen las estimaciones, hagamos un gráfico de las estimaciones regularizadas versus las estimaciones de mínimos cuadrados.
+
+```{r regularization-shrinkage}
+tibble(original = movie_avgs$b_i,
+regularlized = movie_reg_avgs$b_i,
+n = movie_reg_avgs$n_i) %>%
+ggplot(aes(original, regularlized, size=sqrt(n))) +
+geom_point(shape=1, alpha=0.5)
+```
+
+Ahora, echemos un vistazo a las 10 mejores películas basadas en las estimaciones penalizadas $\hat{b}_i(\lambda)$:
+
+```{r}
+train_set %>%
+count(movieId) %>%
+left_join(movie_reg_avgs, by = "movieId") %>%
+left_join(movie_titles, by = "movieId") %>%
+arrange(desc(b_i)) %>%
+slice(1:10) %>%
+pull(title)
+```
+
+¡Esto tiene mucho más sentido! Estas películas se ven más y tienen más calificaciones. Aquí están las 10 peores películas principales:
+
+```{r}
+train_set %>%
+count(movieId) %>%
+left_join(movie_reg_avgs, by = "movieId") %>%
+left_join(movie_titles, by="movieId") %>%
+arrange(b_i) %>%
+select(title, b_i, n) %>%
+slice(1:10) %>%
+pull(title)
+```
+
+¿Mejoramos nuestros resultados?
+
+```{r}
+predicted_ratings <- test_set %>%
+left_join(movie_reg_avgs, by = "movieId") %>%
+mutate(pred = mu + b_i) %>%
+pull(pred)
+RMSE(predicted_ratings, test_set$rating)
+```
+
+```{r echo=FALSE}
+model_3_rmse <- RMSE(predicted_ratings, test_set$rating)
+rmse_results <- bind_rows(rmse_results,
+tibble(method="Regularized Movie Effect Model",
+RMSE = model_3_rmse))
+rmse_results
+```
+
+Las estimaciones penalizadas proporcionan una gran mejora sobre las estimaciones de mínimos cuadrados.
+
+### Elegir los términos de penalización
+
+Tenga en cuenta que $\lambda$ es un parámetro de ajuste. Podemos usar validación cruzada para elegirlo.
+
+```{r best-penalty}
+lambdas <- seq(0, 10, 0.25)
+
+mu <- mean(train_set$rating)
+just_the_sum <- train_set %>%
+group_by(movieId) %>%
+summarize(s = sum(rating - mu), n_i = n())
+
+rmses <- sapply(lambdas, function(l){
+predicted_ratings <- test_set %>%
+left_join(just_the_sum, by='movieId') %>%
+mutate(b_i = s/(n_i+l)) %>%
+mutate(pred = mu + b_i) %>%
+pull(pred)
+return(RMSE(predicted_ratings, test_set$rating))
+})
+qplot(lambdas, rmses)
+lambdas[which.min(rmses)]
+```
+
+Sin embargo, si bien mostramos esto como una ilustración, en la práctica deberíamos usar validación cruzada completa solo en el conjunto del tren, sin usar el conjunto de prueba hasta la evaluación final. El conjunto de prueba nunca debe utilizarse para la sintonización
+
+También podemos utilizar la regularización para estimar los efectos del usuario. Estamos minimizando:
+
+$$
+\frac{1}{N} \sum_{u,i} \left(y_{u,i} - \mu - b_i - b_u \right)^2 +
+\lambda \left(\sum_{i} b_i^2 + \sum_{u} b_u^2\right)
+$$
+
+Las estimaciones que minimizan esto se pueden encontrar de manera similar a lo que hicimos anteriormente. Aquí usamos validación cruzada para elegir un $\lambda$:
+
+```{r best-lambdas}
+lambdas <- seq(0, 10, 0.25)
+
+rmses <- sapply(lambdas, function(l){
+
+mu <- mean(train_set$rating)
+
+b_i <- train_set %>%
+group_by(movieId) %>%
+summarize(b_i = sum(rating - mu)/(n()+l))
+
+b_u <- train_set %>%
+left_join(b_i, by="movieId") %>%
+group_by(userId) %>%
+summarize(b_u = sum(rating - b_i - mu)/(n()+l))
+
+predicted_ratings <-
+test_set %>%
+left_join(b_i, by = "movieId") %>%
+left_join(b_u, by = "userId") %>%
+mutate(pred = mu + b_i + b_u) %>%
+pull(pred)
+
+return(RMSE(predicted_ratings, test_set$rating))
+})
+
+qplot(lambdas, rmses)
+```
+
+Para el modelo completo, el óptimo $\lambda$ es:
+
+```{r}
+lambda <- lambdas[which.min(rmses)]
+lambda
+```
+
+
+```{r, echo=FALSE}
+rmse_results <- bind_rows(
+rmse_results,
+tibble(method="Regularized Movie + User Effect Model",
+RMSE = min(rmses)))
+if(knitr::is_html_output()){
+knitr::kable(rmse_results, "html") %>%
+kableExtra::kable_styling(bootstrap_options = "striped", full_width = FALSE)
+} else{
+knitr::kable(rmse_results, "latex", booktabs = TRUE) %>%
+kableExtra::kable_styling(font_size = 8)
+}
+```
+
+## Ejercicios
+
+Un experto en educación aboga por escuelas más pequeñas. El experto basa esta recomendación en el hecho de que entre las mejores escuelas, muchas son escuelas pequeñas. Simulemos un conjunto de datos para 100 escuelas. Primero, simulemos el número de estudiantes en cada escuela.
+
+```{r, eval=FALSE}
+set.seed(1986)
+n <- round(2^rnorm(1000, 8, 1))
+```
+
+Ahora asignemos una calidad verdadera para cada escuela completamente independiente del tamaño. Este es el parámetro que queremos estimar.
+
+
+```{r, eval=FALSE}
+mu <- round(80 + 2 * rt(1000, 5))
+range(mu)
+schools <- data.frame(id = paste("PS",1:100),
+size = n,
+quality = mu,
+rank = rank(-mu))
+```
+
+Podemos ver que las 10 mejores escuelas son:
+
+```{r, eval=FALSE}
+schools %>% top_n(10, quality) %>% arrange(desc(quality))
+```
+
+Ahora hagamos que los estudiantes en la escuela tomen un examen. Existe una variabilidad aleatoria en la toma de exámenes, por lo que simularemos los puntajes de los exámenes distribuidos normalmente con el promedio determinado por la calidad de la escuela y las desviaciones estándar de 30 puntos porcentuales:
+
+```{r, eval=FALSE}
+scores <- sapply(1:nrow(schools), function(i){
+scores <- rnorm(schools$size[i], schools$quality[i], 30)
+scores
+})
+schools <- schools %>% mutate(score = sapply(scores, mean))
+```
+
+
+1\. ¿Cuáles son las mejores escuelas según el puntaje promedio? Muestra solo la identificación, el tamaño y el puntaje promedio.
+
+
+2\. Compare el tamaño medio de la escuela con el tamaño medio de las 10 mejores escuelas según el puntaje.
+
+
+3\. Según esta prueba, parece que las escuelas pequeñas son mejores que las grandes. Cinco de las 10 mejores escuelas tienen 100 estudiantes o menos. ¿Pero como puede ser ésto? Construimos la simulación para que la calidad y el tamaño sean independientes. Repita el ejercicio para las peores 10 escuelas.
+
+
+4\. ¡Lo mismo es cierto para las peores escuelas! También son pequeños. Trace el puntaje promedio versus el tamaño de la escuela para ver qué está pasando. Destaque las 10 mejores escuelas según la calidad _verdadera_. Use la transformación de escala logarítmica para el tamaño.
+
+
+5\. Podemos ver que el error estándar de la puntuación tiene una mayor variabilidad cuando la escuela es más pequeña. Esta es una realidad estadística básica que aprendimos en las secciones de probabilidad e inferencia. De hecho, tenga en cuenta que 4 de las 10 mejores escuelas se encuentran en las 10 mejores escuelas según el puntaje del examen.
+
+Usemos la regularización para elegir las mejores escuelas. Recuerde las desviaciones de la regularización _desviaciones_ del promedio hacia 0. Entonces, para aplicar la regularización aquí, primero debemos definir el promedio general para todas las escuelas:
+
+```{r, eval=FALSE}
+overall <- mean(sapply(scores, mean))
+```
+
+y luego defina, para cada escuela, cómo se desvía de ese promedio. Escriba un código que calcule el puntaje por encima del promedio de cada escuela pero dividiéndolo por $n + \lambda$ en lugar de $n$, con $n$ el tamaño de la escuela y $\lambda$ un parámetro de regularización. Tratar $\lambda = 3$.
+
+6\. Tenga en cuenta que esto mejora un poco las cosas. El número de escuelas pequeñas que no están altamente clasificadas es ahora 4. ¿Existe una mejor $\lambda$? Encuentra el $\lambda$ que minimiza el RMSE = $1/100 \sum_{i=1}^{100} (\mbox{quality} - \mbox{estimate})^2$.
+
+
+7\. Clasifique las escuelas según el promedio obtenido con los mejores $\alpha$. Tenga en cuenta que ninguna escuela pequeña se incluye incorrectamente.
+
+
+8\. Un error común al usar la regularización es reducir los valores hacia 0 que no están centrados alrededor de 0. Por ejemplo, si no restamos el promedio general antes de reducir, en realidad obtenemos un resultado muy similar. Confirme esto volviendo a ejecutar el código del ejercicio 6 pero sin eliminar la media general.
+
+## Factorización matricial
+
+La factorización matricial es un concepto ampliamente utilizado en el aprendizaje automático. Está muy relacionado con el análisis factorial, la descomposición de valores singulares (SVD) y el análisis de componentes principales (PCA). Aquí describimos el concepto en el contexto de los sistemas de recomendación de películas.
+
+Hemos descrito cómo el modelo:
+
+$$
+Y_{u,i} = \mu + b_i + b_u + \varepsilon_{u,i}
+$$
+
+explica las diferencias de película a película a través del $b_i$ y las diferencias de usuario a usuario a través de la $b_u$. Pero este modelo omite una fuente importante de variación relacionada con el hecho de que los grupos de películas tienen patrones de calificación similares y los grupos de usuarios también tienen patrones de calificación similares. Descubriremos estos patrones estudiando los residuos:
+
+$$
+r_{u,i} = y_{u,i} - \hat{b}_i - \hat{b}_u
+$$
+
+Para ver esto, convertiremos los datos en una matriz para que cada usuario obtenga una fila, cada película obtenga una columna y $y_{u,i}$ es la entrada en fila $u$ y columna $i$. Con fines ilustrativos, solo consideraremos un pequeño subconjunto de películas con muchas calificaciones y usuarios que han calificado muchas películas. También conservamos el aroma de una mujer ( `movieId == 3252`) porque lo usamos para un ejemplo específico:
+
+```{r}
+train_small <- movielens %>%
+group_by(movieId) %>%
+filter(n() >= 50 | movieId == 3252) %>% ungroup() %>%
+group_by(userId) %>%
+filter(n() >= 50) %>% ungroup()
+
+y <- train_small %>%
+select(userId, movieId, rating) %>%
+spread(movieId, rating) %>%
+as.matrix()
+```
+
+Agregamos nombres de fila y columna:
+
+```{r}
+rownames(y)<- y[,1]
+y <- y[,-1]
+
+movie_titles <- movielens %>%
+select(movieId, title) %>%
+distinct()
+
+colnames(y) <- with(movie_titles, title[match(colnames(y), movieId)])
+```
+
+y convertirlos en residuos eliminando los efectos de columna y fila:
+
+```{r}
+y <- sweep(y, 2, colMeans(y, na.rm=TRUE))
+y <- sweep(y, 1, rowMeans(y, na.rm=TRUE))
+```
+
+Si el modelo anterior explica todas las señales, y el $\varepsilon$ son solo ruido, entonces los residuos para diferentes películas deben ser independientes entre sí. Pero no lo son. Aquí hay unos ejemplos:
+
+```{r movie-cor, warning=FALSE, message=FALSE, out.width="100%", fig.width=9, fig.height=3}
+m_1 <- "Godfather, The"
+m_2 <- "Godfather: Part II, The"
+p1 <- qplot(y[ ,m_1], y[,m_2], xlab = m_1, ylab = m_2)
+
+m_1 <- "Godfather, The"
+m_3 <- "Goodfellas"
+p2 <- qplot(y[ ,m_1], y[,m_3], xlab = m_1, ylab = m_3)
+
+m_4 <- "You've Got Mail"
+m_5 <- "Sleepless in Seattle"
+p3 <- qplot(y[ ,m_4], y[,m_5], xlab = m_4, ylab = m_5)
+
+gridExtra::grid.arrange(p1, p2 ,p3, ncol = 3)
+```
+
+Esta trama dice que a los usuarios que les gustó The Godfather más de lo que el modelo espera de ellos, según la película y los efectos del usuario, también les gustó The Godfather II más de lo esperado. Se observa una relación similar al comparar El Padrino y Goodfellas. Aunque no es tan fuerte, todavía hay correlación. También vemos correlaciones entre You Have Got Mail y Sleepless en Seattle
+
+Al observar la correlación entre películas, podemos ver un patrón (cambiamos el nombre de las columnas para ahorrar espacio de impresión):
+
+```{r}
+x <- y[, c(m_1, m_2, m_3, m_4, m_5)]
+short_names <- c("Godfather", "Godfather2", "Goodfellas",
+"You've Got", "Sleepless")
+colnames(x) <- short_names
+cor(x, use="pairwise.complete")
+```
+
+Parece que hay personas a las que les gustan las comedias románticas más de lo esperado, mientras que otras a las que les gustan las películas de gángsters más de lo esperado.
+
+Estos resultados nos dicen que hay estructura en los datos. Pero, ¿cómo podemos modelar esto?
+
+### Análisis de factores
+
+Aquí hay una ilustración, usando una simulación, de cómo podemos usar alguna estructura para predecir el $r_{u,i}$. Supongamos nuestros residuos `r` se parece a esto:
+
+```{r, echo=FALSE}
+q <- matrix(c(1 , 1, 1, -1, -1), ncol = 1)
+rownames(q) <- short_names
+p <- matrix(rep(c(2, 0, -2), c(3, 5, 4)), ncol = 1)
+rownames(p) <- 1:nrow(p)
+
+set.seed(1988)
+r <- jitter(p %*% t(q))
+```
+
+```{r}
+round(r, 1)
+```
+
+Parece que hay un patrón aquí. De hecho, podemos ver patrones de correlación muy fuertes:
+
+```{r}
+cor(r)
+```
+
+Podemos crear vectores `q` y `p`, eso puede explicar gran parte de la estructura que vemos. los `q` se vería así:
+
+```{r}
+t(q)
+```
+
+y reduce las películas a dos grupos: gángster (codificado con 1) y romance (codificado con -1). También podemos reducir los usuarios a tres grupos:
+
+```{r}
+t(p)
+```
+
+los que les gustan las películas de gángsters y no les gustan las películas románticas (codificadas como 2), las que les gustan las películas románticas y no les gustan las películas de gángsters (codificadas como -2), y las que no les importa (codificadas como 0). El punto principal aquí es que casi podemos reconstruir $r$, que tiene 60 valores, con un par de vectores que totalizan 17 valores. Si $r$ contiene los residuos para usuarios $u=1,\dots,12$ para peliculas $i=1,\dots,5$ podemos escribir la siguiente fórmula matemática para nuestros residuos $r_{u,i}$.
+
+
+$$
+r_{u,i} \approx p_u q_i
+$$
+
+Esto implica que podemos explicar más variabilidad modificando nuestro modelo anterior para recomendaciones de películas para:
+
+$$
+Y_{u,i} = \mu + b_i + b_u + p_u q_i + \varepsilon_{u,i}
+$$
+
+
+Sin embargo, motivamos la necesidad de $p_u q_i$ término con una simulación simple. La estructura que se encuentra en los datos suele ser más compleja. Por ejemplo, en esta primera simulación supusimos que solo había un factor $p_u$ eso determinó cuál de las dos películas de géneros $u$ pertenece a. Pero la estructura en nuestros datos de películas parece ser mucho más complicada que la película de gángsters versus el romance. Podemos tener muchos otros factores. Aquí presentamos una simulación un poco más compleja. Ahora agregamos una sexta película.
+
+
+```{r, echo=FALSE}
+set.seed(1988)
+m_6 <- "Scent of a Woman"
+q <- cbind(c(1 , 1, 1, -1, -1, -1),
+c(1 , 1, -1, -1, -1, 1))
+rownames(q) <- c(short_names, "Scent")
+p <- cbind(rep(c(2,0,-2), c(3,5,4)),
+c(-1,1,1,0,0,1,1,1,0,-1,-1,-1))/2
+rownames(p) <- 1:nrow(p)
+
+r <- jitter(p %*% t(q), factor=1)
+```
+
+```{r}
+round(r, 1)
+```
+
+Al explorar la estructura de correlación de este nuevo conjunto de datos
+```{r}
+colnames(r)[4:6] <- c("YGM", "SS", "SW")
+cor(r)
+```
+Observamos que quizás necesitemos un segundo factor para tener en cuenta el hecho de que a algunos usuarios les gusta Al Pacino, mientras que a otros no les gusta o no les importa. Observe que la estructura general de la correlación obtenida de los datos simulados no está tan lejos de la correlación real:
+
+```{r}
+six_movies <- c(m_1, m_2, m_3, m_4, m_5, m_6)
+x <- y[, six_movies]
+colnames(x) <- colnames(r)
+cor(x, use="pairwise.complete")
+```
+
+Para explicar esta estructura más complicada, necesitamos dos factores. Por ejemplo algo como esto:
+
+```{r}
+t(q)
+```
+
+Con el primer factor (la primera fila) utilizado para codificar los grupos de gángster versus romance y un segundo factor (la segunda fila) para explicar los grupos Al Pacino versus ningún grupo Al Pacino. También necesitaremos dos conjuntos de coeficientes para explicar la variabilidad introducida por el $3\times 3$ tipos de grupos:
+
+```{r}
+t(p)
+```
+
+El modelo con dos factores tiene 36 parámetros que pueden usarse para explicar gran parte de la variabilidad en las 72 clasificaciones:
+
+$$
+Y_{u,i} = \mu + b_i + b_u + p_{u,1} q_{1,i} + p_{u,2} q_{2,i} + \varepsilon_{u,i}
+$$
+
+Tenga en cuenta que en una aplicación de datos real, necesitamos ajustar este modelo a los datos. Para explicar la compleja correlación que observamos en datos reales, generalmente permitimos las entradas de $p$ y $q$ ser valores continuos, en lugar de discretos, como los que usamos en la simulación. Por ejemplo, en lugar de dividir las películas en gángster o romance, definimos un continuo. También tenga en cuenta que este no es un modelo lineal y para ajustarlo necesitamos usar un algoritmo diferente al usado por `lm` para encontrar los parámetros que minimizan los mínimos cuadrados. Los algoritmos ganadores para el desafío de Netflix se ajustan a un modelo similar al anterior y utilizan la regularización para penalizar por grandes valores de $p$ y $q$, en lugar de usar mínimos cuadrados. Implementando esto
+enfoque está más allá del alcance de este libro.
+
+### Conexión a SVD y PCA
+
+La descomposición:
+
+$$
+r_{u,i} \approx p_{u,1} q_{1,i} + p_{u,2} q_{2,i}
+$$
+
+está muy relacionado con SVD y PCA. SVD y PCA son conceptos complicados, pero una forma de entenderlos es que SVD es un algoritmo que encuentra los vectores $p$ y $q$ que nos permiten reescribir la matriz $\mbox{r}$ con $m$ filas y $n$ columnas como:
+
+$$
+r_{u,i} = p_{u,1} q_{1,i} + p_{u,2} q_{2,i} + \dots + p_{u,m} q_{m,i}
+$$
+
+con la variabilidad de cada término disminuyendo y con el $p$ s no correlacionado. El algoritmo también calcula esta variabilidad para que podamos saber cuánto de las matrices, la variabilidad total se explica a medida que agregamos nuevos términos. Esto puede permitirnos ver que, con solo unos pocos términos, podemos explicar la mayor parte de la variabilidad.
+
+Veamos un ejemplo con los datos de la película. Para calcular la descomposición, haremos que los residuos con NA sean iguales a 0:
+
+```{r}
+y[is.na(y)] <- 0
+pca <- prcomp(y)
+```
+
+Los $q$ los vectores se denominan componentes principales y se almacenan en esta matriz:
+
+```{r}
+dim(pca$rotation)
+```
+
+Mientras que la $p$, o los efectos del usuario, están aquí:
+
+```{r}
+dim(pca$x)
+```
+
+Podemos ver la variabilidad de cada uno de los vectores:
+
+```{r, pca-sds}
+qplot(1:nrow(x), pca$sdev, xlab = "PC")
+```
+
+<!--
+y vemos que solo los primeros ya explican un gran porcentaje:
+
+```{r var-expained-pca}
+var_explained <- cumsum(pca$sdev^2/ sum(pca$sdev^2))
+qplot(1:nrow(x), var_explained, xlab = "PC")
+```
+-->
+
+También notamos que los dos primeros componentes principales están relacionados con la estructura en las opiniones sobre películas:
+
+```{r movies-pca, echo=FALSE}
+library(ggrepel)
+
+pcs <- data.frame(pca$rotation, name = str_trunc(colnames(y), 30),
+stringsAsFactors = FALSE)
+
+highlight <- filter(pcs, PC1 < -0.1 | PC1 > 0.1 | PC2 < -0.075 | PC2 > 0.1)
+
+pcs %>% ggplot(aes(PC1, PC2)) + geom_point() +
+geom_text_repel(aes(PC1, PC2, label=name),
+data = highlight, size = 2)
+```
+
+Con solo mirar los 10 primeros en cada dirección, vemos un patrón significativo. La primera PC muestra la diferencia entre las películas aclamadas por la crítica en un lado:
+
+```{r, echo=FALSE}
+pcs %>% select(name, PC1) %>% arrange(PC1) %>% slice(1:10) %>% pull(name)
+```
+
+y éxitos de taquilla de Hollywood por el otro:
+
+```{r, echo=FALSE}
+pcs %>% select(name, PC1) %>% arrange(desc(PC1)) %>% slice(1:10) %>% pull(name)
+```
+
+Mientras que la segunda PC parece ir de películas artísticas e independientes:
+
+```{r, echo=FALSE}
+pcs %>% select(name, PC2) %>% arrange(PC2) %>% slice(1:10) %>% pull(name)
+```
+
+para nerd favoritos:
+
+```{r, echo=FALSE}
+pcs %>% select(name, PC2) %>% arrange(desc(PC2)) %>% slice(1:10) %>% pull(name)
+```
+
+Ajustar un modelo que incorpora estas estimaciones es complicado. Para aquellos interesados en implementar un enfoque que incorpore estas ideas, recomendamos probar el paquete __recommenderlab__. Los detalles están más allá del alcance de este libro.
+
+
+## Ejercicios
+
+En este conjunto de ejercicios, trataremos un tema útil para comprender la factorización matricial: la descomposición de valores singulares (SVD). SVD es un resultado matemático que se usa ampliamente en el aprendizaje automático, tanto en la práctica como para comprender las propiedades matemáticas de algunos algoritmos. Este es un tema bastante avanzado y para completar este conjunto de ejercicios tendrá que estar familiarizado con los conceptos de álgebra lineal, como la multiplicación de matrices, las matrices ortogonales y las matrices diagonales.
+
+La SVD nos dice que podemos _descomponer_ un $N\times p$ matriz $Y$ con $p < N$ como
+
+$$ Y = U D V^{\top} $$
+
+Con $U$ y $V$ _ortogonal_ de dimensiones $N\times p$ y $p\times p$, respectivamente, y $D$ un $p \times p$ matriz _diagonal_ con los valores de la diagonal decreciente:
+
+$$d_{1,1} \geq d_{2,2} \geq \dots d_{p,p}.$$
+
+En este ejercicio, veremos una de las formas en que esta descomposición puede ser útil. Para hacer esto, construiremos un conjunto de datos que represente las calificaciones de 100 estudiantes en 24 materias diferentes. El promedio general se ha eliminado, por lo que estos datos representan el punto porcentual que cada estudiante recibió por encima o por debajo del puntaje promedio de la prueba. Entonces, un 0 representa una calificación promedio (C), un 25 es una calificación alta (A +) y un -25 representa una calificación baja (F). Puede simular los datos de esta manera:
+
+
+```{r, eval=FALSE}
+set.seed(1987)
+n <- 100
+k <- 8
+Sigma <- 64 * matrix(c(1, .75, .5, .75, 1, .5, .5, .5, 1), 3, 3)
+m <- MASS::mvrnorm(n, rep(0, 3), Sigma)
+m <- m[order(rowMeans(m), decreasing = TRUE),]
+y <- m %x% matrix(rep(1, k), nrow = 1) +
+matrix(rnorm(matrix(n * k * 3)), n, k * 3)
+colnames(y) <- c(paste(rep("Math",k), 1:k, sep="_"),
+paste(rep("Science",k), 1:k, sep="_"),
+paste(rep("Arts",k), 1:k, sep="_"))
+```
+
+Nuestro objetivo es describir las actuaciones de los estudiantes de la manera más sucinta posible. Por ejemplo, queremos saber si los resultados de estas pruebas son solo números independientes aleatorios. ¿Todos los estudiantes son igual de buenos? ¿Ser bueno en un tema implica que serás bueno en otro? ¿Cómo ayuda la SVD con todo esto? Iremos paso a paso para mostrar que con solo tres pares relativamente pequeños de vectores podemos explicar gran parte de la variabilidad en este $100 \times 24$ conjunto de datos
+
+Puede visualizar los 24 puntajes de las pruebas para los 100 estudiantes al trazar una imagen:
+
+```{r, eval=FALSE}
+my_image <- function(x, zlim = range(x), ...){
+colors = rev(RColorBrewer::brewer.pal(9, "RdBu"))
+cols <- 1:ncol(x)
+rows <- 1:nrow(x)
+image(cols, rows, t(x[rev(rows),,drop=FALSE]), xaxt = "n", yaxt = "n",
+xlab="", ylab="", col = colors, zlim = zlim, ...)
+abline(h=rows + 0.5, v = cols + 0.5)
+axis(side = 1, cols, colnames(x), las = 2)
+}
+
+my_image(y)
+```
+
+1\. ¿Cómo describirías los datos basados en esta figura?
+
+a. Los puntajes de las pruebas son independientes entre sí.
+si. Los estudiantes que evalúan bien están en la parte superior de la imagen y parece que hay tres agrupaciones por materia.
+c. Los estudiantes que son buenos en matemáticas no son buenos en ciencias.
+re. Los estudiantes que son buenos en matemáticas no son buenos en humanidades.
+
+2\. Puede examinar la correlación entre los puntajes de la prueba directamente de esta manera:
+
+```{r, eval=FALSE}
+my_image(cor(y), zlim = c(-1,1))
+range(cor(y))
+axis(side = 2, 1:ncol(y), rev(colnames(y)), las = 2)
+```
+
+¿Cuál de las siguientes opciones describe mejor lo que ves?
+
+a. Los puntajes de las pruebas son independientes.
+si. Las matemáticas y las ciencias están altamente correlacionadas, pero las humanidades no.
+c. Existe una alta correlación entre las pruebas en el mismo sujeto pero no hay correlación entre los sujetos.
+re. Hay una correlación entre todas las pruebas, pero es mayor si las pruebas son de ciencias y matemáticas e incluso más altas dentro de cada materia.
+
+
+3\. Recuerda que la ortogonalidad significa que $U^{\top}U$ y $V^{\top}V$ son iguales a la matriz de identidad. Esto implica que también podemos reescribir la descomposición como
+
+$$ Y V = U D \mbox{ or } U^{\top}Y = D V^{\top}$$
+
+Podemos pensar en $YV$ y $U^{\top}V$ como dos transformaciones de Y que preservan la variabilidad total de $Y$ ya que $U$ y $V$ son ortogonales
+
+Usa la función `svd` para calcular la SVD de `y`. Esta función regresará $U$, $V$ y las entradas diagonales de $D$.
+
+```{r, eval=FALSE}
+s <- svd(y)
+names(s)
+```
+
+Puede verificar que la SVD funciona escribiendo:
+
+```{r, eval=FALSE}
+y_svd <- s$u %*% diag(s$d) %*% t(s$v)
+max(abs(y - y_svd))
+```
+
+Calcule la suma de cuadrados de las columnas de $Y$ y guardarlos en `ss_y`. Luego calcule la suma de cuadrados de columnas del transformado $YV$ y guardarlos en NA. Confirma eso NA es igual a NA.
+
+
+4\. Vemos que se conserva la suma total de cuadrados. Esto es porque $V$ es ortogonal Ahora para comenzar a entender cómo $YV$ es útil,
+trama `ss_y` contra el número de columna y luego hacer lo mismo para `ss_yv`. Que observas
+
+5\. Vemos que la variabilidad de las columnas de $YV$ está disminuyendo. Además, vemos que, en relación con los tres primeros, la variabilidad de las columnas más allá del tercero es casi 0. Ahora observe que no tuvimos que calcular `ss_yv` porque ya tenemos la respuesta ¿Cómo? Recuérdalo $YV = UD$ y porqué $U$ es ortogonal, sabemos que la suma de cuadrados de las columnas de $UD$ son las entradas diagonales de $D$ al cuadrado Confirme esto trazando la raíz cuadrada de `ss_yv` frente a las entradas diagonales de $D$.
+
+
+6\. De lo anterior sabemos que la suma de cuadrados de las columnas de $Y$ (la suma total de cuadrados) se suman a la suma de `s $d^2` and that the transformation $ YV $ gives us columns with sums of squares equal to `s$ d^2`. Ahora calcule qué porcentaje de la variabilidad total se explica solo por las tres primeras columnas de $YV$.
+
+
+7\. Vemos que casi el 99% de la variabilidad se explica por las primeras tres columnas de $YV = UD$. Entonces tenemos la sensación de que deberíamos poder explicar gran parte de la variabilidad y estructura que encontramos al explorar los datos con unas pocas columnas. Antes de continuar, vamos a mostrar un truco computacional útil para evitar crear la matriz `diag (s) $d)`. To motivate this, we note that if we write $ U $ out in its columns $[U_1, U_2, \puntos, U_p] $ then $ UD $ es igual a
+
+$$UD = [U_1 d_{1,1}, U_2 d_{2,2}, \dots, U_p d_{p,p}]$$
+
+Utilizar el `sweep` función para calcular $UD$ sin construir NA ni la multiplicación de matrices.
+
+
+
+8\. Lo sabemos $U_1 d_{1,1}$, la primera columna de $UD$, tiene la mayor variabilidad de todas las columnas de $UD$. Anteriormente vimos una imagen de $Y$:
+
+```{r, eval=FALSE}
+my_image(y)
+```
+
+en el que podemos ver que la variabilidad de estudiante a estudiante es bastante grande y que parece que los estudiantes que son buenos en una materia son buenos en todos. Esto implica que el promedio (en todas las asignaturas) de cada alumno debe explicar en gran medida la variabilidad. Calcule el puntaje promedio de cada estudiante y compárelo con $U_1 d_{1,1}$ y describe lo que encuentras.
+
+
+
+9\. Notamos que los signos en SVD son arbitrarios porque:
+
+$$ U D V^{\top} = (-U) D (-V)^{\top} $$
+
+
+Con esto en mente, vemos que la primera columna de $UD$ es casi idéntico al puntaje promedio de cada estudiante, excepto por el signo.
+
+Esto implica que multiplicar $Y$ por la primera columna de $V$ debe estar realizando una operación similar a tomar el promedio. Haz un diagrama de imagen de $V$ y describa la primera columna en relación con otros y cómo se relaciona esto con tomar un promedio.
+
+
+10\. Ya vimos que podemos reescribir $UD$ como
+
+$$U_1 d_{1,1} + U_2 d_{2,2} + \dots + U_p d_{p,p}$$
+
+con $U_j$ la columna j-ésima de $U$. Esto implica que podemos reescribir toda la SVD como:
+
+$$Y = U_1 d_{1,1} V_1 ^{\top} + U_2 d_{2,2} V_2 ^{\top} + \dots + U_p d_{p,p} V_p ^{\top}$$
+
+con $V_j$ la jésima columna de $V$. Trama $U_1$, luego trazar $V_1^{\top}$ usando el mismo rango para los límites del eje y, luego haga una imagen de $U_1 d_{1,1} V_1 ^{\top}$ y compararlo con la imagen de $Y$. Sugerencia: use el `my_image` función definida anteriormente y usar el `drop=FALSE` argumento para asegurar que los subconjuntos de matrices son matrices.
+
+
+
+11\. Vemos que con solo un vector de longitud 100, un escalar y un vector de longitud 24, en realidad nos acercamos a reconstruir el original $100 \times 24$ matriz. Esta es nuestra primera factorización matricial:
+
+$$ Y \approx d_{1,1} U_1 V_1^{\top}$$
+
+Sabemos que explica `s $d[1]^2/sum(s$ d^2) * 100` por ciento de la variabilidad total. Nuestra aproximación solo explica la observación de que los buenos estudiantes tienden a ser buenos en todas las materias. Pero otro aspecto de los datos originales que nuestra aproximación no explica fue la mayor similitud que observamos en los sujetos. Podemos ver esto calculando la diferencia entre nuestra aproximación y los datos originales y luego calculando las correlaciones. Puede ver esto ejecutando este código:
+
+```{r, eval=FALSE}
+resid <- y - with(s,(u[,1, drop=FALSE]*d[1]) %*% t(v[,1, drop=FALSE]))
+my_image(cor(resid), zlim = c(-1,1))
+axis(side = 2, 1:ncol(y), rev(colnames(y)), las = 2)
+```
+
+Ahora que hemos eliminado el efecto general del estudiante, la gráfica de correlación revela que todavía no hemos explicado la correlación interna de la asignatura ni el hecho de que las matemáticas y las ciencias están más cercanas entre sí que con las artes. Así que exploremos la segunda columna de la SVD. Repita el ejercicio anterior pero para la segunda columna: Trazar $U_2$, luego trazar $V_2^{\top}$ usando el mismo rango para los límites del eje y, luego haga una imagen de $U_2 d_{2,2} V_2 ^{\top}$ y compararlo con la imagen de `resid`.
+
+
+12\. La segunda columna se relaciona claramente con la diferencia de habilidad del estudiante en matemáticas/ ciencias versus las artes. Podemos ver esto más claramente en la trama de `s$v[,2]`. Agregar la matriz que obtenemos con estas dos columnas ayudará con nuestra aproximación:
+
+$$ Y \approx d_{1,1} U_1 V_1^{\top} + d_{2,2} U_2 V_2^{\top} $$
+
+Sabemos que explicará
+
+```{r,eval=FALSE}
+sum(s$d[1:2]^2)/sum(s$d^2) * 100
+```
+
+porcentaje de la variabilidad total. Podemos calcular nuevos residuos como este:
+
+```{r,eval=FALSE}
+resid <- y - with(s,sweep(u[,1:2], 2, d[1:2], FUN="*") %*% t(v[,1:2]))
+my_image(cor(resid), zlim = c(-1,1))
+axis(side = 2, 1:ncol(y), rev(colnames(y)), las = 2)
+```
+
+y ver que la estructura que queda es impulsada por las diferencias entre matemáticas y ciencias. Confirme esto trazando $U_3$, luego trazar $V_3^{\top}$ usando el mismo rango para los límites del eje y, luego haga una imagen de $U_3 d_{3,3} V_3 ^{\top}$ y compararlo con la imagen de `resid`.
+
+
+
+13\. La tercera columna se relaciona claramente con la diferencia de habilidad del estudiante en matemáticas y ciencias. Podemos ver esto más claramente en la trama de `s$v[,3]`. Agregar la matriz que obtenemos con estas dos columnas ayudará con nuestra aproximación:
+
+
+$$ Y \approx d_{1,1} U_1 V_1^{\top} + d_{2,2} U_2 V_2^{\top} + d_{3,3} U_3 V_3^{\top}$$
+
+Sabemos que explicará:
+
+```{r,eval=FALSE}
+sum(s$d[1:3]^2)/sum(s$d^2) * 100
+```
+
+porcentaje de la variabilidad total. Podemos calcular nuevos residuos como este:
+
+```{r,eval=FALSE}
+resid <- y - with(s,sweep(u[,1:3], 2, d[1:3], FUN="*") %*% t(v[,1:3]))
+my_image(cor(resid), zlim = c(-1,1))
+axis(side = 2, 1:ncol(y), rev(colnames(y)), las = 2)
+```
+
+Ya no vemos estructura en los residuos: parecen ser independientes entre sí. Esto implica que podemos describir los datos con el siguiente modelo:
+
+$$ Y = d_{1,1} U_1 V_1^{\top} + d_{2,2} U_2 V_2^{\top} + d_{3,3} U_3 V_3^{\top} + \varepsilon$$
+
+con $\varepsilon$ una matriz de errores independientes idénticamente distribuidos. Este modelo es útil porque resumimos $100 \times 24$ observaciones con $3 \times (100+24+1) = 375$ números. Además, los tres componentes del modelo tienen interpretaciones útiles: 1) la capacidad general de un estudiante, 2) la diferencia en la habilidad entre las matemáticas/ ciencias y las artes, y 3) las diferencias restantes entre las tres materias. Los tamaños $d_{1,1}, d_{2,2}$ y $d_{3,3}$ cuéntanos la variabilidad explicada por cada componente. Finalmente, tenga en cuenta que los componentes $d_{j,j} U_j V_j^{\top}$ son equivalentes al componente principal j.
+
+Termine el ejercicio trazando una imagen de $Y$, una imagen de $d_{1,1} U_1 V_1^{\top} + d_{2,2} U_2 V_2^{\top} + d_{3,3} U_3 V_3^{\top}$ y una imagen de los residuos, todos con el mismo `zlim`.
+
+
+
+14\. Avanzado. los `movielens` el conjunto de datos incluido en el paquete __dslabs__ es un pequeño subconjunto de un conjunto de datos más grande con millones de clasificaciones. Puede encontrar el conjunto de datos más reciente aquí [https://grouplens.org/datasets/movielens/20m/font>(https://grouplens.org/datasets/movielens/20m/). Cree su propio sistema de recomendaciones utilizando todas las herramientas que le hemos mostrado.

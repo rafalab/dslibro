@@ -1,0 +1,198 @@
+# El paquete caret {#caret}
+
+Ya hemos aprendido acerca de la regresión y kNN como algoritmos de aprendizaje automático. En secciones posteriores, aprendemos varios otros, y esto es solo un pequeño subconjunto de todos los algoritmos disponibles. Muchos de estos algoritmos se implementan en R. Sin embargo, se distribuyen a través de diferentes paquetes, desarrollados por diferentes autores, y a menudo usan una sintaxis diferente. El paquete __caret__ intenta consolidar estas diferencias y proporcionar consistencia. Actualmente incluye 237 métodos diferentes que se resumen en el manual del paquete __caret__^[https://topepo.github.io/caret/available-models.html]. Tenga en cuenta que __caret__ no incluye los paquetes necesarios y, para implementar un paquete a través de __caret__, aún necesita instalar la biblioteca. Los paquetes requeridos para cada método se describen en el manual del paquete.
+
+El paquete __caret__ también proporciona una función que realiza la validación cruzada para nosotros. Aquí proporcionamos algunos ejemplos que muestran cómo utilizamos este paquete increíblemente útil. Usaremos el ejemplo 2 o 7 para ilustrar:
+
+```{r, message=FALSE, warning=FALSE}
+library(tidyverse)
+library(dslabs)
+data("mnist_27")
+```
+
+
+## El caret `train` functon
+
+El __caret__ `train` la función nos permite entrenar diferentes algoritmos utilizando una sintaxis similar. Entonces, por ejemplo, podemos escribir:
+
+```{r}
+library(caret)
+train_glm <- train(y ~ ., method = "glm", data = mnist_27$train)
+train_knn <- train(y ~ ., method = "knn", data = mnist_27$train)
+```
+
+Para hacer predicciones, podemos usar la salida de esta función directamente sin necesidad de mirar los detalles de `predict.glm` y `predict.knn`. En cambio, podemos aprender cómo obtener predicciones de `predict.train`.
+
+El código se ve igual para ambos métodos:
+```{r}
+y_hat_glm <- predict(train_glm, mnist_27$test, type = "raw")
+y_hat_knn <- predict(train_knn, mnist_27$test, type = "raw")
+```
+
+Esto nos permite comparar rápidamente los algoritmos. Por ejemplo, podemos comparar la precisión de esta manera:
+
+```{r}
+confusionMatrix(y_hat_glm, mnist_27$test$y)$overall[["Accuracy"]]
+confusionMatrix(y_hat_knn, mnist_27$test$y)$overall[["Accuracy"]]
+```
+
+## Validación cruzada {#caret-cv}
+
+Cuando un algoritmo incluye un parámetro de ajuste, `train` utiliza automáticamente la validación cruzada para decidir entre algunos valores predeterminados. Para saber qué parámetro o parámetros están optimizados, puede leer el manual^[http://topepo.github.io/caret/available-models.html] o estudiar el resultado de:
+
+```{r, eval=FALSE}
+getModelInfo("knn")
+```
+
+También podemos usar una búsqueda rápida como esta:
+
+```{r, eval=FALSE}
+modelLookup("knn")
+```
+
+Si lo ejecutamos con valores predeterminados:
+
+```{r}
+train_knn <- train(y ~ ., method = "knn", data = mnist_27$train)
+```
+
+puede ver rápidamente los resultados de la validación cruzada utilizando el `ggplot` función. El argumento `highlight` destaca el máximo:
+
+```{r caret-highlight}
+ggplot(train_knn, highlight = TRUE)
+```
+
+Por defecto, la validación cruzada se realiza tomando 25 muestras de arranque que comprenden el 25% de las observaciones. Para el `kNN` método, el valor predeterminado es intentar $k=5,7,9$. Cambiamos esto usando el NA parámetro. La cuadrícula de valores debe ser suministrada por un marco de datos con los nombres de los parámetros como se especifica en NA salida.
+
+Aquí, presentamos un ejemplo donde probamos 30 valores entre 9 y 67. Para hacer esto con __caret__, necesitamos definir una columna llamada `k`, entonces usamos esto:
+`data.frame(k = seq(9, 67, 2))`.
+
+Tenga en cuenta que al ejecutar este código, estamos ajustando 30 versiones de kNN a 25 muestras de arranque. Ya que estamos ajustando $30 \times 25 = 750$ modelos kNN, ejecutar este código tomará varios segundos. Establecimos la semilla porque la validación cruzada es un procedimiento aleatorio y queremos asegurarnos de que el resultado aquí sea reproducible.
+
+```{r train-knn-plot}
+set.seed(2008)
+train_knn <- train(y ~ ., method = "knn",
+data = mnist_27$train,
+tuneGrid = data.frame(k = seq(9, 71, 2)))
+ggplot(train_knn, highlight = TRUE)
+```
+
+Para acceder al parámetro que maximiza la precisión, puede usar esto:
+
+```{r}
+train_knn$bestTune
+```
+
+y el mejor modelo como este:
+
+```{r}
+train_knn$finalModel
+```
+
+La función `predict` utilizará este modelo de mejor rendimiento. Aquí está la precisión del mejor modelo cuando se aplica al conjunto de prueba, que todavía no hemos utilizado porque la validación cruzada se realizó en el conjunto de entrenamiento:
+
+```{r}
+confusionMatrix(predict(train_knn, mnist_27$test, type = "raw"),
+mnist_27$test$y)$overall["Accuracy"]
+```
+
+Si queremos cambiar la forma en que realizamos la validación cruzada, podemos usar el `trainControl` función. Podemos hacer que el código anterior sea un poco más rápido mediante, por ejemplo, la validación cruzada 10 veces. Esto significa que tenemos 10 muestras usando el 10% de las observaciones cada una. Logramos esto usando el siguiente código:
+
+```{r cv-10-fold-accuracy-estimate}
+control <- trainControl(method = "cv", number = 10, p = .9)
+train_knn_cv <- train(y ~ ., method = "knn",
+data = mnist_27$train,
+tuneGrid = data.frame(k = seq(9, 71, 2)),
+trControl = control)
+ggplot(train_knn_cv, highlight = TRUE)
+```
+
+Notamos que las estimaciones de precisión son más variables, lo que se espera ya que cambiamos el número de muestras utilizadas para estimar la precisión.
+
+Tenga en cuenta que `results` componente de la `train` la salida incluye varias estadísticas resumidas relacionadas con la variabilidad de las estimaciones de validación cruzada:
+
+```{r}
+names(train_knn$results)
+```
+
+<!--We can also see the standard deviation bars obtained from the cross validation samples:
+
+```{r accuracy-with-sd-bars}
+train_knn$results %>%
+ggplot(aes(x = k, y = Accuracy)) +
+geom_line() +
+geom_point() +
+geom_errorbar(aes(x = k,
+ymin = Accuracy - AccuracySD,
+ymax = Accuracy + AccuracySD))
+```
+-->
+
+## Ejemplo: ajuste con loess
+
+```{r, echo=FALSE}
+plot_cond_prob <- function(p_hat=NULL){
+tmp <- mnist_27$true_p
+if(!is.null(p_hat)){
+tmp <- mutate(tmp, p=p_hat)
+}
+tmp %>% ggplot(aes(x_1, x_2, z=p, fill=p)) +
+geom_raster(show.legend = FALSE) +
+scale_fill_gradientn(colors=c("#F8766D","white","#00BFC4")) +
+stat_contour(breaks=c(0.5),color="black")
+}
+```
+
+El modelo kNN que mejor se ajusta se aproxima a la probabilidad condicional verdadera:
+```{r mnist27-optimal-knn-fit, echo=FALSE}
+plot_cond_prob(predict(train_knn, mnist_27$true_p, type = "prob")[,2])
+```
+
+Sin embargo, sí vemos que el límite es algo ondulado. Esto se debe a que kNN, como el bin bin liso, no utiliza un núcleo. Para mejorar esto, podríamos probar loess. Al leer la parte de los modelos disponibles del manual^[https://topepo.github.io/caret/available-models.html] vemos que podemos usar el `gamLoess` método.
+En el manual^[https://topepo.github.io/caret/train-models-by-tag.html] también vemos que necesitamos instalar el paquete __gam__ si aún no lo hemos hecho:
+
+```{r, eval=FALSE}
+install.packages("gam")
+```
+
+Luego vemos que tenemos dos parámetros para optimizar:
+
+```{r}
+modelLookup("gamLoess")
+```
+
+Nos mantendremos en un grado de 1. Pero para probar diferentes valores para el lapso, todavía tenemos que incluir una columna en la tabla con el nombre `degree` para que podamos hacer esto:
+
+```{r}
+grid <- expand.grid(span = seq(0.15, 0.65, len = 10), degree = 1)
+```
+
+Utilizaremos los parámetros de control de validación cruzada predeterminados.
+
+```{r loess-accuracy, warning=FALSE, message=FALSE}
+train_loess <- train(y ~ .,
+method = "gamLoess",
+tuneGrid=grid,
+data = mnist_27$train)
+ggplot(train_loess, highlight = TRUE)
+```
+
+Podemos ver que el método funciona de manera similar a kNN:
+
+```{r}
+confusionMatrix(data = predict(train_loess, mnist_27$test),
+reference = mnist_27$test$y)$overall["Accuracy"]
+```
+
+y produce una estimación más suave de la probabilidad condicional:
+
+```{r gam-smooth, warning=FALSE, echo=FALSE, out.width="100%"}
+p1 <- plot_cond_prob() + ggtitle("True conditional probability")
+
+p2 <- plot_cond_prob(predict(train_loess, mnist_27$true_p, type = "prob")[,2]) +
+ggtitle("GAM Loess estimate")
+
+gridExtra::grid.arrange(p2, p1, nrow=1)
+```
+
+
