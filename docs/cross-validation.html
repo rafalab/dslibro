@@ -1,0 +1,1177 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+<head>
+
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>Capítulo 29 Validación cruzada | Introducción a la Ciencia de Datos</title>
+  <meta name="description" content="Este libro presenta conceptos y destrezas que les ayudarán abordar los retos de situaciones actuales del análisis de datos. Cubre conceptos de probabilidad, inferencia estadística, regresión lineal y machine learning. Además, les permitirá desarrollar destrezas como la programación R, el wrangling de datos con dplyr, la visualización de datos con ggplot2, la organización de archivos con Shell de UNIX / Linux, el control de versiones con GitHub y la preparación de documentos reproducibles con R markdown." />
+  <meta name="generator" content="bookdown 0.21 and GitBook 2.6.7" />
+
+  <meta property="og:title" content="Capítulo 29 Validación cruzada | Introducción a la Ciencia de Datos" />
+  <meta property="og:type" content="book" />
+  
+  
+  <meta property="og:description" content="Este libro presenta conceptos y destrezas que les ayudarán abordar los retos de situaciones actuales del análisis de datos. Cubre conceptos de probabilidad, inferencia estadística, regresión lineal y machine learning. Además, les permitirá desarrollar destrezas como la programación R, el wrangling de datos con dplyr, la visualización de datos con ggplot2, la organización de archivos con Shell de UNIX / Linux, el control de versiones con GitHub y la preparación de documentos reproducibles con R markdown." />
+  
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="Capítulo 29 Validación cruzada | Introducción a la Ciencia de Datos" />
+  
+  <meta name="twitter:description" content="Este libro presenta conceptos y destrezas que les ayudarán abordar los retos de situaciones actuales del análisis de datos. Cubre conceptos de probabilidad, inferencia estadística, regresión lineal y machine learning. Además, les permitirá desarrollar destrezas como la programación R, el wrangling de datos con dplyr, la visualización de datos con ggplot2, la organización de archivos con Shell de UNIX / Linux, el control de versiones con GitHub y la preparación de documentos reproducibles con R markdown." />
+  
+
+<meta name="author" content="Rafael A. Irizarry" />
+
+
+<meta name="date" content="2021-01-30" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  
+  
+<link rel="prev" href="suavizado.html"/>
+<link rel="next" href="caret.html"/>
+<script src="libs/jquery-2.2.3/jquery.min.js"></script>
+<link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-clipboard.css" rel="stylesheet" />
+
+
+
+
+
+
+
+
+
+<script src="libs/accessible-code-block-0.0.1/empty-anchor.js"></script>
+<script src="libs/kePrint-0.0.1/kePrint.js"></script>
+<link href="libs/lightable-0.0.1/lightable.css" rel="stylesheet" />
+
+
+<style type="text/css">
+code.sourceCode > span { display: inline-block; line-height: 1.25; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode { white-space: pre; position: relative; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+code.sourceCode { white-space: pre-wrap; }
+code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+<link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+
+<body>
+
+
+
+  <div class="book without-animation with-summary font-size-2 font-family-1" data-basepath=".">
+
+    <div class="book-summary">
+      <nav role="navigation">
+
+<ul class="summary">
+<li><a href="./">Introducción a la Ciencia de Datos</a></li>
+
+<li class="divider"></li>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i>Prefacio</a></li>
+<li class="chapter" data-level="" data-path="agradecimientos.html"><a href="agradecimientos.html"><i class="fa fa-check"></i>Agradecimientos</a></li>
+<li class="chapter" data-level="" data-path="introducción.html"><a href="introducción.html"><i class="fa fa-check"></i>Introducción</a><ul>
+<li class="chapter" data-level="" data-path="introducción.html"><a href="introducción.html#los-casos-de-estudio"><i class="fa fa-check"></i>Los casos de estudio</a></li>
+<li class="chapter" data-level="" data-path="introducción.html"><a href="introducción.html#quién-encontrará-útil-este-libro"><i class="fa fa-check"></i>¿Quién encontrará útil este libro?</a></li>
+<li class="chapter" data-level="" data-path="introducción.html"><a href="introducción.html#que-cubre-este-libro"><i class="fa fa-check"></i>¿Que cubre este libro?</a></li>
+<li class="chapter" data-level="" data-path="introducción.html"><a href="introducción.html#qué-no-cubre-este-libro"><i class="fa fa-check"></i>¿Qué no cubre este libro?</a></li>
+</ul></li>
+<li class="chapter" data-level="1" data-path="getting-started.html"><a href="getting-started.html"><i class="fa fa-check"></i><b>1</b> Comenzando con R y RStudio</a><ul>
+<li class="chapter" data-level="1.1" data-path="getting-started.html"><a href="getting-started.html#por-qué-r"><i class="fa fa-check"></i><b>1.1</b> ¿Por qué R?</a></li>
+<li class="chapter" data-level="1.2" data-path="getting-started.html"><a href="getting-started.html#la-consola-r"><i class="fa fa-check"></i><b>1.2</b> La consola R</a></li>
+<li class="chapter" data-level="1.3" data-path="getting-started.html"><a href="getting-started.html#scripts"><i class="fa fa-check"></i><b>1.3</b> <em>Scripts</em></a></li>
+<li class="chapter" data-level="1.4" data-path="getting-started.html"><a href="getting-started.html#rstudio"><i class="fa fa-check"></i><b>1.4</b> RStudio</a><ul>
+<li class="chapter" data-level="1.4.1" data-path="getting-started.html"><a href="getting-started.html#paneles"><i class="fa fa-check"></i><b>1.4.1</b> Paneles</a></li>
+<li class="chapter" data-level="1.4.2" data-path="getting-started.html"><a href="getting-started.html#key-bindings"><i class="fa fa-check"></i><b>1.4.2</b> <em>Key bindings</em></a></li>
+<li class="chapter" data-level="1.4.3" data-path="getting-started.html"><a href="getting-started.html#cómo-ejecutar-comandos-mientras-edita-scripts"><i class="fa fa-check"></i><b>1.4.3</b> Cómo ejecutar comandos mientras edita <em>scripts</em></a></li>
+<li class="chapter" data-level="1.4.4" data-path="getting-started.html"><a href="getting-started.html#cómo-cambiar-las-opciones-globales"><i class="fa fa-check"></i><b>1.4.4</b> Cómo cambiar las opciones globales</a></li>
+</ul></li>
+<li class="chapter" data-level="1.5" data-path="getting-started.html"><a href="getting-started.html#instalación-de-paquetes-de-r"><i class="fa fa-check"></i><b>1.5</b> Instalación de paquetes de R</a></li>
+</ul></li>
+<li class="part"><span><b>I R</b></span></li>
+<li class="chapter" data-level="2" data-path="r-basics.html"><a href="r-basics.html"><i class="fa fa-check"></i><b>2</b> Lo básico de R</a><ul>
+<li class="chapter" data-level="2.1" data-path="r-basics.html"><a href="r-basics.html#caso-de-estudio-los-asesinatos-con-armas-en-ee.-uu."><i class="fa fa-check"></i><b>2.1</b> Caso de estudio: los asesinatos con armas en EE. UU.</a></li>
+<li class="chapter" data-level="2.2" data-path="r-basics.html"><a href="r-basics.html#lo-básico"><i class="fa fa-check"></i><b>2.2</b> Lo básico</a><ul>
+<li class="chapter" data-level="2.2.1" data-path="r-basics.html"><a href="r-basics.html#objetos"><i class="fa fa-check"></i><b>2.2.1</b> Objetos</a></li>
+<li class="chapter" data-level="2.2.2" data-path="r-basics.html"><a href="r-basics.html#el-espacio-de-trabajo"><i class="fa fa-check"></i><b>2.2.2</b> El espacio de trabajo</a></li>
+<li class="chapter" data-level="2.2.3" data-path="r-basics.html"><a href="r-basics.html#funciones"><i class="fa fa-check"></i><b>2.2.3</b> Funciones</a></li>
+<li class="chapter" data-level="2.2.4" data-path="r-basics.html"><a href="r-basics.html#otros-objetos-predefinidos"><i class="fa fa-check"></i><b>2.2.4</b> Otros objetos predefinidos</a></li>
+<li class="chapter" data-level="2.2.5" data-path="r-basics.html"><a href="r-basics.html#nombres-de-variables"><i class="fa fa-check"></i><b>2.2.5</b> Nombres de variables</a></li>
+<li class="chapter" data-level="2.2.6" data-path="r-basics.html"><a href="r-basics.html#cómo-guardar-su-espacio-de-trabajo"><i class="fa fa-check"></i><b>2.2.6</b> Cómo guardar su espacio de trabajo</a></li>
+<li class="chapter" data-level="2.2.7" data-path="r-basics.html"><a href="r-basics.html#scripts-motivantes"><i class="fa fa-check"></i><b>2.2.7</b> <em>Scripts</em> motivantes</a></li>
+<li class="chapter" data-level="2.2.8" data-path="r-basics.html"><a href="r-basics.html#cómo-comentar-su-código"><i class="fa fa-check"></i><b>2.2.8</b> Cómo comentar su código</a></li>
+</ul></li>
+<li class="chapter" data-level="2.3" data-path="r-basics.html"><a href="r-basics.html#ejercicios"><i class="fa fa-check"></i><b>2.3</b> Ejercicios</a></li>
+<li class="chapter" data-level="2.4" data-path="r-basics.html"><a href="r-basics.html#tipos-de-datos"><i class="fa fa-check"></i><b>2.4</b> Tipos de datos</a><ul>
+<li class="chapter" data-level="2.4.1" data-path="r-basics.html"><a href="r-basics.html#data-frames"><i class="fa fa-check"></i><b>2.4.1</b> <em>data frames</em></a></li>
+<li class="chapter" data-level="2.4.2" data-path="r-basics.html"><a href="r-basics.html#cómo-examinar-un-objeto"><i class="fa fa-check"></i><b>2.4.2</b> Cómo examinar un objeto</a></li>
+<li class="chapter" data-level="2.4.3" data-path="r-basics.html"><a href="r-basics.html#el-operador-de-acceso"><i class="fa fa-check"></i><b>2.4.3</b> El operador de acceso: <code>$</code></a></li>
+<li class="chapter" data-level="2.4.4" data-path="r-basics.html"><a href="r-basics.html#vectores-numéricos-de-caracteres-y-lógicos"><i class="fa fa-check"></i><b>2.4.4</b> Vectores: numéricos, de caracteres y lógicos</a></li>
+<li class="chapter" data-level="2.4.5" data-path="r-basics.html"><a href="r-basics.html#factors"><i class="fa fa-check"></i><b>2.4.5</b> Factores</a></li>
+<li class="chapter" data-level="2.4.6" data-path="r-basics.html"><a href="r-basics.html#listas"><i class="fa fa-check"></i><b>2.4.6</b> Listas</a></li>
+<li class="chapter" data-level="2.4.7" data-path="r-basics.html"><a href="r-basics.html#matrices"><i class="fa fa-check"></i><b>2.4.7</b> Matrices</a></li>
+</ul></li>
+<li class="chapter" data-level="2.5" data-path="r-basics.html"><a href="r-basics.html#ejercicios-1"><i class="fa fa-check"></i><b>2.5</b> Ejercicios</a></li>
+<li class="chapter" data-level="2.6" data-path="r-basics.html"><a href="r-basics.html#vectors"><i class="fa fa-check"></i><b>2.6</b> Vectores</a><ul>
+<li class="chapter" data-level="2.6.1" data-path="r-basics.html"><a href="r-basics.html#cómo-crear-vectores"><i class="fa fa-check"></i><b>2.6.1</b> Cómo crear vectores</a></li>
+<li class="chapter" data-level="2.6.2" data-path="r-basics.html"><a href="r-basics.html#nombres"><i class="fa fa-check"></i><b>2.6.2</b> Nombres</a></li>
+<li class="chapter" data-level="2.6.3" data-path="r-basics.html"><a href="r-basics.html#secuencias"><i class="fa fa-check"></i><b>2.6.3</b> Secuencias</a></li>
+<li class="chapter" data-level="2.6.4" data-path="r-basics.html"><a href="r-basics.html#cómo-crear-un-subconjunto"><i class="fa fa-check"></i><b>2.6.4</b> Cómo crear un subconjunto</a></li>
+</ul></li>
+<li class="chapter" data-level="2.7" data-path="r-basics.html"><a href="r-basics.html#la-conversión-forzada"><i class="fa fa-check"></i><b>2.7</b> La conversión forzada</a><ul>
+<li class="chapter" data-level="2.7.1" data-path="r-basics.html"><a href="r-basics.html#not-available-na"><i class="fa fa-check"></i><b>2.7.1</b> <em>Not available</em> (NA)</a></li>
+</ul></li>
+<li class="chapter" data-level="2.8" data-path="r-basics.html"><a href="r-basics.html#ejercicios-2"><i class="fa fa-check"></i><b>2.8</b> Ejercicios</a></li>
+<li class="chapter" data-level="2.9" data-path="r-basics.html"><a href="r-basics.html#sorting"><i class="fa fa-check"></i><b>2.9</b> <em>Sorting</em></a><ul>
+<li class="chapter" data-level="2.9.1" data-path="r-basics.html"><a href="r-basics.html#sort"><i class="fa fa-check"></i><b>2.9.1</b> <code>sort</code></a></li>
+<li class="chapter" data-level="2.9.2" data-path="r-basics.html"><a href="r-basics.html#order"><i class="fa fa-check"></i><b>2.9.2</b> <code>order</code></a></li>
+<li class="chapter" data-level="2.9.3" data-path="r-basics.html"><a href="r-basics.html#max-y-which.max"><i class="fa fa-check"></i><b>2.9.3</b> <code>max</code> y <code>which.max</code></a></li>
+<li class="chapter" data-level="2.9.4" data-path="r-basics.html"><a href="r-basics.html#rank"><i class="fa fa-check"></i><b>2.9.4</b> <code>rank</code></a></li>
+<li class="chapter" data-level="2.9.5" data-path="r-basics.html"><a href="r-basics.html#cuidado-con-el-reciclaje"><i class="fa fa-check"></i><b>2.9.5</b> Cuidado con el reciclaje</a></li>
+</ul></li>
+<li class="chapter" data-level="2.10" data-path="r-basics.html"><a href="r-basics.html#ejercicios-3"><i class="fa fa-check"></i><b>2.10</b> Ejercicios</a></li>
+<li class="chapter" data-level="2.11" data-path="r-basics.html"><a href="r-basics.html#aritmética-de-vectores"><i class="fa fa-check"></i><b>2.11</b> Aritmética de vectores</a><ul>
+<li class="chapter" data-level="2.11.1" data-path="r-basics.html"><a href="r-basics.html#rescaling-un-vector"><i class="fa fa-check"></i><b>2.11.1</b> <em>Rescaling</em> un vector</a></li>
+<li class="chapter" data-level="2.11.2" data-path="r-basics.html"><a href="r-basics.html#dos-vectores"><i class="fa fa-check"></i><b>2.11.2</b> Dos vectores</a></li>
+</ul></li>
+<li class="chapter" data-level="2.12" data-path="r-basics.html"><a href="r-basics.html#ejercicios-4"><i class="fa fa-check"></i><b>2.12</b> Ejercicios</a></li>
+<li class="chapter" data-level="2.13" data-path="r-basics.html"><a href="r-basics.html#indexación"><i class="fa fa-check"></i><b>2.13</b> Indexación</a><ul>
+<li class="chapter" data-level="2.13.1" data-path="r-basics.html"><a href="r-basics.html#crear-subconjuntos-con-lógicos"><i class="fa fa-check"></i><b>2.13.1</b> Crear subconjuntos con lógicos</a></li>
+<li class="chapter" data-level="2.13.2" data-path="r-basics.html"><a href="r-basics.html#operadores-lógicos"><i class="fa fa-check"></i><b>2.13.2</b> Operadores lógicos</a></li>
+<li class="chapter" data-level="2.13.3" data-path="r-basics.html"><a href="r-basics.html#which"><i class="fa fa-check"></i><b>2.13.3</b> <code>which</code></a></li>
+<li class="chapter" data-level="2.13.4" data-path="r-basics.html"><a href="r-basics.html#match"><i class="fa fa-check"></i><b>2.13.4</b> <code>match</code></a></li>
+<li class="chapter" data-level="2.13.5" data-path="r-basics.html"><a href="r-basics.html#in"><i class="fa fa-check"></i><b>2.13.5</b> <code>%in%</code></a></li>
+</ul></li>
+<li class="chapter" data-level="2.14" data-path="r-basics.html"><a href="r-basics.html#ejercicios-5"><i class="fa fa-check"></i><b>2.14</b> Ejercicios</a></li>
+<li class="chapter" data-level="2.15" data-path="r-basics.html"><a href="r-basics.html#gráficos-básicos"><i class="fa fa-check"></i><b>2.15</b> Gráficos básicos</a><ul>
+<li class="chapter" data-level="2.15.1" data-path="r-basics.html"><a href="r-basics.html#plot"><i class="fa fa-check"></i><b>2.15.1</b> <code>plot</code></a></li>
+<li class="chapter" data-level="2.15.2" data-path="r-basics.html"><a href="r-basics.html#hist"><i class="fa fa-check"></i><b>2.15.2</b> <code>hist</code></a></li>
+<li class="chapter" data-level="2.15.3" data-path="r-basics.html"><a href="r-basics.html#boxplot"><i class="fa fa-check"></i><b>2.15.3</b> <code>boxplot</code></a></li>
+<li class="chapter" data-level="2.15.4" data-path="r-basics.html"><a href="r-basics.html#image"><i class="fa fa-check"></i><b>2.15.4</b> <code>image</code></a></li>
+</ul></li>
+<li class="chapter" data-level="2.16" data-path="r-basics.html"><a href="r-basics.html#ejercicios-6"><i class="fa fa-check"></i><b>2.16</b> Ejercicios</a></li>
+</ul></li>
+<li class="chapter" data-level="3" data-path="conceptos-básicos-de-programación.html"><a href="conceptos-básicos-de-programación.html"><i class="fa fa-check"></i><b>3</b> Conceptos básicos de programación</a><ul>
+<li class="chapter" data-level="3.1" data-path="conceptos-básicos-de-programación.html"><a href="conceptos-básicos-de-programación.html#conditionals"><i class="fa fa-check"></i><b>3.1</b> Expresiones condicionales</a></li>
+<li class="chapter" data-level="3.2" data-path="conceptos-básicos-de-programación.html"><a href="conceptos-básicos-de-programación.html#cómo-definir-funciones"><i class="fa fa-check"></i><b>3.2</b> Cómo definir funciones</a></li>
+<li class="chapter" data-level="3.3" data-path="conceptos-básicos-de-programación.html"><a href="conceptos-básicos-de-programación.html#namespaces"><i class="fa fa-check"></i><b>3.3</b> <em>Namespaces</em></a></li>
+<li class="chapter" data-level="3.4" data-path="conceptos-básicos-de-programación.html"><a href="conceptos-básicos-de-programación.html#bucles-for"><i class="fa fa-check"></i><b>3.4</b> Bucles-for</a></li>
+<li class="chapter" data-level="3.5" data-path="conceptos-básicos-de-programación.html"><a href="conceptos-básicos-de-programación.html#vectorization"><i class="fa fa-check"></i><b>3.5</b> Vectorización y funcionales</a></li>
+<li class="chapter" data-level="3.6" data-path="conceptos-básicos-de-programación.html"><a href="conceptos-básicos-de-programación.html#ejercicios-7"><i class="fa fa-check"></i><b>3.6</b> Ejercicios</a></li>
+</ul></li>
+<li class="chapter" data-level="4" data-path="tidyverse.html"><a href="tidyverse.html"><i class="fa fa-check"></i><b>4</b> <em>tidyverse</em></a><ul>
+<li class="chapter" data-level="4.1" data-path="tidyverse.html"><a href="tidyverse.html#tidy-data"><i class="fa fa-check"></i><b>4.1</b> Data <em>tidy</em></a></li>
+<li class="chapter" data-level="4.2" data-path="tidyverse.html"><a href="tidyverse.html#ejercicios-8"><i class="fa fa-check"></i><b>4.2</b> Ejercicios</a></li>
+<li class="chapter" data-level="4.3" data-path="tidyverse.html"><a href="tidyverse.html#cómo-manipular-los-data-frames"><i class="fa fa-check"></i><b>4.3</b> Cómo manipular los <em>data frames</em></a><ul>
+<li class="chapter" data-level="4.3.1" data-path="tidyverse.html"><a href="tidyverse.html#cómo-añadir-una-columna-con-mutate"><i class="fa fa-check"></i><b>4.3.1</b> Cómo añadir una columna con <code>mutate</code></a></li>
+<li class="chapter" data-level="4.3.2" data-path="tidyverse.html"><a href="tidyverse.html#cómo-crear-subconjuntos-con-filter"><i class="fa fa-check"></i><b>4.3.2</b> Cómo crear subconjuntos con <code>filter</code></a></li>
+<li class="chapter" data-level="4.3.3" data-path="tidyverse.html"><a href="tidyverse.html#cómo-seleccionar-columnas-con-select"><i class="fa fa-check"></i><b>4.3.3</b> Cómo seleccionar columnas con <code>select</code></a></li>
+</ul></li>
+<li class="chapter" data-level="4.4" data-path="tidyverse.html"><a href="tidyverse.html#ejercicios-9"><i class="fa fa-check"></i><b>4.4</b> Ejercicios</a></li>
+<li class="chapter" data-level="4.5" data-path="tidyverse.html"><a href="tidyverse.html#el-pipe"><i class="fa fa-check"></i><b>4.5</b> El <em>pipe</em>: <code>%&gt;%</code></a></li>
+<li class="chapter" data-level="4.6" data-path="tidyverse.html"><a href="tidyverse.html#ejercicios-10"><i class="fa fa-check"></i><b>4.6</b> Ejercicios</a></li>
+<li class="chapter" data-level="4.7" data-path="tidyverse.html"><a href="tidyverse.html#cómo-resumir-datos"><i class="fa fa-check"></i><b>4.7</b> Cómo resumir datos</a><ul>
+<li class="chapter" data-level="4.7.1" data-path="tidyverse.html"><a href="tidyverse.html#summarize"><i class="fa fa-check"></i><b>4.7.1</b> <code>summarize</code></a></li>
+<li class="chapter" data-level="4.7.2" data-path="tidyverse.html"><a href="tidyverse.html#pull"><i class="fa fa-check"></i><b>4.7.2</b> <code>pull</code></a></li>
+<li class="chapter" data-level="4.7.3" data-path="tidyverse.html"><a href="tidyverse.html#group-by"><i class="fa fa-check"></i><b>4.7.3</b> Cómo agrupar y luego resumir con <code>group_by</code></a></li>
+</ul></li>
+<li class="chapter" data-level="4.8" data-path="tidyverse.html"><a href="tidyverse.html#cómo-ordenar-los-data-frames"><i class="fa fa-check"></i><b>4.8</b> Cómo ordenar los <em>data frames</em></a><ul>
+<li class="chapter" data-level="4.8.1" data-path="tidyverse.html"><a href="tidyverse.html#cómo-ordenar-anidadamente"><i class="fa fa-check"></i><b>4.8.1</b> Cómo ordenar anidadamente</a></li>
+<li class="chapter" data-level="4.8.2" data-path="tidyverse.html"><a href="tidyverse.html#los-primeros-n"><i class="fa fa-check"></i><b>4.8.2</b> Los primeros <span class="math inline">\(n\)</span></a></li>
+</ul></li>
+<li class="chapter" data-level="4.9" data-path="tidyverse.html"><a href="tidyverse.html#ejercicios-11"><i class="fa fa-check"></i><b>4.9</b> Ejercicios</a></li>
+<li class="chapter" data-level="4.10" data-path="tidyverse.html"><a href="tidyverse.html#tibbles"><i class="fa fa-check"></i><b>4.10</b> <em>Tibbles</em></a><ul>
+<li class="chapter" data-level="4.10.1" data-path="tidyverse.html"><a href="tidyverse.html#los-tibbles-se-ven-mejor"><i class="fa fa-check"></i><b>4.10.1</b> Los <em>tibbles</em> se ven mejor</a></li>
+<li class="chapter" data-level="4.10.2" data-path="tidyverse.html"><a href="tidyverse.html#los-subconjuntos-de-tibbles-son-tibbles"><i class="fa fa-check"></i><b>4.10.2</b> Los subconjuntos de <em>tibbles</em> son <em>tibbles</em></a></li>
+<li class="chapter" data-level="4.10.3" data-path="tidyverse.html"><a href="tidyverse.html#los-tibbles-pueden-tener-entradas-complejas"><i class="fa fa-check"></i><b>4.10.3</b> Los <em>tibbles</em> pueden tener entradas complejas</a></li>
+<li class="chapter" data-level="4.10.4" data-path="tidyverse.html"><a href="tidyverse.html#los-tibbles-se-pueden-agrupar"><i class="fa fa-check"></i><b>4.10.4</b> Los <em>tibbles</em> se pueden agrupar</a></li>
+<li class="chapter" data-level="4.10.5" data-path="tidyverse.html"><a href="tidyverse.html#cómo-crear-un-tibble-usando-tibble-en-lugar-de-data.frame"><i class="fa fa-check"></i><b>4.10.5</b> Cómo crear un <em>tibble</em> usando <code>tibble</code> en lugar de <code>data.frame</code></a></li>
+</ul></li>
+<li class="chapter" data-level="4.11" data-path="tidyverse.html"><a href="tidyverse.html#el-operador-punto"><i class="fa fa-check"></i><b>4.11</b> El operador punto</a></li>
+<li class="chapter" data-level="4.12" data-path="tidyverse.html"><a href="tidyverse.html#do"><i class="fa fa-check"></i><b>4.12</b> <code>do</code></a></li>
+<li class="chapter" data-level="4.13" data-path="tidyverse.html"><a href="tidyverse.html#el-paquete-purrr"><i class="fa fa-check"></i><b>4.13</b> El paquete <strong>purrr</strong></a></li>
+<li class="chapter" data-level="4.14" data-path="tidyverse.html"><a href="tidyverse.html#los-condicionales-de-tidyverse"><i class="fa fa-check"></i><b>4.14</b> Los condicionales de <em>tidyverse</em></a><ul>
+<li class="chapter" data-level="4.14.1" data-path="tidyverse.html"><a href="tidyverse.html#case_when"><i class="fa fa-check"></i><b>4.14.1</b> <code>case_when</code></a></li>
+<li class="chapter" data-level="4.14.2" data-path="tidyverse.html"><a href="tidyverse.html#between"><i class="fa fa-check"></i><b>4.14.2</b> <code>between</code></a></li>
+</ul></li>
+<li class="chapter" data-level="4.15" data-path="tidyverse.html"><a href="tidyverse.html#ejercicios-12"><i class="fa fa-check"></i><b>4.15</b> Ejercicios</a></li>
+</ul></li>
+<li class="chapter" data-level="5" data-path="importing-data.html"><a href="importing-data.html"><i class="fa fa-check"></i><b>5</b> Importando datos</a><ul>
+<li class="chapter" data-level="5.1" data-path="importing-data.html"><a href="importing-data.html#las-rutas-y-el-directorio-de-trabajo"><i class="fa fa-check"></i><b>5.1</b> Las rutas y el directorio de trabajo</a><ul>
+<li class="chapter" data-level="5.1.1" data-path="importing-data.html"><a href="importing-data.html#el-sistema-de-archivos"><i class="fa fa-check"></i><b>5.1.1</b> El sistema de archivos</a></li>
+<li class="chapter" data-level="5.1.2" data-path="importing-data.html"><a href="importing-data.html#las-rutas-relativas-y-completas"><i class="fa fa-check"></i><b>5.1.2</b> Las rutas relativas y completas</a></li>
+<li class="chapter" data-level="5.1.3" data-path="importing-data.html"><a href="importing-data.html#el-directorio-de-trabajo"><i class="fa fa-check"></i><b>5.1.3</b> El directorio de trabajo</a></li>
+<li class="chapter" data-level="5.1.4" data-path="importing-data.html"><a href="importing-data.html#cómo-generar-los-nombres-de-ruta"><i class="fa fa-check"></i><b>5.1.4</b> Cómo generar los nombres de ruta</a></li>
+<li class="chapter" data-level="5.1.5" data-path="importing-data.html"><a href="importing-data.html#cómo-copiar-los-archivos-usando-rutas"><i class="fa fa-check"></i><b>5.1.5</b> Cómo copiar los archivos usando rutas</a></li>
+</ul></li>
+<li class="chapter" data-level="5.2" data-path="importing-data.html"><a href="importing-data.html#los-paquetes-readr-y-readxl"><i class="fa fa-check"></i><b>5.2</b> Los paquetes readr y readxl</a><ul>
+<li class="chapter" data-level="5.2.1" data-path="importing-data.html"><a href="importing-data.html#readr"><i class="fa fa-check"></i><b>5.2.1</b> readr</a></li>
+<li class="chapter" data-level="5.2.2" data-path="importing-data.html"><a href="importing-data.html#readxl"><i class="fa fa-check"></i><b>5.2.2</b> readxl</a></li>
+</ul></li>
+<li class="chapter" data-level="5.3" data-path="importing-data.html"><a href="importing-data.html#ejercicios-13"><i class="fa fa-check"></i><b>5.3</b> Ejercicios</a></li>
+<li class="chapter" data-level="5.4" data-path="importing-data.html"><a href="importing-data.html#cómo-descargar-archivos"><i class="fa fa-check"></i><b>5.4</b> Cómo descargar archivos</a></li>
+<li class="chapter" data-level="5.5" data-path="importing-data.html"><a href="importing-data.html#las-funciones-de-importación-de-base-r"><i class="fa fa-check"></i><b>5.5</b> Las funciones de importación de base R</a><ul>
+<li class="chapter" data-level="5.5.1" data-path="importing-data.html"><a href="importing-data.html#scan"><i class="fa fa-check"></i><b>5.5.1</b> <code>scan</code></a></li>
+</ul></li>
+<li class="chapter" data-level="5.6" data-path="importing-data.html"><a href="importing-data.html#archivos-de-texto-versus-archivos-binarios"><i class="fa fa-check"></i><b>5.6</b> Archivos de texto versus archivos binarios</a></li>
+<li class="chapter" data-level="5.7" data-path="importing-data.html"><a href="importing-data.html#unicode-versus-ascii"><i class="fa fa-check"></i><b>5.7</b> Unicode versus ASCII</a></li>
+<li class="chapter" data-level="5.8" data-path="importing-data.html"><a href="importing-data.html#cómo-organizar-datos-con-hojas-de-cálculo"><i class="fa fa-check"></i><b>5.8</b> Cómo organizar datos con hojas de cálculo</a></li>
+<li class="chapter" data-level="5.9" data-path="importing-data.html"><a href="importing-data.html#ejercicios-14"><i class="fa fa-check"></i><b>5.9</b> Ejercicios</a></li>
+</ul></li>
+<li class="part"><span><b>II Visualización de datos</b></span></li>
+<li class="chapter" data-level="6" data-path="introducción-a-la-visualización-de-datos.html"><a href="introducción-a-la-visualización-de-datos.html"><i class="fa fa-check"></i><b>6</b> Introducción a la visualización de datos</a></li>
+<li class="chapter" data-level="7" data-path="ggplot2.html"><a href="ggplot2.html"><i class="fa fa-check"></i><b>7</b> ggplot2</a><ul>
+<li class="chapter" data-level="7.1" data-path="ggplot2.html"><a href="ggplot2.html#los-componentes-de-un-gráfico"><i class="fa fa-check"></i><b>7.1</b> Los componentes de un gráfico</a></li>
+<li class="chapter" data-level="7.2" data-path="ggplot2.html"><a href="ggplot2.html#objetos-ggplot"><i class="fa fa-check"></i><b>7.2</b> objetos <code>ggplot</code></a></li>
+<li class="chapter" data-level="7.3" data-path="ggplot2.html"><a href="ggplot2.html#geometrías"><i class="fa fa-check"></i><b>7.3</b> Geometrías</a></li>
+<li class="chapter" data-level="7.4" data-path="ggplot2.html"><a href="ggplot2.html#mapeos-estéticos"><i class="fa fa-check"></i><b>7.4</b> Mapeos estéticos</a></li>
+<li class="chapter" data-level="7.5" data-path="ggplot2.html"><a href="ggplot2.html#capas"><i class="fa fa-check"></i><b>7.5</b> Capas</a><ul>
+<li class="chapter" data-level="7.5.1" data-path="ggplot2.html"><a href="ggplot2.html#cómo-probar-varios-argumentos"><i class="fa fa-check"></i><b>7.5.1</b> Cómo probar varios argumentos</a></li>
+</ul></li>
+<li class="chapter" data-level="7.6" data-path="ggplot2.html"><a href="ggplot2.html#mapeos-estéticos-globales-versus-locales"><i class="fa fa-check"></i><b>7.6</b> Mapeos estéticos globales versus locales</a></li>
+<li class="chapter" data-level="7.7" data-path="ggplot2.html"><a href="ggplot2.html#escalas"><i class="fa fa-check"></i><b>7.7</b> Escalas</a></li>
+<li class="chapter" data-level="7.8" data-path="ggplot2.html"><a href="ggplot2.html#etiquetas-y-títulos"><i class="fa fa-check"></i><b>7.8</b> Etiquetas y títulos</a></li>
+<li class="chapter" data-level="7.9" data-path="ggplot2.html"><a href="ggplot2.html#categorías-como-colores"><i class="fa fa-check"></i><b>7.9</b> Categorías como colores</a></li>
+<li class="chapter" data-level="7.10" data-path="ggplot2.html"><a href="ggplot2.html#anotación-formas-y-ajustes"><i class="fa fa-check"></i><b>7.10</b> Anotación, formas y ajustes</a></li>
+<li class="chapter" data-level="7.11" data-path="ggplot2.html"><a href="ggplot2.html#add-on-packages"><i class="fa fa-check"></i><b>7.11</b> Paquetes complementarios</a></li>
+<li class="chapter" data-level="7.12" data-path="ggplot2.html"><a href="ggplot2.html#cómo-combinarlo-todo"><i class="fa fa-check"></i><b>7.12</b> Cómo combinarlo todo</a></li>
+<li class="chapter" data-level="7.13" data-path="ggplot2.html"><a href="ggplot2.html#qplot"><i class="fa fa-check"></i><b>7.13</b> Gráficos rápidos con <code>qplot</code></a></li>
+<li class="chapter" data-level="7.14" data-path="ggplot2.html"><a href="ggplot2.html#cuadrículas-de-gráficos"><i class="fa fa-check"></i><b>7.14</b> Cuadrículas de gráficos</a></li>
+<li class="chapter" data-level="7.15" data-path="ggplot2.html"><a href="ggplot2.html#ejercicios-15"><i class="fa fa-check"></i><b>7.15</b> Ejercicios</a></li>
+</ul></li>
+<li class="chapter" data-level="8" data-path="distributions.html"><a href="distributions.html"><i class="fa fa-check"></i><b>8</b> Cómo visualizar distribuciones de datos</a><ul>
+<li class="chapter" data-level="8.1" data-path="distributions.html"><a href="distributions.html#tipos-de-variables"><i class="fa fa-check"></i><b>8.1</b> Tipos de variables</a></li>
+<li class="chapter" data-level="8.2" data-path="distributions.html"><a href="distributions.html#estudio-de-caso-describiendo-alturas-de-estudiantes"><i class="fa fa-check"></i><b>8.2</b> Estudio de caso: describiendo alturas de estudiantes</a></li>
+<li class="chapter" data-level="8.3" data-path="distributions.html"><a href="distributions.html#la-función-de-distribución"><i class="fa fa-check"></i><b>8.3</b> La función de distribución</a></li>
+<li class="chapter" data-level="8.4" data-path="distributions.html"><a href="distributions.html#cdf-intro"><i class="fa fa-check"></i><b>8.4</b> Funciones de distribución acumulada</a></li>
+<li class="chapter" data-level="8.5" data-path="distributions.html"><a href="distributions.html#histogramas"><i class="fa fa-check"></i><b>8.5</b> Histogramas</a></li>
+<li class="chapter" data-level="8.6" data-path="distributions.html"><a href="distributions.html#densidad-suave"><i class="fa fa-check"></i><b>8.6</b> Densidad suave</a><ul>
+<li class="chapter" data-level="8.6.1" data-path="distributions.html"><a href="distributions.html#cómo-interpretar-el-eje-y"><i class="fa fa-check"></i><b>8.6.1</b> Cómo interpretar el eje-y</a></li>
+<li class="chapter" data-level="8.6.2" data-path="distributions.html"><a href="distributions.html#densidades-permiten-estratificación"><i class="fa fa-check"></i><b>8.6.2</b> Densidades permiten estratificación</a></li>
+</ul></li>
+<li class="chapter" data-level="8.7" data-path="distributions.html"><a href="distributions.html#ejercicios-16"><i class="fa fa-check"></i><b>8.7</b> Ejercicios</a></li>
+<li class="chapter" data-level="8.8" data-path="distributions.html"><a href="distributions.html#normal-distribution"><i class="fa fa-check"></i><b>8.8</b> La distribución normal</a></li>
+<li class="chapter" data-level="8.9" data-path="distributions.html"><a href="distributions.html#unidades-estándar"><i class="fa fa-check"></i><b>8.9</b> Unidades estándar</a></li>
+<li class="chapter" data-level="8.10" data-path="distributions.html"><a href="distributions.html#gráficos-q-q"><i class="fa fa-check"></i><b>8.10</b> Gráficos Q-Q</a></li>
+<li class="chapter" data-level="8.11" data-path="distributions.html"><a href="distributions.html#percentiles"><i class="fa fa-check"></i><b>8.11</b> Percentiles</a></li>
+<li class="chapter" data-level="8.12" data-path="distributions.html"><a href="distributions.html#diagramas-de-caja"><i class="fa fa-check"></i><b>8.12</b> Diagramas de caja</a></li>
+<li class="chapter" data-level="8.13" data-path="distributions.html"><a href="distributions.html#stratification"><i class="fa fa-check"></i><b>8.13</b> Estratificación</a></li>
+<li class="chapter" data-level="8.14" data-path="distributions.html"><a href="distributions.html#student-height-cont"><i class="fa fa-check"></i><b>8.14</b> Estudio de caso: descripción de alturas de estudiantes (continuación)</a></li>
+<li class="chapter" data-level="8.15" data-path="distributions.html"><a href="distributions.html#ejercicios-17"><i class="fa fa-check"></i><b>8.15</b> Ejercicios</a></li>
+<li class="chapter" data-level="8.16" data-path="distributions.html"><a href="distributions.html#other-geometries"><i class="fa fa-check"></i><b>8.16</b> Geometrías ggplot2</a><ul>
+<li class="chapter" data-level="8.16.1" data-path="distributions.html"><a href="distributions.html#diagramas-de-barras"><i class="fa fa-check"></i><b>8.16.1</b> Diagramas de barras</a></li>
+<li class="chapter" data-level="8.16.2" data-path="distributions.html"><a href="distributions.html#histogramas-1"><i class="fa fa-check"></i><b>8.16.2</b> Histogramas</a></li>
+<li class="chapter" data-level="8.16.3" data-path="distributions.html"><a href="distributions.html#gráficos-de-densidad"><i class="fa fa-check"></i><b>8.16.3</b> Gráficos de densidad</a></li>
+<li class="chapter" data-level="8.16.4" data-path="distributions.html"><a href="distributions.html#diagramas-de-caja-1"><i class="fa fa-check"></i><b>8.16.4</b> Diagramas de caja</a></li>
+<li class="chapter" data-level="8.16.5" data-path="distributions.html"><a href="distributions.html#gráficos-q-q-1"><i class="fa fa-check"></i><b>8.16.5</b> Gráficos Q-Q</a></li>
+<li class="chapter" data-level="8.16.6" data-path="distributions.html"><a href="distributions.html#imágenes"><i class="fa fa-check"></i><b>8.16.6</b> Imágenes</a></li>
+<li class="chapter" data-level="8.16.7" data-path="distributions.html"><a href="distributions.html#gráficos-rápidos"><i class="fa fa-check"></i><b>8.16.7</b> Gráficos rápidos</a></li>
+</ul></li>
+<li class="chapter" data-level="8.17" data-path="distributions.html"><a href="distributions.html#ejercicios-18"><i class="fa fa-check"></i><b>8.17</b> Ejercicios</a></li>
+</ul></li>
+<li class="chapter" data-level="9" data-path="gapminder.html"><a href="gapminder.html"><i class="fa fa-check"></i><b>9</b> Visualización de datos en la práctica</a><ul>
+<li class="chapter" data-level="9.1" data-path="gapminder.html"><a href="gapminder.html#estudio-de-caso-nuevas-ideas-sobre-la-pobreza"><i class="fa fa-check"></i><b>9.1</b> Estudio de caso: nuevas ideas sobre la pobreza</a><ul>
+<li class="chapter" data-level="9.1.1" data-path="gapminder.html"><a href="gapminder.html#la-prueba-de-hans-rosling"><i class="fa fa-check"></i><b>9.1.1</b> La prueba de Hans Rosling</a></li>
+</ul></li>
+<li class="chapter" data-level="9.2" data-path="gapminder.html"><a href="gapminder.html#diagrama-de-dispersión"><i class="fa fa-check"></i><b>9.2</b> Diagrama de dispersión</a></li>
+<li class="chapter" data-level="9.3" data-path="gapminder.html"><a href="gapminder.html#separar-en-facetas"><i class="fa fa-check"></i><b>9.3</b> Separar en facetas</a><ul>
+<li class="chapter" data-level="9.3.1" data-path="gapminder.html"><a href="gapminder.html#facet_wrap"><i class="fa fa-check"></i><b>9.3.1</b> <code>facet_wrap</code></a></li>
+<li class="chapter" data-level="9.3.2" data-path="gapminder.html"><a href="gapminder.html#escalas-fijas-para-mejores-comparaciones"><i class="fa fa-check"></i><b>9.3.2</b> Escalas fijas para mejores comparaciones</a></li>
+</ul></li>
+<li class="chapter" data-level="9.4" data-path="gapminder.html"><a href="gapminder.html#gráficos-de-series-de-tiempo"><i class="fa fa-check"></i><b>9.4</b> Gráficos de series de tiempo</a><ul>
+<li class="chapter" data-level="9.4.1" data-path="gapminder.html"><a href="gapminder.html#etiquetas-en-lugar-de-leyendas"><i class="fa fa-check"></i><b>9.4.1</b> Etiquetas en lugar de leyendas</a></li>
+</ul></li>
+<li class="chapter" data-level="9.5" data-path="gapminder.html"><a href="gapminder.html#transformaciones-de-datos"><i class="fa fa-check"></i><b>9.5</b> Transformaciones de datos</a><ul>
+<li class="chapter" data-level="9.5.1" data-path="gapminder.html"><a href="gapminder.html#transformación-logarítmica"><i class="fa fa-check"></i><b>9.5.1</b> Transformación logarítmica</a></li>
+<li class="chapter" data-level="9.5.2" data-path="gapminder.html"><a href="gapminder.html#qué-base"><i class="fa fa-check"></i><b>9.5.2</b> ¿Qué base?</a></li>
+<li class="chapter" data-level="9.5.3" data-path="gapminder.html"><a href="gapminder.html#transformar-los-valores-o-la-escala"><i class="fa fa-check"></i><b>9.5.3</b> ¿Transformar los valores o la escala?</a></li>
+</ul></li>
+<li class="chapter" data-level="9.6" data-path="gapminder.html"><a href="gapminder.html#cómo-visualizar-distribuciones-multimodales"><i class="fa fa-check"></i><b>9.6</b> Cómo visualizar distribuciones multimodales</a></li>
+<li class="chapter" data-level="9.7" data-path="gapminder.html"><a href="gapminder.html#cómo-comparar-múltiples-distribuciones-con-diagramas-de-caja-y-gráficos-ridge"><i class="fa fa-check"></i><b>9.7</b> Cómo comparar múltiples distribuciones con diagramas de caja y gráficos <em>ridge</em></a><ul>
+<li class="chapter" data-level="9.7.1" data-path="gapminder.html"><a href="gapminder.html#diagrama-de-caja"><i class="fa fa-check"></i><b>9.7.1</b> Diagrama de caja</a></li>
+<li class="chapter" data-level="9.7.2" data-path="gapminder.html"><a href="gapminder.html#gráficos-ridge"><i class="fa fa-check"></i><b>9.7.2</b> Gráficos <em>ridge</em></a></li>
+<li class="chapter" data-level="9.7.3" data-path="gapminder.html"><a href="gapminder.html#ejemplo-distribuciones-de-ingresos-de-1970-versus-2010"><i class="fa fa-check"></i><b>9.7.3</b> Ejemplo: distribuciones de ingresos de 1970 versus 2010</a></li>
+<li class="chapter" data-level="9.7.4" data-path="gapminder.html"><a href="gapminder.html#cómo-obtener-acceso-a-variables-calculadas"><i class="fa fa-check"></i><b>9.7.4</b> Cómo obtener acceso a variables calculadas</a></li>
+<li class="chapter" data-level="9.7.5" data-path="gapminder.html"><a href="gapminder.html#densidades-ponderadas"><i class="fa fa-check"></i><b>9.7.5</b> Densidades ponderadas</a></li>
+</ul></li>
+<li class="chapter" data-level="9.8" data-path="gapminder.html"><a href="gapminder.html#la-falacia-ecológica-y-la-importancia-de-mostrar-los-datos"><i class="fa fa-check"></i><b>9.8</b> La falacia ecológica y la importancia de mostrar los datos</a><ul>
+<li class="chapter" data-level="9.8.1" data-path="gapminder.html"><a href="gapminder.html#logit"><i class="fa fa-check"></i><b>9.8.1</b> Transformación logística</a></li>
+<li class="chapter" data-level="9.8.2" data-path="gapminder.html"><a href="gapminder.html#mostrar-los-datos"><i class="fa fa-check"></i><b>9.8.2</b> Mostrar los datos</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="10" data-path="principios-de-visualización-de-datos.html"><a href="principios-de-visualización-de-datos.html"><i class="fa fa-check"></i><b>10</b> Principios de visualización de datos</a><ul>
+<li class="chapter" data-level="10.1" data-path="principios-de-visualización-de-datos.html"><a href="principios-de-visualización-de-datos.html#cómo-codificar-datos-utilizando-señales-visuales"><i class="fa fa-check"></i><b>10.1</b> Cómo codificar datos utilizando señales visuales</a></li>
+<li class="chapter" data-level="10.2" data-path="principios-de-visualización-de-datos.html"><a href="principios-de-visualización-de-datos.html#sepa-cuándo-incluir-0"><i class="fa fa-check"></i><b>10.2</b> Sepa cuándo incluir 0</a></li>
+<li class="chapter" data-level="10.3" data-path="principios-de-visualización-de-datos.html"><a href="principios-de-visualización-de-datos.html#no-distorsionar-cantidades"><i class="fa fa-check"></i><b>10.3</b> No distorsionar cantidades</a></li>
+<li class="chapter" data-level="10.4" data-path="principios-de-visualización-de-datos.html"><a href="principios-de-visualización-de-datos.html#ordenar-categorías-por-un-valor-significativo"><i class="fa fa-check"></i><b>10.4</b> Ordenar categorías por un valor significativo</a></li>
+<li class="chapter" data-level="10.5" data-path="principios-de-visualización-de-datos.html"><a href="principios-de-visualización-de-datos.html#mostrar-los-datos-1"><i class="fa fa-check"></i><b>10.5</b> Mostrar los datos</a></li>
+<li class="chapter" data-level="10.6" data-path="principios-de-visualización-de-datos.html"><a href="principios-de-visualización-de-datos.html#cómo-facilitar-comparaciones"><i class="fa fa-check"></i><b>10.6</b> Cómo facilitar comparaciones</a><ul>
+<li class="chapter" data-level="10.6.1" data-path="principios-de-visualización-de-datos.html"><a href="principios-de-visualización-de-datos.html#use-ejes-comunes"><i class="fa fa-check"></i><b>10.6.1</b> Use ejes comunes</a></li>
+<li class="chapter" data-level="10.6.2" data-path="principios-de-visualización-de-datos.html"><a href="principios-de-visualización-de-datos.html#alinee-gráficos-verticalmente-para-ver-cambios-horizontales-y-horizontalmente-para-ver-cambios-verticales"><i class="fa fa-check"></i><b>10.6.2</b> Alinee gráficos verticalmente para ver cambios horizontales y horizontalmente para ver cambios verticales</a></li>
+<li class="chapter" data-level="10.6.3" data-path="principios-de-visualización-de-datos.html"><a href="principios-de-visualización-de-datos.html#considere-transformaciones"><i class="fa fa-check"></i><b>10.6.3</b> Considere transformaciones</a></li>
+<li class="chapter" data-level="10.6.4" data-path="principios-de-visualización-de-datos.html"><a href="principios-de-visualización-de-datos.html#señales-visuales-comparadas-deben-estar-adyacentes"><i class="fa fa-check"></i><b>10.6.4</b> Señales visuales comparadas deben estar adyacentes</a></li>
+<li class="chapter" data-level="10.6.5" data-path="principios-de-visualización-de-datos.html"><a href="principios-de-visualización-de-datos.html#use-color"><i class="fa fa-check"></i><b>10.6.5</b> Use color</a></li>
+</ul></li>
+<li class="chapter" data-level="10.7" data-path="principios-de-visualización-de-datos.html"><a href="principios-de-visualización-de-datos.html#piense-en-los-daltónicos"><i class="fa fa-check"></i><b>10.7</b> Piense en los daltónicos</a></li>
+<li class="chapter" data-level="10.8" data-path="principios-de-visualización-de-datos.html"><a href="principios-de-visualización-de-datos.html#gráficos-para-dos-variables"><i class="fa fa-check"></i><b>10.8</b> Gráficos para dos variables</a><ul>
+<li class="chapter" data-level="10.8.1" data-path="principios-de-visualización-de-datos.html"><a href="principios-de-visualización-de-datos.html#slope-charts"><i class="fa fa-check"></i><b>10.8.1</b> Slope charts</a></li>
+<li class="chapter" data-level="10.8.2" data-path="principios-de-visualización-de-datos.html"><a href="principios-de-visualización-de-datos.html#gráfico-bland-altman"><i class="fa fa-check"></i><b>10.8.2</b> Gráfico Bland-Altman</a></li>
+</ul></li>
+<li class="chapter" data-level="10.9" data-path="principios-de-visualización-de-datos.html"><a href="principios-de-visualización-de-datos.html#cómo-codificar-una-tercera-variable"><i class="fa fa-check"></i><b>10.9</b> Cómo codificar una tercera variable</a></li>
+<li class="chapter" data-level="10.10" data-path="principios-de-visualización-de-datos.html"><a href="principios-de-visualización-de-datos.html#evite-los-gráficos-pseudo-tridimensionales"><i class="fa fa-check"></i><b>10.10</b> Evite los gráficos pseudo-tridimensionales</a></li>
+<li class="chapter" data-level="10.11" data-path="principios-de-visualización-de-datos.html"><a href="principios-de-visualización-de-datos.html#evite-demasiados-dígitos-significativos"><i class="fa fa-check"></i><b>10.11</b> Evite demasiados dígitos significativos</a></li>
+<li class="chapter" data-level="10.12" data-path="principios-de-visualización-de-datos.html"><a href="principios-de-visualización-de-datos.html#conozca-a-su-audiencia"><i class="fa fa-check"></i><b>10.12</b> Conozca a su audiencia</a></li>
+<li class="chapter" data-level="10.13" data-path="principios-de-visualización-de-datos.html"><a href="principios-de-visualización-de-datos.html#ejercicios-19"><i class="fa fa-check"></i><b>10.13</b> Ejercicios</a></li>
+<li class="chapter" data-level="10.14" data-path="principios-de-visualización-de-datos.html"><a href="principios-de-visualización-de-datos.html#vaccines"><i class="fa fa-check"></i><b>10.14</b> Estudio de caso: las vacunas y las enfermedades infecciosas</a></li>
+<li class="chapter" data-level="10.15" data-path="principios-de-visualización-de-datos.html"><a href="principios-de-visualización-de-datos.html#ejercicios-20"><i class="fa fa-check"></i><b>10.15</b> Ejercicios</a></li>
+</ul></li>
+<li class="chapter" data-level="11" data-path="robust-summaries.html"><a href="robust-summaries.html"><i class="fa fa-check"></i><b>11</b> Resúmenes robustos</a><ul>
+<li class="chapter" data-level="11.1" data-path="robust-summaries.html"><a href="robust-summaries.html#valores-atípicos"><i class="fa fa-check"></i><b>11.1</b> Valores atípicos</a></li>
+<li class="chapter" data-level="11.2" data-path="robust-summaries.html"><a href="robust-summaries.html#mediana"><i class="fa fa-check"></i><b>11.2</b> Mediana</a></li>
+<li class="chapter" data-level="11.3" data-path="robust-summaries.html"><a href="robust-summaries.html#el-rango-intercuartil-iqr"><i class="fa fa-check"></i><b>11.3</b> El rango intercuartil (IQR)</a></li>
+<li class="chapter" data-level="11.4" data-path="robust-summaries.html"><a href="robust-summaries.html#la-definición-de-tukey-de-un-valor-atípico"><i class="fa fa-check"></i><b>11.4</b> La definición de Tukey de un valor atípico</a></li>
+<li class="chapter" data-level="11.5" data-path="robust-summaries.html"><a href="robust-summaries.html#desviación-absoluta-mediana"><i class="fa fa-check"></i><b>11.5</b> Desviación absoluta mediana</a></li>
+<li class="chapter" data-level="11.6" data-path="robust-summaries.html"><a href="robust-summaries.html#ejercicios-21"><i class="fa fa-check"></i><b>11.6</b> Ejercicios</a></li>
+<li class="chapter" data-level="11.7" data-path="robust-summaries.html"><a href="robust-summaries.html#estudio-de-caso-alturas-autoreportadas-de-estudiantes"><i class="fa fa-check"></i><b>11.7</b> Estudio de caso: alturas autoreportadas de estudiantes</a></li>
+</ul></li>
+<li class="part"><span><b>III Estadísticas con R</b></span></li>
+<li class="chapter" data-level="12" data-path="introducción-a-las-estadísticas-con-r.html"><a href="introducción-a-las-estadísticas-con-r.html"><i class="fa fa-check"></i><b>12</b> Introducción a las estadísticas con R</a></li>
+<li class="chapter" data-level="13" data-path="probabilidad.html"><a href="probabilidad.html"><i class="fa fa-check"></i><b>13</b> Probabilidad</a><ul>
+<li class="chapter" data-level="13.1" data-path="probabilidad.html"><a href="probabilidad.html#probabilidad-discreta"><i class="fa fa-check"></i><b>13.1</b> Probabilidad discreta</a><ul>
+<li class="chapter" data-level="13.1.1" data-path="probabilidad.html"><a href="probabilidad.html#frecuencia-relativa"><i class="fa fa-check"></i><b>13.1.1</b> Frecuencia relativa</a></li>
+<li class="chapter" data-level="13.1.2" data-path="probabilidad.html"><a href="probabilidad.html#notación"><i class="fa fa-check"></i><b>13.1.2</b> Notación</a></li>
+<li class="chapter" data-level="13.1.3" data-path="probabilidad.html"><a href="probabilidad.html#distribuciones-de-probabilidad"><i class="fa fa-check"></i><b>13.1.3</b> Distribuciones de probabilidad</a></li>
+</ul></li>
+<li class="chapter" data-level="13.2" data-path="probabilidad.html"><a href="probabilidad.html#simulaciones-monte-carlo-para-datos-categóricos"><i class="fa fa-check"></i><b>13.2</b> Simulaciones Monte Carlo para datos categóricos</a><ul>
+<li class="chapter" data-level="13.2.1" data-path="probabilidad.html"><a href="probabilidad.html#fijar-la-semilla-aleatoria"><i class="fa fa-check"></i><b>13.2.1</b> Fijar la semilla aleatoria</a></li>
+<li class="chapter" data-level="13.2.2" data-path="probabilidad.html"><a href="probabilidad.html#con-y-sin-reemplazo"><i class="fa fa-check"></i><b>13.2.2</b> Con y sin reemplazo</a></li>
+</ul></li>
+<li class="chapter" data-level="13.3" data-path="probabilidad.html"><a href="probabilidad.html#independencia"><i class="fa fa-check"></i><b>13.3</b> Independencia</a></li>
+<li class="chapter" data-level="13.4" data-path="probabilidad.html"><a href="probabilidad.html#probabilidades-condicionales"><i class="fa fa-check"></i><b>13.4</b> Probabilidades condicionales</a></li>
+<li class="chapter" data-level="13.5" data-path="probabilidad.html"><a href="probabilidad.html#reglas-de-la-adición-y-de-la-multiplicación"><i class="fa fa-check"></i><b>13.5</b> Reglas de la adición y de la multiplicación</a><ul>
+<li class="chapter" data-level="13.5.1" data-path="probabilidad.html"><a href="probabilidad.html#regla-de-la-multiplicación"><i class="fa fa-check"></i><b>13.5.1</b> Regla de la multiplicación</a></li>
+<li class="chapter" data-level="13.5.2" data-path="probabilidad.html"><a href="probabilidad.html#regla-de-la-multiplicación-bajo-independencia"><i class="fa fa-check"></i><b>13.5.2</b> Regla de la multiplicación bajo independencia</a></li>
+<li class="chapter" data-level="13.5.3" data-path="probabilidad.html"><a href="probabilidad.html#regla-de-la-adición"><i class="fa fa-check"></i><b>13.5.3</b> Regla de la adición</a></li>
+</ul></li>
+<li class="chapter" data-level="13.6" data-path="probabilidad.html"><a href="probabilidad.html#combinaciones-y-permutaciones"><i class="fa fa-check"></i><b>13.6</b> Combinaciones y permutaciones</a><ul>
+<li class="chapter" data-level="13.6.1" data-path="probabilidad.html"><a href="probabilidad.html#ejemplo-monte-carlo"><i class="fa fa-check"></i><b>13.6.1</b> Ejemplo Monte Carlo</a></li>
+</ul></li>
+<li class="chapter" data-level="13.7" data-path="probabilidad.html"><a href="probabilidad.html#ejemplos"><i class="fa fa-check"></i><b>13.7</b> Ejemplos</a><ul>
+<li class="chapter" data-level="13.7.1" data-path="probabilidad.html"><a href="probabilidad.html#problema-monty-hall"><i class="fa fa-check"></i><b>13.7.1</b> Problema Monty Hall</a></li>
+<li class="chapter" data-level="13.7.2" data-path="probabilidad.html"><a href="probabilidad.html#problema-de-cumpleaños"><i class="fa fa-check"></i><b>13.7.2</b> Problema de cumpleaños</a></li>
+</ul></li>
+<li class="chapter" data-level="13.8" data-path="probabilidad.html"><a href="probabilidad.html#infinito-en-la-práctica"><i class="fa fa-check"></i><b>13.8</b> Infinito en la práctica</a></li>
+<li class="chapter" data-level="13.9" data-path="probabilidad.html"><a href="probabilidad.html#ejercicios-22"><i class="fa fa-check"></i><b>13.9</b> Ejercicios</a></li>
+<li class="chapter" data-level="13.10" data-path="probabilidad.html"><a href="probabilidad.html#probabilidad-continua"><i class="fa fa-check"></i><b>13.10</b> Probabilidad continua</a></li>
+<li class="chapter" data-level="13.11" data-path="probabilidad.html"><a href="probabilidad.html#distribuciones-teóricas-continuas"><i class="fa fa-check"></i><b>13.11</b> Distribuciones teóricas continuas</a><ul>
+<li class="chapter" data-level="13.11.1" data-path="probabilidad.html"><a href="probabilidad.html#distribuciones-teóricas-como-aproximaciones"><i class="fa fa-check"></i><b>13.11.1</b> Distribuciones teóricas como aproximaciones</a></li>
+<li class="chapter" data-level="13.11.2" data-path="probabilidad.html"><a href="probabilidad.html#la-densidad-de-probabilidad"><i class="fa fa-check"></i><b>13.11.2</b> La densidad de probabilidad</a></li>
+</ul></li>
+<li class="chapter" data-level="13.12" data-path="probabilidad.html"><a href="probabilidad.html#simulaciones-monte-carlo-para-variables-continuas"><i class="fa fa-check"></i><b>13.12</b> Simulaciones Monte Carlo para variables continuas</a></li>
+<li class="chapter" data-level="13.13" data-path="probabilidad.html"><a href="probabilidad.html#distribuciones-continuas"><i class="fa fa-check"></i><b>13.13</b> Distribuciones continuas</a></li>
+<li class="chapter" data-level="13.14" data-path="probabilidad.html"><a href="probabilidad.html#ejercicios-23"><i class="fa fa-check"></i><b>13.14</b> Ejercicios</a></li>
+</ul></li>
+<li class="chapter" data-level="14" data-path="variables-aleatorias.html"><a href="variables-aleatorias.html"><i class="fa fa-check"></i><b>14</b> Variables aleatorias</a><ul>
+<li class="chapter" data-level="14.1" data-path="variables-aleatorias.html"><a href="variables-aleatorias.html#variables-aleatorias-1"><i class="fa fa-check"></i><b>14.1</b> Variables aleatorias</a></li>
+<li class="chapter" data-level="14.2" data-path="variables-aleatorias.html"><a href="variables-aleatorias.html#modelos-de-muestreo"><i class="fa fa-check"></i><b>14.2</b> Modelos de muestreo</a></li>
+<li class="chapter" data-level="14.3" data-path="variables-aleatorias.html"><a href="variables-aleatorias.html#la-distribución-de-probabilidad-de-una-variable-aleatoria"><i class="fa fa-check"></i><b>14.3</b> La distribución de probabilidad de una variable aleatoria</a></li>
+<li class="chapter" data-level="14.4" data-path="variables-aleatorias.html"><a href="variables-aleatorias.html#distribuciones-versus-distribuciones-de-probabilidad"><i class="fa fa-check"></i><b>14.4</b> Distribuciones versus distribuciones de probabilidad</a></li>
+<li class="chapter" data-level="14.5" data-path="variables-aleatorias.html"><a href="variables-aleatorias.html#notación-para-variables-aleatorias"><i class="fa fa-check"></i><b>14.5</b> Notación para variables aleatorias</a></li>
+<li class="chapter" data-level="14.6" data-path="variables-aleatorias.html"><a href="variables-aleatorias.html#el-valor-esperado-y-el-error-estándar"><i class="fa fa-check"></i><b>14.6</b> El valor esperado y el error estándar</a><ul>
+<li class="chapter" data-level="14.6.1" data-path="variables-aleatorias.html"><a href="variables-aleatorias.html#población-sd-versus-la-muestra-sd"><i class="fa fa-check"></i><b>14.6.1</b> Población SD versus la muestra SD</a></li>
+</ul></li>
+<li class="chapter" data-level="14.7" data-path="variables-aleatorias.html"><a href="variables-aleatorias.html#teorema-del-límite-central"><i class="fa fa-check"></i><b>14.7</b> Teorema del límite central</a><ul>
+<li class="chapter" data-level="14.7.1" data-path="variables-aleatorias.html"><a href="variables-aleatorias.html#cuán-grande-es-grande-en-el-teorema-del-límite-central"><i class="fa fa-check"></i><b>14.7.1</b> ¿Cuán grande es grande en el teorema del límite central?</a></li>
+</ul></li>
+<li class="chapter" data-level="14.8" data-path="variables-aleatorias.html"><a href="variables-aleatorias.html#propiedades-estadísticas-de-promedios"><i class="fa fa-check"></i><b>14.8</b> Propiedades estadísticas de promedios</a></li>
+<li class="chapter" data-level="14.9" data-path="variables-aleatorias.html"><a href="variables-aleatorias.html#ley-de-los-grandes-números"><i class="fa fa-check"></i><b>14.9</b> Ley de los grandes números</a><ul>
+<li class="chapter" data-level="14.9.1" data-path="variables-aleatorias.html"><a href="variables-aleatorias.html#malinterpretando-la-ley-de-promedios"><i class="fa fa-check"></i><b>14.9.1</b> Malinterpretando la ley de promedios</a></li>
+</ul></li>
+<li class="chapter" data-level="14.10" data-path="variables-aleatorias.html"><a href="variables-aleatorias.html#ejercicios-24"><i class="fa fa-check"></i><b>14.10</b> Ejercicios</a></li>
+<li class="chapter" data-level="14.11" data-path="variables-aleatorias.html"><a href="variables-aleatorias.html#estudio-de-caso-the-big-short"><i class="fa fa-check"></i><b>14.11</b> Estudio de caso: The Big Short</a><ul>
+<li class="chapter" data-level="14.11.1" data-path="variables-aleatorias.html"><a href="variables-aleatorias.html#tasas-de-interés-explicadas-con-modelo-de-oportunidad"><i class="fa fa-check"></i><b>14.11.1</b> Tasas de interés explicadas con modelo de oportunidad</a></li>
+<li class="chapter" data-level="14.11.2" data-path="variables-aleatorias.html"><a href="variables-aleatorias.html#the-big-short"><i class="fa fa-check"></i><b>14.11.2</b> The Big Short</a></li>
+</ul></li>
+<li class="chapter" data-level="14.12" data-path="variables-aleatorias.html"><a href="variables-aleatorias.html#ejercicios-25"><i class="fa fa-check"></i><b>14.12</b> Ejercicios</a></li>
+</ul></li>
+<li class="chapter" data-level="15" data-path="inference.html"><a href="inference.html"><i class="fa fa-check"></i><b>15</b> Inferencia estadística</a><ul>
+<li class="chapter" data-level="15.1" data-path="inference.html"><a href="inference.html#encuestas"><i class="fa fa-check"></i><b>15.1</b> Encuestas</a><ul>
+<li class="chapter" data-level="15.1.1" data-path="inference.html"><a href="inference.html#el-modelo-de-muestreo-para-encuestas"><i class="fa fa-check"></i><b>15.1.1</b> El modelo de muestreo para encuestas</a></li>
+</ul></li>
+<li class="chapter" data-level="15.2" data-path="inference.html"><a href="inference.html#poblaciones-muestras-parámetros-y-estimaciones"><i class="fa fa-check"></i><b>15.2</b> Poblaciones, muestras, parámetros y estimaciones</a><ul>
+<li class="chapter" data-level="15.2.1" data-path="inference.html"><a href="inference.html#el-promedio-de-la-muestra"><i class="fa fa-check"></i><b>15.2.1</b> El promedio de la muestra</a></li>
+<li class="chapter" data-level="15.2.2" data-path="inference.html"><a href="inference.html#parámetros"><i class="fa fa-check"></i><b>15.2.2</b> Parámetros</a></li>
+<li class="chapter" data-level="15.2.3" data-path="inference.html"><a href="inference.html#encuesta-versus-pronóstico"><i class="fa fa-check"></i><b>15.2.3</b> Encuesta versus pronóstico</a></li>
+<li class="chapter" data-level="15.2.4" data-path="inference.html"><a href="inference.html#propiedades-de-nuestra-estimación-valor-esperado-y-error-estándar"><i class="fa fa-check"></i><b>15.2.4</b> Propiedades de nuestra estimación: valor esperado y error estándar</a></li>
+</ul></li>
+<li class="chapter" data-level="15.3" data-path="inference.html"><a href="inference.html#ejercicios-26"><i class="fa fa-check"></i><b>15.3</b> Ejercicios</a></li>
+<li class="chapter" data-level="15.4" data-path="inference.html"><a href="inference.html#clt"><i class="fa fa-check"></i><b>15.4</b> Teorema del límite central en la práctica</a><ul>
+<li class="chapter" data-level="15.4.1" data-path="inference.html"><a href="inference.html#una-simulación-monte-carlo"><i class="fa fa-check"></i><b>15.4.1</b> Una simulación Monte Carlo</a></li>
+<li class="chapter" data-level="15.4.2" data-path="inference.html"><a href="inference.html#la-diferencia"><i class="fa fa-check"></i><b>15.4.2</b> La diferencia</a></li>
+<li class="chapter" data-level="15.4.3" data-path="inference.html"><a href="inference.html#sesgo-por-qué-no-realizar-una-encuesta-bien-grande"><i class="fa fa-check"></i><b>15.4.3</b> Sesgo: ¿por qué no realizar una encuesta bien grande?</a></li>
+</ul></li>
+<li class="chapter" data-level="15.5" data-path="inference.html"><a href="inference.html#ejercicios-27"><i class="fa fa-check"></i><b>15.5</b> Ejercicios</a></li>
+<li class="chapter" data-level="15.6" data-path="inference.html"><a href="inference.html#intervalos-de-confianza"><i class="fa fa-check"></i><b>15.6</b> Intervalos de confianza</a><ul>
+<li class="chapter" data-level="15.6.1" data-path="inference.html"><a href="inference.html#una-simulación-monte-carlo-1"><i class="fa fa-check"></i><b>15.6.1</b> Una simulación Monte Carlo</a></li>
+<li class="chapter" data-level="15.6.2" data-path="inference.html"><a href="inference.html#el-idioma-correcto"><i class="fa fa-check"></i><b>15.6.2</b> El idioma correcto</a></li>
+</ul></li>
+<li class="chapter" data-level="15.7" data-path="inference.html"><a href="inference.html#ejercicios-28"><i class="fa fa-check"></i><b>15.7</b> Ejercicios</a></li>
+<li class="chapter" data-level="15.8" data-path="inference.html"><a href="inference.html#poder"><i class="fa fa-check"></i><b>15.8</b> Poder</a></li>
+<li class="chapter" data-level="15.9" data-path="inference.html"><a href="inference.html#valores-p"><i class="fa fa-check"></i><b>15.9</b> valores p</a></li>
+<li class="chapter" data-level="15.10" data-path="inference.html"><a href="inference.html#association-tests"><i class="fa fa-check"></i><b>15.10</b> Pruebas de asociación</a><ul>
+<li class="chapter" data-level="15.10.1" data-path="inference.html"><a href="inference.html#lady-tasting-tea"><i class="fa fa-check"></i><b>15.10.1</b> Lady Tasting Tea</a></li>
+<li class="chapter" data-level="15.10.2" data-path="inference.html"><a href="inference.html#tablas-2x2"><i class="fa fa-check"></i><b>15.10.2</b> Tablas 2x2</a></li>
+<li class="chapter" data-level="15.10.3" data-path="inference.html"><a href="inference.html#prueba-de-chi-cuadrado"><i class="fa fa-check"></i><b>15.10.3</b> Prueba de chi-cuadrado</a></li>
+<li class="chapter" data-level="15.10.4" data-path="inference.html"><a href="inference.html#odds-ratio"><i class="fa fa-check"></i><b>15.10.4</b> Riesgo relativo</a></li>
+<li class="chapter" data-level="15.10.5" data-path="inference.html"><a href="inference.html#intervalos-de-confianza-para-el-riesgo-relativo"><i class="fa fa-check"></i><b>15.10.5</b> Intervalos de confianza para el riesgo relativo</a></li>
+<li class="chapter" data-level="15.10.6" data-path="inference.html"><a href="inference.html#corrección-de-recuento-pequeño"><i class="fa fa-check"></i><b>15.10.6</b> Corrección de recuento pequeño</a></li>
+<li class="chapter" data-level="15.10.7" data-path="inference.html"><a href="inference.html#muestras-grandes-valores-p-pequeños"><i class="fa fa-check"></i><b>15.10.7</b> Muestras grandes, valores p pequeños</a></li>
+</ul></li>
+<li class="chapter" data-level="15.11" data-path="inference.html"><a href="inference.html#ejercicios-29"><i class="fa fa-check"></i><b>15.11</b> Ejercicios</a></li>
+</ul></li>
+<li class="chapter" data-level="16" data-path="models.html"><a href="models.html"><i class="fa fa-check"></i><b>16</b> Modelos estadísticos</a><ul>
+<li class="chapter" data-level="16.1" data-path="models.html"><a href="models.html#agregadores-de-encuestas"><i class="fa fa-check"></i><b>16.1</b> Agregadores de encuestas</a><ul>
+<li class="chapter" data-level="16.1.1" data-path="models.html"><a href="models.html#datos-de-encuesta"><i class="fa fa-check"></i><b>16.1.1</b> Datos de encuesta</a></li>
+<li class="chapter" data-level="16.1.2" data-path="models.html"><a href="models.html#sesgo-de-los-encuestadores"><i class="fa fa-check"></i><b>16.1.2</b> Sesgo de los encuestadores</a></li>
+</ul></li>
+<li class="chapter" data-level="16.2" data-path="models.html"><a href="models.html#data-driven-model"><i class="fa fa-check"></i><b>16.2</b> Modelos basados en datos</a></li>
+<li class="chapter" data-level="16.3" data-path="models.html"><a href="models.html#ejercicios-30"><i class="fa fa-check"></i><b>16.3</b> Ejercicios</a></li>
+<li class="chapter" data-level="16.4" data-path="models.html"><a href="models.html#bayesian-statistics"><i class="fa fa-check"></i><b>16.4</b> Estadísticas bayesianas</a><ul>
+<li class="chapter" data-level="16.4.1" data-path="models.html"><a href="models.html#teorema-de-bayes"><i class="fa fa-check"></i><b>16.4.1</b> Teorema de Bayes</a></li>
+</ul></li>
+<li class="chapter" data-level="16.5" data-path="models.html"><a href="models.html#simulación-del-teorema-de-bayes"><i class="fa fa-check"></i><b>16.5</b> Simulación del teorema de Bayes</a><ul>
+<li class="chapter" data-level="16.5.1" data-path="models.html"><a href="models.html#bayes-en-la-práctica"><i class="fa fa-check"></i><b>16.5.1</b> Bayes en la práctica</a></li>
+</ul></li>
+<li class="chapter" data-level="16.6" data-path="models.html"><a href="models.html#modelos-jerárquicos"><i class="fa fa-check"></i><b>16.6</b> Modelos jerárquicos</a></li>
+<li class="chapter" data-level="16.7" data-path="models.html"><a href="models.html#ejercicios-31"><i class="fa fa-check"></i><b>16.7</b> Ejercicios</a></li>
+<li class="chapter" data-level="16.8" data-path="models.html"><a href="models.html#election-forecasting"><i class="fa fa-check"></i><b>16.8</b> Estudio de caso: pronóstico de elecciones</a><ul>
+<li class="chapter" data-level="16.8.1" data-path="models.html"><a href="models.html#bayesian-approach"><i class="fa fa-check"></i><b>16.8.1</b> Enfoque bayesiano</a></li>
+<li class="chapter" data-level="16.8.2" data-path="models.html"><a href="models.html#el-sesgo-general"><i class="fa fa-check"></i><b>16.8.2</b> El sesgo general</a></li>
+<li class="chapter" data-level="16.8.3" data-path="models.html"><a href="models.html#representaciones-matemáticas-de-modelos"><i class="fa fa-check"></i><b>16.8.3</b> Representaciones matemáticas de modelos</a></li>
+<li class="chapter" data-level="16.8.4" data-path="models.html"><a href="models.html#prediciendo-el-colegio-electoral"><i class="fa fa-check"></i><b>16.8.4</b> Prediciendo el colegio electoral</a></li>
+<li class="chapter" data-level="16.8.5" data-path="models.html"><a href="models.html#pronósticos"><i class="fa fa-check"></i><b>16.8.5</b> Pronósticos</a></li>
+</ul></li>
+<li class="chapter" data-level="16.9" data-path="models.html"><a href="models.html#ejercicios-32"><i class="fa fa-check"></i><b>16.9</b> Ejercicios</a></li>
+<li class="chapter" data-level="16.10" data-path="models.html"><a href="models.html#t-dist"><i class="fa fa-check"></i><b>16.10</b> La distribución t</a></li>
+</ul></li>
+<li class="chapter" data-level="17" data-path="regression.html"><a href="regression.html"><i class="fa fa-check"></i><b>17</b> Regresión</a><ul>
+<li class="chapter" data-level="17.1" data-path="regression.html"><a href="regression.html#estudio-de-caso-la-altura-es-hereditaria"><i class="fa fa-check"></i><b>17.1</b> Estudio de caso: ¿la altura es hereditaria?</a></li>
+<li class="chapter" data-level="17.2" data-path="regression.html"><a href="regression.html#corr-coef"><i class="fa fa-check"></i><b>17.2</b> El coeficiente de correlación</a><ul>
+<li class="chapter" data-level="17.2.1" data-path="regression.html"><a href="regression.html#la-correlación-de-muestra-es-una-variable-aleatoria"><i class="fa fa-check"></i><b>17.2.1</b> La correlación de muestra es una variable aleatoria</a></li>
+<li class="chapter" data-level="17.2.2" data-path="regression.html"><a href="regression.html#la-correlación-no-siempre-es-un-resumen-útil"><i class="fa fa-check"></i><b>17.2.2</b> La correlación no siempre es un resumen útil</a></li>
+</ul></li>
+<li class="chapter" data-level="17.3" data-path="regression.html"><a href="regression.html#conditional-expectation"><i class="fa fa-check"></i><b>17.3</b> Valor esperado condicional</a></li>
+<li class="chapter" data-level="17.4" data-path="regression.html"><a href="regression.html#la-línea-de-regresión"><i class="fa fa-check"></i><b>17.4</b> La línea de regresión</a><ul>
+<li class="chapter" data-level="17.4.1" data-path="regression.html"><a href="regression.html#regresión-mejora-precisión"><i class="fa fa-check"></i><b>17.4.1</b> Regresión mejora precisión</a></li>
+<li class="chapter" data-level="17.4.2" data-path="regression.html"><a href="regression.html#distribución-normal-de-dos-variables-avanzada"><i class="fa fa-check"></i><b>17.4.2</b> Distribución normal de dos variables (avanzada)</a></li>
+<li class="chapter" data-level="17.4.3" data-path="regression.html"><a href="regression.html#varianza-explicada"><i class="fa fa-check"></i><b>17.4.3</b> Varianza explicada</a></li>
+<li class="chapter" data-level="17.4.4" data-path="regression.html"><a href="regression.html#advertencia-hay-dos-líneas-de-regresión"><i class="fa fa-check"></i><b>17.4.4</b> Advertencia: hay dos líneas de regresión</a></li>
+</ul></li>
+<li class="chapter" data-level="17.5" data-path="regression.html"><a href="regression.html#ejercicios-33"><i class="fa fa-check"></i><b>17.5</b> Ejercicios</a></li>
+</ul></li>
+<li class="chapter" data-level="18" data-path="modelos-lineales.html"><a href="modelos-lineales.html"><i class="fa fa-check"></i><b>18</b> Modelos lineales</a><ul>
+<li class="chapter" data-level="18.1" data-path="modelos-lineales.html"><a href="modelos-lineales.html#estudio-de-caso-moneyball"><i class="fa fa-check"></i><b>18.1</b> Estudio de caso: Moneyball</a><ul>
+<li class="chapter" data-level="18.1.1" data-path="modelos-lineales.html"><a href="modelos-lineales.html#sabermetrics"><i class="fa fa-check"></i><b>18.1.1</b> Sabermetrics</a></li>
+<li class="chapter" data-level="18.1.2" data-path="modelos-lineales.html"><a href="modelos-lineales.html#conceptos-básicos-de-béisbol"><i class="fa fa-check"></i><b>18.1.2</b> Conceptos básicos de béisbol</a></li>
+<li class="chapter" data-level="18.1.3" data-path="modelos-lineales.html"><a href="modelos-lineales.html#no-hay-premios-para-bb"><i class="fa fa-check"></i><b>18.1.3</b> No hay premios para BB</a></li>
+<li class="chapter" data-level="18.1.4" data-path="modelos-lineales.html"><a href="modelos-lineales.html#base-por-bolas-o-bases-robadas"><i class="fa fa-check"></i><b>18.1.4</b> ¿Base por bolas o bases robadas?</a></li>
+<li class="chapter" data-level="18.1.5" data-path="modelos-lineales.html"><a href="modelos-lineales.html#regresión-aplicada-a-las-estadísticas-de-béisbol"><i class="fa fa-check"></i><b>18.1.5</b> Regresión aplicada a las estadísticas de béisbol</a></li>
+</ul></li>
+<li class="chapter" data-level="18.2" data-path="modelos-lineales.html"><a href="modelos-lineales.html#confusión"><i class="fa fa-check"></i><b>18.2</b> Confusión</a><ul>
+<li class="chapter" data-level="18.2.1" data-path="modelos-lineales.html"><a href="modelos-lineales.html#entender-confusión-a-través-de-estratificación"><i class="fa fa-check"></i><b>18.2.1</b> Entender confusión a través de estratificación</a></li>
+<li class="chapter" data-level="18.2.2" data-path="modelos-lineales.html"><a href="modelos-lineales.html#regresión-lineal-múltiple"><i class="fa fa-check"></i><b>18.2.2</b> Regresión lineal múltiple</a></li>
+</ul></li>
+<li class="chapter" data-level="18.3" data-path="modelos-lineales.html"><a href="modelos-lineales.html#lse"><i class="fa fa-check"></i><b>18.3</b> Estimaciones de mínimos cuadrados</a><ul>
+<li class="chapter" data-level="18.3.1" data-path="modelos-lineales.html"><a href="modelos-lineales.html#interpretando-modelos-lineales"><i class="fa fa-check"></i><b>18.3.1</b> Interpretando modelos lineales</a></li>
+<li class="chapter" data-level="18.3.2" data-path="modelos-lineales.html"><a href="modelos-lineales.html#estimaciones-de-mínimos-cuadrados-lse"><i class="fa fa-check"></i><b>18.3.2</b> Estimaciones de mínimos cuadrados (LSE)</a></li>
+<li class="chapter" data-level="18.3.3" data-path="modelos-lineales.html"><a href="modelos-lineales.html#la-función-lm"><i class="fa fa-check"></i><b>18.3.3</b> La función <code>lm</code></a></li>
+<li class="chapter" data-level="18.3.4" data-path="modelos-lineales.html"><a href="modelos-lineales.html#lse-son-variables-aleatorias"><i class="fa fa-check"></i><b>18.3.4</b> LSE son variables aleatorias</a></li>
+<li class="chapter" data-level="18.3.5" data-path="modelos-lineales.html"><a href="modelos-lineales.html#valores-pronosticados-son-variables-aleatorias"><i class="fa fa-check"></i><b>18.3.5</b> Valores pronosticados son variables aleatorias</a></li>
+</ul></li>
+<li class="chapter" data-level="18.4" data-path="modelos-lineales.html"><a href="modelos-lineales.html#ejercicios-34"><i class="fa fa-check"></i><b>18.4</b> Ejercicios</a></li>
+<li class="chapter" data-level="18.5" data-path="modelos-lineales.html"><a href="modelos-lineales.html#regresión-lineal-en-el-tidyverse"><i class="fa fa-check"></i><b>18.5</b> Regresión lineal en el tidyverse</a><ul>
+<li class="chapter" data-level="18.5.1" data-path="modelos-lineales.html"><a href="modelos-lineales.html#el-paquete-broom"><i class="fa fa-check"></i><b>18.5.1</b> El paquete broom</a></li>
+</ul></li>
+<li class="chapter" data-level="18.6" data-path="modelos-lineales.html"><a href="modelos-lineales.html#ejercicios-35"><i class="fa fa-check"></i><b>18.6</b> Ejercicios</a></li>
+<li class="chapter" data-level="18.7" data-path="modelos-lineales.html"><a href="modelos-lineales.html#estudio-de-caso-moneyball-continuación"><i class="fa fa-check"></i><b>18.7</b> Estudio de caso: Moneyball (continuación)</a><ul>
+<li class="chapter" data-level="18.7.1" data-path="modelos-lineales.html"><a href="modelos-lineales.html#añadiendo-información-sobre-salario-y-posición"><i class="fa fa-check"></i><b>18.7.1</b> Añadiendo información sobre salario y posición</a></li>
+<li class="chapter" data-level="18.7.2" data-path="modelos-lineales.html"><a href="modelos-lineales.html#escoger-nueve-jugadores"><i class="fa fa-check"></i><b>18.7.2</b> Escoger nueve jugadores</a></li>
+</ul></li>
+<li class="chapter" data-level="18.8" data-path="modelos-lineales.html"><a href="modelos-lineales.html#la-falacia-de-la-regresión"><i class="fa fa-check"></i><b>18.8</b> La falacia de la regresión</a></li>
+<li class="chapter" data-level="18.9" data-path="modelos-lineales.html"><a href="modelos-lineales.html#modelos-de-error-de-medición"><i class="fa fa-check"></i><b>18.9</b> Modelos de error de medición</a></li>
+<li class="chapter" data-level="18.10" data-path="modelos-lineales.html"><a href="modelos-lineales.html#ejercicios-36"><i class="fa fa-check"></i><b>18.10</b> Ejercicios</a></li>
+</ul></li>
+<li class="chapter" data-level="19" data-path="la-asociación-no-implica-causalidad.html"><a href="la-asociación-no-implica-causalidad.html"><i class="fa fa-check"></i><b>19</b> La asociación no implica causalidad</a><ul>
+<li class="chapter" data-level="19.1" data-path="la-asociación-no-implica-causalidad.html"><a href="la-asociación-no-implica-causalidad.html#correlación-espuria"><i class="fa fa-check"></i><b>19.1</b> Correlación espuria</a></li>
+<li class="chapter" data-level="19.2" data-path="la-asociación-no-implica-causalidad.html"><a href="la-asociación-no-implica-causalidad.html#valores-atípicos-1"><i class="fa fa-check"></i><b>19.2</b> Valores atípicos</a></li>
+<li class="chapter" data-level="19.3" data-path="la-asociación-no-implica-causalidad.html"><a href="la-asociación-no-implica-causalidad.html#inversión-de-causa-y-efecto"><i class="fa fa-check"></i><b>19.3</b> Inversión de causa y efecto</a></li>
+<li class="chapter" data-level="19.4" data-path="la-asociación-no-implica-causalidad.html"><a href="la-asociación-no-implica-causalidad.html#factores-de-confusión"><i class="fa fa-check"></i><b>19.4</b> Factores de confusión</a><ul>
+<li class="chapter" data-level="19.4.1" data-path="la-asociación-no-implica-causalidad.html"><a href="la-asociación-no-implica-causalidad.html#ejemplo-admisiones-a-la-universidad-de-california-berkeley"><i class="fa fa-check"></i><b>19.4.1</b> Ejemplo: admisiones a la Universidad de California, Berkeley</a></li>
+<li class="chapter" data-level="19.4.2" data-path="la-asociación-no-implica-causalidad.html"><a href="la-asociación-no-implica-causalidad.html#confusión-explicada-gráficamente"><i class="fa fa-check"></i><b>19.4.2</b> Confusión explicada gráficamente</a></li>
+<li class="chapter" data-level="19.4.3" data-path="la-asociación-no-implica-causalidad.html"><a href="la-asociación-no-implica-causalidad.html#promedio-después-de-estratificar"><i class="fa fa-check"></i><b>19.4.3</b> Promedio después de estratificar</a></li>
+</ul></li>
+<li class="chapter" data-level="19.5" data-path="la-asociación-no-implica-causalidad.html"><a href="la-asociación-no-implica-causalidad.html#la-paradoja-de-simpson"><i class="fa fa-check"></i><b>19.5</b> La paradoja de Simpson</a></li>
+<li class="chapter" data-level="19.6" data-path="la-asociación-no-implica-causalidad.html"><a href="la-asociación-no-implica-causalidad.html#ejercicios-37"><i class="fa fa-check"></i><b>19.6</b> Ejercicios</a></li>
+</ul></li>
+<li class="part"><span><b>IV <em>Wrangling</em> de datos</b></span></li>
+<li class="chapter" data-level="20" data-path="introducción-al-wrangling-de-datos.html"><a href="introducción-al-wrangling-de-datos.html"><i class="fa fa-check"></i><b>20</b> Introducción al wrangling de datos</a></li>
+<li class="chapter" data-level="21" data-path="cómo-cambiar-el-formato-de-datos.html"><a href="cómo-cambiar-el-formato-de-datos.html"><i class="fa fa-check"></i><b>21</b> Cómo cambiar el formato de datos</a><ul>
+<li class="chapter" data-level="21.1" data-path="cómo-cambiar-el-formato-de-datos.html"><a href="cómo-cambiar-el-formato-de-datos.html#gather"><i class="fa fa-check"></i><b>21.1</b> <code>gather</code></a></li>
+<li class="chapter" data-level="21.2" data-path="cómo-cambiar-el-formato-de-datos.html"><a href="cómo-cambiar-el-formato-de-datos.html#spread"><i class="fa fa-check"></i><b>21.2</b> <code>spread</code></a></li>
+<li class="chapter" data-level="21.3" data-path="cómo-cambiar-el-formato-de-datos.html"><a href="cómo-cambiar-el-formato-de-datos.html#separate"><i class="fa fa-check"></i><b>21.3</b> <code>separate</code></a></li>
+<li class="chapter" data-level="21.4" data-path="cómo-cambiar-el-formato-de-datos.html"><a href="cómo-cambiar-el-formato-de-datos.html#unite"><i class="fa fa-check"></i><b>21.4</b> <code>unite</code></a></li>
+<li class="chapter" data-level="21.5" data-path="cómo-cambiar-el-formato-de-datos.html"><a href="cómo-cambiar-el-formato-de-datos.html#ejercicios-38"><i class="fa fa-check"></i><b>21.5</b> Ejercicios</a></li>
+</ul></li>
+<li class="chapter" data-level="22" data-path="unir-tablas.html"><a href="unir-tablas.html"><i class="fa fa-check"></i><b>22</b> Unir tablas</a><ul>
+<li class="chapter" data-level="22.1" data-path="unir-tablas.html"><a href="unir-tablas.html#joins"><i class="fa fa-check"></i><b>22.1</b> Joins</a><ul>
+<li class="chapter" data-level="22.1.1" data-path="unir-tablas.html"><a href="unir-tablas.html#left-join"><i class="fa fa-check"></i><b>22.1.1</b> Left join</a></li>
+<li class="chapter" data-level="22.1.2" data-path="unir-tablas.html"><a href="unir-tablas.html#right-join"><i class="fa fa-check"></i><b>22.1.2</b> Right join</a></li>
+<li class="chapter" data-level="22.1.3" data-path="unir-tablas.html"><a href="unir-tablas.html#inner-join"><i class="fa fa-check"></i><b>22.1.3</b> Inner join</a></li>
+<li class="chapter" data-level="22.1.4" data-path="unir-tablas.html"><a href="unir-tablas.html#full-join"><i class="fa fa-check"></i><b>22.1.4</b> Full join</a></li>
+<li class="chapter" data-level="22.1.5" data-path="unir-tablas.html"><a href="unir-tablas.html#semi-join"><i class="fa fa-check"></i><b>22.1.5</b> Semi join</a></li>
+<li class="chapter" data-level="22.1.6" data-path="unir-tablas.html"><a href="unir-tablas.html#anti-join"><i class="fa fa-check"></i><b>22.1.6</b> Anti join</a></li>
+</ul></li>
+<li class="chapter" data-level="22.2" data-path="unir-tablas.html"><a href="unir-tablas.html#binding"><i class="fa fa-check"></i><b>22.2</b> Binding</a><ul>
+<li class="chapter" data-level="22.2.1" data-path="unir-tablas.html"><a href="unir-tablas.html#pegando-columnas"><i class="fa fa-check"></i><b>22.2.1</b> Pegando columnas</a></li>
+<li class="chapter" data-level="22.2.2" data-path="unir-tablas.html"><a href="unir-tablas.html#pegando-filas"><i class="fa fa-check"></i><b>22.2.2</b> Pegando filas</a></li>
+</ul></li>
+<li class="chapter" data-level="22.3" data-path="unir-tablas.html"><a href="unir-tablas.html#operadores-de-sets"><i class="fa fa-check"></i><b>22.3</b> Operadores de sets</a><ul>
+<li class="chapter" data-level="22.3.1" data-path="unir-tablas.html"><a href="unir-tablas.html#intersecar"><i class="fa fa-check"></i><b>22.3.1</b> Intersecar</a></li>
+<li class="chapter" data-level="22.3.2" data-path="unir-tablas.html"><a href="unir-tablas.html#unión"><i class="fa fa-check"></i><b>22.3.2</b> Unión</a></li>
+<li class="chapter" data-level="22.3.3" data-path="unir-tablas.html"><a href="unir-tablas.html#setdiff"><i class="fa fa-check"></i><b>22.3.3</b> <code>setdiff</code></a></li>
+<li class="chapter" data-level="22.3.4" data-path="unir-tablas.html"><a href="unir-tablas.html#setequal"><i class="fa fa-check"></i><b>22.3.4</b> <code>setequal</code></a></li>
+</ul></li>
+<li class="chapter" data-level="22.4" data-path="unir-tablas.html"><a href="unir-tablas.html#ejercicios-39"><i class="fa fa-check"></i><b>22.4</b> Ejercicios</a></li>
+</ul></li>
+<li class="chapter" data-level="23" data-path="extracción-de-la-web.html"><a href="extracción-de-la-web.html"><i class="fa fa-check"></i><b>23</b> Extracción de la web</a><ul>
+<li class="chapter" data-level="23.1" data-path="extracción-de-la-web.html"><a href="extracción-de-la-web.html#html"><i class="fa fa-check"></i><b>23.1</b> HTML</a></li>
+<li class="chapter" data-level="23.2" data-path="extracción-de-la-web.html"><a href="extracción-de-la-web.html#el-paquete-rvest"><i class="fa fa-check"></i><b>23.2</b> El paquete rvest</a></li>
+<li class="chapter" data-level="23.3" data-path="extracción-de-la-web.html"><a href="extracción-de-la-web.html#css-selectors"><i class="fa fa-check"></i><b>23.3</b> Selectores CSS</a></li>
+<li class="chapter" data-level="23.4" data-path="extracción-de-la-web.html"><a href="extracción-de-la-web.html#json"><i class="fa fa-check"></i><b>23.4</b> JSON</a></li>
+<li class="chapter" data-level="23.5" data-path="extracción-de-la-web.html"><a href="extracción-de-la-web.html#ejercicios-40"><i class="fa fa-check"></i><b>23.5</b> Ejercicios</a></li>
+</ul></li>
+<li class="chapter" data-level="24" data-path="procesamiento-de-cadenas.html"><a href="procesamiento-de-cadenas.html"><i class="fa fa-check"></i><b>24</b> Procesamiento de cadenas</a><ul>
+<li class="chapter" data-level="24.1" data-path="procesamiento-de-cadenas.html"><a href="procesamiento-de-cadenas.html#stringr"><i class="fa fa-check"></i><b>24.1</b> El paquete stringr</a></li>
+<li class="chapter" data-level="24.2" data-path="procesamiento-de-cadenas.html"><a href="procesamiento-de-cadenas.html#estudio-de-caso-1-datos-de-asesinatos-en-ee.-uu."><i class="fa fa-check"></i><b>24.2</b> Estudio de caso 1: datos de asesinatos en EE. UU.</a></li>
+<li class="chapter" data-level="24.3" data-path="procesamiento-de-cadenas.html"><a href="procesamiento-de-cadenas.html#estudio-de-caso-2-alturas-autoreportadas"><i class="fa fa-check"></i><b>24.3</b> Estudio de caso 2: alturas autoreportadas</a></li>
+<li class="chapter" data-level="24.4" data-path="procesamiento-de-cadenas.html"><a href="procesamiento-de-cadenas.html#cómo-escapar-al-definir-cadenas"><i class="fa fa-check"></i><b>24.4</b> Cómo <em>escapar</em> al definir cadenas</a></li>
+<li class="chapter" data-level="24.5" data-path="procesamiento-de-cadenas.html"><a href="procesamiento-de-cadenas.html#expresiones-regulares"><i class="fa fa-check"></i><b>24.5</b> Expresiones regulares</a><ul>
+<li class="chapter" data-level="24.5.1" data-path="procesamiento-de-cadenas.html"><a href="procesamiento-de-cadenas.html#las-cadenas-son-una-expresión-regular"><i class="fa fa-check"></i><b>24.5.1</b> Las cadenas son una expresión regular</a></li>
+<li class="chapter" data-level="24.5.2" data-path="procesamiento-de-cadenas.html"><a href="procesamiento-de-cadenas.html#caracteres-especiales"><i class="fa fa-check"></i><b>24.5.2</b> Caracteres especiales</a></li>
+<li class="chapter" data-level="24.5.3" data-path="procesamiento-de-cadenas.html"><a href="procesamiento-de-cadenas.html#clases-de-caracteres"><i class="fa fa-check"></i><b>24.5.3</b> Clases de caracteres</a></li>
+<li class="chapter" data-level="24.5.4" data-path="procesamiento-de-cadenas.html"><a href="procesamiento-de-cadenas.html#anclas"><i class="fa fa-check"></i><b>24.5.4</b> Anclas</a></li>
+<li class="chapter" data-level="24.5.5" data-path="procesamiento-de-cadenas.html"><a href="procesamiento-de-cadenas.html#cuantificadores"><i class="fa fa-check"></i><b>24.5.5</b> Cuantificadores</a></li>
+<li class="chapter" data-level="24.5.6" data-path="procesamiento-de-cadenas.html"><a href="procesamiento-de-cadenas.html#espacio-en-blanco-s"><i class="fa fa-check"></i><b>24.5.6</b> Espacio en blanco <code>\s</code></a></li>
+<li class="chapter" data-level="24.5.7" data-path="procesamiento-de-cadenas.html"><a href="procesamiento-de-cadenas.html#cuantificadores-1"><i class="fa fa-check"></i><b>24.5.7</b> Cuantificadores: <code>*</code>, <code>?</code>, <code>+</code></a></li>
+<li class="chapter" data-level="24.5.8" data-path="procesamiento-de-cadenas.html"><a href="procesamiento-de-cadenas.html#no"><i class="fa fa-check"></i><b>24.5.8</b> No</a></li>
+<li class="chapter" data-level="24.5.9" data-path="procesamiento-de-cadenas.html"><a href="procesamiento-de-cadenas.html#groups"><i class="fa fa-check"></i><b>24.5.9</b> Grupos</a></li>
+</ul></li>
+<li class="chapter" data-level="24.6" data-path="procesamiento-de-cadenas.html"><a href="procesamiento-de-cadenas.html#buscar-y-reemplazar-con-expresiones-regulares"><i class="fa fa-check"></i><b>24.6</b> Buscar y reemplazar con expresiones regulares</a><ul>
+<li class="chapter" data-level="24.6.1" data-path="procesamiento-de-cadenas.html"><a href="procesamiento-de-cadenas.html#buscar-y-reemplazar-usando-grupos"><i class="fa fa-check"></i><b>24.6.1</b> Buscar y reemplazar usando grupos</a></li>
+</ul></li>
+<li class="chapter" data-level="24.7" data-path="procesamiento-de-cadenas.html"><a href="procesamiento-de-cadenas.html#probar-y-mejorar"><i class="fa fa-check"></i><b>24.7</b> Probar y mejorar</a></li>
+<li class="chapter" data-level="24.8" data-path="procesamiento-de-cadenas.html"><a href="procesamiento-de-cadenas.html#podar"><i class="fa fa-check"></i><b>24.8</b> Podar</a></li>
+<li class="chapter" data-level="24.9" data-path="procesamiento-de-cadenas.html"><a href="procesamiento-de-cadenas.html#cambio-de-mayúsculas-o-minúsculas"><i class="fa fa-check"></i><b>24.9</b> Cambio de mayúsculas o minúsculas</a></li>
+<li class="chapter" data-level="24.10" data-path="procesamiento-de-cadenas.html"><a href="procesamiento-de-cadenas.html#estudio-de-caso-2-alturas-autoreportadas-continuación"><i class="fa fa-check"></i><b>24.10</b> Estudio de caso 2: alturas autoreportadas (continuación)</a><ul>
+<li class="chapter" data-level="24.10.1" data-path="procesamiento-de-cadenas.html"><a href="procesamiento-de-cadenas.html#la-función-extract"><i class="fa fa-check"></i><b>24.10.1</b> La función <code>extract</code></a></li>
+<li class="chapter" data-level="24.10.2" data-path="procesamiento-de-cadenas.html"><a href="procesamiento-de-cadenas.html#juntando-todas-la-piezas"><i class="fa fa-check"></i><b>24.10.2</b> Juntando todas la piezas</a></li>
+</ul></li>
+<li class="chapter" data-level="24.11" data-path="procesamiento-de-cadenas.html"><a href="procesamiento-de-cadenas.html#división-de-cadenas"><i class="fa fa-check"></i><b>24.11</b> División de cadenas</a></li>
+<li class="chapter" data-level="24.12" data-path="procesamiento-de-cadenas.html"><a href="procesamiento-de-cadenas.html#estudio-de-caso-3-extracción-de-tablas-de-un-pdf"><i class="fa fa-check"></i><b>24.12</b> Estudio de caso 3: extracción de tablas de un PDF</a></li>
+<li class="chapter" data-level="24.13" data-path="procesamiento-de-cadenas.html"><a href="procesamiento-de-cadenas.html#recode"><i class="fa fa-check"></i><b>24.13</b> Recodificación</a></li>
+<li class="chapter" data-level="24.14" data-path="procesamiento-de-cadenas.html"><a href="procesamiento-de-cadenas.html#ejercicios-41"><i class="fa fa-check"></i><b>24.14</b> Ejercicios</a></li>
+</ul></li>
+<li class="chapter" data-level="25" data-path="cómo-leer-y-procesar-fechas-y-horas.html"><a href="cómo-leer-y-procesar-fechas-y-horas.html"><i class="fa fa-check"></i><b>25</b> Cómo leer y procesar fechas y horas</a><ul>
+<li class="chapter" data-level="25.1" data-path="cómo-leer-y-procesar-fechas-y-horas.html"><a href="cómo-leer-y-procesar-fechas-y-horas.html#el-tipo-de-datos-de-fecha"><i class="fa fa-check"></i><b>25.1</b> El tipo de datos de fecha</a></li>
+<li class="chapter" data-level="25.2" data-path="cómo-leer-y-procesar-fechas-y-horas.html"><a href="cómo-leer-y-procesar-fechas-y-horas.html#lubridate"><i class="fa fa-check"></i><b>25.2</b> El paquete lubridate</a></li>
+<li class="chapter" data-level="25.3" data-path="cómo-leer-y-procesar-fechas-y-horas.html"><a href="cómo-leer-y-procesar-fechas-y-horas.html#ejercicios-42"><i class="fa fa-check"></i><b>25.3</b> Ejercicios</a></li>
+</ul></li>
+<li class="chapter" data-level="26" data-path="minería-de-textos.html"><a href="minería-de-textos.html"><i class="fa fa-check"></i><b>26</b> Minería de textos</a><ul>
+<li class="chapter" data-level="26.1" data-path="minería-de-textos.html"><a href="minería-de-textos.html#estudio-de-caso-tuits-de-trump"><i class="fa fa-check"></i><b>26.1</b> Estudio de caso: tuits de Trump</a></li>
+<li class="chapter" data-level="26.2" data-path="minería-de-textos.html"><a href="minería-de-textos.html#texto-como-datos"><i class="fa fa-check"></i><b>26.2</b> Texto como datos</a></li>
+<li class="chapter" data-level="26.3" data-path="minería-de-textos.html"><a href="minería-de-textos.html#análisis-de-sentimiento"><i class="fa fa-check"></i><b>26.3</b> Análisis de sentimiento</a></li>
+<li class="chapter" data-level="26.4" data-path="minería-de-textos.html"><a href="minería-de-textos.html#ejercicios-43"><i class="fa fa-check"></i><b>26.4</b> Ejercicios</a></li>
+</ul></li>
+<li class="part"><span><b>V Machine Learning</b></span></li>
+<li class="chapter" data-level="27" data-path="introducción-al-aprendizaje-automático.html"><a href="introducción-al-aprendizaje-automático.html"><i class="fa fa-check"></i><b>27</b> Introducción al aprendizaje automático</a><ul>
+<li class="chapter" data-level="27.1" data-path="introducción-al-aprendizaje-automático.html"><a href="introducción-al-aprendizaje-automático.html#notación-1"><i class="fa fa-check"></i><b>27.1</b> Notación</a></li>
+<li class="chapter" data-level="27.2" data-path="introducción-al-aprendizaje-automático.html"><a href="introducción-al-aprendizaje-automático.html#un-ejemplo"><i class="fa fa-check"></i><b>27.2</b> Un ejemplo</a></li>
+<li class="chapter" data-level="27.3" data-path="introducción-al-aprendizaje-automático.html"><a href="introducción-al-aprendizaje-automático.html#ejercicios-44"><i class="fa fa-check"></i><b>27.3</b> Ejercicios</a></li>
+<li class="chapter" data-level="27.4" data-path="introducción-al-aprendizaje-automático.html"><a href="introducción-al-aprendizaje-automático.html#métricas-de-evaluación"><i class="fa fa-check"></i><b>27.4</b> Métricas de evaluación</a><ul>
+<li class="chapter" data-level="27.4.1" data-path="introducción-al-aprendizaje-automático.html"><a href="introducción-al-aprendizaje-automático.html#conjuntos-de-entrenamiento-y-prueba"><i class="fa fa-check"></i><b>27.4.1</b> Conjuntos de entrenamiento y prueba</a></li>
+<li class="chapter" data-level="27.4.2" data-path="introducción-al-aprendizaje-automático.html"><a href="introducción-al-aprendizaje-automático.html#precisión-general"><i class="fa fa-check"></i><b>27.4.2</b> Precisión general</a></li>
+<li class="chapter" data-level="27.4.3" data-path="introducción-al-aprendizaje-automático.html"><a href="introducción-al-aprendizaje-automático.html#la-matriz-de-confusión"><i class="fa fa-check"></i><b>27.4.3</b> La matriz de confusión</a></li>
+<li class="chapter" data-level="27.4.4" data-path="introducción-al-aprendizaje-automático.html"><a href="introducción-al-aprendizaje-automático.html#sensibilidad-y-especificidad"><i class="fa fa-check"></i><b>27.4.4</b> Sensibilidad y especificidad</a></li>
+<li class="chapter" data-level="27.4.5" data-path="introducción-al-aprendizaje-automático.html"><a href="introducción-al-aprendizaje-automático.html#precisión-equilibrada-y-f_1-puntuación"><i class="fa fa-check"></i><b>27.4.5</b> Precisión equilibrada y <span class="math inline">\(F_1\)</span> puntuación</a></li>
+<li class="chapter" data-level="27.4.6" data-path="introducción-al-aprendizaje-automático.html"><a href="introducción-al-aprendizaje-automático.html#la-prevalencia-importa-en-la-práctica"><i class="fa fa-check"></i><b>27.4.6</b> La prevalencia importa en la práctica</a></li>
+<li class="chapter" data-level="27.4.7" data-path="introducción-al-aprendizaje-automático.html"><a href="introducción-al-aprendizaje-automático.html#roc-y-curvas-de-recuperación-de-precisión"><i class="fa fa-check"></i><b>27.4.7</b> ROC y curvas de recuperación de precisión</a></li>
+<li class="chapter" data-level="27.4.8" data-path="introducción-al-aprendizaje-automático.html"><a href="introducción-al-aprendizaje-automático.html#loss-function"><i class="fa fa-check"></i><b>27.4.8</b> La función de pérdida</a></li>
+</ul></li>
+<li class="chapter" data-level="27.5" data-path="introducción-al-aprendizaje-automático.html"><a href="introducción-al-aprendizaje-automático.html#ejercicios-45"><i class="fa fa-check"></i><b>27.5</b> Ejercicios</a></li>
+<li class="chapter" data-level="27.6" data-path="introducción-al-aprendizaje-automático.html"><a href="introducción-al-aprendizaje-automático.html#probabilidades-y-expectativas-condicionales"><i class="fa fa-check"></i><b>27.6</b> Probabilidades y expectativas condicionales</a><ul>
+<li class="chapter" data-level="27.6.1" data-path="introducción-al-aprendizaje-automático.html"><a href="introducción-al-aprendizaje-automático.html#probabilidades-condicionales-1"><i class="fa fa-check"></i><b>27.6.1</b> Probabilidades condicionales</a></li>
+<li class="chapter" data-level="27.6.2" data-path="introducción-al-aprendizaje-automático.html"><a href="introducción-al-aprendizaje-automático.html#expectativas-condicionales"><i class="fa fa-check"></i><b>27.6.2</b> Expectativas condicionales</a></li>
+<li class="chapter" data-level="27.6.3" data-path="introducción-al-aprendizaje-automático.html"><a href="introducción-al-aprendizaje-automático.html#la-expectativa-condicional-minimiza-la-función-de-pérdida-al-cuadrado"><i class="fa fa-check"></i><b>27.6.3</b> La expectativa condicional minimiza la función de pérdida al cuadrado</a></li>
+</ul></li>
+<li class="chapter" data-level="27.7" data-path="introducción-al-aprendizaje-automático.html"><a href="introducción-al-aprendizaje-automático.html#ejercicios-46"><i class="fa fa-check"></i><b>27.7</b> Ejercicios</a></li>
+<li class="chapter" data-level="27.8" data-path="introducción-al-aprendizaje-automático.html"><a href="introducción-al-aprendizaje-automático.html#two-or-seven"><i class="fa fa-check"></i><b>27.8</b> Estudio de caso: ¿es un 2 o un 7?</a></li>
+</ul></li>
+<li class="chapter" data-level="28" data-path="suavizado.html"><a href="suavizado.html"><i class="fa fa-check"></i><b>28</b> Suavizado</a><ul>
+<li class="chapter" data-level="28.1" data-path="suavizado.html"><a href="suavizado.html#alisado-de-bin"><i class="fa fa-check"></i><b>28.1</b> Alisado de bin</a></li>
+<li class="chapter" data-level="28.2" data-path="suavizado.html"><a href="suavizado.html#kernels"><i class="fa fa-check"></i><b>28.2</b> Kernels</a></li>
+<li class="chapter" data-level="28.3" data-path="suavizado.html"><a href="suavizado.html#regresión-ponderada-local-loess"><i class="fa fa-check"></i><b>28.3</b> Regresión ponderada local (loess)</a><ul>
+<li class="chapter" data-level="28.3.1" data-path="suavizado.html"><a href="suavizado.html#parábolas-de-montaje"><i class="fa fa-check"></i><b>28.3.1</b> Parábolas de montaje</a></li>
+<li class="chapter" data-level="28.3.2" data-path="suavizado.html"><a href="suavizado.html#cuidado-con-los-parámetros-de-suavizado-predeterminados"><i class="fa fa-check"></i><b>28.3.2</b> Cuidado con los parámetros de suavizado predeterminados</a></li>
+</ul></li>
+<li class="chapter" data-level="28.4" data-path="suavizado.html"><a href="suavizado.html#smoothing-ml-connection"><i class="fa fa-check"></i><b>28.4</b> Conectando el suavizado al aprendizaje automático</a></li>
+<li class="chapter" data-level="28.5" data-path="suavizado.html"><a href="suavizado.html#ejercicios-47"><i class="fa fa-check"></i><b>28.5</b> Ejercicios</a></li>
+</ul></li>
+<li class="chapter" data-level="29" data-path="cross-validation.html"><a href="cross-validation.html"><i class="fa fa-check"></i><b>29</b> Validación cruzada</a><ul>
+<li class="chapter" data-level="29.1" data-path="cross-validation.html"><a href="cross-validation.html#knn-cv-intro"><i class="fa fa-check"></i><b>29.1</b> Motivación con vecinos k-más cercanos</a><ul>
+<li class="chapter" data-level="29.1.1" data-path="cross-validation.html"><a href="cross-validation.html#sobreentrenamiento"><i class="fa fa-check"></i><b>29.1.1</b> Sobreentrenamiento</a></li>
+<li class="chapter" data-level="29.1.2" data-path="cross-validation.html"><a href="cross-validation.html#alisado-excesivo"><i class="fa fa-check"></i><b>29.1.2</b> Alisado excesivo</a></li>
+<li class="chapter" data-level="29.1.3" data-path="cross-validation.html"><a href="cross-validation.html#escogiendo-el-k-en-knn"><i class="fa fa-check"></i><b>29.1.3</b> Escogiendo el <span class="math inline">\(k\)</span> en kNN</a></li>
+</ul></li>
+<li class="chapter" data-level="29.2" data-path="cross-validation.html"><a href="cross-validation.html#descripción-matemática-de-validación-cruzada"><i class="fa fa-check"></i><b>29.2</b> Descripción matemática de validación cruzada</a></li>
+<li class="chapter" data-level="29.3" data-path="cross-validation.html"><a href="cross-validation.html#validación-cruzada-k-fold"><i class="fa fa-check"></i><b>29.3</b> Validación cruzada K-fold</a></li>
+<li class="chapter" data-level="29.4" data-path="cross-validation.html"><a href="cross-validation.html#ejercicios-48"><i class="fa fa-check"></i><b>29.4</b> Ejercicios</a></li>
+<li class="chapter" data-level="29.5" data-path="cross-validation.html"><a href="cross-validation.html#bootstrap"><i class="fa fa-check"></i><b>29.5</b> Bootstrap</a></li>
+<li class="chapter" data-level="29.6" data-path="cross-validation.html"><a href="cross-validation.html#ejercicios-49"><i class="fa fa-check"></i><b>29.6</b> Ejercicios</a></li>
+</ul></li>
+<li class="chapter" data-level="30" data-path="caret.html"><a href="caret.html"><i class="fa fa-check"></i><b>30</b> El paquete caret</a><ul>
+<li class="chapter" data-level="30.1" data-path="caret.html"><a href="caret.html#el-caret-train-functon"><i class="fa fa-check"></i><b>30.1</b> El caret <code>train</code> functon</a></li>
+<li class="chapter" data-level="30.2" data-path="caret.html"><a href="caret.html#caret-cv"><i class="fa fa-check"></i><b>30.2</b> Validación cruzada</a></li>
+<li class="chapter" data-level="30.3" data-path="caret.html"><a href="caret.html#ejemplo-ajuste-con-loess"><i class="fa fa-check"></i><b>30.3</b> Ejemplo: ajuste con loess</a></li>
+</ul></li>
+<li class="chapter" data-level="31" data-path="ejemplos-de-algoritmos.html"><a href="ejemplos-de-algoritmos.html"><i class="fa fa-check"></i><b>31</b> Ejemplos de algoritmos</a><ul>
+<li class="chapter" data-level="31.1" data-path="ejemplos-de-algoritmos.html"><a href="ejemplos-de-algoritmos.html#regresión-lineal"><i class="fa fa-check"></i><b>31.1</b> Regresión lineal</a><ul>
+<li class="chapter" data-level="31.1.1" data-path="ejemplos-de-algoritmos.html"><a href="ejemplos-de-algoritmos.html#los-predict-función"><i class="fa fa-check"></i><b>31.1.1</b> Los <code>predict</code> función</a></li>
+</ul></li>
+<li class="chapter" data-level="31.2" data-path="ejemplos-de-algoritmos.html"><a href="ejemplos-de-algoritmos.html#ejercicios-50"><i class="fa fa-check"></i><b>31.2</b> Ejercicios</a></li>
+<li class="chapter" data-level="31.3" data-path="ejemplos-de-algoritmos.html"><a href="ejemplos-de-algoritmos.html#regresión-logística"><i class="fa fa-check"></i><b>31.3</b> Regresión logística</a><ul>
+<li class="chapter" data-level="31.3.1" data-path="ejemplos-de-algoritmos.html"><a href="ejemplos-de-algoritmos.html#modelos-lineales-generalizados"><i class="fa fa-check"></i><b>31.3.1</b> Modelos lineales generalizados</a></li>
+<li class="chapter" data-level="31.3.2" data-path="ejemplos-de-algoritmos.html"><a href="ejemplos-de-algoritmos.html#regresión-logística-con-más-de-un-predictor"><i class="fa fa-check"></i><b>31.3.2</b> Regresión logística con más de un predictor</a></li>
+</ul></li>
+<li class="chapter" data-level="31.4" data-path="ejemplos-de-algoritmos.html"><a href="ejemplos-de-algoritmos.html#ejercicios-51"><i class="fa fa-check"></i><b>31.4</b> Ejercicios</a></li>
+<li class="chapter" data-level="31.5" data-path="ejemplos-de-algoritmos.html"><a href="ejemplos-de-algoritmos.html#k-vecinos-más-cercanos"><i class="fa fa-check"></i><b>31.5</b> k-vecinos más cercanos</a></li>
+<li class="chapter" data-level="31.6" data-path="ejemplos-de-algoritmos.html"><a href="ejemplos-de-algoritmos.html#ejercicios-52"><i class="fa fa-check"></i><b>31.6</b> Ejercicios</a></li>
+<li class="chapter" data-level="31.7" data-path="ejemplos-de-algoritmos.html"><a href="ejemplos-de-algoritmos.html#modelos-generativos"><i class="fa fa-check"></i><b>31.7</b> Modelos generativos</a><ul>
+<li class="chapter" data-level="31.7.1" data-path="ejemplos-de-algoritmos.html"><a href="ejemplos-de-algoritmos.html#naive-bayes"><i class="fa fa-check"></i><b>31.7.1</b> Naive Bayes</a></li>
+<li class="chapter" data-level="31.7.2" data-path="ejemplos-de-algoritmos.html"><a href="ejemplos-de-algoritmos.html#controlando-la-prevalencia"><i class="fa fa-check"></i><b>31.7.2</b> Controlando la prevalencia</a></li>
+<li class="chapter" data-level="31.7.3" data-path="ejemplos-de-algoritmos.html"><a href="ejemplos-de-algoritmos.html#análisis-discriminante-cuadrático"><i class="fa fa-check"></i><b>31.7.3</b> Análisis discriminante cuadrático</a></li>
+<li class="chapter" data-level="31.7.4" data-path="ejemplos-de-algoritmos.html"><a href="ejemplos-de-algoritmos.html#análisis-discriminante-lineal"><i class="fa fa-check"></i><b>31.7.4</b> Análisis discriminante lineal</a></li>
+<li class="chapter" data-level="31.7.5" data-path="ejemplos-de-algoritmos.html"><a href="ejemplos-de-algoritmos.html#conexión-a-distancia"><i class="fa fa-check"></i><b>31.7.5</b> Conexión a distancia</a></li>
+</ul></li>
+<li class="chapter" data-level="31.8" data-path="ejemplos-de-algoritmos.html"><a href="ejemplos-de-algoritmos.html#estudio-de-caso-más-de-tres-clases"><i class="fa fa-check"></i><b>31.8</b> Estudio de caso: más de tres clases</a></li>
+<li class="chapter" data-level="31.9" data-path="ejemplos-de-algoritmos.html"><a href="ejemplos-de-algoritmos.html#ejercicios-53"><i class="fa fa-check"></i><b>31.9</b> Ejercicios</a></li>
+<li class="chapter" data-level="31.10" data-path="ejemplos-de-algoritmos.html"><a href="ejemplos-de-algoritmos.html#árboles-de-clasificación-y-regresión-cart"><i class="fa fa-check"></i><b>31.10</b> Árboles de clasificación y regresión (CART)</a><ul>
+<li class="chapter" data-level="31.10.1" data-path="ejemplos-de-algoritmos.html"><a href="ejemplos-de-algoritmos.html#la-maldición-de-la-dimensionalidad"><i class="fa fa-check"></i><b>31.10.1</b> La maldición de la dimensionalidad</a></li>
+<li class="chapter" data-level="31.10.2" data-path="ejemplos-de-algoritmos.html"><a href="ejemplos-de-algoritmos.html#carrera-motivación"><i class="fa fa-check"></i><b>31.10.2</b> CARRERA motivación</a></li>
+<li class="chapter" data-level="31.10.3" data-path="ejemplos-de-algoritmos.html"><a href="ejemplos-de-algoritmos.html#árboles-de-regresión"><i class="fa fa-check"></i><b>31.10.3</b> Árboles de regresión</a></li>
+<li class="chapter" data-level="31.10.4" data-path="ejemplos-de-algoritmos.html"><a href="ejemplos-de-algoritmos.html#árboles-de-clasificación-decisión"><i class="fa fa-check"></i><b>31.10.4</b> Árboles de clasificación (decisión)</a></li>
+</ul></li>
+<li class="chapter" data-level="31.11" data-path="ejemplos-de-algoritmos.html"><a href="ejemplos-de-algoritmos.html#bosques-al-azar"><i class="fa fa-check"></i><b>31.11</b> Bosques al azar</a></li>
+<li class="chapter" data-level="31.12" data-path="ejemplos-de-algoritmos.html"><a href="ejemplos-de-algoritmos.html#ejercicios-54"><i class="fa fa-check"></i><b>31.12</b> Ejercicios</a></li>
+</ul></li>
+<li class="chapter" data-level="32" data-path="machine-learning-en-la-práctica.html"><a href="machine-learning-en-la-práctica.html"><i class="fa fa-check"></i><b>32</b> Machine learning en la práctica</a><ul>
+<li class="chapter" data-level="32.1" data-path="machine-learning-en-la-práctica.html"><a href="machine-learning-en-la-práctica.html#preprocesamiento"><i class="fa fa-check"></i><b>32.1</b> Preprocesamiento</a></li>
+<li class="chapter" data-level="32.2" data-path="machine-learning-en-la-práctica.html"><a href="machine-learning-en-la-práctica.html#k-vecino-más-cercano-y-bosque-aleatorio"><i class="fa fa-check"></i><b>32.2</b> k-vecino más cercano y bosque aleatorio</a></li>
+<li class="chapter" data-level="32.3" data-path="machine-learning-en-la-práctica.html"><a href="machine-learning-en-la-práctica.html#importancia-variable"><i class="fa fa-check"></i><b>32.3</b> Importancia variable</a></li>
+<li class="chapter" data-level="32.4" data-path="machine-learning-en-la-práctica.html"><a href="machine-learning-en-la-práctica.html#evaluaciones-visuales"><i class="fa fa-check"></i><b>32.4</b> Evaluaciones visuales</a></li>
+</ul></li>
+<li class="chapter" data-level="33" data-path="grandes-conjuntos-de-datos.html"><a href="grandes-conjuntos-de-datos.html"><i class="fa fa-check"></i><b>33</b> Grandes conjuntos de datos</a><ul>
+<li class="chapter" data-level="33.1" data-path="grandes-conjuntos-de-datos.html"><a href="grandes-conjuntos-de-datos.html#matrix-algebra"><i class="fa fa-check"></i><b>33.1</b> Álgebra matricial</a><ul>
+<li class="chapter" data-level="33.1.1" data-path="grandes-conjuntos-de-datos.html"><a href="grandes-conjuntos-de-datos.html#notación-2"><i class="fa fa-check"></i><b>33.1.1</b> Notación</a></li>
+<li class="chapter" data-level="33.1.2" data-path="grandes-conjuntos-de-datos.html"><a href="grandes-conjuntos-de-datos.html#convertir-un-vector-en-una-matriz"><i class="fa fa-check"></i><b>33.1.2</b> Convertir un vector en una matriz</a></li>
+<li class="chapter" data-level="33.1.3" data-path="grandes-conjuntos-de-datos.html"><a href="grandes-conjuntos-de-datos.html#resúmenes-de-filas-y-columnas"><i class="fa fa-check"></i><b>33.1.3</b> Resúmenes de filas y columnas</a></li>
+<li class="chapter" data-level="33.1.4" data-path="grandes-conjuntos-de-datos.html"><a href="grandes-conjuntos-de-datos.html#apply"><i class="fa fa-check"></i><b>33.1.4</b> <code>apply</code></a></li>
+<li class="chapter" data-level="33.1.5" data-path="grandes-conjuntos-de-datos.html"><a href="grandes-conjuntos-de-datos.html#filtrar-columnas-basadas-en-resúmenes"><i class="fa fa-check"></i><b>33.1.5</b> Filtrar columnas basadas en resúmenes</a></li>
+<li class="chapter" data-level="33.1.6" data-path="grandes-conjuntos-de-datos.html"><a href="grandes-conjuntos-de-datos.html#indexación-con-matrices"><i class="fa fa-check"></i><b>33.1.6</b> Indexación con matrices</a></li>
+<li class="chapter" data-level="33.1.7" data-path="grandes-conjuntos-de-datos.html"><a href="grandes-conjuntos-de-datos.html#binarizar-los-datos"><i class="fa fa-check"></i><b>33.1.7</b> Binarizar los datos</a></li>
+<li class="chapter" data-level="33.1.8" data-path="grandes-conjuntos-de-datos.html"><a href="grandes-conjuntos-de-datos.html#vectorización-para-matrices"><i class="fa fa-check"></i><b>33.1.8</b> Vectorización para matrices</a></li>
+<li class="chapter" data-level="33.1.9" data-path="grandes-conjuntos-de-datos.html"><a href="grandes-conjuntos-de-datos.html#operaciones-de-álgebra-matricial"><i class="fa fa-check"></i><b>33.1.9</b> Operaciones de álgebra matricial</a></li>
+</ul></li>
+<li class="chapter" data-level="33.2" data-path="grandes-conjuntos-de-datos.html"><a href="grandes-conjuntos-de-datos.html#ejercicios-55"><i class="fa fa-check"></i><b>33.2</b> Ejercicios</a></li>
+<li class="chapter" data-level="33.3" data-path="grandes-conjuntos-de-datos.html"><a href="grandes-conjuntos-de-datos.html#distancia"><i class="fa fa-check"></i><b>33.3</b> Distancia</a><ul>
+<li class="chapter" data-level="33.3.1" data-path="grandes-conjuntos-de-datos.html"><a href="grandes-conjuntos-de-datos.html#distancia-euclidiana"><i class="fa fa-check"></i><b>33.3.1</b> Distancia euclidiana</a></li>
+<li class="chapter" data-level="33.3.2" data-path="grandes-conjuntos-de-datos.html"><a href="grandes-conjuntos-de-datos.html#distancia-en-dimensiones-superiores"><i class="fa fa-check"></i><b>33.3.2</b> Distancia en dimensiones superiores</a></li>
+<li class="chapter" data-level="33.3.3" data-path="grandes-conjuntos-de-datos.html"><a href="grandes-conjuntos-de-datos.html#ejemplo-de-distancia-euclidiana"><i class="fa fa-check"></i><b>33.3.3</b> Ejemplo de distancia euclidiana</a></li>
+<li class="chapter" data-level="33.3.4" data-path="grandes-conjuntos-de-datos.html"><a href="grandes-conjuntos-de-datos.html#predictor-space"><i class="fa fa-check"></i><b>33.3.4</b> Espacio predictor</a></li>
+<li class="chapter" data-level="33.3.5" data-path="grandes-conjuntos-de-datos.html"><a href="grandes-conjuntos-de-datos.html#distancia-entre-predictores"><i class="fa fa-check"></i><b>33.3.5</b> Distancia entre predictores</a></li>
+</ul></li>
+<li class="chapter" data-level="33.4" data-path="grandes-conjuntos-de-datos.html"><a href="grandes-conjuntos-de-datos.html#ejercicios-56"><i class="fa fa-check"></i><b>33.4</b> Ejercicios</a></li>
+<li class="chapter" data-level="33.5" data-path="grandes-conjuntos-de-datos.html"><a href="grandes-conjuntos-de-datos.html#reducción-de-dimensiones"><i class="fa fa-check"></i><b>33.5</b> Reducción de dimensiones</a><ul>
+<li class="chapter" data-level="33.5.1" data-path="grandes-conjuntos-de-datos.html"><a href="grandes-conjuntos-de-datos.html#preservando-la-distancia"><i class="fa fa-check"></i><b>33.5.1</b> Preservando la distancia</a></li>
+<li class="chapter" data-level="33.5.2" data-path="grandes-conjuntos-de-datos.html"><a href="grandes-conjuntos-de-datos.html#transformaciones-lineales-avanzado"><i class="fa fa-check"></i><b>33.5.2</b> Transformaciones lineales (avanzado)</a></li>
+<li class="chapter" data-level="33.5.3" data-path="grandes-conjuntos-de-datos.html"><a href="grandes-conjuntos-de-datos.html#transformaciones-ortogonales-avanzado"><i class="fa fa-check"></i><b>33.5.3</b> Transformaciones ortogonales (avanzado)</a></li>
+<li class="chapter" data-level="33.5.4" data-path="grandes-conjuntos-de-datos.html"><a href="grandes-conjuntos-de-datos.html#análisis-de-componentes-principales"><i class="fa fa-check"></i><b>33.5.4</b> Análisis de componentes principales</a></li>
+<li class="chapter" data-level="33.5.5" data-path="grandes-conjuntos-de-datos.html"><a href="grandes-conjuntos-de-datos.html#ejemplo-de-iris"><i class="fa fa-check"></i><b>33.5.5</b> Ejemplo de Iris</a></li>
+<li class="chapter" data-level="33.5.6" data-path="grandes-conjuntos-de-datos.html"><a href="grandes-conjuntos-de-datos.html#ejemplo-de-mnist"><i class="fa fa-check"></i><b>33.5.6</b> Ejemplo de MNIST</a></li>
+</ul></li>
+<li class="chapter" data-level="33.6" data-path="grandes-conjuntos-de-datos.html"><a href="grandes-conjuntos-de-datos.html#ejercicios-57"><i class="fa fa-check"></i><b>33.6</b> Ejercicios</a></li>
+<li class="chapter" data-level="33.7" data-path="grandes-conjuntos-de-datos.html"><a href="grandes-conjuntos-de-datos.html#sistemas-de-recomendación"><i class="fa fa-check"></i><b>33.7</b> Sistemas de recomendación</a><ul>
+<li class="chapter" data-level="33.7.1" data-path="grandes-conjuntos-de-datos.html"><a href="grandes-conjuntos-de-datos.html#datos-de-lente-de-película"><i class="fa fa-check"></i><b>33.7.1</b> Datos de lente de película</a></li>
+<li class="chapter" data-level="33.7.2" data-path="grandes-conjuntos-de-datos.html"><a href="grandes-conjuntos-de-datos.html#sistemas-de-recomendación-como-un-desafío-de-aprendizaje-automático"><i class="fa fa-check"></i><b>33.7.2</b> Sistemas de recomendación como un desafío de aprendizaje automático</a></li>
+<li class="chapter" data-level="33.7.3" data-path="grandes-conjuntos-de-datos.html"><a href="grandes-conjuntos-de-datos.html#netflix-loss-function"><i class="fa fa-check"></i><b>33.7.3</b> Función de pérdida</a></li>
+<li class="chapter" data-level="33.7.4" data-path="grandes-conjuntos-de-datos.html"><a href="grandes-conjuntos-de-datos.html#un-primer-modelo"><i class="fa fa-check"></i><b>33.7.4</b> Un primer modelo</a></li>
+<li class="chapter" data-level="33.7.5" data-path="grandes-conjuntos-de-datos.html"><a href="grandes-conjuntos-de-datos.html#modelado-de-efectos-de-películas"><i class="fa fa-check"></i><b>33.7.5</b> Modelado de efectos de películas</a></li>
+<li class="chapter" data-level="33.7.6" data-path="grandes-conjuntos-de-datos.html"><a href="grandes-conjuntos-de-datos.html#efectos-de-usuario"><i class="fa fa-check"></i><b>33.7.6</b> Efectos de usuario</a></li>
+</ul></li>
+<li class="chapter" data-level="33.8" data-path="grandes-conjuntos-de-datos.html"><a href="grandes-conjuntos-de-datos.html#ejercicios-58"><i class="fa fa-check"></i><b>33.8</b> Ejercicios</a></li>
+<li class="chapter" data-level="33.9" data-path="grandes-conjuntos-de-datos.html"><a href="grandes-conjuntos-de-datos.html#regularización"><i class="fa fa-check"></i><b>33.9</b> Regularización</a><ul>
+<li class="chapter" data-level="33.9.1" data-path="grandes-conjuntos-de-datos.html"><a href="grandes-conjuntos-de-datos.html#motivación"><i class="fa fa-check"></i><b>33.9.1</b> Motivación</a></li>
+<li class="chapter" data-level="33.9.2" data-path="grandes-conjuntos-de-datos.html"><a href="grandes-conjuntos-de-datos.html#mínimos-cuadrados-penalizados"><i class="fa fa-check"></i><b>33.9.2</b> Mínimos cuadrados penalizados</a></li>
+<li class="chapter" data-level="33.9.3" data-path="grandes-conjuntos-de-datos.html"><a href="grandes-conjuntos-de-datos.html#elegir-los-términos-de-penalización"><i class="fa fa-check"></i><b>33.9.3</b> Elegir los términos de penalización</a></li>
+</ul></li>
+<li class="chapter" data-level="33.10" data-path="grandes-conjuntos-de-datos.html"><a href="grandes-conjuntos-de-datos.html#ejercicios-59"><i class="fa fa-check"></i><b>33.10</b> Ejercicios</a></li>
+<li class="chapter" data-level="33.11" data-path="grandes-conjuntos-de-datos.html"><a href="grandes-conjuntos-de-datos.html#factorización-matricial"><i class="fa fa-check"></i><b>33.11</b> Factorización matricial</a><ul>
+<li class="chapter" data-level="33.11.1" data-path="grandes-conjuntos-de-datos.html"><a href="grandes-conjuntos-de-datos.html#análisis-de-factores"><i class="fa fa-check"></i><b>33.11.1</b> Análisis de factores</a></li>
+<li class="chapter" data-level="33.11.2" data-path="grandes-conjuntos-de-datos.html"><a href="grandes-conjuntos-de-datos.html#conexión-a-svd-y-pca"><i class="fa fa-check"></i><b>33.11.2</b> Conexión a SVD y PCA</a></li>
+</ul></li>
+<li class="chapter" data-level="33.12" data-path="grandes-conjuntos-de-datos.html"><a href="grandes-conjuntos-de-datos.html#ejercicios-60"><i class="fa fa-check"></i><b>33.12</b> Ejercicios</a></li>
+</ul></li>
+<li class="chapter" data-level="34" data-path="clustering.html"><a href="clustering.html"><i class="fa fa-check"></i><b>34</b> Agrupación</a><ul>
+<li class="chapter" data-level="34.1" data-path="clustering.html"><a href="clustering.html#agrupación-jerárquica"><i class="fa fa-check"></i><b>34.1</b> Agrupación jerárquica</a></li>
+<li class="chapter" data-level="34.2" data-path="clustering.html"><a href="clustering.html#k-means"><i class="fa fa-check"></i><b>34.2</b> k-means</a></li>
+<li class="chapter" data-level="34.3" data-path="clustering.html"><a href="clustering.html#mapas-de-calor"><i class="fa fa-check"></i><b>34.3</b> Mapas de calor</a></li>
+<li class="chapter" data-level="34.4" data-path="clustering.html"><a href="clustering.html#características-de-filtrado"><i class="fa fa-check"></i><b>34.4</b> Características de filtrado</a></li>
+<li class="chapter" data-level="34.5" data-path="clustering.html"><a href="clustering.html#ejercicios-61"><i class="fa fa-check"></i><b>34.5</b> Ejercicios</a></li>
+</ul></li>
+<li class="divider"></li>
+<li><a href="https://github.com/rstudio/bookdown" target="blank">Published with bookdown</a></li>
+
+</ul>
+
+      </nav>
+    </div>
+
+    <div class="book-body">
+      <div class="body-inner">
+        <div class="book-header" role="navigation">
+          <h1>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">Introducción a la Ciencia de Datos</a>
+          </h1>
+        </div>
+
+        <div class="page-wrapper" tabindex="-1" role="main">
+          <div class="page-inner">
+
+            <section class="normal" id="section-">
+<div id="cross-validation" class="section level1">
+<h1><span class="header-section-number">Capítulo 29</span> Validación cruzada</h1>
+<p>En este capítulo presentamos la validación cruzada, una de las ideas más importantes en el aprendizaje automático. Aquí nos centramos en los aspectos conceptuales y matemáticos. Describiremos cómo implementar la validación cruzada en la práctica con el paquete <strong>caret</strong> más adelante, en la Sección <a href="caret.html#caret-cv">30.2</a> en el proximo capitulo. Para motivar el concepto, utilizaremos los dos datos de dígitos predictores presentados en la Sección <a href="introducción-al-aprendizaje-automático.html#two-or-seven">27.8</a> e introducir, por primera vez, un algoritmo de aprendizaje automático real: k-vecinos más cercanos (kNN).</p>
+<div id="knn-cv-intro" class="section level2">
+<h2><span class="header-section-number">29.1</span> Motivación con vecinos k-más cercanos</h2>
+<p>Comencemos cargando los datos y mostrando una gráfica de los predictores con resultados representados con color.</p>
+<div class="sourceCode" id="cb1048"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1048-1"><a href="cross-validation.html#cb1048-1"></a><span class="kw">library</span>(tidyverse)</span>
+<span id="cb1048-2"><a href="cross-validation.html#cb1048-2"></a><span class="kw">library</span>(dslabs)</span>
+<span id="cb1048-3"><a href="cross-validation.html#cb1048-3"></a><span class="kw">data</span>(<span class="st">&quot;mnist_27&quot;</span>)</span>
+<span id="cb1048-4"><a href="cross-validation.html#cb1048-4"></a>mnist_<span class="dv">27</span><span class="op">$</span>test<span class="op">%&gt;%</span><span class="st"> </span><span class="kw">ggplot</span>(<span class="kw">aes</span>(x_<span class="dv">1</span>, x_<span class="dv">2</span>, <span class="dt">color =</span> y)) <span class="op">+</span><span class="st"> </span><span class="kw">geom_point</span>()</span></code></pre></div>
+<p><img src="libro_files/figure-html/mnist-27-data-1.png" width="70%" style="display: block; margin: auto;" /></p>
+<p>Utilizaremos estos datos para estimar la función de probabilidad condicional</p>
+<p><span class="math display">\[
+p(x_1, x_2) = \mbox{Pr}(Y=1 \mid X_1=x_1 , X_2 = x_2).
+\]</span>
+como se define en la Sección <a href="suavizado.html#smoothing-ml-connection">28.4</a>. Con k-vecinos más cercanos (kNN) estimamos <span class="math inline">\(p(x_1, x_2)\)</span> de manera similar al alisado de contenedores. Sin embargo, como veremos, kNN es más fácil de adaptar a múltiples dimensiones. Primero definimos la distancia entre todas las observaciones en función de las características. Entonces, por cualquier punto <span class="math inline">\((x_1,x_2)\)</span> para lo cual queremos una estimación de <span class="math inline">\(p(x_1, x_2)\)</span> buscamos el <span class="math inline">\(k\)</span> puntos más cercanos a <span class="math inline">\((x_1,x_2)\)</span> y luego tome un promedio de los 0 y 1 asociados con estos puntos. Nos referimos al conjunto de puntos utilizados para calcular el promedio como el barrio. Debido a la conexión que describimos anteriormente entre las expectativas condicionales y las probabilidades condicionales, esto nos da un <span class="math inline">\(\hat{p}(x_1,x_2)\)</span>, al igual que el bin suavizador nos dio una estimación de una tendencia. Al igual que con los suavizadores de contenedores, podemos controlar la flexibilidad de nuestra estimación, en este caso a través de <span class="math inline">\(k\)</span> parámetro: más grande <span class="math inline">\(k\)</span> s resultan en estimaciones más suaves, mientras que son más pequeñas <span class="math inline">\(k\)</span> s dan como resultado estimaciones más flexibles y más onduladas.</p>
+<p>Para implementar el algoritmo, podemos usar el <code>knn3</code> función del paquete <strong>caret</strong>. Mirando el archivo de ayuda para este paquete, vemos que podemos llamarlo de una de dos maneras. Utilizaremos el primero en el que especificamos una <em>formula</em> y un marco de datos. El marco de datos contiene todos los datos que se utilizarán. La fórmula tiene la forma. <code>outcome ~ predictor_1 + predictor_2 + predictor_3</code> y así. Por lo tanto, escribiríamos <code>y ~ x_1 + x_2</code>. Si vamos a usar todos los predictores, podemos usar el <code>.</code> me gusta esto <code>y ~ .</code>. La última llamada se ve así:</p>
+<div class="sourceCode" id="cb1049"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1049-1"><a href="cross-validation.html#cb1049-1"></a><span class="kw">library</span>(caret)</span>
+<span id="cb1049-2"><a href="cross-validation.html#cb1049-2"></a>knn_fit &lt;-<span class="st"> </span><span class="kw">knn3</span>(y <span class="op">~</span><span class="st"> </span>., <span class="dt">data =</span> mnist_<span class="dv">27</span><span class="op">$</span>train)</span></code></pre></div>
+<p>Para esta función, también debemos elegir un parámetro: el número de vecinos a incluir. Comencemos con el valor predeterminado <span class="math inline">\(k=5\)</span>.</p>
+<div class="sourceCode" id="cb1050"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1050-1"><a href="cross-validation.html#cb1050-1"></a>knn_fit &lt;-<span class="st"> </span><span class="kw">knn3</span>(y <span class="op">~</span><span class="st"> </span>., <span class="dt">data =</span> mnist_<span class="dv">27</span><span class="op">$</span>train, <span class="dt">k =</span> <span class="dv">5</span>)</span></code></pre></div>
+<p>En este caso, dado que nuestro conjunto de datos es equilibrado y nos preocupamos tanto por la sensibilidad como por la especificidad, utilizaremos la precisión para cuantificar el rendimiento.</p>
+<p>Los <code>predict</code> función para <code>knn</code> produce una probabilidad para cada clase. Mantenemos la probabilidad de ser un 7 como estimación <span class="math inline">\(\hat{p}(x_1, x_2)\)</span></p>
+<div class="sourceCode" id="cb1051"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1051-1"><a href="cross-validation.html#cb1051-1"></a>y_hat_knn &lt;-<span class="st"> </span><span class="kw">predict</span>(knn_fit, mnist_<span class="dv">27</span><span class="op">$</span>test, <span class="dt">type =</span> <span class="st">&quot;class&quot;</span>)</span>
+<span id="cb1051-2"><a href="cross-validation.html#cb1051-2"></a><span class="kw">confusionMatrix</span>(y_hat_knn, mnist_<span class="dv">27</span><span class="op">$</span>test<span class="op">$</span>y)<span class="op">$</span>overall[<span class="st">&quot;Accuracy&quot;</span>]</span>
+<span id="cb1051-3"><a href="cross-validation.html#cb1051-3"></a><span class="co">#&gt; Accuracy </span></span>
+<span id="cb1051-4"><a href="cross-validation.html#cb1051-4"></a><span class="co">#&gt;    0.815</span></span></code></pre></div>
+<p>En la sección <a href="introducción-al-aprendizaje-automático.html#two-or-seven">27.8</a> utilizamos la regresión lineal para generar una estimación.</p>
+<div class="sourceCode" id="cb1052"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1052-1"><a href="cross-validation.html#cb1052-1"></a>fit_lm &lt;-<span class="st"> </span>mnist_<span class="dv">27</span><span class="op">$</span>train <span class="op">%&gt;%</span></span>
+<span id="cb1052-2"><a href="cross-validation.html#cb1052-2"></a><span class="kw">mutate</span>(<span class="dt">y =</span> <span class="kw">ifelse</span>(y <span class="op">==</span><span class="st"> </span><span class="dv">7</span>, <span class="dv">1</span>, <span class="dv">0</span>)) <span class="op">%&gt;%</span></span>
+<span id="cb1052-3"><a href="cross-validation.html#cb1052-3"></a><span class="kw">lm</span>(y <span class="op">~</span><span class="st"> </span>x_<span class="dv">1</span> <span class="op">+</span><span class="st"> </span>x_<span class="dv">2</span>, <span class="dt">data =</span> .)</span>
+<span id="cb1052-4"><a href="cross-validation.html#cb1052-4"></a>p_hat_lm &lt;-<span class="st"> </span><span class="kw">predict</span>(fit_lm, mnist_<span class="dv">27</span><span class="op">$</span>test)</span>
+<span id="cb1052-5"><a href="cross-validation.html#cb1052-5"></a>y_hat_lm &lt;-<span class="st"> </span><span class="kw">factor</span>(<span class="kw">ifelse</span>(p_hat_lm <span class="op">&gt;</span><span class="st"> </span><span class="fl">0.5</span>, <span class="dv">7</span>, <span class="dv">2</span>))</span>
+<span id="cb1052-6"><a href="cross-validation.html#cb1052-6"></a><span class="kw">confusionMatrix</span>(y_hat_lm, mnist_<span class="dv">27</span><span class="op">$</span>test<span class="op">$</span>y)<span class="op">$</span>overall[<span class="st">&quot;Accuracy&quot;</span>]</span>
+<span id="cb1052-7"><a href="cross-validation.html#cb1052-7"></a><span class="co">#&gt; Accuracy </span></span>
+<span id="cb1052-8"><a href="cross-validation.html#cb1052-8"></a><span class="co">#&gt;     0.75</span></span></code></pre></div>
+<p>Y vemos que kNN, con el parámetro predeterminado, ya supera la regresión. Para ver por qué este es el caso, tramaremos <span class="math inline">\(\hat{p}(x_1, x_2)\)</span> y compararlo con la probabilidad condicional verdadera <span class="math inline">\(p(x_1, x_2)\)</span>:</p>
+<p><img src="libro_files/figure-html/knn-fit-1.png" width="100%" style="display: block; margin: auto;" /></p>
+<p>Vemos que kNN se adapta mejor a la forma no lineal de <span class="math inline">\(p(x_1, x_2)\)</span>. Sin embargo, nuestra estimación tiene algunas islas de azul en el área roja, lo que intuitivamente no tiene mucho sentido. Esto se debe a lo que llamamos <em>over-training</em>. Describimos el sobreentrenamiento en detalle a continuación. El exceso de entrenamiento es la razón por la que tenemos una mayor precisión en el conjunto de trenes en comparación con el conjunto de prueba:</p>
+<div class="sourceCode" id="cb1053"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1053-1"><a href="cross-validation.html#cb1053-1"></a>y_hat_knn &lt;-<span class="st"> </span><span class="kw">predict</span>(knn_fit, mnist_<span class="dv">27</span><span class="op">$</span>train, <span class="dt">type =</span> <span class="st">&quot;class&quot;</span>)</span>
+<span id="cb1053-2"><a href="cross-validation.html#cb1053-2"></a><span class="kw">confusionMatrix</span>(y_hat_knn, mnist_<span class="dv">27</span><span class="op">$</span>train<span class="op">$</span>y)<span class="op">$</span>overall[<span class="st">&quot;Accuracy&quot;</span>]</span>
+<span id="cb1053-3"><a href="cross-validation.html#cb1053-3"></a><span class="co">#&gt; Accuracy </span></span>
+<span id="cb1053-4"><a href="cross-validation.html#cb1053-4"></a><span class="co">#&gt;    0.882</span></span>
+<span id="cb1053-5"><a href="cross-validation.html#cb1053-5"></a></span>
+<span id="cb1053-6"><a href="cross-validation.html#cb1053-6"></a>y_hat_knn &lt;-<span class="st"> </span><span class="kw">predict</span>(knn_fit, mnist_<span class="dv">27</span><span class="op">$</span>test, <span class="dt">type =</span> <span class="st">&quot;class&quot;</span>)</span>
+<span id="cb1053-7"><a href="cross-validation.html#cb1053-7"></a><span class="kw">confusionMatrix</span>(y_hat_knn, mnist_<span class="dv">27</span><span class="op">$</span>test<span class="op">$</span>y)<span class="op">$</span>overall[<span class="st">&quot;Accuracy&quot;</span>]</span>
+<span id="cb1053-8"><a href="cross-validation.html#cb1053-8"></a><span class="co">#&gt; Accuracy </span></span>
+<span id="cb1053-9"><a href="cross-validation.html#cb1053-9"></a><span class="co">#&gt;    0.815</span></span></code></pre></div>
+<div id="sobreentrenamiento" class="section level3">
+<h3><span class="header-section-number">29.1.1</span> Sobreentrenamiento</h3>
+<p>El sobreentrenamiento es peor cuando establecemos <span class="math inline">\(k=1\)</span>. Con <span class="math inline">\(k=1\)</span>, la estimación para cada <span class="math inline">\((x_1, x_2)\)</span> en el conjunto de entrenamiento se obtiene solo con el <span class="math inline">\(y\)</span> correspondiente a ese punto. En este caso, si el <span class="math inline">\((x_1, x_2)\)</span> son únicos, obtendremos una precisión perfecta en el conjunto de entrenamiento porque cada punto se usa para predecirse a sí mismo. Recuerde que si los predictores no son únicos y tienen resultados diferentes para al menos un conjunto de predictores, entonces es imposible predecir perfectamente.</p>
+<p>Aquí ajustamos un modelo kNN con <span class="math inline">\(k=1\)</span>:</p>
+<div class="sourceCode" id="cb1054"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1054-1"><a href="cross-validation.html#cb1054-1"></a>knn_fit_<span class="dv">1</span> &lt;-<span class="st"> </span><span class="kw">knn3</span>(y <span class="op">~</span><span class="st"> </span>., <span class="dt">data =</span> mnist_<span class="dv">27</span><span class="op">$</span>train, <span class="dt">k =</span> <span class="dv">1</span>)</span>
+<span id="cb1054-2"><a href="cross-validation.html#cb1054-2"></a>y_hat_knn_<span class="dv">1</span> &lt;-<span class="st"> </span><span class="kw">predict</span>(knn_fit_<span class="dv">1</span>, mnist_<span class="dv">27</span><span class="op">$</span>train, <span class="dt">type =</span> <span class="st">&quot;class&quot;</span>)</span>
+<span id="cb1054-3"><a href="cross-validation.html#cb1054-3"></a><span class="kw">confusionMatrix</span>(y_hat_knn_<span class="dv">1</span>, mnist_<span class="dv">27</span><span class="op">$</span>train<span class="op">$</span>y)<span class="op">$</span>overall[[<span class="st">&quot;Accuracy&quot;</span>]]</span>
+<span id="cb1054-4"><a href="cross-validation.html#cb1054-4"></a><span class="co">#&gt; [1] 0.999</span></span></code></pre></div>
+<p>Sin embargo, la precisión del conjunto de prueba es en realidad peor que la regresión logística:</p>
+<div class="sourceCode" id="cb1055"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1055-1"><a href="cross-validation.html#cb1055-1"></a>y_hat_knn_<span class="dv">1</span> &lt;-<span class="st"> </span><span class="kw">predict</span>(knn_fit_<span class="dv">1</span>, mnist_<span class="dv">27</span><span class="op">$</span>test, <span class="dt">type =</span> <span class="st">&quot;class&quot;</span>)</span>
+<span id="cb1055-2"><a href="cross-validation.html#cb1055-2"></a><span class="kw">confusionMatrix</span>(y_hat_knn_<span class="dv">1</span>, mnist_<span class="dv">27</span><span class="op">$</span>test<span class="op">$</span>y)<span class="op">$</span>overall[<span class="st">&quot;Accuracy&quot;</span>]</span>
+<span id="cb1055-3"><a href="cross-validation.html#cb1055-3"></a><span class="co">#&gt; Accuracy </span></span>
+<span id="cb1055-4"><a href="cross-validation.html#cb1055-4"></a><span class="co">#&gt;     0.74</span></span></code></pre></div>
+<p>Podemos ver el problema de sobreajuste en esta figura.
+<img src="libro_files/figure-html/knn-1-overfit-1.png" width="100%" style="display: block; margin: auto;" /></p>
+<p>Las curvas negras denotan los límites de la regla de decisión.</p>
+<p>El estimado <span class="math inline">\(\hat{p}(x_1, x_2)\)</span> sigue los datos de entrenamiento muy de cerca (izquierda). Puedes ver que en el conjunto de entrenamiento, los límites se han trazado para rodear perfectamente un único punto rojo en un mar azul. Porque la mayoría de los puntos <span class="math inline">\((x_1, x_2)\)</span> son únicos, la predicción es 1 o 0 y la predicción para ese punto es la etiqueta asociada. Sin embargo, una vez que presentamos el conjunto de entrenamiento (derecha), vemos que muchas de estas pequeñas islas ahora tienen el color opuesto y terminamos haciendo varias predicciones incorrectas.</p>
+</div>
+<div id="alisado-excesivo" class="section level3">
+<h3><span class="header-section-number">29.1.2</span> Alisado excesivo</h3>
+<p>Aunque no tan mal como con los ejemplos anteriores, vimos eso con <span class="math inline">\(k=5\)</span> también hemos sobreentrenado. Por lo tanto, debemos considerar una mayor <span class="math inline">\(k\)</span>. Probemos, por ejemplo, un número mucho mayor: <span class="math inline">\(k=401\)</span>.</p>
+<div class="sourceCode" id="cb1056"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1056-1"><a href="cross-validation.html#cb1056-1"></a>knn_fit_<span class="dv">401</span> &lt;-<span class="st"> </span><span class="kw">knn3</span>(y <span class="op">~</span><span class="st"> </span>., <span class="dt">data =</span> mnist_<span class="dv">27</span><span class="op">$</span>train, <span class="dt">k =</span> <span class="dv">401</span>)</span>
+<span id="cb1056-2"><a href="cross-validation.html#cb1056-2"></a>y_hat_knn_<span class="dv">401</span> &lt;-<span class="st"> </span><span class="kw">predict</span>(knn_fit_<span class="dv">401</span>, mnist_<span class="dv">27</span><span class="op">$</span>test, <span class="dt">type =</span> <span class="st">&quot;class&quot;</span>)</span>
+<span id="cb1056-3"><a href="cross-validation.html#cb1056-3"></a><span class="kw">confusionMatrix</span>(y_hat_knn_<span class="dv">401</span>, mnist_<span class="dv">27</span><span class="op">$</span>test<span class="op">$</span>y)<span class="op">$</span>overall[<span class="st">&quot;Accuracy&quot;</span>]</span>
+<span id="cb1056-4"><a href="cross-validation.html#cb1056-4"></a><span class="co">#&gt; Accuracy </span></span>
+<span id="cb1056-5"><a href="cross-validation.html#cb1056-5"></a><span class="co">#&gt;     0.79</span></span></code></pre></div>
+<p>Esto resulta ser similar a la regresión:
+<img src="libro_files/figure-html/mnist-27-glm-est-1.png" width="100%" style="display: block; margin: auto;" /></p>
+<p>Este tamaño de <span class="math inline">\(k\)</span> es tan grande que no permite suficiente flexibilidad. A esto lo llamamos <em>over-smoothing</em>.</p>
+</div>
+<div id="escogiendo-el-k-en-knn" class="section level3">
+<h3><span class="header-section-number">29.1.3</span> Escogiendo el <span class="math inline">\(k\)</span> en kNN</h3>
+<p>Entonces, ¿cómo elegimos <span class="math inline">\(k\)</span>? En principio queremos elegir el <span class="math inline">\(k\)</span> que maximiza la precisión o minimiza el MSE esperado como se define en <a href="introducción-al-aprendizaje-automático.html#loss-function">27.4.8</a>. El objetivo de la validación cruzada es estimar estas cantidades para cualquier algoritmo y conjunto de parámetros de ajuste como <span class="math inline">\(k\)</span>. Para entender por qué necesitamos un método especial para hacer esto, repitamos lo que hicimos anteriormente pero para diferentes valores de <span class="math inline">\(k\)</span>:</p>
+<div class="sourceCode" id="cb1057"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1057-1"><a href="cross-validation.html#cb1057-1"></a>ks &lt;-<span class="st"> </span><span class="kw">seq</span>(<span class="dv">3</span>, <span class="dv">251</span>, <span class="dv">2</span>)</span></code></pre></div>
+<p>Hacemos esto usando <code>map_df</code> función para repetir lo anterior para cada uno.</p>
+<div class="sourceCode" id="cb1058"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1058-1"><a href="cross-validation.html#cb1058-1"></a><span class="kw">library</span>(purrr)</span>
+<span id="cb1058-2"><a href="cross-validation.html#cb1058-2"></a>accuracy &lt;-<span class="st"> </span><span class="kw">map_df</span>(ks, <span class="cf">function</span>(k){</span>
+<span id="cb1058-3"><a href="cross-validation.html#cb1058-3"></a>fit &lt;-<span class="st"> </span><span class="kw">knn3</span>(y <span class="op">~</span><span class="st"> </span>., <span class="dt">data =</span> mnist_<span class="dv">27</span><span class="op">$</span>train, <span class="dt">k =</span> k)</span>
+<span id="cb1058-4"><a href="cross-validation.html#cb1058-4"></a></span>
+<span id="cb1058-5"><a href="cross-validation.html#cb1058-5"></a>y_hat &lt;-<span class="st"> </span><span class="kw">predict</span>(fit, mnist_<span class="dv">27</span><span class="op">$</span>train, <span class="dt">type =</span> <span class="st">&quot;class&quot;</span>)</span>
+<span id="cb1058-6"><a href="cross-validation.html#cb1058-6"></a>cm_train &lt;-<span class="st"> </span><span class="kw">confusionMatrix</span>(y_hat, mnist_<span class="dv">27</span><span class="op">$</span>train<span class="op">$</span>y)</span>
+<span id="cb1058-7"><a href="cross-validation.html#cb1058-7"></a>train_error &lt;-<span class="st"> </span>cm_train<span class="op">$</span>overall[<span class="st">&quot;Accuracy&quot;</span>]</span>
+<span id="cb1058-8"><a href="cross-validation.html#cb1058-8"></a></span>
+<span id="cb1058-9"><a href="cross-validation.html#cb1058-9"></a>y_hat &lt;-<span class="st"> </span><span class="kw">predict</span>(fit, mnist_<span class="dv">27</span><span class="op">$</span>test, <span class="dt">type =</span> <span class="st">&quot;class&quot;</span>)</span>
+<span id="cb1058-10"><a href="cross-validation.html#cb1058-10"></a>cm_test &lt;-<span class="st"> </span><span class="kw">confusionMatrix</span>(y_hat, mnist_<span class="dv">27</span><span class="op">$</span>test<span class="op">$</span>y)</span>
+<span id="cb1058-11"><a href="cross-validation.html#cb1058-11"></a>test_error &lt;-<span class="st"> </span>cm_test<span class="op">$</span>overall[<span class="st">&quot;Accuracy&quot;</span>]</span>
+<span id="cb1058-12"><a href="cross-validation.html#cb1058-12"></a></span>
+<span id="cb1058-13"><a href="cross-validation.html#cb1058-13"></a><span class="kw">tibble</span>(<span class="dt">train =</span> train_error, <span class="dt">test =</span> test_error)</span>
+<span id="cb1058-14"><a href="cross-validation.html#cb1058-14"></a>})</span></code></pre></div>
+<p>Tenga en cuenta que estimamos la precisión utilizando tanto el conjunto de entrenamiento como el conjunto de prueba. Ahora podemos trazar las estimaciones de precisión para cada valor de <span class="math inline">\(k\)</span>:</p>
+<p><img src="libro_files/figure-html/accuracy-vs-k-knn-1.png" width="70%" style="display: block; margin: auto;" /></p>
+<p>Primero, tenga en cuenta que la estimación obtenida en el conjunto de entrenamiento es generalmente menor que la estimación obtenida con el conjunto de prueba, con una diferencia mayor para valores más pequeños de <span class="math inline">\(k\)</span>. Esto se debe al sobreentrenamiento. También tenga en cuenta que la precisión frente a <span class="math inline">\(k\)</span> la trama es bastante irregular. No esperamos esto porque pequeños cambios en <span class="math inline">\(k\)</span> no debería afectar demasiado el rendimiento del algoritmo. La irregularidad se explica por el hecho de que la precisión se calcula en una muestra y, por lo tanto, es una variable aleatoria. Esto demuestra por qué preferimos minimizar la pérdida esperada en lugar de la pérdida que observamos con un conjunto de datos.</p>
+<p>Si tuviéramos que usar estas estimaciones para elegir <span class="math inline">\(k\)</span> que maximiza la precisión, usaríamos las estimaciones basadas en los datos de la prueba:</p>
+<div class="sourceCode" id="cb1059"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1059-1"><a href="cross-validation.html#cb1059-1"></a>ks[<span class="kw">which.max</span>(accuracy<span class="op">$</span>test)]</span>
+<span id="cb1059-2"><a href="cross-validation.html#cb1059-2"></a><span class="co">#&gt; [1] 41</span></span>
+<span id="cb1059-3"><a href="cross-validation.html#cb1059-3"></a><span class="kw">max</span>(accuracy<span class="op">$</span>test)</span>
+<span id="cb1059-4"><a href="cross-validation.html#cb1059-4"></a><span class="co">#&gt; [1] 0.86</span></span></code></pre></div>
+<p>Otra razón por la que necesitamos una mejor estimación de precisión es que si usamos el conjunto de prueba para elegir esto <span class="math inline">\(k\)</span>, no debemos esperar que la estimación de precisión que se acompaña se extrapole al mundo real. Esto se debe a que incluso aquí rompimos una regla de oro del aprendizaje automático: seleccionamos el <span class="math inline">\(k\)</span> utilizando el conjunto de prueba. La validación cruzada también proporciona una estimación que tiene esto en cuenta.</p>
+</div>
+</div>
+<div id="descripción-matemática-de-validación-cruzada" class="section level2">
+<h2><span class="header-section-number">29.2</span> Descripción matemática de validación cruzada</h2>
+<p>En la sección <a href="introducción-al-aprendizaje-automático.html#loss-function">27.4.8</a>, describimos que un objetivo común del aprendizaje automático es encontrar un algoritmo que produzca predictores <span class="math inline">\(\hat{Y}\)</span> para un resultado <span class="math inline">\(Y\)</span> que minimiza el MSE:</p>
+<p><span class="math display">\[
+\mbox{MSE} = \mbox{E}\left\{ \frac{1}{N}\sum_{i=1}^N (\hat{Y}_i - Y_i)^2 \right\}
+\]</span>
+Cuando todo lo que tenemos a nuestra disposición es un conjunto de datos, podemos estimar el MSE con el MSE observado de esta manera:</p>
+<p><span class="math display">\[
+\hat{\mbox{MSE}} = \frac{1}{N}\sum_{i=1}^N (\hat{y}_i - y_i)^2
+\]</span>
+Estos dos a menudo se conocen como el “error verdadero” y el “error aparente”, respectivamente.</p>
+<p>Hay dos características importantes del error aparente que siempre debemos tener en cuenta:</p>
+<ol style="list-style-type: decimal">
+<li><p>Debido a que nuestros datos son aleatorios, el error aparente es una variable aleatoria. Por ejemplo, el conjunto de datos que tenemos puede ser una muestra aleatoria de una población más grande. Un algoritmo puede tener un error aparente menor que otro algoritmo debido a la suerte.</p></li>
+<li><p>Si entrenamos un algoritmo en el mismo conjunto de datos que usamos para calcular el error aparente, podríamos estar entrenando demasiado. En general, cuando hacemos esto, el error aparente será una subestimación del error verdadero. Veremos un ejemplo extremo de esto con k vecinos más cercanos.</p></li>
+</ol>
+<p>La validación cruzada es una técnica que nos permite aliviar estos dos problemas. Para comprender la validación cruzada, es útil pensar en el error verdadero, una cantidad teórica, como el promedio de muchos errores aparentes obtenidos al aplicar el algoritmo a <span class="math inline">\(B\)</span> nuevas muestras aleatorias de los datos, ninguna de ellas utilizada para entrenar el algoritmo. Como se muestra en un capítulo anterior, pensamos en el verdadero error como:</p>
+<p><span class="math display">\[
+\frac{1}{B} \sum_{b=1}^B \frac{1}{N}\sum_{i=1}^N \left(\hat{y}_i^b - y_i^b\right)^2
+\]</span>
+con <span class="math inline">\(B\)</span> un gran número que puede considerarse prácticamente infinito.
+Como ya se mencionó, esta es una cantidad teórica porque solo tenemos disponible un conjunto de resultados: <span class="math inline">\(y_1, \dots, y_n\)</span>. La validación cruzada se basa en la idea de imitar la configuración teórica anterior de la mejor manera posible con los datos que tenemos. Para hacer esto, tenemos que generar una serie de diferentes muestras aleatorias. Hay varios enfoques que podemos usar, pero la idea general para todos ellos es generar aleatoriamente conjuntos de datos más pequeños que no se usan para el entrenamiento, y en su lugar se usan para estimar el error verdadero.</p>
+</div>
+<div id="validación-cruzada-k-fold" class="section level2">
+<h2><span class="header-section-number">29.3</span> Validación cruzada K-fold</h2>
+<p>El primero que describimos es <em>K-fold cross validation</em>.
+En términos generales, un desafío de aprendizaje automático comienza con un conjunto de datos (azul en la imagen a continuación). Necesitamos construir un algoritmo usando este conjunto de datos que eventualmente se usará en conjuntos de datos completamente independientes (amarillo).</p>
+<p><img src="ml/img/cv-1.png" width="70%" style="display: block; margin: auto;" /></p>
+<p>Pero no podemos ver estos conjuntos de datos independientes.</p>
+<p><img src="ml/img/cv-2.png" width="70%" style="display: block; margin: auto;" /></p>
+<p>Entonces, para imitar esta situación, creamos una parte de nuestro conjunto de datos y pretendemos que sea un conjunto de datos independiente: dividimos el conjunto de datos en un <em>conjunto de entrenamiento</em> (azul) y un <em>conjunto de prueba</em> (rojo). Entrenaremos nuestro algoritmo exclusivamente en el conjunto de entrenamiento y usaremos el conjunto de prueba solo para fines de evaluación.</p>
+<p>Por lo general, intentamos seleccionar una pequeña parte del conjunto de datos para tener la mayor cantidad de datos posible para entrenar. Sin embargo, también queremos que el conjunto de pruebas sea grande para que podamos obtener una estimación estable de la pérdida sin ajustar un número poco práctico de modelos. Las opciones típicas son usar del 10% al 20% de los datos para las pruebas.</p>
+<p><img src="ml/img/cv-3.png" width="70%" style="display: block; margin: auto;" /></p>
+<p>Reiteremos que es indispensable que no usemos el conjunto de prueba en absoluto: no para filtrar filas, no para seleccionar características, ¡nada!</p>
+<p>Ahora, esto presenta un nuevo problema porque para la mayoría de los algoritmos de aprendizaje automático necesitamos seleccionar parámetros, por ejemplo, el número de vecinos <span class="math inline">\(k\)</span> en k-vecinos más cercanos. Aquí, nos referiremos al conjunto de parámetros como <span class="math inline">\(\lambda\)</span>. Necesitamos optimizar los parámetros del algoritmo sin usar nuestro conjunto de pruebas y sabemos que si optimizamos y evaluamos en el mismo conjunto de datos, sobreentrenaremos. Aquí es donde la validación cruzada es más útil.</p>
+<p>Para cada conjunto de parámetros de algoritmo que se considera, queremos una estimación del MSE y luego elegiremos los parámetros con el MSE más pequeño. La validación cruzada proporciona esta estimación.</p>
+<p>Primero, antes de comenzar el procedimiento de validación cruzada, es importante corregir todos los parámetros del algoritmo. Aunque entrenaremos el algoritmo en el conjunto de conjuntos de entrenamiento, los parámetros <span class="math inline">\(\lambda\)</span> será el mismo en todos los conjuntos de entrenamiento. Usaremos <span class="math inline">\(\hat{y}_i(\lambda)\)</span> para denotar los predictores obtenidos cuando usamos parámetros <span class="math inline">\(\lambda\)</span>.</p>
+<p>Entonces, si vamos a imitar esta definición:</p>
+<p><span class="math display">\[
+\mbox{MSE}(\lambda) = \frac{1}{B} \sum_{b=1}^B \frac{1}{N}\sum_{i=1}^N \left(\hat{y}_i^b(\lambda) - y_i^b\right)^2
+\]</span></p>
+<p>queremos considerar conjuntos de datos que puedan considerarse una muestra aleatoria independiente y queremos hacerlo varias veces. Con la validación cruzada K-fold, lo hacemos <span class="math inline">\(K\)</span> veces. En los dibujos animados, estamos mostrando un ejemplo que usa <span class="math inline">\(K=5\)</span>.</p>
+<p>Eventualmente terminaremos con <span class="math inline">\(K\)</span> muestras, pero comencemos describiendo cómo construir el primero: simplemente elegimos <span class="math inline">\(M=N/K\)</span> observaciones al azar (redondeamos si <span class="math inline">\(M\)</span> no es un número redondo) y piense en esto como una muestra aleatoria <span class="math inline">\(y_1^b, \dots, y_M^b\)</span>, con <span class="math inline">\(b=1\)</span>. Llamamos a esto el conjunto de validación:</p>
+<p><img src="ml/img/cv-4.png" width="70%" style="display: block; margin: auto;" /></p>
+<p>Ahora podemos ajustar el modelo en el conjunto de entrenamiento, luego calcular el error aparente en el conjunto independiente:</p>
+<p><span class="math display">\[
+\hat{\mbox{MSE}}_b(\lambda) = \frac{1}{M}\sum_{i=1}^M \left(\hat{y}_i^b(\lambda) - y_i^b\right)^2
+\]</span></p>
+<p>Tenga en cuenta que esta es solo una muestra y, por lo tanto, devolverá una estimación ruidosa del error verdadero. Por eso tomamos <span class="math inline">\(K\)</span> muestras, no solo una. En la validación de K-cross, dividimos aleatoriamente las observaciones en <span class="math inline">\(K\)</span> conjuntos no superpuestos:</p>
+<p><img src="ml/img/cv-5.png" width="70%" style="display: block; margin: auto;" /></p>
+<p>Ahora repetimos el cálculo anterior para cada uno de estos conjuntos <span class="math inline">\(b=1,\dots,K\)</span> y obtener <span class="math inline">\(\hat{\mbox{MSE}}_1(\lambda),\dots, \hat{\mbox{MSE}}_K(\lambda)\)</span>. Luego, para nuestra estimación final, calculamos el promedio:</p>
+<p><span class="math display">\[
+\hat{\mbox{MSE}}(\lambda) = \frac{1}{B} \sum_{b=1}^K \hat{\mbox{MSE}}_b(\lambda)
+\]</span></p>
+<p>y obtener un estimado de nuestra pérdida. Un paso final sería seleccionar el <span class="math inline">\(\lambda\)</span> eso minimiza el MSE.</p>
+<p>Hemos descrito cómo usar la validación cruzada para optimizar los parámetros. Sin embargo, ahora tenemos que tener en cuenta el hecho de que la optimización se produjo en los datos de entrenamiento y, por lo tanto, necesitamos una estimación de nuestro algoritmo final basado en datos que no se utilizaron para optimizar la elección. Aquí es donde usamos el conjunto de prueba que separamos al principio:</p>
+<p><img src="ml/img/cv-6.png" width="70%" style="display: block; margin: auto;" /></p>
+<p>Podemos hacer una validación cruzada nuevamente:</p>
+<p><img src="ml/img/cv-7.png" width="70%" style="display: block; margin: auto;" /></p>
+<p>y obtener una estimación final de nuestra pérdida esperada. Sin embargo, tenga en cuenta que esto significa que todo nuestro tiempo de cálculo se multiplica por <span class="math inline">\(K\)</span>. Pronto aprenderá que realizar esta tarea lleva tiempo porque estamos realizando muchos cálculos complejos. Como resultado, siempre estamos buscando formas de reducir este tiempo. Para la evaluación final, a menudo solo usamos un conjunto de pruebas.</p>
+<p>Una vez que estemos satisfechos con este modelo y queramos ponerlo a disposición de otros, podríamos reajustar el modelo en todo el conjunto de datos, sin cambiar los parámetros optimizados.</p>
+<p><img src="ml/img/cv-8.png" width="70%" style="display: block; margin: auto;" /></p>
+<p>Ahora, ¿cómo elegimos la validación cruzada? <span class="math inline">\(K\)</span>? Grandes valores de <span class="math inline">\(K\)</span> son preferibles porque los datos de entrenamiento imitan mejor el conjunto de datos original. Sin embargo, valores mayores de <span class="math inline">\(K\)</span> tendrá un tiempo de cálculo mucho más lento: por ejemplo, la validación cruzada 100 veces será 10 veces más lenta que la validación cruzada 10 veces. Por esta razón, las elecciones de <span class="math inline">\(K=5\)</span> y <span class="math inline">\(K=10\)</span> son populares</p>
+<p>Una forma de mejorar la varianza de nuestra estimación final es tomar más muestras. Para hacer esto, ya no necesitaríamos que el conjunto de entrenamiento se dividiera en conjuntos no superpuestos. En cambio, simplemente elegiríamos <span class="math inline">\(K\)</span> conjuntos de algún tamaño al azar.</p>
+<p>Una versión popular de esta técnica, en cada pliegue, selecciona observaciones al azar con reemplazo (lo que significa que la misma observación puede aparecer dos veces). Este enfoque tiene algunas ventajas (no se discute aquí) y generalmente se conoce como <em>bootstrap</em>. De hecho, este es el enfoque predeterminado en el paquete <strong>caret</strong>. Describimos cómo implementar la validación cruzada con el paquete <strong>caret</strong> en el próximo capítulo. En la siguiente sección, incluimos una explicación de cómo funciona el bootstrap en general.</p>
+</div>
+<div id="ejercicios-48" class="section level2">
+<h2><span class="header-section-number">29.4</span> Ejercicios</h2>
+<p>Genere un conjunto de predictores aleatorios y resultados como este:</p>
+<div class="sourceCode" id="cb1060"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1060-1"><a href="cross-validation.html#cb1060-1"></a><span class="kw">set.seed</span>(<span class="dv">1996</span>)</span>
+<span id="cb1060-2"><a href="cross-validation.html#cb1060-2"></a>n &lt;-<span class="st"> </span><span class="dv">1000</span></span>
+<span id="cb1060-3"><a href="cross-validation.html#cb1060-3"></a>p &lt;-<span class="st"> </span><span class="dv">10000</span></span>
+<span id="cb1060-4"><a href="cross-validation.html#cb1060-4"></a>x &lt;-<span class="st"> </span><span class="kw">matrix</span>(<span class="kw">rnorm</span>(n <span class="op">*</span><span class="st"> </span>p), n, p)</span>
+<span id="cb1060-5"><a href="cross-validation.html#cb1060-5"></a><span class="kw">colnames</span>(x) &lt;-<span class="st"> </span><span class="kw">paste</span>(<span class="st">&quot;x&quot;</span>, <span class="dv">1</span><span class="op">:</span><span class="kw">ncol</span>(x), <span class="dt">sep =</span> <span class="st">&quot;_&quot;</span>)</span>
+<span id="cb1060-6"><a href="cross-validation.html#cb1060-6"></a>y &lt;-<span class="st"> </span><span class="kw">rbinom</span>(n, <span class="dv">1</span>, <span class="fl">0.5</span>) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">factor</span>()</span>
+<span id="cb1060-7"><a href="cross-validation.html#cb1060-7"></a></span>
+<span id="cb1060-8"><a href="cross-validation.html#cb1060-8"></a>x_subset &lt;-<span class="st"> </span>x[ ,<span class="kw">sample</span>(p, <span class="dv">100</span>)]</span></code></pre></div>
+<p>1. Porque <code>x</code> y <code>y</code> son completamente independientes, no deberías poder predecir <code>y</code> utilizando <code>x</code> con precisión mayor que 0.5. Confirme esto ejecutando la validación cruzada utilizando regresión logística para ajustar el modelo. Debido a que tenemos tantos predictores, seleccionamos una muestra aleatoria <code>x_subset</code>. Use el subconjunto cuando entrene al modelo. Pista: usa el cursor <code>train</code> función. los <code>results</code> componente de la salida de <code>train</code> te muestra la precisión. Ignora las advertencias.</p>
+<p>2. Ahora, en lugar de una selección aleatoria de predictores, vamos a buscar aquellos que sean más predictivos del resultado. Podemos hacer esto comparando los valores para el <span class="math inline">\(y=1\)</span> grupo para aquellos en el <span class="math inline">\(y=0\)</span> grupo, para cada predictor, utilizando una prueba t. Puede realizar este paso así:</p>
+<div class="sourceCode" id="cb1061"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1061-1"><a href="cross-validation.html#cb1061-1"></a>devtools<span class="op">::</span><span class="kw">install_bioc</span>(<span class="st">&quot;genefilter&quot;</span>)</span>
+<span id="cb1061-2"><a href="cross-validation.html#cb1061-2"></a><span class="kw">install.packages</span>(<span class="st">&quot;genefilter&quot;</span>)</span>
+<span id="cb1061-3"><a href="cross-validation.html#cb1061-3"></a><span class="kw">library</span>(genefilter)</span>
+<span id="cb1061-4"><a href="cross-validation.html#cb1061-4"></a>tt &lt;-<span class="st"> </span><span class="kw">colttests</span>(x, y)</span></code></pre></div>
+<p>Cree un vector de los valores p y llámelo <code>pvals</code>.</p>
+<p>3. Crear un índice <code>ind</code> con los números de columna de los predictores que estaban “estadísticamente significativos” asociados con <code>y</code>. Utilice un valor de corte p de 0.01 para definir “estadísticamente significativo”. ¿Cuántos predictores sobreviven a este corte?</p>
+<p>4. Vuelva a ejecutar la validación cruzada pero después de redefinir <code>x_subset</code> ser el subconjunto de <code>x</code> definido por las columnas que muestran una asociación “estadísticamente significativa” con <code>y</code>. ¿Cuál es la precisión ahora?</p>
+<p>5. Vuelva a ejecutar la validación cruzada nuevamente, pero esta vez usando kNN. Pruebe la siguiente cuadrícula de parámetros de ajuste: <code>k = seq(101, 301, 25)</code>. Haz un diagrama de la precisión resultante.</p>
+<p>6. En los ejercicios 3 y 4, vemos que a pesar del hecho de que <code>x</code> y <code>y</code> son completamente independientes, pudimos predecir <code>y</code> con una precisión superior al 70%. Debemos estar haciendo algo mal entonces. ¿Qué es?</p>
+<ol style="list-style-type: lower-alpha">
+<li>La función <code>train</code> estima la precisión en los mismos datos que usa para entrenar el algoritmo.
+si. Estamos ajustando demasiado el modelo al incluir 100 predictores.</li>
+<li>Utilizamos todo el conjunto de datos para seleccionar las columnas utilizadas en el modelo. Este paso debe incluirse como parte del algoritmo. La validación cruzada se realizó <strong>después de</strong> esta selección.
+re. La alta precisión se debe solo a la variabilidad aleatoria.</li>
+</ol>
+<p>7. Avanzado. Vuelva a realizar la validación cruzada, pero esta vez incluya el paso de selección en la validación cruzada. La precisión ahora debería estar cerca del 50%.</p>
+<p>8. Carga el <code>tissue_gene_expression</code> conjunto de datos Utilizar el <code>train</code> función para predecir el tejido a partir de la expresión génica. Usa kNN. Qué <code>k</code> ¿funciona mejor?</p>
+</div>
+<div id="bootstrap" class="section level2">
+<h2><span class="header-section-number">29.5</span> Bootstrap</h2>
+<p>Suponga que la distribución del ingreso de su población es la siguiente:</p>
+<div class="sourceCode" id="cb1062"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1062-1"><a href="cross-validation.html#cb1062-1"></a><span class="kw">set.seed</span>(<span class="dv">1995</span>)</span>
+<span id="cb1062-2"><a href="cross-validation.html#cb1062-2"></a>n &lt;-<span class="st"> </span><span class="dv">10</span><span class="op">^</span><span class="dv">6</span></span>
+<span id="cb1062-3"><a href="cross-validation.html#cb1062-3"></a>income &lt;-<span class="st"> </span><span class="dv">10</span><span class="op">^</span>(<span class="kw">rnorm</span>(n, <span class="kw">log10</span>(<span class="dv">45000</span>), <span class="kw">log10</span>(<span class="dv">3</span>)))</span>
+<span id="cb1062-4"><a href="cross-validation.html#cb1062-4"></a><span class="kw">qplot</span>(<span class="kw">log10</span>(income), <span class="dt">bins =</span> <span class="dv">30</span>, <span class="dt">color =</span> <span class="kw">I</span>(<span class="st">&quot;black&quot;</span>))</span></code></pre></div>
+<p><img src="libro_files/figure-html/income-distribution-1.png" width="70%" style="display: block; margin: auto;" /></p>
+<p>La mediana de la población es:</p>
+<div class="sourceCode" id="cb1063"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1063-1"><a href="cross-validation.html#cb1063-1"></a>m &lt;-<span class="st"> </span><span class="kw">median</span>(income)</span>
+<span id="cb1063-2"><a href="cross-validation.html#cb1063-2"></a>m</span>
+<span id="cb1063-3"><a href="cross-validation.html#cb1063-3"></a><span class="co">#&gt; [1] 44939</span></span></code></pre></div>
+<p>Supongamos que no tenemos acceso a toda la población, pero queremos estimar la mediana <span class="math inline">\(m\)</span>. Tomamos una muestra de 100 y estimamos la mediana de la población. <span class="math inline">\(m\)</span> con la mediana de la muestra <span class="math inline">\(M\)</span>:</p>
+<div class="sourceCode" id="cb1064"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1064-1"><a href="cross-validation.html#cb1064-1"></a>N &lt;-<span class="st"> </span><span class="dv">100</span></span>
+<span id="cb1064-2"><a href="cross-validation.html#cb1064-2"></a>X &lt;-<span class="st"> </span><span class="kw">sample</span>(income, N)</span>
+<span id="cb1064-3"><a href="cross-validation.html#cb1064-3"></a><span class="kw">median</span>(X)</span>
+<span id="cb1064-4"><a href="cross-validation.html#cb1064-4"></a><span class="co">#&gt; [1] 38461</span></span></code></pre></div>
+<p>¿Podemos construir un intervalo de confianza? ¿Cuál es la distribución de <span class="math inline">\(M\)</span> ?</p>
+<p>Debido a que estamos simulando los datos, podemos usar una simulación de Monte Carlo para aprender la distribución de <span class="math inline">\(M\)</span>.</p>
+<div class="sourceCode" id="cb1065"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1065-1"><a href="cross-validation.html#cb1065-1"></a><span class="kw">library</span>(gridExtra)</span>
+<span id="cb1065-2"><a href="cross-validation.html#cb1065-2"></a>B &lt;-<span class="st"> </span><span class="dv">10</span><span class="op">^</span><span class="dv">4</span></span>
+<span id="cb1065-3"><a href="cross-validation.html#cb1065-3"></a>M &lt;-<span class="st"> </span><span class="kw">replicate</span>(B, {</span>
+<span id="cb1065-4"><a href="cross-validation.html#cb1065-4"></a>X &lt;-<span class="st"> </span><span class="kw">sample</span>(income, N)</span>
+<span id="cb1065-5"><a href="cross-validation.html#cb1065-5"></a><span class="kw">median</span>(X)</span>
+<span id="cb1065-6"><a href="cross-validation.html#cb1065-6"></a>})</span>
+<span id="cb1065-7"><a href="cross-validation.html#cb1065-7"></a>p1 &lt;-<span class="st"> </span><span class="kw">qplot</span>(M, <span class="dt">bins =</span> <span class="dv">30</span>, <span class="dt">color =</span> <span class="kw">I</span>(<span class="st">&quot;black&quot;</span>))</span>
+<span id="cb1065-8"><a href="cross-validation.html#cb1065-8"></a>p2 &lt;-<span class="st"> </span><span class="kw">qplot</span>(<span class="dt">sample =</span> <span class="kw">scale</span>(M), <span class="dt">xlab =</span> <span class="st">&quot;theoretical&quot;</span>, <span class="dt">ylab =</span> <span class="st">&quot;sample&quot;</span>) <span class="op">+</span></span>
+<span id="cb1065-9"><a href="cross-validation.html#cb1065-9"></a><span class="kw">geom_abline</span>()</span>
+<span id="cb1065-10"><a href="cross-validation.html#cb1065-10"></a><span class="kw">grid.arrange</span>(p1, p2, <span class="dt">ncol =</span> <span class="dv">2</span>)</span></code></pre></div>
+<p><img src="libro_files/figure-html/median-is-normal-1.png" width="100%" style="display: block; margin: auto;" /></p>
+<p>Si conocemos esta distribución, podemos construir un intervalo de confianza. El problema aquí es que, como ya hemos descrito, en la práctica no tenemos acceso a la distribución. En el pasado, hemos usado el Teorema del límite central, pero el CLT que estudiamos se aplica a los promedios y aquí estamos interesados en la mediana. Podemos ver que el intervalo de confianza del 95% basado en CLT</p>
+<div class="sourceCode" id="cb1066"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1066-1"><a href="cross-validation.html#cb1066-1"></a><span class="kw">median</span>(X) <span class="op">+</span><span class="st"> </span><span class="fl">1.96</span> <span class="op">*</span><span class="st"> </span><span class="kw">sd</span>(X)<span class="op">/</span><span class="st"> </span><span class="kw">sqrt</span>(N) <span class="op">*</span><span class="st"> </span><span class="kw">c</span>(<span class="op">-</span><span class="dv">1</span>, <span class="dv">1</span>)</span>
+<span id="cb1066-2"><a href="cross-validation.html#cb1066-2"></a><span class="co">#&gt; [1] 21018 55905</span></span></code></pre></div>
+<p>es bastante diferente del intervalo de confianza que generaríamos si conocemos la distribución real de <span class="math inline">\(M\)</span>:</p>
+<div class="sourceCode" id="cb1067"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1067-1"><a href="cross-validation.html#cb1067-1"></a><span class="kw">quantile</span>(M, <span class="kw">c</span>(<span class="fl">0.025</span>, <span class="fl">0.975</span>))</span>
+<span id="cb1067-2"><a href="cross-validation.html#cb1067-2"></a><span class="co">#&gt;  2.5% 97.5% </span></span>
+<span id="cb1067-3"><a href="cross-validation.html#cb1067-3"></a><span class="co">#&gt; 34438 59050</span></span></code></pre></div>
+<p>El bootstrap nos permite aproximar una simulación de Monte Carlo sin acceso a toda la distribución. La idea general es relativamente simple. Actuamos como si la muestra observada fuera la población. Luego muestreamos (con reemplazo) conjuntos de datos, del mismo tamaño de muestra que el conjunto de datos original. Luego calculamos la estadística de resumen, en este caso la mediana, en estas <em>muestras de arranque</em>.</p>
+<p>La teoría nos dice que, en muchas situaciones, la distribución de las estadísticas obtenidas con muestras de bootstrap se aproxima a la distribución de nuestra estadística real. Así es como construimos muestras de bootstrap y una distribución aproximada:</p>
+<div class="sourceCode" id="cb1068"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1068-1"><a href="cross-validation.html#cb1068-1"></a>B &lt;-<span class="st"> </span><span class="dv">10</span><span class="op">^</span><span class="dv">4</span></span>
+<span id="cb1068-2"><a href="cross-validation.html#cb1068-2"></a>M_star &lt;-<span class="st"> </span><span class="kw">replicate</span>(B, {</span>
+<span id="cb1068-3"><a href="cross-validation.html#cb1068-3"></a>X_star &lt;-<span class="st"> </span><span class="kw">sample</span>(X, N, <span class="dt">replace =</span> <span class="ot">TRUE</span>)</span>
+<span id="cb1068-4"><a href="cross-validation.html#cb1068-4"></a><span class="kw">median</span>(X_star)</span>
+<span id="cb1068-5"><a href="cross-validation.html#cb1068-5"></a>})</span></code></pre></div>
+<p>Tenga en cuenta que un intervalo de confianza construido con bootstrap está mucho más cerca de uno construido con la distribución teórica:</p>
+<div class="sourceCode" id="cb1069"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1069-1"><a href="cross-validation.html#cb1069-1"></a><span class="kw">quantile</span>(M_star, <span class="kw">c</span>(<span class="fl">0.025</span>, <span class="fl">0.975</span>))</span>
+<span id="cb1069-2"><a href="cross-validation.html#cb1069-2"></a><span class="co">#&gt;  2.5% 97.5% </span></span>
+<span id="cb1069-3"><a href="cross-validation.html#cb1069-3"></a><span class="co">#&gt; 30253 56909</span></span></code></pre></div>
+<p>Para obtener más información sobre Bootstrap, incluidas las correcciones que se pueden aplicar para mejorar estos intervalos de confianza, consulte el libro <em>Una introducción a Bootstrap</em> de Efron, B. y Tibshirani, RJ</p>
+<ul>
+<li>Tenga en cuenta que podemos usar ideas similares a las utilizadas en el arranque en la validación cruzada: en lugar de dividir los datos en particiones iguales, simplemente arrancamos muchas veces. *</li>
+</ul>
+</div>
+<div id="ejercicios-49" class="section level2">
+<h2><span class="header-section-number">29.6</span> Ejercicios</h2>
+<p>1. Los <code>createResample</code> la función se puede utilizar para crear ejemplos de bootstrap. Por ejemplo, podemos crear 10 muestras de bootstrap para <code>mnist_27</code> conjunto de datos como este:</p>
+<div class="sourceCode" id="cb1070"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1070-1"><a href="cross-validation.html#cb1070-1"></a><span class="kw">set.seed</span>(<span class="dv">1995</span>)</span>
+<span id="cb1070-2"><a href="cross-validation.html#cb1070-2"></a>indexes &lt;-<span class="st"> </span><span class="kw">createResample</span>(mnist_<span class="dv">27</span><span class="op">$</span>train<span class="op">$</span>y, <span class="dv">10</span>)</span></code></pre></div>
+<p>Cuantas veces <code>3</code>, <code>4</code> y <code>7</code> aparecer en el primer índice re-muestreado?</p>
+<p>2. Vemos que algunos números aparecen más de una vez y otros no aparecen ninguna vez. Esto tiene que ser así para que cada conjunto de datos sea independiente. Repita el ejercicio para todos los índices re-muestreados.</p>
+<p>3. Genere un conjunto de datos aleatorio como este:</p>
+<div class="sourceCode" id="cb1071"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1071-1"><a href="cross-validation.html#cb1071-1"></a>y &lt;-<span class="st"> </span><span class="kw">rnorm</span>(<span class="dv">100</span>, <span class="dv">0</span>, <span class="dv">1</span>)</span></code></pre></div>
+<p>Estime el 75º cuantil, que sabemos es:</p>
+<div class="sourceCode" id="cb1072"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1072-1"><a href="cross-validation.html#cb1072-1"></a><span class="kw">qnorm</span>(<span class="fl">0.75</span>)</span></code></pre></div>
+<p>con el cuantil de muestra:</p>
+<div class="sourceCode" id="cb1073"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1073-1"><a href="cross-validation.html#cb1073-1"></a><span class="kw">quantile</span>(y, <span class="fl">0.75</span>)</span></code></pre></div>
+<p>Ejecute una simulación de Monte Carlo para conocer el valor esperado y el error estándar de esta variable aleatoria.</p>
+<p>4. En la práctica, no podemos ejecutar una simulación de Monte Carlo porque no sabemos si <code>rnorm</code> se está utilizando para simular los datos. Use el bootstrap para estimar el error estándar usando solo la muestra inicial <code>y</code>. Use 10 muestras de bootstrap.</p>
+<p>5. Vuelva a hacer el ejercicio 4, pero con 10,000 muestras de bootstrap.</p>
+
+</div>
+</div>
+            </section>
+
+          </div>
+        </div>
+      </div>
+<a href="suavizado.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="caret.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+    </div>
+  </div>
+<script src="libs/gitbook-2.6.7/js/app.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/lunr.js"></script>
+<script src="libs/gitbook-2.6.7/js/clipboard.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
+<script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-clipboard.js"></script>
+<script>
+gitbook.require(["gitbook"], function(gitbook) {
+gitbook.start({
+"sharing": {
+"github": false,
+"facebook": true,
+"twitter": true,
+"linkedin": false,
+"weibo": false,
+"instapaper": false,
+"vk": false,
+"all": ["facebook", "twitter", "linkedin", "weibo", "instapaper"]
+},
+"fontsettings": {
+"theme": "white",
+"family": "sans",
+"size": 2
+},
+"edit": {
+"link": "https://github.com/rafalab/dslibro/edit/master/ml/cross-validation.Rmd",
+"text": "Edit"
+},
+"history": {
+"link": null,
+"text": null
+},
+"view": {
+"link": null,
+"text": null
+},
+"download": null,
+"toc": {
+"collapse": "section"
+}
+});
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    var src = "true";
+    if (src === "" || src === "true") src = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML";
+    if (location.protocol !== "file:")
+      if (/^https?:/.test(src))
+        src = src.replace(/^https?:/, '');
+    script.src = src;
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+</body>
+
+</html>
