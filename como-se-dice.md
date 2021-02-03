@@ -49,6 +49,7 @@
 | Exploratory Data Analysis (EDA) | Análisis exploratorio de datos (_EDA_ por sus siglas en inglés) | exploratory data analysis (EDA) |Análisis exploratorio de datos | Análisis exploratorio de datos |
 | execute (verb)| ejecutar |to execute the code | ejecutar | ejecutar |
 | __F__ | | | | |
+| $F_1$-score| medida $F_1$ |  |  |
 | feature (for machine learning) | atributo | | | |
 | file (verb) | archivar | to file |  |  |
 | file (noun)| archivo |save the script in a file | Archivo | archivo o fichero |
