@@ -104,7 +104,10 @@ transformación logarítmica   |  |
 | outliers | valores atípicos|  | |  |
 | output | _output_, resultado, salida | the output of the function is a vector |un _output_ (no se traduce),resultado, salida  | salida |
 | output layer| capa de salida || |  |
+| overall accuracy | exactitud general |  |  |  |
+| overtraining | sobreajuste |  |  |  |
 | __P__ | | | | |
+| parse | leer y procesar |  |  |  |
 | path  |ruta | Relative and full paths, the path of a file list | rutas | ruta |
 | pipe | _pipe_ | `%>%` |  _pipe_ | tubería |
 | pipe (verb) | canalizar | We can continue to pipe values along |  |  |
@@ -150,13 +153,14 @@ transformación logarítmica   |  |
 | __T__ | | | | |
 | t statistic | estadística t o prueba t |  |  |  |
 | tabs | pestañas | RStudio has a Viewer tab | pestañas | pestañas |
-| test set | set de validación |  | set/datos de validación |  |
+| test set | set de evaluación |  |  |  |
 | tidy data | datos _tidy_ | |  | datos ordenados | datos limpios/ordenados |
 | tidy format | formato _tidy_ | this data is in tidy format | | | 
 | time series plot | gráfico de series de tiempo  | |  |
 | training set |  set de entrenamiento |  set/datos de entrenamiento  |  |
 | __U__ | | | | |
 | __V__ | | | | |
+| validation set | set de validación |  |  |  |
 | __W__ | | | | |
 | web-based | disponible en la web | | en linea/disponible en la web,  | en la web |
 | web scraping | extracción de la web | | descarga/extracción de información en linea | extracción de la web, rastreo web |
