@@ -9,7 +9,7 @@ library(tidyverse)
 library(caret)
 ```
 
-Como primer ejemplo, usamos los datos de altura en [fix bold? eng too] dslabs:
+Como primer ejemplo, usamos los datos de altura en __dslabs__:
 
 ```{r}
 library(dslabs)
@@ -23,14 +23,13 @@ y <- heights$sex
 x <- heights$height
 ```
 
-En este caso, solo tenemos un predictor, altura, e `y` es claramente un resultado categórico ya que los valores observados son `Male` o `Female`. Sabemos que no podremos predecir $Y$ muy exactamente basado en $X$ porque las alturas promedio masculinas y femeninas no son tan diferentes en relación con la variabilidad dentro del grupo. [fix] ¿Pero podemos hacerlo mejor que simplemente adivinar? Para responder a esta pregunta, necesitamos una definición [fix add quotes in english) cuantitativa de "mejor".
+En este caso, solo tenemos un predictor, altura; `y` es claramente un resultado categórico ya que los valores observados son `Male` o `Female`. Sabemos que no podremos predecir $Y$ muy exactamente basado en $X$ porque las alturas promedio masculinas y femeninas no son tan diferentes en relación con la variabilidad dentro del grupo. [fix] ¿Pero podemos hacerlo mejor que simplemente adivinar? Para responder a esta pregunta, necesitamos una definición [fix add quotes in english] cuantitativa de "mejor".
 
 ### Sets de entrenamiento y evaluación
 
 En última instancia, un algoritmo de _machine learning_ se evalúa basado en cómo funciona en el mundo real con sets de datos completamente nuevos. Sin embargo, cuando desarrollamos un algoritmo, generalmente tenemos un set de datos para el que conocemos los resultados, como lo hacemos con las alturas: sabemos el sexo de cada estudiante en nuestro set de datos. Por lo tanto, para imitar el proceso de evaluación final, generalmente dividimos los datos en dos partes y actuamos como si no supiéramos el resultado de una de estas. Dejamos de fingir que no conocemos el resultado para evaluar el algoritmo, pero solo _después_ de haber terminado de construirlo. Nos referimos al grupo para el que conocemos el resultado [fix check] y que usamos para desarrollar el algoritmo como el _set de entrenamiento_ (_training set_ en inglés). Nos referimos al grupo para el que pretendemos que no conocer el resultado como el _set de evaluación_ (_test set_ en inglés).
 
-Una forma estándar de generar los sets de entrenamiento y evaluación es dividiendo aleatoriamente los datos. El paquete __caret__ incluye la función `createDataPartition` que
-nos ayuda a generar índices para dividir aleatoriamente los datos en sets de entrenamiento y evaluación:
+Una forma estándar de generar los sets de entrenamiento y evaluación es dividiendo aleatoriamente los datos. El paquete __caret__ incluye la función `createDataPartition` que nos ayuda a generar índices para dividir aleatoriamente los datos en sets de entrenamiento y evaluación:
 
 
 ```{r}
@@ -74,7 +73,7 @@ mean(y_hat == test_set$sex)
 
 No es sorprendente que nuestra exactidud sea 50%. ¡Estamos adivinando!
 
-¿Podemos [fix] hacerlo mejor/mejorarlo? El análisis de datos exploratorios sugiere que podemos porque, en promedio, los hombres son un poco más altos que las mujeres:
+¿Podemos mejorarla? El análisis de datos exploratorios sugiere que podemos porque, en promedio, los hombres son un poco más altos que las mujeres:
 
 ```{r}
 heights %>% group_by(sex) %>% summarize(mean(height), sd(height))
@@ -93,9 +92,9 @@ La exactidud aumenta de 0.50 a aproximadamente 0.80:
 mean(y == y_hat)
 ```
 
-¿Pero podemos hacerlo aún mejor? En el ejemplo anterior, [fix] utilizamos un valor límite de 62, pero podemos examinar la exactidud obtenida para otros valores límite y luego elegir el valor que provee los mejores resultados. Pero recuerden, **es importante que optimicemos el límite utilizando solo el set de entrenamiento**: el set de evaluación es solo para evaluación. Aunque para este ejemplo simplista no es un problema, más adelante aprenderemos que evaluar un algoritmo en el set de entrenamiento puede conducir a un _sobreajuste_ (_overfitting_ en inglés), que a menudo resulta en evaluaciones peligrosamente sobre optimistas.
+¿Pero podemos mejorarla aún más? En el ejemplo anterior, utilizamos un umbral de 62, pero podemos examinar la exactidud obtenida para otros umbrales y luego elegir el valor que provee los mejores resultados. Pero recuerden, **es importante que optimicemos el umbral utilizando solo el set de entrenamiento**: el set de evaluación es solo para evaluación. Aunque para este ejemplo simplista no es un problema, más adelante aprenderemos que evaluar un algoritmo en el set de entrenamiento puede conducir a un _sobreajuste_ (_overfitting_ en inglés), que a menudo resulta en evaluaciones peligrosamente sobre optimistas.
 
-Aquí examinamos [fix] la exactidud de 10 límites diferentes y elegimos el que produce el mejor resultado:
+Aquí examinamos la exactidud de 10 umbrales diferentes y elegimos el que produce el mejor resultado:
 
 ```{r}
 cutoff <- seq(61, 70)
@@ -121,14 +120,14 @@ Vemos que el valor máximo es:
 max(accuracy)
 ```
 
-que es mucho más grande que 0.5. El límite que resulta en esta exactitud es:
+que es mucho más grande que 0.5. El umbral que resulta en esta exactitud es:
 
 ```{r}
 best_cutoff <- cutoff[which.max(accuracy)]
 best_cutoff
 ```
 
-Ahora podemos probar este límite en nuestro set de evaluaciones para asegurarnos de que nuestra exactitud no sea demasiado optimista:
+Ahora podemos probar este umbral en nuestro set de evaluaciones para asegurarnos de que nuestra exactitud no sea demasiado optimista:
 
 ```{r}
 y_hat <- ifelse(test_set$height > best_cutoff, "Male", "Female") %>%
@@ -229,16 +228,16 @@ cm$byClass[c("Sensitivity","Specificity", "Prevalence")]
 Podemos ver que la alta exactitud general es posible a pesar de la sensibilidad relativamente baja. Como sugerimos anteriormente, la razón por la que esto sucede es debido a la baja prevalencia (0.23): la proporción de mujeres es baja. Debido a que la prevalencia es baja, no predecir las mujeres reales como mujeres (baja sensibilidad) no disminuye la exactitud tanto como no predecir hombres reales como hombres (baja especificidad). Este es un ejemplo de por qué es importante examinar la sensibilidad y la especificidad y no solo la exactitud. Antes de aplicar este algoritmo a sets de datos generales, debemos preguntarnos si la prevalencia será la misma.
 
 
-### Exactitud equilibrada y puntuación $F_1$
+### Exactitud equilibrada y medida $F_1$
 
-Aunque generalmente recomendamos estudiar tanto la especificidad como la sensibilidad, a menudo es útil tener un resumen de un número, por ejemplo, para fines de optimización. Una medida que se prefiere sobre la exactitud general es el promedio de especificidad y sensibilidad, conocida como _exactitud equilibrada_ (_balanced accuracy_ en inglés). Debido a que la especificidad y la sensibilidad son tasas, es más apropiado calcular el promedio _armónico_. De hecho, el _ $F_1$-score_, un resumen de un número ampliamente utilizado, es el promedio armónico de precisión y recuperación:
+Aunque generalmente recomendamos estudiar tanto la especificidad como la sensibilidad, a menudo es útil tener un resumen de un número, por ejemplo, para fines de optimización. Una medida que se prefiere sobre la exactitud general es el promedio de especificidad y sensibilidad, conocida como _exactitud equilibrada_ (_balanced accuracy_ en inglés). Debido a que la especificidad y la sensibilidad son tasas, es más apropiado calcular la _media armónica_ (_harmonic average_ en inglés). De hecho, la _medida $F_1$_ (_$F_1$-score_ en inglés), un resumen de un número ampliamente utilizado, es la media armónica de precisión y _recall_:
 
 $$
 \frac{1}{\frac{1}{2}\left(\frac{1}{\mbox{recall}} +
 \frac{1}{\mbox{precision}}\right) }
 $$
 
-Debido a que es más fácil de escribir, a menudo ve este promedio armónico reescrito como:
+Debido a que es más fácil de escribir, a menudo se ve esta media armónica reescrita como:
 
 $$
 2 \times \frac{\mbox{precision} \cdot \mbox{recall}}
@@ -247,7 +246,7 @@ $$
 
 al definir $F_1$.
 
-Recuerde que, según el contexto, algunos tipos de errores son más costosos que otros. Por ejemplo, en el caso de la seguridad del avión, es mucho más importante maximizar la sensibilidad sobre la especificidad: no predecir el mal funcionamiento de un avión antes de que se estrelle es un error mucho más costoso que aterrizar un avión cuando, de hecho, el avión está en Perfecta condicion. En un caso criminal de asesinato capital, lo contrario es cierto ya que un falso positivo puede llevar a ejecutar a una persona inocente. los $F_1$-score se puede adaptar para pesar la especificidad y la sensibilidad de manera diferente. Para hacer esto, definimos $\beta$ para representar cuánto más importante se compara la sensibilidad con la especificidad y considerar un promedio armónico ponderado:
+Recuerden que, según el contexto, algunos tipos de errores son más costosos que otros. Por ejemplo, en el caso de la seguridad de los aviones, es mucho más importante maximizar la sensibilidad sobre la especificidad: no predecir el mal funcionamiento de un avión antes de que se estrelle es un error mucho más costoso que aterrizar un avión cuando, de hecho, el avión está en perfectas condiciones. En un caso criminal de asesinato capital, lo contrario es cierto ya que un falso positivo puede llevar a ejecutar a una persona inocente. La medida $F_1$ se puede adaptar para pesar la especificidad y la sensibilidad de manera diferente. Para hacer esto, definimos $\beta$ para representar cuánto más importante se compara la sensibilidad con la especificidad y considerar una media armónica ponderada:
 
 $$
 \frac{1}{\frac{\beta^2}{1+\beta^2}\frac{1}{\mbox{recall}} +
@@ -255,10 +254,10 @@ $$
 $$
 
 
-Los `F_meas` la función en el paquete __caret__ calcula este resumen con `beta` por defecto a 1.
+La función `F_meas` en el paquete __caret__ calcula este resumen [fix] con `beta` por defecto a 1.
 
 
-Reconstruyamos nuestro algoritmo de predicción, pero esta vez maximizando el puntaje F en lugar de la exactitud general:
+Reconstruyamos nuestro algoritmo de predicción, pero esta vez maximizando la medida F en lugar de la exactitud general:
 
 ```{r}
 cutoff <- seq(61, 70)
@@ -269,7 +268,7 @@ F_meas(data = y_hat, reference = factor(train_set$sex))
 })
 ```
 
-Como antes, podemos trazar estos $F_1$ medidas versus los límites:
+Como antes, podemos trazar estas medidas $F_1$ versus los umbrales:
 
 ```{r f_1-vs-cutoff, echo=FALSE}
 data.frame(cutoff, F_1) %>%
@@ -278,19 +277,19 @@ geom_point() +
 geom_line()
 ```
 
-Vemos que se maximiza en $F_1$ valor de:
+[fix check] Vemos que se maximiza en una medida $F_1$ de:
 
 ```{r}
 max(F_1)
 ```
 
-Este máximo se logra cuando usamos el siguiente límite:
+Este máximo se logra cuando usamos el siguiente umbral:
 ```{r}
 best_cutoff <- cutoff[which.max(F_1)]
 best_cutoff
 ```
 
-Un límite de 65 tiene más sentido que 64. Además, equilibra la especificidad y la sensibilidad de nuestra matriz de confusión:
+Un umbral de 65 tiene más sentido que 64. Además, equilibra la especificidad y la sensibilidad de nuestra matriz de confusión:
 
 ```{r}
 y_hat <- ifelse(test_set$height > best_cutoff, "Male", "Female") %>%
@@ -299,21 +298,21 @@ sensitivity(data = y_hat, reference = test_set$sex)
 specificity(data = y_hat, reference = test_set$sex)
 ```
 
-Ahora vemos que hacemos mucho mejor que adivinar, que tanto la sensibilidad como la especificidad son relativamente altas, y que hemos construido nuestro primer algoritmo de _machine learning_. Se necesita altura como predictor y predice mujeres si tienes 65 pulgadas o menos.
+Ahora vemos que hacemos mucho mejor que adivinar, que tanto la sensibilidad como la especificidad son relativamente altas, y que hemos construido nuestro primer algoritmo de _machine learning_. Este toma altura como predictor y predice mujeres si la persona mide 65 pulgadas o menos.
 
 
 ### La prevalencia importa en la práctica
 
-Un algoritmo de _machine learning_ con una sensibilidad y especificidad muy altas puede no ser útil en la práctica cuando la prevalencia es cercana a 0 o 1. Para ver esto, considere el caso de un médico que se especialice en una enfermedad rara y esté interesado en desarrollar un algoritmo para prediciendo quién tiene la enfermedad. El médico comparte datos con usted y luego desarrolla un algoritmo con una sensibilidad muy alta. Explica que esto significa que si un paciente tiene la enfermedad, es muy probable que el algoritmo prediga correctamente. También le dice al médico que también está preocupado porque, según el set de datos que analizó, la mitad de los pacientes tienen la enfermedad: $\mbox{Pr}(\hat{Y}=1)$. El médico no está preocupado ni impresionado y explica que lo importante es la precisión de la evaluación: $\mbox{Pr}(Y=1 | \hat{Y}=1)$. Usando el teorema de Bayes, podemos conectar las dos medidas:
+[fix] Un algoritmo de _machine learning_ con sensibilidad y especificidad muy altas puede ser inútil en la práctica cuando la prevalencia es cercana a 0 o 1. Para ver esto, considere el caso de una doctora que se especializa en una enfermedad rara y que está interesada en desarrollar un algoritmo para predecir quién tiene la enfermedad. La doctora comparte datos con ustedes, que entonces desarrollan un algoritmo con una sensibilidad muy alta. Explican que esto significa que si un paciente tiene la enfermedad, es muy probable que el algoritmo prediga correctamente. También le dicen a la doctora que están preocupados porque, según el set de datos que analizaron, la mitad de los pacientes tienen la enfermedad: $\mbox{Pr}(\hat{Y}=1)$. La doctora no está preocupada ni impresionada y explica que lo importante es la precisión de la evaluación: $\mbox{Pr}(Y=1 | \hat{Y}=1)$. Usando el teorema de Bayes, podemos conectar las dos medidas:
 
 $$ \mbox{Pr}(Y = 1\mid \hat{Y}=1) = \mbox{Pr}(\hat{Y}=1 \mid Y=1) \frac{\mbox{Pr}(Y=1)}{\mbox{Pr}(\hat{Y}=1)}$$
 
-El médico sabe que la prevalencia de la enfermedad es de 5 en 1,000, lo que implica que $\mbox{Pr}(Y=1) \,/ \,\mbox{Pr}(\hat{Y}=1) = 1/100$ y, por lo tanto, la precisión de su algoritmo es inferior a 0.01. El médico no tiene mucho uso para su algoritmo.
+La doctora sabe que la prevalencia de la enfermedad es de 5 en 1,000, lo que implica que $\mbox{Pr}(Y=1) \,/ \,\mbox{Pr}(\hat{Y}=1) = 1/100$ y, por lo tanto, la precisión de su algoritmo es inferior a 0.01. La doctora no tiene mucho uso para su algoritmo.
 
 
 ### ROC y curvas de recuperación de precisión
 
-Al comparar los dos métodos (adivinar versus usar un límite de altura), observamos la precisión y $F_1$. El segundo método claramente superó al primero. Sin embargo, si bien consideramos varios puntos de corte para el segundo método, para el primero solo consideramos un enfoque: adivinar con igual probabilidad. Tenga en cuenta que adivinar `Male` con mayor probabilidad nos daría una mayor precisión debido al sesgo en la muestra:
+Al comparar los dos métodos (adivinar versus usar un umbral de altura), observamos la exactitud y [fix el?] $F_1$. El segundo método claramente superó al primero. Sin embargo, si bien consideramos varios umbrales para el segundo método, para el primero solo consideramos un enfoque: adivinar con igual probabilidad. Tengan en cuenta que adivinar `Male` con mayor probabilidad nos daría una mayor exactitud debido al sesgo en la muestra:
 
 
 ```{r}
@@ -326,10 +325,9 @@ mean(y_hat == test_set$sex)
 
 Pero, como se describió anteriormente, esto tendría el costo de una menor sensibilidad. Las curvas que describimos en esta sección nos ayudarán a ver esto.
 
-Recuerde que para cada uno de estos parámetros, podemos obtener una sensibilidad y especificidad diferentes. Por esta razón, un enfoque muy común para evaluar métodos es compararlos gráficamente trazando ambos.
+Recuerden que para cada uno de estos parámetros, [fix] podemos obtener una sensibilidad y especificidad diferente. Por esta razón, un enfoque muy común para evaluar métodos es compararlos gráficamente trazando ambos.
 
-Una trama ampliamente utilizada que hace esto es la curva de características operativas del receptor (ROC). Si se pregunta de dónde viene este nombre, puede consultar el
-Página de Wikipedia ROC^[https://en.wikipedia.org/wiki/Receiver_operating_characteristic].
+Un gráfico ampliamente utilizado que hace esto es la curva ROC [fix discuss with rafa] (_acrónimo de Receiver Operating Characteristic_ o Característica Operativa del Receptor). Si se pregunta de dónde viene este nombre, puede consultar la página de Wikipedia Curva ROC^[https://es.wikipedia.org/wiki/Curva_ROC].
 
 La curva ROC representa la sensibilidad (TPR) frente a la especificidad 1 o la tasa de falsos positivos (FPR). Aquí calculamos el TPR y el FPR necesarios para diferentes probabilidades de adivinar hombres:
 
@@ -397,11 +395,11 @@ geom_point() +
 geom_text_repel(nudge_x = 0.01, nudge_y = -0.01, show.legend = FALSE)
 ```
 
-Podemos ver que obtenemos una mayor sensibilidad con este enfoque para todos los valores de especificidad, lo que implica que, de hecho, es un método mejor. Tenga en cuenta que las curvas ROC para adivinar siempre caen en la línea de identificación. También tenga en cuenta que al hacer curvas ROC, a menudo es bueno agregar el límite asociado con cada punto.
+Podemos ver que obtenemos una mayor sensibilidad con este enfoque para todos los valores de especificidad, lo que implica que, de hecho, es un método mejor. Tengan en cuenta que las curvas ROC para adivinar siempre caen en la línea de identificación. También noten que al hacer curvas ROC, a menudo es bueno agregar el umbral asociado con cada punto.
 
 Los paquetes __pROC__y__plotROC__ son útiles para generar estos gráficos.
 
-Las curvas ROC tienen una debilidad y es que ninguna de las medidas trazadas depende de la prevalencia. En los casos en que la prevalencia es importante, en su lugar podemos hacer un gráfico de recuerdo preciso. La idea es similar, pero en cambio graficamos la precisión con el recuerdo:
+Las curvas ROC tienen una debilidad y es que ninguna de las medidas graficadas depende de la prevalencia. En los casos en que la prevalencia es importante, en su lugar podemos hacer un gráfico de precisión-_recall_. La idea es similar, pero en cambio graficamos la precisión versus el _recall_:
 
 
 ```{r precision-recall-1, warning=FALSE, message=FALSE, echo=FALSE}
@@ -448,13 +446,12 @@ geom_point() +
 facet_wrap(~ Positive)
 ```
 
-De esta trama vemos de inmediato que la precisión de adivinar no es alta. Esto se debe a que la prevalencia es baja. También vemos que si cambiamos los positivos para que signifiquen Masculino en lugar de Femenino, la curva ROC permanece igual, pero la gráfica de recuperación precisa cambia.
+De este gráfico vemos de inmediato que la precisión de adivinar no es alta. Esto se debe a que la prevalencia es baja. También vemos que si cambiamos los positivos para que signifiquen Masculino en lugar de Femenino, la curva ROC permanece igual, pero el gráfico de precisión-_recall_ cambia.
 
 
 ### La función de pérdida {#loss-function}
 
-Hasta ahora hemos descrito métricas de evaluación que se aplican exclusivamente a datos categóricos.
-Específicamente, para los resultados binarios, hemos descrito cómo la sensibilidad, especificidad, precisión y $F_1$ se puede utilizar como cuantificación. Sin embargo, estas métricas no son útiles para resultados continuos. En esta sección, describimos cómo el enfoque general para definir "mejor" en _machine learning_ es definir una _función de pérdida_, que puede aplicarse tanto a datos categóricos como continuos.
+Hasta ahora hemos descrito métricas de evaluación que se aplican exclusivamente a datos categóricos. Específicamente, para los resultados binarios, hemos descrito cómo la sensibilidad, especificidad, precisión y $F_1$ se pueden utilizar como cuantificación. Sin embargo, estas métricas no son útiles para resultados continuos. En esta sección, describimos cómo el enfoque general para definir "mejor" en _machine learning_ es definir una _función de pérdida_ (_loss function_ en inglés), que puede aplicarse tanto a datos categóricos como continuos.
 
 La función de pérdida más utilizada es la función de pérdida al cuadrado. Si $\hat{y}$ es nuestro predictor y $y$ es el resultado observado, la función de pérdida al cuadrado es simplemente:
 
@@ -462,15 +459,15 @@ $$
 (\hat{y} - y)^2
 $$
 
-Debido a que a menudo tenemos un set de evaluaciones con muchas observaciones, digamos $N$, usamos el error cuadrático medio (MSE):
+Debido a que a menudo tenemos un set de evaluaciones con muchas observaciones, digamos $N$, usamos el error cuadrático medio (MSE por sus siglas en inglés):
 
 $$
 \mbox{MSE} = \frac{1}{N} \mbox{RSS} = \frac{1}{N}\sum_{i=1}^N (\hat{y}_i - y_i)^2
 $$
 
-En la práctica, a menudo informamos el error cuadrático medio (RMSE), que es $\sqrt{\mbox{MSE}}$, porque está en las mismas unidades que los resultados. Pero hacer las matemáticas a menudo es más fácil con el MSE y, por lo tanto, se usa más comúnmente en los libros de texto, ya que estos generalmente describen las propiedades teóricas de los algoritmos.
+En la práctica, a menudo informamos [fix] el _root_ error cuadrático medio/	desviación cuadrática media (RMSE), que es $\sqrt{\mbox{MSE}}$, porque está en las mismas unidades que los resultados. Pero hacer las matemáticas a menudo es más fácil con el MSE y, por lo tanto, se usa más en los libros de texto, ya que estos generalmente describen las propiedades teóricas de los algoritmos.
 
-Si los resultados son binarios, tanto RMSE como MSE son equivalentes a una precisión menos, ya que $(\hat{y} - y)^2$ es 0 si la predicción fue correcta y 1 en caso contrario. En general, nuestro objetivo es construir un algoritmo que minimice la pérdida para que esté lo más cerca posible de 0.
+[fix] Si los resultados son binarios, tanto RMSE como MSE son equivalentes a una exactitud menos uno, ya que $(\hat{y} - y)^2$ es 0 si la predicción fue correcta y 1 en caso contrario. En general, nuestro objetivo es construir un algoritmo que minimice la pérdida para que esté lo más cerca posible de 0.
 
 Debido a que nuestros datos son generalmente una muestra aleatoria, podemos pensar en el MSE como una variable aleatoria y el MSE observado puede considerarse como una estimación del MSE esperado, que en notación matemática escribimos así:
 
@@ -478,22 +475,22 @@ $$
 \mbox{E}\left\{ \frac{1}{N}\sum_{i=1}^N (\hat{Y}_i - Y_i)^2 \right\}
 $$
 
-Este es un concepto teórico porque en la práctica solo tenemos un set de datos para trabajar. Pero en teoría, pensamos en tener una gran cantidad de muestras aleatorias (llámelo $B$), aplique nuestro algoritmo a cada uno, obtenga un MSE para cada muestra aleatoria y piense en el MSE esperado como:
+Este es un concepto teórico porque en la práctica solo tenemos un set de datos para trabajar. Pero en teoría, pensamos en tener una gran cantidad de muestras aleatorias (llámela $B$), aplique nuestro algoritmo a cada una, obtenga un MSE para cada muestra aleatoria y piense en el MSE esperado como:
 
 $$
 \frac{1}{B} \sum_{b=1}^B \frac{1}{N}\sum_{i=1}^N \left(\hat{y}_i^b - y_i^b\right)^2
 $$
 
-con $y_{i}^b$ denotando el $i$ observación en el $b$ th muestra aleatoria y $\hat{y}_i^b$ la predicción resultante obtenida de aplicar exactamente el mismo algoritmo al $b$ muestra aleatoria. Nuevamente, en la práctica solo observamos una muestra aleatoria, por lo que el MSE esperado es solo teórico. Sin embargo, en el capítulo \@ref(cross-validation) describimos un enfoque para estimar el MSE que trata de imitar esta cantidad teórica.
+con $y_{i}^b$ denotando la observación $i$ en la muestra aleatoria $b$ y $\hat{y}_i^b$ la predicción resultante obtenida de aplicar exactamente el mismo algoritmo a la muestra aleatoria $b$. Nuevamente, en la práctica solo observamos una muestra aleatoria, por lo que el MSE esperado es solo teórico. Sin embargo, en el capítulo \@ref(cross-validation) describimos un enfoque para estimar el MSE que trata de imitar esta cantidad teórica.
 
-Tenga en cuenta que hay funciones de pérdida distintas de la pérdida al cuadrado. Por ejemplo, el _Mean Absolute Error_ utiliza valores absolutos, $|\hat{Y}_i - Y_i|$ en lugar de cuadrar los errores
+Tengan en cuenta que hay funciones de pérdida distintas de la pérdida al cuadrado. Por ejemplo, [fix desviación promedia ; desviación media ; error medio absoluto] el _Mean Absolute Error_ utiliza valores absolutos, $|\hat{Y}_i - Y_i|$ en lugar de cuadrar los errores
 $(\hat{Y}_i - Y_i)^2$. Sin embargo, en este libro nos enfocamos en minimizar la pérdida cuadrada ya que es la más utilizada.
 
 
 ## Ejercicios
 
 
-Los `reported_height` y `height` se recopilaron sets de datos de tres clases impartidas en los Departamentos de Informática y Bioestadística, así como de forma remota a través de la Escuela de Extensión. La clase de bioestadística se impartió en 2016 junto con una versión en línea ofrecida por la Escuela de Extensión. El 25 de enero de 2016 a las 8:15 a.m., durante una de las conferencias, los instructores pidieron a los estudiantes que completaran el cuestionario de sexo y altura que poblaba el `reported_height` set de datos Los estudiantes en línea completaron la encuesta durante los próximos días, después de que la conferencia se publicara en línea. Podemos usar esta información para definir una variable, llamarla `type`, para denotar el tipo de estudiante: `inclass` o `online`:
+Los sets de datos `reported_height` y `height` se recopilaron de tres clases impartidas en los Departamentos de Informática y Bioestadística, así como de forma remota a través de la Escuela de Extensión. La clase de bioestadística se impartió en 2016 junto con una versión en línea ofrecida por la Escuela de Extensión. El 25 de enero de 2016 a las 8:15 a.m., durante una de las conferencias, los instructores le pidieron a los estudiantes que completaran el cuestionario de sexo y altura que poblaba el set de datos `reported_height`. Los estudiantes en línea completaron la encuesta durante los próximos días, después de que la conferencia se publicara en línea. Podemos usar esta información para definir una variable, llamarla `type`, para denotar el tipo de estudiante: `inclass` o `online`:
 
 ```{r, eval=FALSE}
 library(lubridate)
@@ -509,21 +506,20 @@ y <- factor(dat$sex, c("Female", "Male"))
 ```
 
 
-1\. Mostrar estadísticas de resumen que indican que el `type` es predictivo del sexo.
+1\. Muestre estadísticas de resumen que indican que el `type` es predictivo del sexo.
 
 
-2\. En lugar de usar la altura para predecir el sexo, use el `type` variable.
+2\. En lugar de usar la altura para predecir el sexo, use el variable `type`.
 
 
-3\. Mostrar la matriz de confusión.
+3\. Muestre la matriz de confusión.
 
 
-4\. Utilizar el `confusionMatrix` funcionen en el paquete __caret__ para informar la precisión.
+4\. Utilice la función `confusionMatrix` en el paquete __caret__ para informar la exactitud.
+
+5\. Ahora use las funciiones `sensitivity` y `specificity` para informar especificidad y sensibilidad.
 
 
-5\. Ahora usa el `sensitivity` y `specificity` funciones para informar especificidad y sensibilidad.
-
-
-6\. ¿Cuál es la prevalencia (% de mujeres) en el `dat` set de datos definido anteriormente?
+6\. ¿Cuál es la prevalencia (% de mujeres) en el set de datos `dat` definido anteriormente?
 
 
