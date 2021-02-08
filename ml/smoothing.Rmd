@@ -1,10 +1,10 @@
-# Suavizado
+# Suavización
 
 ```{r, echo=FALSE}
 img_path <- "ml/img/"
 ```
 
-Antes de continuar aprendiendo sobre algoritmos de aprendizaje automático, presentamos el importante concepto de _smoothing_. El suavizado es una técnica muy poderosa utilizada en todo el análisis de datos. Otros nombres dados a esta técnica son _ajuste de curvas_y_filtrado de paso bajo_. Está diseñado para detectar tendencias en presencia de datos ruidosos en casos en los que se desconoce la forma de la tendencia. El nombre _smoothing_ proviene del hecho de que para lograr esta hazaña, asumimos que la tendencia es _smooth_, como en una superficie lisa. En contraste, el ruido, o la desviación de la tendencia, es impredecible tambaleante:
+Antes de continuar aprendiendo sobre algoritmos de _machine learning_, presentamos el importante concepto de _suavización_ (_smoothing_ en inglés). La suavización es una técnica muy poderosa utilizada en todo el análisis de datos. Otros nombres dados a esta técnica [fix] son _ajustamiento de curvas_ y _filtrado de paso bajo_ (_curve fitting_ y _low pass filtering_ en inglés). [fix] Está diseñado para detectar tendencias en presencia de datos ruidosos en casos en los que se desconoce la forma de la tendencia. El nombre _suavización_ proviene del hecho de que para lograr esta hazaña, asumimos que la tendencia es _suavizar_, como en una superficie lisa. En contraste, el ruido, o la desviación de la tendencia, es impredecible tambaleante:
 
 ```{r signal-plus-noise-example, message=FALSE, warning=FALSE, fig.height=6, echo=FALSE}
 library(tidyverse)
@@ -20,9 +20,9 @@ gridExtra::grid.arrange(p1, p2, p3)
 
 Parte de lo que explicamos en esta sección son los supuestos que nos permiten extraer la tendencia del ruido.
 
-** Para entender por qué cubrimos este tema, recuerde que los conceptos detrás de las técnicas de suavizado son extremadamente útiles en el aprendizaje automático porque las expectativas/ probabilidades condicionales pueden considerarse como tendencias de formas desconocidas que necesitamos estimar en presencia de incertidumbre. **
+**Para entender por qué cubrimos este tema, recuerden que los conceptos detrás de las técnicas de suavización son extremadamente útiles en _machine learning_ porque las expectativas/probabilidades condicionales pueden considerarse como tendencias de formas desconocidas que necesitamos estimar en presencia de incertidumbre.**
 
-Para explicar estos conceptos, nos centraremos primero en un problema con un solo predictor. Específicamente, tratamos de estimar la tendencia temporal en el margen de la encuesta de votación popular de 2008 en Estados Unidos (diferencia entre Obama y McCain).
+Para explicar estos conceptos, nos centraremos primero en un problema con un solo predictor. Específicamente, tratamos de estimar la tendencia temporal en el margen de la encuesta de votación popular de 2008 en Estados Unidos (la diferencia entre Obama y McCain).
 
 ```{r polls-2008-data, warning=FALSE, message=FALSE}
 library(tidyverse)
@@ -31,7 +31,7 @@ data("polls_2008")
 qplot(day, margin, data = polls_2008)
 ```
 
-Para los propósitos de este ejemplo, no lo piense como un problema de pronóstico. En cambio, simplemente estamos interesados en aprender la forma de la tendencia * después * de que terminen las elecciones.
+Para los propósitos de este ejemplo, no lo piensem como un problema de pronóstico. En cambio, simplemente estamos interesados en aprender la forma de la tendencia *después* de que terminen las elecciones.
 
 Suponemos que para cualquier día $x$, hay una verdadera preferencia entre el electorado $f(x)$, pero debido a la incertidumbre introducida por el sondeo, cada punto de datos viene con un error $\varepsilon$. Un modelo matemático para el margen de encuesta observado $Y_i$ es:
 
@@ -39,7 +39,7 @@ $$
 Y_i = f(x_i) + \varepsilon_i
 $$
 
-Para pensar en esto como un problema de aprendizaje automático, tenga en cuenta que queremos predecir $Y$ dado un día $x$. Si supiéramos la expectativa condicional $f(x) = \mbox{E}(Y \mid X=x)$, lo usaríamos Pero como no conocemos esta expectativa condicional, tenemos que estimarla. Usemos la regresión, ya que es el único método que hemos aprendido hasta ahora.
+Para pensar en esto como un problema de _machine learning_, tengan en cuenta que queremos predecir $Y$ dado un día $x$. Si supiéramos la expectativa condicional $f(x) = \mbox{E}(Y \mid X=x)$, lo usaríamos Pero como no conocemos esta expectativa condicional, tenemos que estimarla. Usemos la regresión, ya que es el único método que hemos aprendido hasta ahora.
 
 ```{r linear-regression-not-flexible, echo=FALSE}
 resid <- ifelse(lm(margin~day, data = polls_2008)$resid > 0, "+", "-")
@@ -50,26 +50,26 @@ geom_smooth(method = "lm", se = FALSE, color = "black") +
 geom_point(aes(color = resid), size = 3)
 ```
 
-La línea que vemos no parece describir muy bien la tendencia. Por ejemplo, el 4 de septiembre (día -62), se celebró la Convención Republicana y los datos sugieren que le dio a John McCain un impulso en las encuestas. Sin embargo, la línea de regresión no captura esta tendencia potencial. Para ver más claramente la falta de ajuste, observamos que los puntos por encima de la línea ajustada (azul) y los de abajo (rojo) no se distribuyen uniformemente entre los días. Por lo tanto, necesitamos un enfoque alternativo y más flexible.
+La línea que vemos no parece describir muy bien la tendencia. Por ejemplo, el 4 de septiembre (día -62), se celebró la Convención Republicana y los datos sugieren que le dio a John McCain un impulso en las encuestas. Sin embargo, la línea de regresión no captura esta tendencia potencial. Para ver más claramente la falta de ajuste, observamos que los puntos por encima de la línea ajustada (azul) y los de abajo (rojo) no se distribuyen uniformemente entre los días. Por lo tanto, necesitamos un enfoque alternativo más flexible.
 
-## Alisado de bin
+## Suavización de compartimientos
 
-La idea general del suavizado es agrupar los puntos de datos en estratos en los que el valor de $f(x)$ se puede suponer que es constante. Podemos hacer esta suposición porque pensamos $f(x)$ cambia lentamente y, como resultado, $f(x)$ es casi constante en pequeñas ventanas de tiempo. Un ejemplo de esta idea para el `poll_2008` los datos suponen que la opinión pública se mantuvo aproximadamente igual en el plazo de una semana. Con este supuesto, tenemos varios puntos de datos con el mismo valor esperado.
+La idea general del suavización es agrupar los puntos de datos en estratos en los que el valor de $f(x)$ se puede suponer que es constante. Podemos hacer esta suposición porque pensamos $f(x)$ cambia lentamente y, como resultado, $f(x)$ es casi constante en pequeñas ventanas de tiempo. Un ejemplo de esta idea para los datos `poll_2008` es suponer que la opinión pública se mantuvo aproximadamente igual en el plazo de una semana. Con este supuesto, tenemos varios puntos de datos con el mismo valor esperado.
 
-Si arreglamos un día para estar en el centro de nuestra semana, llámelo $x_0$, entonces para cualquier otro día $x$ tal que $|x - x_0| \leq 3.5$, asumimos $f(x)$ es una constante $f(x) = \mu$. Esta suposición implica que:
+Si fijamos un día para estar en el centro de nuestra semana, llámelo $x_0$, entonces para cualquier otro día $x$ tal que $|x - x_0| \leq 3.5$, asumimos que $f(x)$ es una constante $f(x) = \mu$. Esta suposición implica que:
 $$
 E[Y_i | X_i = x_i ] \approx \mu \mbox{ if } |x_i - x_0| \leq 3.5
 $$
 
-Al suavizar, llamamos satisfactorio al tamaño del intervalo $|x_i - x_0| \leq 3.5$ el _tamaño de la ventana_, _ancho de banda_o_span_. Más adelante veremos que intentamos optimizar este parámetro.
+Al suavizar, llamamos al tamaño del intervalo que satisface $|x_i - x_0| \leq 3.5$, el _tamaño de la ventana_, _parámetro de suavizado_ o _span_. Más adelante veremos que intentamos optimizar este parámetro.
 
-Esta suposición implica que una buena estimación de $f(x)$ es el promedio de $Y_i$ valores en la ventana. Si definimos $A_0$ como el conjunto de índices $i$ tal que $|x_i - x_0| \leq 3.5$ y $N_0$ como el número de índices en $A_0$, entonces nuestra estimación es:
+Esta suposición implica que una buen estimado de $f(x)$ es el promedio de $Y_i$ valores en la ventana. Si definimos $A_0$ como el conjunto de índices $i$ tal que $|x_i - x_0| \leq 3.5$ y $N_0$ como el número de índices en $A_0$, entonces nuestro estimado es:
 
 $$
 \hat{f}(x_0) = \frac{1}{N_0} \sum_{i \in A_0} Y_i
 $$
 
-La idea detrás de _bin smoothing_ es hacer este cálculo con cada valor de $x$ como el centro En el ejemplo de la encuesta, para cada día, calcularíamos el promedio de los valores dentro de una semana con ese día en el centro. Aquí hay dos ejemplos: $x_0 = -125$ y $x_0 = -55$. El segmento azul representa el promedio resultante.
+La idea detrás de la _suavización de compartimientos_ (_bin smoothing_ en inglés) es hacer este cálculo con cada valor de $x$ como el centro. En el ejemplo de la encuesta, para cada día, calcularíamos el promedio de los valores dentro de una semana con ese día en el centro. Aquí hay dos ejemplos: $x_0 = -125$ y $x_0 = -55$. El segmento azul representa el promedio resultante.
 
 ```{r binsmoother-expained, echo=FALSE}
 span <- 3.5
@@ -87,7 +87,7 @@ method = "lm", formula=y~1, se = FALSE) +
 facet_wrap(~center)
 ```
 
-Al calcular esta media para cada punto, formamos una estimación de la curva subyacente $f(x)$. A continuación, mostramos el procedimiento que se produce a medida que avanzamos de -155 a 0. En cada valor de $x_0$, mantenemos la estimación $\hat{f}(x_0)$ y pasar al siguiente punto:
+Al calcular esta media para cada punto, formamos un estimado de la curva subyacente $f(x)$. A continuación, mostramos el procedimiento que se produce a medida que avanzamos de -155 a 0. En cada valor de $x_0$, mantenemos el estimado $\hat{f}(x_0)$ y continuamos al siguiente punto:
 
 ```{r binsmoother-animation, echo=FALSE, warning=FALSE}
 library(gganimate)
@@ -126,7 +126,7 @@ facet_wrap(~center, nrow = 2)
 }
 ```
 
-El código final y la estimación resultante se ven así:
+El código final y el estimado resultante se ven así:
 
 ```{r binsmoother-final}
 span <- 7
@@ -141,16 +141,15 @@ geom_line(aes(day, smooth), color="red")
 
 ## Kernels
 
-El resultado final de la papelera más suave es bastante ondulante. Una razón para esto es que cada vez que la ventana se mueve, cambian dos puntos. Podemos atenuar esto algo tomando promedios ponderados que le dan al punto central más peso que a los puntos lejanos, con los dos puntos en los bordes recibiendo muy poco peso.
+El resultado final de suavización de compartimiento es bastante ondulante. Una razón para esto es que cada vez que la ventana se mueve, cambian dos puntos. Podemos atenuar esto algo tomando promedios ponderados que le dan al punto central más peso que a los puntos lejanos, con los dos puntos en los bordes recibiendo muy poco peso.
 
-Puede pensar en el enfoque bin bin más suave como un promedio ponderado:
+Pueden pensar en el enfoque de suavización de compartimiento como un promedio ponderado:
 
 $$
 \hat{f}(x_0) = \sum_{i=1}^N w_0(x_i) Y_i
 $$
 
-en el que cada punto recibe un peso de cualquiera $0$ o $1/N_0$, con $N_0$ el número de puntos en la semana. En el código anterior, usamos el argumento `kernel="box"` en nuestro llamado a la función `ksmooth`. Esto se debe a que la función de peso parece una caja.
-Los `ksmooth` la función proporciona una opción "más suave" que utiliza la densidad normal para asignar pesos.
+en el que cada punto recibe un peso de $0$ o $1/N_0$, con $N_0$ el número de puntos en la semana. En el código anterior, usamos el argumento `kernel="box"` en nuestra llamada a la función `ksmooth`. Esto se debe a que [fix] la función de peso parece una caja. La función `ksmooth` ofrece una opción "más suave" que utiliza la densidad normal para asignar pesos.
 
 ```{r gaussian-kernel, echo=FALSE, out.width="80%", fig.height=3, fig.width=6}
 x_0 <- -125
@@ -217,7 +216,7 @@ facet_wrap(~center, nrow = 2)
 ```
 -->
 
-El código final y la trama resultante para el kerenl normal se ven así:
+El código final y el gráfico resultante para el _kernel_ normal se ven así:
 
 ```{r final-ksmooth-normal-kernel}
 span <- 7
@@ -230,21 +229,21 @@ geom_point(size = 3, alpha = .5, color = "grey") +
 geom_line(aes(day, smooth), color="red")
 ```
 
-Tenga en cuenta que la estimación final ahora se ve más suave.
+Tengan en cuenta que el estimado final ahora se ve más suave.
 
-Hay varias funciones en R que implementan suavizadores de bin. Un ejemplo es `ksmooth`, mostrado anteriormente. En la práctica, sin embargo, generalmente preferimos métodos que usan modelos ligeramente más complejos que ajustar una constante. El resultado final anterior, por ejemplo, todavía es algo ondulante en partes que no esperamos que sea (entre -125 y -75, por ejemplo). Métodos como `loess`, que explicamos a continuación, mejora esto.
+Hay varias funciones en R que implementan suavizadores de compartimientos. Un ejemplo es `ksmooth`, mostrada anteriormente. En la práctica, sin embargo, generalmente preferimos métodos que usan modelos ligeramente más complejos que ajustar una constante. El resultado final anterior, por ejemplo, todavía es algo ondulante en partes que no esperamos que sea (entre -125 y -75, por ejemplo). Métodos como `loess`, que explicamos a continuación, mejoran esto.
 
 ## Regresión ponderada local (loess)
 
-Una limitación del enfoque de bin bin más suave que se acaba de describir es que necesitamos ventanas pequeñas para mantener los supuestos aproximadamente constantes. Como resultado, terminamos con un pequeño número de puntos de datos para promediar y obtener estimaciones imprecisas $\hat{f}(x)$. Aquí describimos cómo _la regresión ponderada local_ (loess) nos permite considerar tamaños de ventana más grandes. Para hacer esto, usaremos un resultado matemático, conocido como el teorema de Taylor, que nos dice que si observa con suficiente atención cualquier función suave $f(x)$, se verá como una línea. Para ver por qué esto tiene sentido, considere los bordes curvos que hacen los jardineros con espadas de bordes rectos:
+[fix check sent] Una limitación del enfoque de suavización de compartimientos que acabamos de describir es que necesitamos ventanas pequeñas para mantener los supuestos aproximadamente constantes. Como resultado, terminamos con un pequeño número de puntos de datos [fix 'to average'] para promediar y obtener estimaciones imprecisas $\hat{f}(x)$. Aquí describimos cómo _la regresión ponderada local_ (loess o _local weighted regression_ en inglés) nos permite considerar tamaños de ventana más grandes. [fix check] Para hacer esto, usaremos un resultado matemático, conocido como el teorema de Taylor, que nos dice que si mira con atención a cualquier función suave $f(x)$, se verá como una línea. Para ver por qué esto tiene sentido, consideren los bordes curvos que hacen los jardineros con espadas de bordes rectos:
 
 ```{r, echo=FALSE}
 knitr::include_graphics(file.path(img_path, "garden.png"))
 ```
 
-(&Quot;Borde del camino del jardín de Downing Street"^[https://www.flickr.com/photos/49707497@N06/7361631644] por el usuario de Flckr Número 10^[https://www.flickr.com/photos/number10gov/] Licencia CC-BY 2.0^[https://creativecommons.org/licenses/by/2.0/].)
+(&Quot;Downing Street garden path edge"^[https://www.flickr.com/photos/49707497@N06/7361631644] por el usuario de Flckr Número 10^[https://www.flickr.com/photos/number10gov/] Licencia CC-BY 2.0^[https://creativecommons.org/licenses/by/2.0/].)
 
-En lugar de asumir que la función es aproximadamente constante en una ventana, asumimos que la función es localmente lineal. Podemos considerar tamaños de ventana más grandes con el supuesto lineal que con una constante. En lugar de la ventana de una semana, consideramos una ventana más grande en la que la tendencia es aproximadamente lineal. Comenzamos con una ventana de tres semanas y luego consideramos y evaluamos otras opciones:
+En lugar de suponer que la función es aproximadamente constante en una ventana, suponemos que la función es localmente lineal. [fix check] Podemos considerar tamaños de ventana más grandes con el supuesto lineal que con una constante. En lugar de la ventana de una semana, consideramos una ventana más grande en la que la tendencia es aproximadamente lineal. Comenzamos con una ventana de tres semanas y luego consideramos y evaluamos otras opciones:
 
 $$
 E[Y_i | X_i = x_i ] = \beta_0 + \beta_1 (x_i-x_0) \mbox{ if } |x_i - x_0| \leq 21
@@ -272,7 +271,7 @@ geom_point(aes(size = weight)) +
 facet_wrap(~center)
 ```
 
-El valor ajustado en $x_0$ se convierte en nuestra estimación $\hat{f}(x_0)$. A continuación, mostramos el procedimiento que ocurre mientras pasamos de -155 a 0.
+El valor ajustado en $x_0$ se convierte en nuestro estimado $\hat{f}(x_0)$. A continuación, mostramos el procedimiento que ocurre mientras pasamos de -155 a 0.
 
 ```{r loess-animation, echo=FALSE, warning=FALSE}
 library(broom)
@@ -309,7 +308,7 @@ facet_wrap(~center, nrow = 2)
 }
 ```
 
-El resultado final es un ajuste más suave que el bin bin porque utilizamos tamaños de muestra más grandes para estimar nuestros parámetros locales:
+[fix check] El resultado final es un ajuste más suave que ese producido por suavización de compartimiento porque utilizamos tamaños de muestra más grandes para estimar nuestros parámetros locales:
 
 ```{r final-loess}
 total_days <- diff(range(polls_2008$day))
@@ -323,7 +322,7 @@ geom_point(size = 3, alpha = .5, color = "grey") +
 geom_line(aes(day, smooth), color="red")
 ```
 
-Diferentes tramos nos dan diferentes estimaciones. Podemos ver cómo diferentes tamaños de ventana conducen a diferentes estimaciones:
+[fix] Diferentes _spans_ nos dan diferentes estimados. Podemos ver cómo diferentes tamaños de ventana conducen a diferentes estimados:
 
 ```{r loess-multi-span-animation, echo=FALSE, warning=FALSE}
 spans <- c(.66, 0.25, 0.15, 0.10)
@@ -370,7 +369,7 @@ facet_grid(span ~ center)
 
 ```
 
-Aquí están las estimaciones finales:
+Aquí están los estimados finales:
 
 ```{r loess-final, echo=FALSE}
 tmp %>% ggplot(aes(day, margin)) +
@@ -379,29 +378,29 @@ geom_line(aes(day, .fitted), data = fits, color = "red") +
 facet_wrap(~span)
 ```
 
-Hay otras tres diferencias entre `loess` y el típico bin más suave.
+Hay otras tres diferencias entre `loess` y el típico suavizador de compartimiento.
 
-1\. En lugar de mantener el tamaño del contenedor igual, `loess` mantiene el mismo número de puntos utilizados en el ajuste local. Este número se controla a través de `span` argumento, que espera una proporción. Por ejemplo, si `N` es el número de puntos de datos y `span=0.5`, entonces para un determinado $x$, `loess` usará el `0.5 * N` puntos más cercanos a $x$ para el ajuste
+1\. En lugar de mantener el tamaño del compartimiento igual, `loess` mantiene el mismo número de puntos utilizados en el ajuste local. Este número se controla a través del argumento `span`, que espera una proporción. Por ejemplo, si `N` es el número de puntos de datos y `span=0.5`, entonces para un determinado $x$, `loess` usará el `0.5 * N` puntos más cercanos a $x$ para el ajuste
 
-2\. Al ajustar una línea localmente, `loess` utiliza un enfoque ponderado Básicamente, en lugar de usar mínimos cuadrados, minimizamos una versión ponderada:
+2\. Al ajustar una línea localmente, `loess` utiliza un enfoque ponderado. Básicamente, en lugar de usar mínimos cuadrados, minimizamos una versión ponderada:
 
 $$
 \sum_{i=1}^N w_0(x_i) \left[Y_i - \left\{\beta_0 + \beta_1 (x_i-x_0)\right\}\right]^2
 $$
 
-Sin embargo, en lugar del núcleo gaussiano, loess usa una función llamada el peso triple de Tukey:
+Sin embargo, en lugar del _kernel_ gaussiano, loess usa una función llamada el _Tukey tri-weight_:
 
 $$
 W(u)= \left( 1 - |u|^3\right)^3 \mbox{ if } |u| \leq 1 \mbox{ and } W(u) = 0 \mbox{ if } |u| > 1
 $$
 
-Para definir los pesos, denotamos $2h$ como el tamaño de la ventana y definir:
+Para definir los pesos, denotamos $2h$ como el tamaño de la ventana y definimos:
 
 $$
 w_0(x_i) = W\left(\frac{x_i - x_0}{h}\right)
 $$
 
-Este núcleo difiere del núcleo gaussiano en que más puntos obtienen valores más cercanos al máximo:
+Este _kernel_ difiere del _kernel_ gaussiano en que más puntos obtienen valores más cercanos al máximo:
 
 ```{r triweight-kernel, echo=FALSE, out.width="80%", fig.height=3, fig.width=6}
 x_0 <- -125
@@ -425,16 +424,16 @@ gridExtra::grid.arrange(p1, p2, ncol = 2)
 
 3\. `loess` tiene la opción de ajustar el modelo local _robustly_. Se implementa un algoritmo iterativo en el que, después de ajustar un modelo en una iteración, se detectan valores atípicos y se ponderan hacia abajo para la siguiente iteración. Para usar esta opción, usamos el argumento `family="symmetric"`.
 
-### Parábolas de montaje
+### Cómo ajustar parábolas
 
-El teorema de Taylor también nos dice que si miras cualquier función matemática lo suficientemente cerca, parece una parábola. El teorema también establece que no tiene que mirar tan de cerca cuando se aproxima con parábolas como cuando se aproxima con líneas. Esto significa que podemos hacer que nuestras ventanas sean aún más grandes y ajustar parábolas en lugar de líneas.
+[fix check title] El teorema de Taylor también nos dice que si miramos cualquier función matemática lo suficientemente cerca, parece una parábola. El teorema también establece que no tienen que mirar tan de cerca cuando se aproxima con parábolas como cuando se aproxima con líneas. Esto significa que podemos hacer que nuestras ventanas sean aún más grandes y ajustar parábolas en lugar de líneas.
 
 
 $$
 E[Y_i | X_i = x_i ] = \beta_0 + \beta_1 (x_i-x_0) + \beta_2 (x_i-x_0)^2 \mbox{ if } |x_i - x_0| \leq h
 $$
 
-Este es realmente el procedimiento predeterminado de la función `loess`. Es posible que haya notado que cuando mostramos el código para usar loess, configuramos `degree = 1`. Esto le dice a loess que se ajuste a polinomios de grado 1, un nombre elegante para líneas. Si lees la página de ayuda para loess, verás que el argumento `degree` el valor predeterminado es 2. Por defecto, loess se ajusta a parábolas, no a líneas. Aquí hay una comparación de las líneas de ajuste (guiones rojos) y las parábolas de ajuste (naranja sólido):
+Este es realmente el procedimiento por defecto de la función `loess`. Es posible que hayan notado que cuando mostramos el código para usar loess, configuramos `degree = 1`. Esto le dice a loess que se ajuste a polinomios de grado 1, un nombre elegante para líneas. Si leen la página de ayuda para loess, verán que para el argumento `degree` el valor predeterminado es 2. Por defecto, loess se ajusta a parábolas, no a líneas. Aquí hay una comparación de [fix end of sent] las líneas de ajuste (guiones rojos) y las parábolas de ajuste (naranja sólido):
 
 ```{r polls-2008-parabola-line-loess}
 total_days <- diff(range(polls_2008$day))
@@ -454,9 +453,9 @@ geom_line(aes(day, smooth_2), color="orange", lty = 1)
 Los `degree = 2` nos da resultados más ondulantes. En realidad preferimos `degree = 1` ya que es menos propenso a este tipo de ruido.
 
 
-### Cuidado con los parámetros de suavizado predeterminados
+### Cuidado con los parámetros de suavización predeterminados
 
-`ggplot` utiliza loess en su `geom_smooth` función:
+`ggplot` utiliza loess en su función `geom_smooth`:
 
 ```{r ggplot-loess-default, warning=FALSE, message=FALSE}
 polls_2008 %>% ggplot(aes(day, margin)) +
@@ -464,8 +463,8 @@ geom_point() +
 geom_smooth()
 ```
 
-Pero tenga cuidado con los parámetros predeterminados, ya que rara vez son óptimos.
-Sin embargo, puede cambiarlos convenientemente:
+Pero tengan cuidado con los parámetros predeterminados, ya que rara vez son óptimos.
+Sin embargo, pueden cambiarlos convenientemente:
 
 ```{r ggplot-loess-degree-1, warning=FALSE, message=FALSE}
 polls_2008 %>% ggplot(aes(day, margin)) +
@@ -473,18 +472,18 @@ geom_point() +
 geom_smooth(span = 0.15, method.args = list(degree=1))
 ```
 
-## Conectando el suavizado al aprendizaje automático {#smoothing-ml-connection}
+## Conectando la suavización al _machine learning_ {#smoothing-ml-connection}
 
-Para ver cómo el suavizado se relaciona con el aprendizaje automático con un ejemplo concreto, considere nuestro \@ref(two-or-seven) ejemplo. Si definimos el resultado $Y = 1$ para dígitos que son siete y $Y=0$ para dígitos que son 2, entonces estamos interesados en estimar la probabilidad condicional:
+Para ver cómo la suavización se relaciona con el _machine learning_ con un ejemplo concreto, consideren nuestro ejemplo \@ref(two-or-seven). [fix eng sound off too ] Si definimos el resultado $Y = 1$ para dígitos que son siete y $Y=0$ para dígitos que son 2, entonces estamos interesados en estimar la probabilidad condicional:
 
 $$
 p(x_1, x_2) = \mbox{Pr}(Y=1 \mid X_1=x_1 , X_2 = x_2).
 $$
-con $X_1$ y $X_2$ los dos predictores definidos en la Sección \@ref(two-or-seven). En este ejemplo, los 0 y 1 que observamos son "ruidosos" porque para algunas regiones las probabilidades $p(x_1, x_2)$ no están tan cerca de 0 o 1. Así que necesitamos estimar $p(x_1, x_2)$. El suavizado es una alternativa para lograr esto. En la sección \@ref(two-or-seven) vimos que la regresión lineal no era lo suficientemente flexible como para capturar la naturaleza no lineal de $p(x_1, x_2)$, por lo tanto, los enfoques de suavizado pueden proporcionar una mejora. En el siguiente capítulo describimos un algoritmo de aprendizaje automático popular, k-vecinos más cercanos, que se basa en el suavizado de bin.
+con $X_1$ y $X_2$ los dos predictores definidos en la Sección \@ref(two-or-seven). En este ejemplo, los 0 y 1 que observamos son "ruidosos" porque para algunas regiones las probabilidades $p(x_1, x_2)$ no están tan cerca de 0 o 1. Así que necesitamos estimar $p(x_1, x_2)$. La suavización es una alternativa para lograr esto. En la sección \@ref(two-or-seven) vimos que la regresión lineal no era lo suficientemente flexible como para capturar la naturaleza no lineal de $p(x_1, x_2)$, por lo tanto, los enfoques de suavización pueden proveer una mejora. En el siguiente capítulo describimos un algoritmo popular de _machine learning_, _K-nearest neighbors_, que se basa en la suavización de compartimiento.
 
 ## Ejercicios
 
-1\. En la parte discutible de este libro, utilizamos el siguiente código para obtener recuentos de mortalidad para Puerto Rico para 2015-2018.
+1\. En la parte de _wrangling_ de este libro, utilizamos el siguiente código para obtener recuentos de mortalidad para Puerto Rico para 2015-2018.
 
 ```{r, eval=FALSE}
 library(tidyverse)
@@ -520,11 +519,11 @@ mutate(date = make_date(year, month, day)) %>%
 filter(date <= "2018-05-01")
 ```
 
-Utilizar el `loess` función para obtener una estimación uniforme del número esperado de muertes en función de la fecha. Trace esta función suave resultante. Haz el lapso de unos dos meses.
+Utilice la función `loess` para obtener un estimado uniforme del número esperado de muertes en función de la fecha. Grafique la función suave que resulta. Haga el _span_ de dos meses.
 
-2\. Trace las estimaciones suaves en función del día del año, todas en la misma parcela pero con diferentes colores.
+2\. Grafique los estimados suaves en función del día del año, todas en el mismo gráfico pero con diferentes colores.
 
-3\. Supongamos que queremos predecir 2s y 7s en nuestro `mnist_27` conjunto de datos con solo la segunda covariable. ¿Podemos hacer esto? En la primera inspección parece que los datos no tienen mucho poder predictivo. De hecho, si ajustamos una regresión logística regular, el coeficiente para `x_2` no es significativo!
+3\. Supongamos que queremos predecir 2s y 7s en nuestro set de datos  `mnist_27` con solo la segunda covariable. ¿Podemos hacer esto? En la primera inspección parece que los datos no tienen mucho poder predictivo. De hecho, si ajustamos una regresión logística regular, el coeficiente para `x_2` no es significativo!
 
 ```{r, eval = FALSE}
 library(broom)
@@ -535,12 +534,12 @@ glm(y ~ x_2, family = "binomial", data = .) %>%
 tidy()
 ```
 
-Trazar un diagrama de dispersión aquí no es útil ya que `y` es binario:
+Graficar un diagrama de dispersión aquí no es útil ya que `y` es binario:
 
 ```{r, eval = FALSE}
 qplot(x_2, y, data = mnist_27$train)
 ```
 
-Ajuste una línea de loess a los datos anteriores y trace los resultados. Observe que hay poder predictivo, excepto que la probabilidad condicional no es lineal.
+Ajuste una línea de loess a los datos anteriores y grafique los resultados. Observe que hay poder predictivo, excepto que la probabilidad condicional no es lineal.
 
 
