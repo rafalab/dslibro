@@ -21,6 +21,7 @@
 | bar plots| diagrama de barras  | |  |
 | bin | compartimiento |  |  |
 | bindwidth | tamaño de compartimiento |  |  |
+| bivariate normal distribution | distribución normal bivariante  |  |  |
 | boxplot | diagrama de caja | display the data in a boxplot|diagrama de caja y bigote | gráfico de | 
 | __C__ | | | | |
 | call |  | llamada |  |
@@ -74,6 +75,7 @@
 | __K__ | | | | |
 | K-means | K-medios | | | |
 | K-nearest neighbors | _K-nearest neighbors_ | | K-nearest neighbors, K vecinos más cercanos | K-vecinos mas cercanos |
+| kernel | kernel | | | |
 | key bindings | | combinaciones de teclas | combinaciones de teclas |
 | keyboard shortcut | Use the keyboard shortcut command-S | atajo del teclado | atajo de teclado |
 | __L__ | | | | |

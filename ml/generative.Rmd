@@ -1,18 +1,18 @@
 ## Modelos generativos
 
-Hemos descrito cómo, cuando se usa la pérdida al cuadrado, las expectativas/ probabilidades condicionales proporcionan el mejor enfoque para desarrollar una regla de decisión. En un caso binario, el error verdadero más pequeño que podemos lograr está determinado por la regla de Bayes, que es una regla de decisión basada en la probabilidad condicional verdadera:
+Hemos descrito cómo, cuando se usa [fix squared loss] la pérdida al cuadrado, las expectativas/probabilidades condicionales ofrecen el mejor enfoque para desarrollar una regla de decisión. En un caso binario, el error verdadero más pequeño que podemos lograr está determinado por la regla de Bayes, que es una regla de decisión basada en la probabilidad condicional verdadera:
 
 $$
 p(\mathbf{x}) = \mbox{Pr}(Y=1 \mid \mathbf{X}=\mathbf{x})
 $$
 
-Hemos descrito varios enfoques para estimar $p(\mathbf{x})$. En todos estos enfoques, estimamos la probabilidad condicional directamente y no consideramos la distribución de los predictores. En el aprendizaje automático, estos se denominan enfoques _discriminativos_.
+Hemos descrito varios enfoques para estimar $p(\mathbf{x})$. En todos estos, estimamos la probabilidad condicional directamente y no consideramos la distribución de los predictores. En _machine learning_, estos se denominan enfoques _discriminativos_.
 
-Sin embargo, el teorema de Bayes nos dice que conocer la distribución de los predictores $\mathbf{X}$ puede ser útil. Métodos que modelan la distribución conjunta de $Y$ y $\mathbf{X}$ se denominan _modelos generativos_ (modelamos cómo todos los datos, $\mathbf{X}$ y $Y$, son generadas). Comenzamos describiendo el modelo generativo más general, Naive Bayes, y luego procedemos a describir dos casos específicos, el análisis discriminante cuadrático (QDA) y el análisis discriminante lineal (LDA).
+Sin embargo, el teorema de Bayes nos dice que conocer la distribución de los predictores $\mathbf{X}$ puede ser útil. Métodos que modelan la distribución conjunta de $Y$ y $\mathbf{X}$ se denominan _modelos generativos_ (modelamos cómo todos los datos, $\mathbf{X}$ y $Y$, se generan). Comenzamos describiendo el modelo generativo más general, _Naive Bayes_, y luego describimos dos casos específicos: [fix] el análisis discriminante cuadrático (QDA) y el análisis discriminante lineal (LDA).
 
 ### Naive Bayes
 
-Recordemos que la regla de Bayes nos dice que podemos reescribir $p(\mathbf{x})$ me gusta esto:
+Recordemos que la regla de Bayes nos dice que podemos reescribir $p(\mathbf{x})$ así:
 
 $$
 p(\mathbf{x}) = \mbox{Pr}(Y=1|\mathbf{X}=\mathbf{x}) = \frac{f_{\mathbf{X}|Y=1}(\mathbf{x}) \mbox{Pr}(Y=1)}
@@ -20,9 +20,9 @@ p(\mathbf{x}) = \mbox{Pr}(Y=1|\mathbf{X}=\mathbf{x}) = \frac{f_{\mathbf{X}|Y=1}(
 $$
 
 
-con $f_{\mathbf{X}|Y=1}$ y $f_{\mathbf{X}|Y=0}$ representando las funciones de distribución del predictor $\mathbf{X}$ para las dos clases $Y=1$ y $Y=0$. La fórmula implica que si podemos estimar estas distribuciones condicionales de los predictores, podemos desarrollar una poderosa regla de decisión. Sin embargo, este es un gran _si_. A medida que avanzamos, encontraremos ejemplos en los que $\mathbf{X}$ tiene muchas dimensiones y no tenemos mucha información sobre la distribución. En estos casos, Naive Bayes será prácticamente imposible de implementar. Sin embargo, hay casos en los que tenemos un pequeño número de predictores (no más de 2) y muchas categorías en las que los modelos generativos pueden ser bastante poderosos. Describimos dos ejemplos específicos y utilizamos nuestros estudios de caso descritos anteriormente para ilustrarlos.
+con $f_{\mathbf{X}|Y=1}$ y $f_{\mathbf{X}|Y=0}$ representando las funciones de distribución del predictor $\mathbf{X}$ para las dos clases $Y=1$ y $Y=0$. La fórmula implica que si podemos estimar estas distribuciones condicionales de los predictores, podemos desarrollar una poderosa regla de decisión. Sin embargo, esto es un gran "si". A medida que avanzamos, encontraremos ejemplos en los que $\mathbf{X}$ tiene muchas dimensiones y no tenemos mucha información sobre la distribución. En estos casos, _Naive Bayes_ será prácticamente imposible de implementar. Sin embargo, hay casos en los que tenemos un pequeño número de predictores (no más de 2) y muchas categorías en las que los modelos generativos pueden ser bastante poderosos. Describimos dos ejemplos específicos y utilizamos nuestros estudios de caso descritos anteriormente para ilustrarlos.
 
-Comencemos con un caso muy simple y poco interesante, pero ilustrativo: el ejemplo relacionado con la predicción del sexo desde la altura.
+Comencemos con un caso muy sencillo y poco interesante, pero ilustrativo: el ejemplo relacionado con la predicción del sexo según la altura.
 
 ```{r, warning=FALSE, message=FALSE}
 library(tidyverse)
@@ -38,7 +38,7 @@ train_set <- heights %>% slice(-test_index)
 test_set <- heights %>% slice(test_index)
 ```
 
-En este caso, el enfoque de Naive Bayes es particularmente apropiado porque sabemos que la distribución normal es una buena aproximación para las distribuciones condicionales de altura dada el sexo para ambas clases. $Y=1$ (hembra) y $Y=0$ (masculino). Esto implica que podemos aproximar las distribuciones condicionales $f_{X|Y=1}$ y $f_{X|Y=0}$ simplemente estimando promedios y desviaciones estándar de los datos:
+En este caso, el enfoque _Naive Bayes_ es particularmente apropiado porque sabemos que la distribución normal es una buena aproximación para las distribuciones condicionales de altura dada el sexo para ambas clases. $Y=1$ (hembra) y $Y=0$ (masculino). Esto implica que podemos aproximar las distribuciones condicionales $f_{X|Y=1}$ y $f_{X|Y=0}$ simplemente estimando promedios y desviaciones estándar de los datos:
 
 ```{r}
 params <- train_set %>%
@@ -85,19 +85,19 @@ mapping = aes(x, p_hat), lty = 3)
 ```
 
 
-De hecho, podemos mostrar que el enfoque de Naive Bayes es matemáticamente similar a la predicción de regresión logística. Sin embargo, dejamos la demostración a un texto más avanzado, como los Elementos del aprendizaje estadístico^[https://web.stanford.edu/~hastie/Papers/ESLII.pdf]. Podemos ver que son similares empíricamente al comparar las dos curvas resultantes.
+De hecho, podemos mostrar que el enfoque de _Naive Bayes_ es matemáticamente similar a la predicción de regresión logística. Sin embargo, dejamos la demostración a un texto más avanzado, como los Elements of Statistical Learning^[https://web.stanford.edu/~hastie/Papers/ESLII.pdf]. Podemos ver que son similares empíricamente al comparar las dos curvas resultantes.
 
 
 ### Controlando la prevalencia
 
-Una característica útil del enfoque Naive Bayes es que incluye un parámetro para tener en cuenta las diferencias en la prevalencia. Usando nuestra muestra, estimamos $f_{X|Y=1}$, $f_{X|Y=0}$ y $\pi$. Si usamos sombreros para denotar las estimaciones, podemos escribir $\hat{p}(x)$ como:
+Una característica útil del enfoque _Naive Bayes_ es que incluye un parámetro para tener en cuenta las diferencias en la prevalencia. Usando nuestra muestra, estimamos $f_{X|Y=1}$, $f_{X|Y=0}$ y $\pi$. Si usamos sombreros para denotar los estimados, podemos escribir $\hat{p}(x)$ como:
 
 $$
 \hat{p}(x)= \frac{\hat{f}_{X|Y=1}(x) \hat{\pi}}
 { \hat{f}_{X|Y=0}(x)(1-\hat{\pi}) + \hat{f}_{X|Y=1}(x)\hat{\pi} }
 $$
 
-Como discutimos anteriormente, nuestra muestra tiene una prevalencia mucho menor, `r signif(pi,2)`, que la población general. Entonces si usamos la regla $\hat{p}(x)>0.5$ para predecir las mujeres, nuestra precisión se verá afectada debido a la baja sensibilidad:
+Como discutimos anteriormente, nuestra muestra tiene una prevalencia mucho menor, `r signif(pi,2)`, que la población general. Entonces si usamos la regla $\hat{p}(x)>0.5$ para predecir las mujeres, nuestra exactitud se verá afectada debido a la baja sensibilidad:
 
 ```{r}
 y_hat_bayes <- ifelse(p_hat_bayes > 0.5, "Female", "Male")
@@ -110,16 +110,16 @@ Nuevamente, esto se debe a que el algoritmo da más peso a la especificidad para
 specificity(data = factor(y_hat_bayes), reference = factor(test_set$sex))
 ```
 
-Esto se debe principalmente al hecho de que $\hat{\pi}$ es sustancialmente menor que 0.5, por lo que tendemos a predecir `Male` más a menudo. Tiene sentido que un algoritmo de aprendizaje automático haga esto en nuestra muestra porque tenemos un mayor porcentaje de hombres. Pero si tuviéramos que extrapolar esto a una población general, nuestra precisión general se vería afectada por la baja sensibilidad.
+Esto se debe principalmente al hecho de que $\hat{\pi}$ es sustancialmente menor que 0.5, por lo que tendemos a predecir `Male` más a menudo. Tiene sentido que un algoritmo de _machine learning_ haga esto en nuestra muestra porque tenemos un mayor porcentaje de hombres. Pero si tuviéramos que extrapolar esto a una población general, nuestra exactitud general se vería afectada por la baja sensibilidad.
 
-El enfoque Naive Bayes nos da una forma directa de corregir esto, ya que simplemente podemos forzar $\hat{\pi}$ ser el valor que queramos que sea. Entonces, para equilibrar la especificidad y la sensibilidad, en lugar de cambiar el límite en la regla de decisión, simplemente podríamos cambiar $\hat{\pi}$ a 0.5 así:
+El enfoque _Naive Bayes_ nos da una forma directa de corregir esto, ya que simplemente podemos forzar $\hat{\pi}$ a ser el valor que queramos que sea. Entonces, para equilibrar la especificidad y la sensibilidad, en lugar de cambiar el límite en la regla de decisión, simplemente podríamos cambiar $\hat{\pi}$ a 0.5 así:
 
 ```{r}
 p_hat_bayes_unbiased <- f1 * 0.5/ (f1 * 0.5 + f0 * (1 - 0.5))
 y_hat_bayes_unbiased <- ifelse(p_hat_bayes_unbiased> 0.5, "Female", "Male")
 ```
 
-Tenga en cuenta la diferencia de sensibilidad con un mejor equilibrio:
+Tengan en cuenta la diferencia de sensibilidad con un mejor equilibrio:
 
 ```{r}
 sensitivity(factor(y_hat_bayes_unbiased), factor(test_set$sex))
@@ -136,13 +136,13 @@ geom_vline(xintercept = 67, lty = 2)
 
 ### Análisis discriminante cuadrático
 
-El Análisis Discriminante Cuadrático (QDA) es una versión de Naive Bayes en la cual asumimos que las distribuciones $p_{\mathbf{X}|Y=1}(x)$ y $p_{\mathbf{X}|Y=0}(\mathbf{x})$ son multivariantes normales. El ejemplo simple que describimos en la sección anterior es en realidad QDA. Veamos ahora un caso un poco más complicado: el ejemplo 2 o 7.
+El Análisis Discriminante Cuadrático (QDA) es una versión de _Naive Bayes_ en la cual supones que las distribuciones $p_{\mathbf{X}|Y=1}(x)$ y $p_{\mathbf{X}|Y=0}(\mathbf{x})$ son [fix] multivariantes normales. El ejemplo sencillo que describimos en la sección anterior es en realidad QDA. Veamos ahora un caso un poco más complicado: el ejemplo 2 o 7.
 
 ```{r}
 data("mnist_27")
 ```
 
-En este caso, tenemos dos predictores, por lo que suponemos que cada uno es bivariado normal. Esto implica que necesitamos estimar dos promedios, dos desviaciones estándar y una correlación para cada caso. $Y=1$ y $Y=0$. Una vez que tengamos estos, podemos aproximar las distribuciones $f_{X_1,X_2|Y=1}$ y $f_{X_1, X_2|Y=0}$. Podemos estimar fácilmente los parámetros a partir de los datos:
+En este caso, tenemos dos predictores, por lo que suponemos que cada uno [fix] es bivariado normal. Esto implica que necesitamos estimar dos promedios, dos desviaciones estándar y una correlación para cada caso. $Y=1$ y $Y=0$. Una vez que tengamos estos, podemos aproximar las distribuciones $f_{X_1,X_2|Y=1}$ y $f_{X_1, X_2|Y=0}$. Podemos estimar fácilmente los parámetros a partir de los datos:
 
 ```{r}
 params <- mnist_27$train %>%
@@ -153,7 +153,7 @@ r = cor(x_1, x_2))
 params
 ```
 
-Aquí proporcionamos una forma visual de mostrar el enfoque. Trazamos los datos y usamos diagramas de contorno para dar una idea de cómo son las dos densidades normales estimadas (mostramos la curva que representa una región que incluye el 95% de los puntos):
+Aquí ofrecemos una forma visual de mostrar el enfoque. Graficamos los datos y usamos[fix contour plots] diagramas de contorno para dar una idea de cómo son las dos densidades normales estimadas (mostramos la curva que representa una región que incluye el 95% de los puntos):
 
 ```{r qda-explained}
 mnist_27$train %>% mutate(y = factor(y)) %>%
@@ -162,9 +162,9 @@ geom_point(show.legend = FALSE) +
 stat_ellipse(type="norm", lwd = 1.5)
 ```
 
-Esto define la siguiente estimación de $f(x_1, x_2)$.
+Esto define el siguiente estimado de $f(x_1, x_2)$.
 
-Podemos usar el `train` función del paquete __caret__ para ajustarse al modelo y obtener predictores:
+Podemos usar la función `train` del paquete __caret__ para ajustarse al modelo y obtener predictores:
 
 ```{r}
 library(caret)
@@ -178,7 +178,7 @@ y_hat <- predict(train_qda, mnist_27$test)
 confusionMatrix(y_hat, mnist_27$test$y)$overall["Accuracy"]
 ```
 
-La probabilidad condicional estimada parece relativamente buena, aunque no encaja tan bien como los suavizadores del núcleo:
+[fix check sent] La probabilidad condicional estimada parece relativamente buena, aunque no se ajusta tan bien como los suavizadores de _kernel_:
 
 ```{r, echo=FALSE}
 plot_cond_prob <- function(p_hat=NULL){
@@ -203,7 +203,7 @@ ggtitle("QDA")
 grid.arrange(p2, p1, nrow = 1)
 ```
 
-Una razón por la que QDA no funciona tan bien como los métodos del núcleo es quizás porque la suposición de normalidad no es válida. Aunque para los 2 parece razonable, para los 7 parece estar apagado. Observe la ligera curvatura en los puntos para los 7:
+Una razón por la que QDA no funciona tan bien como los métodos de _kernel_ es quizás porque la suposición de normalidad no es válida. Aunque para los 2 parece razonable, para los 7 no lo parece. Observe la ligera curvatura en los puntos para los 7:
 
 ```{r qda-does-not-fit, out.width="100%"}
 mnist_27$train %>% mutate(y = factor(y)) %>%
@@ -252,7 +252,7 @@ geom_point(aes(x_1, x_2, color=y), show.legend = FALSE) +
 stat_ellipse(aes(x_1, x_2, color = y), data = tmp, type="norm", lwd = 1.5)
 ```
 
-Ahora el tamaño de las elipses y el ángulo son los mismos. Esto se debe a que tienen las mismas desviaciones y correlaciones estándar.
+Ahora el tamaño de las elipses y el ángulo son iguales. Esto se debe a que tienen las mismas desviaciones y correlaciones estándar.
 
 Podemos ajustar el modelo LDA usando __caret__:
 
@@ -285,7 +285,7 @@ $$
 p(x) = \frac{1}{\sqrt{2\pi} \sigma} \exp\left\{ - \frac{(x-\mu)^2}{\sigma^2}\right\}
 $$
 
-Si eliminamos la constante $1/(\sqrt{2\pi} \sigma)$ y luego tomamos el registro, obtenemos:
+Si eliminamos la constante $1/(\sqrt{2\pi} \sigma)$ y luego [fix take the log] tomamos el registro, obtenemos:
 
 $$
 - \frac{(x-\mu)^2}{\sigma^2}
@@ -351,7 +351,7 @@ confusionMatrix(predict(train_qda, test_set), test_set$y)$table
 
 La precisión es `r caret::confusionMatrix(predict(train_qda, test_set), test_set$y)$general["Precision"]`
 
-Tenga en cuenta que para la sensibilidad y especificidad, tenemos un par de valores para **cada** clase. Para definir estos términos, necesitamos un resultado binario. Por lo tanto, tenemos tres columnas: una para cada clase como positivos y las otras dos como negativas.
+Tengan en cuenta que para la sensibilidad y especificidad, tenemos un par de valores para **cada** clase. Para definir estos términos, necesitamos un resultado binario. Por lo tanto, tenemos tres columnas: una para cada clase como positivos y las otras dos como negativas.
 
 Para visualizar qué partes de la región se llaman 1, 2 y 7 ahora necesitamos tres colores:
 
@@ -383,14 +383,14 @@ stat_contour(breaks=c(1.5, 2.5),color="black") +
 guides(colour = guide_legend(override.aes = list(size=2)))
 ```
 
-Los resultados para kNN
+Los resultados para kNN:
 
 ```{r}
 train_knn <- train(y ~ ., method = "knn", data = train_set,
 tuneGrid = data.frame(k = seq(15, 51, 2)))
 ```
 
-son mucho mejores con una precisión de
+son mucho mejores con una exactitud de
 `r caret::confusionMatrix(predict(train_knn, test_set), test_set$y)$general["Precision"]`. La regla de decisión se ve así:
 
 ```{r three-classes-knn-better, echo=FALSE}
@@ -401,7 +401,7 @@ stat_contour(breaks=c(1.5, 2.5),color="black") +
 guides(colour = guide_legend(override.aes = list(size=2)))
 ```
 
-Tenga en cuenta que una de las limitaciones de los modelos generativos aquí se debe a la falta de ajuste del supuesto normal, en particular para la clase 1.
+Tengan en cuenta que una de las limitaciones de los modelos generativos aquí se debe a la falta de ajuste del supuesto normal, en particular para la clase 1.
 
 ```{r three-classes-lack-of-fit}
 train_set %>% mutate(y = factor(y)) %>%
@@ -416,10 +416,10 @@ Los modelos generativos pueden ser muy potentes, pero solo cuando somos capaces 
 ## Ejercicios
 
 
-Vamos a aplicar LDA y QDA a la `tissue_gene_expression` conjunto de datos Comenzaremos con ejemplos simples basados en este conjunto de datos y luego desarrollaremos un ejemplo realista.
+Vamos a aplicar LDA y QDA al set de datos `tissue_gene_expression` Comenzaremos con ejemplos sencillos basados en este set de datos y luego desarrollaremos un ejemplo realista.
 
 
-1\. Cree un conjunto de datos con solo las clases "cerebelo" e "hipocampo" (dos partes del cerebro) y una matriz de predicción con 10 columnas seleccionadas al azar.
+1\. Cree un set de datos con solo las clases "cerebelo" e "hipocampo" (dos partes del cerebro) y una matriz de predicción con 10 columnas seleccionadas al azar.
 
 ```{r, eval=FALSE}
 set.seed(1993)
@@ -431,23 +431,23 @@ x <- tissue_gene_expression$x[ind, ]
 x <- x[, sample(ncol(x), 10)]
 ```
 
-Utilizar el `train` función para estimar la precisión de LDA.
+Utilice la función `train` para estimar la exactitud de LDA.
 
 
-2\. En este caso, LDA se ajusta a dos distribuciones normales de 10 dimensiones. Mire el modelo ajustado mirando el `finalModel` componente del resultado del tren. Observe que hay un componente llamado `means` eso incluye la estimación `means` de ambas distribuciones. Trace los vectores medios uno contra el otro y determine qué predictores (genes) parecen estar impulsando el algoritmo.
+2\. En este caso, LDA se ajusta a dos distribuciones normales de 10 dimensiones. Mire el modelo ajustado mirando el componente `finalModel` del [fix eng] resultado de `train`. Observe que hay un componente llamado `means` que incluye el estimado `means` de ambas distribuciones. Grafique los vectores medios uno contra el otro y determine qué predictores (genes) parecen estar impulsando el algoritmo.
 
 
 3\. Repita los ejercicios 1 con QDA. ¿Tiene una mayor precisión que LDA?
 
 
-4\. ¿Los mismos predictores (genes) impulsan el algoritmo? Haz un diagrama como en el ejercicio 2.
+4\. ¿Los mismos predictores (genes) impulsan el algoritmo? Haga un diagrama como en el ejercicio 2.
 
 
-5\. Una cosa que vemos en la gráfica anterior es que el valor de los predictores se correlaciona en ambos grupos: algunos predictores son bajos en ambos grupos, mientras que otros son altos en ambos grupos. El valor medio de cada predictor, `colMeans(x)`, no es informativo ni útil para la predicción, y a menudo para fines de interpretación es útil centrar o escalar cada columna. Esto se puede lograr con el `preProcessing` argumento en `train`. Vuelva a ejecutar LDA con `preProcessing = "scale"`. Tenga en cuenta que la precisión no cambia, pero vea cómo es más fácil identificar los predictores que difieren más entre los grupos en la gráfica realizada en el ejercicio 4.
+5\. Una cosa que vemos en el gráfico anterior es que el valor de los predictores se correlaciona en ambos grupos: algunos predictores son bajos en ambos grupos, mientras que otros son altos en ambos grupos. El valor medio de cada predictor, `colMeans(x)`, no es informativo ni útil para la predicción, y para fines de interpretación a menudo es útil centrar o escalar cada columna. Esto se puede lograr con el argumento `preProcessing` en `train`. Vuelva a ejecutar LDA con `preProcessing = "scale"`. Tenga en cuenta que la exactitud no cambia, pero vea cómo es más fácil identificar los predictores que difieren más entre los grupos en el gráfico realizada en el ejercicio 4.
 
 
 
-6\. En los ejercicios anteriores vimos que ambos enfoques funcionaron bien. Grafique los valores predictores para los dos genes con las mayores diferencias entre los dos grupos en un diagrama de dispersión para ver cómo parecen seguir una distribución bivariada como se supone por los enfoques LDA y QDA. Colorea los puntos por el resultado.
+6\. En los ejercicios anteriores vimos que ambos enfoques funcionaron bien. Grafique los valores predictores para los dos genes con las mayores diferencias entre los dos grupos en un diagrama de dispersión para ver cómo parecen seguir una [fix] distribución bivariada como se supone por los enfoques LDA y QDA. Colorea los puntos por el resultado.
 
 
 7\. Ahora vamos a aumentar un poco la complejidad del desafío: consideraremos todos los tipos de tejidos.
@@ -460,14 +460,13 @@ x <- tissue_gene_expression$x
 x <- x[, sample(ncol(x), 10)]
 ```
 
-¿Qué precisión obtienes con LDA?
+¿Qué exactitud obtiene con LDA?
 
 
+8\. Vemos que los resultados son ligeramente peores. Utilice la función `confusionMatrix` para aprender qué tipo de errores estamos cometiendo.
 
-8\. Vemos que los resultados son ligeramente peores. Utilizar el `confusionMatrix` función para aprender qué tipo de errores estamos cometiendo.
 
-
-9\. Trace una imagen de los centros de las siete distribuciones normales de 10 dimensiones.
+9\. Grafique una imagen de los centros de las siete distribuciones normales de 10 dimensiones.
 
 
 

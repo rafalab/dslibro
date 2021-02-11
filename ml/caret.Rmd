@@ -142,12 +142,12 @@ stat_contour(breaks=c(0.5),color="black")
 }
 ```
 
-El modelo kNN que mejor se ajusta se aproxima a la probabilidad condicional verdadera:
+[fix] El modelo kNN mejor ajustad que se aproxima a la probabilidad condicional verdadera:
 ```{r mnist27-optimal-knn-fit, echo=FALSE}
 plot_cond_prob(predict(train_knn, mnist_27$true_p, type = "prob")[,2])
 ```
 
-Sin embargo, sí vemos que el límite es algo ondulado. Esto se debe a que kNN, como el bin bin liso, no utiliza un núcleo. Para mejorar esto, podríamos probar loess. Al leer la parte de los modelos disponibles del manual^[https://topepo.github.io/caret/available-models.html] vemos que podemos usar el `gamLoess` método.
+Sin embargo, sí vemos que el límite es algo ondulado. Esto se debe a que kNN, [fix] como el suavizador de compartimiento básico, no utiliza un _kernel_. Para mejorar esto, podríamos probar loess. Al leer la parte sobre los modelos disponibles en el manual^[https://topepo.github.io/caret/available-models.html], vemos que podemos usar el método `gamLoess`.
 En el manual^[https://topepo.github.io/caret/train-models-by-tag.html] también vemos que necesitamos instalar el paquete __gam__ si aún no lo hemos hecho:
 
 ```{r, eval=FALSE}
@@ -160,7 +160,7 @@ Luego vemos que tenemos dos parámetros para optimizar:
 modelLookup("gamLoess")
 ```
 
-Nos mantendremos en un grado de 1. Pero para probar diferentes valores para el lapso, todavía tenemos que incluir una columna en la tabla con el nombre `degree` para que podamos hacer esto:
+Nos mantendremos en un grado de 1. Pero para probar diferentes valores para el _span_, todavía tenemos que incluir una columna en la tabla con el nombre `degree` para poder hacer esto:
 
 ```{r}
 grid <- expand.grid(span = seq(0.15, 0.65, len = 10), degree = 1)
