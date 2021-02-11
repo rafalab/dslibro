@@ -12,6 +12,7 @@
 | access (verb) | acceder | you access the column with `$` | | acceder a |
 | access operator | operador de acceso | `$` is the access operator  | | operador de acceso a |
 | accessor | operador de acceso | `$` is called the accessor   | accesador? | acceso |
+| accuracy |exactitud  | |  |
 | add-ons | complementos|  add-ons | complementos | complementos o plugins |
 | arithmetic operator |operador aritmético  | addition is an arithmentic operator | | operador aritmético |
 | assignment operator | operador de asignación |`<-` is the  assignment operator |operador de asignación  | |
@@ -21,8 +22,8 @@
 | bar plots| diagrama de barras  | |  |
 | bin | compartimiento |  |  |
 | bindwidth | tamaño de compartimiento |  |  |
-| bivariate normal distribution | distribución normal bivariante  |  |  |
-| boxplot | diagrama de caja | display the data in a boxplot|diagrama de caja y bigote | gráfico de | 
+| bivariate normal distribution | distribución normal de dos variables  |  |  |
+| boxplot | diagrama de caja | display the data in a boxplot| diagrama de caja y bigote | | 
 | __C__ | | | | |
 | call |  | llamada |  |
 | case study | caso de estudio| one case study which is helpful | | caso de estudio |
