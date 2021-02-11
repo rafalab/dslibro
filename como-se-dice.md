@@ -85,6 +85,7 @@
 transformación logarítmica   |  |
 | logicals |  lógicos o booleanos | to get a vector of logicals | operadores lógicos o booleanos | lógicos o booleanos |
 | loop |  | bucle |  |
+| loss function | función de pérdida |  |  |
 | __M__ | | | | |
 | machine learning | _machine learning_ | | machine learning o la traducción literal aprendizaje de máquina | [aprendizaje automático](http://portal.uned.es/portal/page?_pageid=93,61703783&_dad=portal&_schema=PORTAL&idAsignatura=71014023) |
 | map (noun) | mapeo | |  |  |
