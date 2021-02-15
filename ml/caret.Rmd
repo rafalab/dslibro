@@ -1,6 +1,6 @@
 # El paquete caret {#caret}
 
-Ya hemos aprendido acerca de la regresión y kNN como algoritmos de _machine learning_. En secciones posteriores, aprendemos varios otros, y esto es solo un pequeño subconjunto de todos los algoritmos disponibles. Muchos de estos algoritmos se implementan en R. Sin embargo, se distribuyen a través de diferentes paquetes, desarrollados por diferentes autores, y a menudo usan una sintaxis diferente. El paquete __caret__ intenta consolidar estas diferencias y dar consistencia. Actualmente incluye 237 métodos diferentes que se resumen en el manual del paquete __caret__^[https://topepo.github.io/caret/available-models.html]. Tengan en cuenta que __caret__ no incluye los paquetes necesarios y, para implementar un paquete a través de __caret__, aún necesitan instalar [fix] la biblioteca. Los paquetes requeridos para cada método se describen en el manual del paquete.
+Ya hemos aprendido acerca de la regresión y kNN como algoritmos de _machine learning_. En secciones posteriores, aprendemos varios otros, y esto es solo un pequeño subconjunto de todos los algoritmos disponibles. Muchos de estos algoritmos se implementan en R. Sin embargo, se distribuyen a través de diferentes paquetes, desarrollados por diferentes autores, y a menudo usan una sintaxis diferente. El paquete __caret__ intenta consolidar estas diferencias y dar consistencia. Actualmente incluye 237 métodos diferentes que se resumen en el manual del paquete __caret__^[https://topepo.github.io/caret/available-models.html]. Tengan en cuenta que __caret__ no incluye los paquetes necesarios y, para implementar un paquete a través de __caret__, aún necesitan instalar el paquete. Los paquetes requeridos para cada método se describen en el manual del paquete.
 
 El paquete __caret__ también provee una función que realiza la validación cruzada para nosotros. Aquí oferecemos algunos ejemplos que muestran cómo utilizamos este paquete increíblemente útil. Usaremos el ejemplo 2 o 7 para ilustrar:
 
@@ -38,7 +38,7 @@ confusionMatrix(y_hat_knn, mnist_27$test$y)$overall[["Accuracy"]]
 
 ## Validación cruzada {#caret-cv}
 
-Cuando un algoritmo incluye [fix 'tuning parameter'] un parámetro de ajuste, `train` utiliza automáticamente la validación cruzada para decidir entre algunos valores predeterminados. Para saber qué parámetro o parámetros están optimizados, pueden leer el manual^[http://topepo.github.io/caret/available-models.html] o estudiar el resultado de:
+Cuando un algoritmo incluye [fix lookup alex 'tuning parameter'] un parámetro de ajuste, `train` utiliza automáticamente la validación cruzada para decidir entre algunos valores predeterminados. Para saber qué parámetro o parámetros están optimizados, pueden leer el manual^[http://topepo.github.io/caret/available-models.html] o estudiar el resultado de:
 
 ```{r, eval=FALSE}
 getModelInfo("knn")
@@ -62,9 +62,9 @@ pueden ver rápidamente los resultados de la validación cruzada utilizando la f
 ggplot(train_knn, highlight = TRUE)
 ```
 
-Por defecto, la validación cruzada se realiza tomando 25 muestras de _bootstrap_ que comprenden el 25% de las observaciones. Para el método `kNN`,[fix] el valor predeterminado es intentar $k=5,7,9$. Cambiamos esto usando el parámetro `tuneGrid`. La cuadrícula de valores debe ser suministrada por un _data frame_ con los nombres de los parámetros como se especifica en el output `modelLookup`.
+Por defecto, la validación cruzada se realiza tomando 25 muestras de _bootstrap_ que comprenden el 25% de las observaciones. Para el método `kNN`, el valor predeterminado resulta en intentar $k=5, 7, 9$. Cambiamos esto usando el parámetro `tuneGrid`. La cuadrícula de valores debe ser suministrada por un _data frame_ con los nombres de los parámetros como se especifica en el output `modelLookup`.
 
-Aquí, presentamos un ejemplo donde probamos 30 valores entre 9 y 67. Para hacer esto con __caret__, necesitamos definir una columna llamada `k`, entonces usamos esto: `data.frame(k = seq(9, 67, 2))`.
+Aquí, presentamos un ejemplo donde probamos 30 valores entre 9 y 67. Para hacer esto con __caret__, necesitamos definir una columna llamada `k` de la siguiente manera: `data.frame(k = seq(9, 67, 2))`.
 
 Noten que al ejecutar este código, estamos ajustando 30 versiones de kNN a 25 muestras de _bootstrap_. Ya que estamos ajustando $30 \times 25 = 750$ kNN modelos, ejecutar este código tomará varios segundos. Fijamos la semilla porque la validación cruzada es un procedimiento aleatorio y queremos asegurarnos de que el resultado aquí sea reproducible.
 
@@ -82,7 +82,7 @@ Para acceder al parámetro que maximiza la precisión, pueden usar esto:
 train_knn$bestTune
 ```
 
-[fix] y el mejor modelo así:
+y para acceder el mejor modelo, pueden usar esto:
 
 ```{r}
 train_knn$finalModel
@@ -95,7 +95,7 @@ confusionMatrix(predict(train_knn, mnist_27$test, type = "raw"),
 mnist_27$test$y)$overall["Accuracy"]
 ```
 
-Si queremos cambiar la forma en que realizamos la validación cruzada, podemos usarla función `trainControl` función. Podemos hacer que el código anterior sea un poco más rápido mediante, por ejemplo, la validación [fix] cruzada _10 fold_. Esto significa que tenemos 10 muestras cada una usando el 10% de las observaciones. Logramos esto usando el siguiente código:
+Si queremos cambiar la forma en que realizamos la validación cruzada, podemos usar la función `trainControl`. Podemos hacer que el código anterior sea un poco más rápido mediante, por ejemplo, la validación cruzada [fix lookup fold en sección de validación cruzada] _10 fold_. Esto significa que tenemos 10 muestras cada una usando el 10% de las observaciones. Logramos esto usando el siguiente código:
 
 ```{r cv-10-fold-accuracy-estimate}
 control <- trainControl(method = "cv", number = 10, p = .9)
@@ -142,12 +142,13 @@ stat_contour(breaks=c(0.5),color="black")
 }
 ```
 
-[fix] El modelo kNN mejor ajustad que se aproxima a la probabilidad condicional verdadera:
+El modelo kNN que da el mejor resultado, también da una buena aproximación de la probabilidad condicional verdadera:
+
 ```{r mnist27-optimal-knn-fit, echo=FALSE}
 plot_cond_prob(predict(train_knn, mnist_27$true_p, type = "prob")[,2])
 ```
 
-Sin embargo, sí vemos que el límite es algo ondulado. Esto se debe a que kNN, [fix] como el suavizador de compartimiento básico, no utiliza un _kernel_. Para mejorar esto, podríamos probar loess. Al leer la parte sobre los modelos disponibles en el manual^[https://topepo.github.io/caret/available-models.html], vemos que podemos usar el método `gamLoess`.
+Sin embargo, sí vemos que la frontera es algo ondulada. Esto se debe a que kNN, igual que el suavizador de compartimiento básico, no utiliza un _kernel_. Para mejorar esto, podríamos tratar loess. Al leer la parte sobre los modelos disponibles en el manual^[https://topepo.github.io/caret/available-models.html], vemos que podemos usar el método `gamLoess`.
 En el manual^[https://topepo.github.io/caret/train-models-by-tag.html] también vemos que necesitamos instalar el paquete __gam__ si aún no lo hemos hecho:
 
 ```{r, eval=FALSE}

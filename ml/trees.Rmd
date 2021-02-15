@@ -6,9 +6,9 @@ img_path <- "ml/img"
 
 ### La maldición de la dimensionalidad
 
-Describimos cómo los métodos como LDA y QDA no deben usarse con muchos predictores $p$ porque el número de parámetros que necesitamos estimar se vuelve demasiado grande. Por ejemplo, con el ejemplo de dígitos $p=784$, tendríamos más de 600,000 parámetros con LDA, y lo multiplicaríamos por el número de clases para QDA. Los métodos de kernel como kNN o regresión local no tienen parámetros de modelo para estimar. Sin embargo, también se enfrentan a un desafío cuando se utilizan predictores múltiples debido a lo que se conoce como la "maldición de la dimensionalidad". La dimensión aquí se refiere al hecho de que cuando tenemos $p$ predictores, la distancia entre dos observaciones se calcula en $p$-dimensional espacio.
+Describimos cómo métodos como LDA y QDA no deben usarse con muchos predictores $p$ porque el número de parámetros que necesitamos estimar se vuelve demasiado grande. Por ejemplo, con el ejemplo de dígitos $p=784$, tendríamos más de 600,000 parámetros con LDA, y lo multiplicaríamos por el número de clases para QDA. Los métodos de _kernel_, como kNN o regresión local, no tienen parámetros de modelo para estimar. Sin embargo, también se enfrentan a un desafío cuando se utilizan predictores múltiples debido a lo que se conoce como la _maldición de la dimensionalidad_. La _dimensión_ aquí se refiere al hecho de que cuando tenemos $p$ predictores, la distancia entre dos observaciones se calcula en un espacio $p$-dimensional.
 
-Una forma útil de comprender la maldición de la dimensionalidad es considerar qué tan grande tenemos que hacer un espacio/ vecindario/ ventana para incluir un porcentaje dado de los datos. Recuerde que con vecindarios más grandes, nuestros métodos pierden flexibilidad.
+Una forma útil de comprender la maldición de la dimensionalidad es considerar cuán grande tenemos que hacer un vecindario (_neighborhood_) para incluir un porcentaje dado de los datos. Recuerden que con vecindarios más grandes, nuestros métodos pierden flexibilidad.
 
 Por ejemplo, supongamos que tenemos un predictor continuo con puntos igualmente espaciados en el intervalo [0,1] y queremos crear ventanas que incluyan 1/10 de datos. Entonces es fácil ver que nuestras ventanas tienen que ser de tamaño 0.1:
 
@@ -45,7 +45,7 @@ points(x[25],y[25], cex = 0.5, pch=4)
 ```
 
 Usando la misma lógica, si queremos incluir el 10% de los datos en un espacio tridimensional, entonces el lado de cada cubo es $\sqrt[3]{.10} \approx 0.464$.
-En general, incluir el 10% de los datos en un caso con $p$ dimensiones, necesitamos un intervalo con cada lado del tamaño $\sqrt[p]{.10}$ del total. Esta proporción se acerca a 1 rápidamente, y si la proporción es 1 significa que incluimos todos los datos y ya no estamos suavizando.
+En general, para incluir el 10% de los datos en un caso con $p$ dimensiones, necesitamos un intervalo con cada lado del tamaño $\sqrt[p]{.10}$ del total. Esta proporción se acerca a 1 rápidamente, y si la proporción es 1 significa que incluimos todos los datos y ya no estamos suavizando.
 
 ```{r curse-of-dim-4, message=FALSE, message=FALSE}
 library(tidyverse)
@@ -53,13 +53,13 @@ p <- 1:100
 qplot(p, .1^(1/p), ylim = c(0,1))
 ```
 
-Cuando llegamos a 100 predictores, el vecindario ya no es muy local, ya que cada lado cubre casi todo el conjunto de datos.
+Cuando llegamos a 100 predictores, el vecindario ya no es muy local, ya que cada lado cubre casi todo el set de datos.
 
 Aquí observamos un conjunto de métodos elegantes y versátiles que se adaptan a dimensiones más altas y también permiten que estas regiones tomen formas más complejas mientras producen modelos que son interpretables. Estos son métodos muy populares, conocidos y estudiados. Nos concentraremos en los árboles de regresión y decisión y su extensión a bosques aleatorios.
 
 ### CARRERA motivación
 
-Para motivar esta sección, utilizaremos un nuevo conjunto de datos.
+Para motivar esta sección, utilizaremos un nuevo set de datos.
 eso incluye el desglose de la composición del aceite de oliva en 8 ácidos grasos:
 
 ```{r}
@@ -140,7 +140,7 @@ Los árboles de regresión y decisión operan prediciendo una variable de result
 
 ### Árboles de regresión
 
-Cuando el resultado es continuo, llamamos al método un árbol _regresión_. Para introducir árboles de regresión, utilizaremos los datos de la encuesta de 2008 utilizados en secciones anteriores para describir la idea básica de cómo construimos estos algoritmos. Al igual que con otros algoritmos de aprendizaje automático, intentaremos estimar la expectativa condicional $f(x) = \mbox{E}(Y | X = x)$ con $Y$ el margen de la encuesta y $x$ el dia.
+Cuando el resultado es continuo, llamamos al método un árbol _regresión_. Para introducir árboles de regresión, utilizaremos los datos de la encuesta de 2008 utilizados en secciones anteriores para describir la idea básica de cómo construimos estos algoritmos. Al igual que con otros algoritmos de _machine learning_, intentaremos estimar la expectativa condicional $f(x) = \mbox{E}(Y | X = x)$ con $Y$ el margen de la encuesta y $x$ el dia.
 
 ```{r polls-2008-again}
 data("polls_2008")
@@ -203,7 +203,7 @@ geom_step(aes(day, y_hat), col="red")
 
 Tenga en cuenta que el algoritmo dejó de particionar a las 8. Ahora explicamos cómo se toma esta decisión.
 
-Primero necesitamos definir el término _parámetro de complejidad_ (cp). Cada vez que dividimos y definimos dos nuevas particiones, nuestro conjunto de entrenamiento RSS disminuye. Esto se debe a que con más particiones, nuestro modelo tiene más flexibilidad para adaptarse a los datos de entrenamiento. De hecho, si divide hasta que cada punto sea su propia partición, entonces RSS baja hasta 0 ya que el promedio de un valor es el mismo valor. Para evitar esto, el algoritmo establece un mínimo de cuánto debe mejorar el RSS para que se agregue otra partición. Este parámetro se conoce como _parámetro de complejidad_ (cp). El RSS debe mejorar por un factor de cp para que se agregue la nueva partición. Por lo tanto, los valores grandes de cp obligarán al algoritmo a detenerse antes, lo que resulta en menos nodos.
+Primero necesitamos definir el término _parámetro de complejidad_ (cp). Cada vez que dividimos y definimos dos nuevas particiones, nuestro set de entrenamiento RSS disminuye. Esto se debe a que con más particiones, nuestro modelo tiene más flexibilidad para adaptarse a los datos de entrenamiento. De hecho, si divide hasta que cada punto sea su propia partición, entonces RSS baja hasta 0 ya que el promedio de un valor es el mismo valor. Para evitar esto, el algoritmo establece un mínimo de cuánto debe mejorar el RSS para que se agregue otra partición. Este parámetro se conoce como _parámetro de complejidad_ (cp). El RSS debe mejorar por un factor de cp para que se agregue la nueva partición. Por lo tanto, los valores grandes de cp obligarán al algoritmo a detenerse antes, lo que resulta en menos nodos.
 
 Sin embargo, cp no es el único parámetro utilizado para decidir si debemos particionar una partición actual o no. Otro parámetro común es el número mínimo de observaciones requeridas en una partición antes de dividirla más. El argumento usado en el `rpart` la función es `minsplit` y el valor predeterminado es 20. El `rpart` la implementación de árboles de regresión también permite a los usuarios determinar un número mínimo de observaciones en cada nodo. El argumento es `minbucket` y por defecto a `round(minsplit/3)`.
 
@@ -267,7 +267,7 @@ pruned_fit <- prune(fit, cp = 0.01)
 
 Los árboles de clasificación, o árboles de decisión, se usan en problemas de predicción donde el resultado es categórico. Utilizamos el mismo principio de partición con algunas diferencias para tener en cuenta el hecho de que ahora estamos trabajando con un resultado categórico.
 
-La primera diferencia es que formamos predicciones calculando qué clase es la más común entre las observaciones del conjunto de entrenamiento dentro de la partición, en lugar de tomar el promedio en cada partición (ya que no podemos tomar el promedio de las categorías).
+La primera diferencia es que formamos predicciones calculando qué clase es la más común entre las observaciones del set de entrenamiento dentro de la partición, en lugar de tomar el promedio en cada partición (ya que no podemos tomar el promedio de las categorías).
 
 El segundo es que ya no podemos usar RSS para elegir la partición. Si bien podríamos utilizar el enfoque ingenuo de buscar particiones que minimicen el error de entrenamiento, los enfoques de mejor desempeño utilizan métricas más sofisticadas. Dos de los más populares son el _Gini Index_y_Entropy_.
 
@@ -337,23 +337,23 @@ Tenga en cuenta que con los árboles de decisión, es difícil suavizar los lím
 
 Los árboles de clasificación tienen ciertas ventajas que los hacen muy útiles. Son altamente interpretables, incluso más que los modelos lineales. Son fáciles de visualizar (si son lo suficientemente pequeños). Finalmente, pueden modelar procesos de decisión humanos y no requieren el uso de predictores ficticios para variables categóricas. Por otro lado, el enfoque a través de particiones recursivas puede sobreentrenar fácilmente y, por lo tanto, es un poco más difícil de entrenar que, por ejemplo, la regresión lineal o kNN. Además, en términos de precisión, rara vez es el método de mejor rendimiento ya que no es muy flexible y es muy inestable a los cambios en los datos de entrenamiento. Los bosques aleatorios, explicados a continuación, mejoran varias de estas deficiencias.
 
-## Bosques al azar
+## Bosques aleatiruis
 
-Los bosques aleatorios son un enfoque de aprendizaje automático **muy popular** que aborda las deficiencias de los árboles de decisión utilizando una idea inteligente. El objetivo es mejorar el rendimiento de la predicción y reducir la inestabilidad mediante el promedio de árboles de decisión múltiple (un bosque de árboles construido con aleatoriedad). Tiene dos características que ayudan a lograr esto.
+Los bosques aleatorios son un enfoque de _machine learning_ **muy popular** que aborda las deficiencias de los árboles de decisión utilizando una idea inteligente. El objetivo es mejorar el rendimiento de la predicción y reducir la inestabilidad mediante el promedio de árboles de decisión múltiple (un bosque de árboles construido con aleatoriedad). Tiene dos características que ayudan a lograr esto.
 
 El primer paso es _agotstrap aggregation_o_bagging_. La idea general es generar muchos predictores, cada uno utilizando árboles de regresión o clasificación, y luego formando una predicción final basada en la predicción promedio de todos estos árboles. Para asegurar que los árboles individuales no sean iguales, utilizamos el bootstrap para inducir aleatoriedad. Estas dos características combinadas explican el nombre: el bootstrap hace que los árboles individuales sean **aleatorios** diferentes, y la combinación de árboles es el **bosque**. Los pasos específicos son los siguientes.
 
-1\. Construir $B$ árboles de decisión utilizando el conjunto de entrenamiento. Nos referimos a los modelos equipados como $T_1, T_2, \dots, T_B$. Luego explicamos cómo nos aseguramos de que sean diferentes.
+1\. Construir $B$ árboles de decisión utilizando el set de entrenamiento. Nos referimos a los modelos equipados como $T_1, T_2, \dots, T_B$. Luego explicamos cómo nos aseguramos de que sean diferentes.
 
-2\. Para cada observación en el conjunto de prueba, forme una predicción $\hat{y}_j$ usando el árbol $T_j$.
+2\. Para cada observación en el set de evaluación, forme una predicción $\hat{y}_j$ usando el árbol $T_j$.
 
 3\. Para resultados continuos, forme una predicción final con el promedio $\hat{y} = \frac{1}{B} \sum_{j=1}^B \hat{y}_j$. Para la clasificación de datos categóricos, prediga $\hat{y}$ con voto mayoritario (clase más frecuente entre $\hat{y}_1, \dots, \hat{y}_T$).
 
-Entonces, ¿cómo obtenemos diferentes árboles de decisión de un solo conjunto de entrenamiento? Para esto, usamos la aleatoriedad de dos maneras que explicamos en los pasos a continuación. Dejar $N$ sea el número de observaciones en el conjunto de entrenamiento. Crear $T_j, \, j=1,\ldots,B$ del conjunto de entrenamiento hacemos lo siguiente:
+Entonces, ¿cómo obtenemos diferentes árboles de decisión de un solo set de entrenamiento? Para esto, usamos la aleatoriedad de dos maneras que explicamos en los pasos a continuación. Dejar $N$ sea el número de observaciones en el set de entrenamiento. Crear $T_j, \, j=1,\ldots,B$ del set de entrenamiento hacemos lo siguiente:
 
-1\. Crear un conjunto de entrenamiento de bootstrap por muestreo $N$ observaciones del conjunto de entrenamiento **con reemplazo**. Esta es la primera forma de inducir aleatoriedad.
+1\. Crear un set de entrenamiento de bootstrap por muestreo $N$ observaciones del set de entrenamiento **con reemplazo**. Esta es la primera forma de inducir aleatoriedad.
 
-2\. Una gran cantidad de características es típica en los desafíos de aprendizaje automático. A menudo, muchas características pueden ser informativas, pero incluirlas todas en el modelo puede resultar en un sobreajuste. La segunda forma en que los bosques aleatorios inducen la aleatoriedad es seleccionando aleatoriamente las características que se incluirán en la construcción de cada árbol. Se selecciona un subconjunto aleatorio diferente para cada árbol. Esto reduce la correlación entre los árboles en el bosque, mejorando así la precisión de la predicción.
+2\. Una gran cantidad de características es típica en los desafíos de _machine learning_. A menudo, muchas características pueden ser informativas, pero incluirlas todas en el modelo puede resultar en un sobreajuste. La segunda forma en que los bosques aleatorios inducen la aleatoriedad es seleccionando aleatoriamente las características que se incluirán en la construcción de cada árbol. Se selecciona un subconjunto aleatorio diferente para cada árbol. Esto reduce la correlación entre los árboles en el bosque, mejorando así la precisión de la predicción.
 
 Para ilustrar cómo los primeros pasos pueden dar como resultado estimaciones más uniformes, demostraremos ajustando un bosque aleatorio a
 los datos de las encuestas de 2008. Utilizaremos el `randomForest` función en el paquete __randomForest__:
@@ -536,12 +536,12 @@ Tenga en cuenta que podemos evitar escribir nuestro propio código utilizando ot
 
 
 El bosque aleatorio funciona mejor en todos los ejemplos que hemos considerado. Sin embargo, una desventaja de los bosques aleatorios es que perdemos interpretabilidad. Un enfoque que ayuda con la interpretabilidad es examinar _importancia variable_.
-Para definir _importancia variable_ contamos con qué frecuencia se usa un predictor en los árboles individuales. Puede obtener más información sobre _variable importancia_ en un libro de aprendizaje automático avanzado^[https://web.stanford.edu/~hastie/Papers/ESLII.pdf]. El paquete __caret__ incluye la función `varImp` que extrae importancia variable de cualquier modelo en el que se implementa el cálculo. Damos un ejemplo de cómo usamos la importancia variable en la siguiente sección.
+Para definir _importancia variable_ contamos con qué frecuencia se usa un predictor en los árboles individuales. Puede obtener más información sobre _variable importancia_ en un libro de _machine learning_ avanzado^[https://web.stanford.edu/~hastie/Papers/ESLII.pdf]. El paquete __caret__ incluye la función `varImp` que extrae importancia variable de cualquier modelo en el que se implementa el cálculo. Damos un ejemplo de cómo usamos la importancia variable en la siguiente sección.
 
 
 ## Ejercicios
 
-1\. Cree un conjunto de datos simple donde el resultado crezca 0.75 unidades en promedio por cada aumento en un predictor:
+1\. Cree un set de datos simple donde el resultado crezca 0.75 unidades en promedio por cada aumento en un predictor:
 
 ```{r, eval=FALSE}
 n <- 1000
@@ -574,7 +574,7 @@ Utilizar `rpart` para ajustar un árbol de regresión y guardar el resultado en 
 8\. Haz un diagrama de dispersión junto con la predicción del modelo mejor ajustado.
 
 
-9\. Utilizar el `rpart` función para ajustar un árbol de clasificación a la `tissue_gene_expression` conjunto de datos Utilizar el `train` función para estimar la precisión. Poner a prueba o probar `cp` valores de `seq(0, 0.05, 0.01)`. Trace la precisión para informar los resultados del mejor modelo.
+9\. Utilizar el `rpart` función para ajustar un árbol de clasificación a la `tissue_gene_expression` set de datos Utilizar el `train` función para estimar la precisión. Poner a prueba o probar `cp` valores de `seq(0, 0.05, 0.01)`. Trace la precisión para informar los resultados del mejor modelo.
 
 
 10\. Estudie la matriz de confusión para el árbol de clasificación de mejor ajuste. ¿Qué observas que sucede con la placenta?

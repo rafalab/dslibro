@@ -12,7 +12,7 @@ data("mnist_27")
 
 ## Regresión lineal
 
-La regresión lineal puede considerarse un algoritmo de _machine learning_. En la Sección \@ref(two-or-seven) demostramos cómo la regresión lineal puede ser demasiada rígida para ser útil. Esto es generalmente cierto, pero para algunos desafíos funciona bastante bien. También sirve como [fix baseline approach enfoque de partida/inicial check sent] un enfoque de línea de base: si no puede mejorarlo con un enfoque más complejo, probablemente querrá continuar con la regresión lineal. [fix check eng] Para establecer rápidamente la conexión entre la regresión y el _machine learning_, reformularemos el estudio de Galton con alturas, un resultado continuo.
+La regresión lineal puede considerarse un algoritmo de _machine learning_. En la Sección \@ref(two-or-seven) demostramos cómo la regresión lineal puede ser demasiada rígida para ser útil. Esto es generalmente cierto, pero para algunos desafíos funciona bastante bien. También sirve como enfoque de partida: si no podemos mejorarlo con un enfoque más complejo, probablemente querremos continuar con la regresión lineal. Para establecer rápidamente la conexión entre la regresión y el _machine learning_, reformularemos el estudio de Galton con alturas, un resultado continuo.
 
 ```{r, message=FALSE, warning=FALSE}
 library(HistData)
@@ -44,7 +44,7 @@ m <- mean(train_set$son)
 m
 ```
 
-[fix 'our squared loss is' ] Nuestra pérdida al cuadrado es:
+[fix 'our squared loss is' alex look up in machine learnig book] Nuestra pérdida al cuadrado es:
 
 ```{r}
 mean((m - test_set$son)^2)
@@ -91,7 +91,7 @@ y_hat <- predict(fit, test_set)
 mean((y_hat - test_set$son)^2)
 ```
 
-`predict` no siempre devuelve objetos del mismo tipo; depende del tipo de objeto que se le envíe. Para conocer los detalles, deben mirar el archivo de ayuda específico para el tipo de objeto de ajuste que se está utilizando.[fix check eng] La función `predict` es un tipo especial de función en R (denominada _función genérica_) que llama a otras funciones según el tipo de objeto que recibe. Así que si `predict` recibe un objeto que sale de la función `lm`, llamará `predict.lm`. Si recibe un objeto que sale de `glm` llamará `predict.glm`. Estas dos funciones son similares pero diferentes. Puede obtener más información sobre las diferencias leyendo los archivos de ayuda:
+`predict` no siempre devuelve objetos del mismo tipo; depende del tipo de objeto que se le envíe. Para conocer los detalles, deben mirar la ayuda específica para el tipo de objeto de ajuste que se está utilizando. [fix eng take out The] `predict` es un tipo especial de función en R (denominada _función genérica_) que llama a otras funciones según el tipo de objeto que recibe. Así que si `predict` recibe un objeto que sale de la función `lm`, llamará `predict.lm`. Si recibe un objeto que sale de `glm` llamará `predict.glm`. Estas dos funciones son similares pero diferentes. Puede obtener más información sobre las diferencias leyendo los archivos de ayuda:
 
 ```{r, eval=FALSE}
 ?predict.lm
@@ -112,7 +112,7 @@ dat <- MASS::mvrnorm(n = 100, c(69, 69), Sigma) %>%
 data.frame() %>% setNames(c("x", "y"))
 ```
 
-[fix check ok ] Use el paquete __caret__ para dividir/particionar en un set de evaluación y uno de entrenamiento del mismo tamaño. Entrene un modelo lineal e indique el RMSE. Repita este ejercicio 100 veces y haga un histograma de los RMSE e indique el promedio y la desviación estándar.[fix] Sugerencia: adapte el código mostrado anteriormente así:
+Use el paquete __caret__ para particionar en un set de evaluación y uno de entrenamiento del mismo tamaño. Entrene un modelo lineal e indique el RMSE. Repita este ejercicio 100 veces y haga un histograma de los RMSE e indique el promedio y la desviación estándar. Sugerencia: adapte el código mostrado anteriormente así:
 
 ```{r, eval=FALSE}
 y <- dat$y
@@ -197,7 +197,7 @@ d. A menos que incluyamos todos los predictores, no tenemos poder de predicción
 
 ## Regresión logística
 
-El enfoque de regresión puede extenderse a datos categóricos. En esta sección, primero ilustramos cómo, para datos binarios, simplemente se puede asignar valores numéricos de 0 y 1 a los resultados $y$ y aplicar la regresión como si los datos fueran continuos. Luego señalaremos una limitación con este enfoque e introduciremos _regresión logística_ como una solución. La regresión logística es un caso específico de un set de _modelos lineales generalizados_. Para ilustrar la regresión logística, [fix ok?] la aplicaremos a nuestro ejemplo anterior de predicción de sexo basado en altura:
+El enfoque de regresión puede extenderse a datos categóricos. En esta sección, primero ilustramos cómo, para datos binarios, simplemente se puede asignar valores numéricos de 0 y 1 a los resultados $y$ y aplicar la regresión como si los datos fueran continuos. Luego señalaremos una limitación con este enfoque e introduciremos _regresión logística_ como una solución. La regresión logística es un caso específico de un set de _modelos lineales generalizados_. Para ilustrar la regresión logística, la aplicaremos a nuestro ejemplo anterior de predicción de sexo basado en altura:
 
 ```{r, echo=FALSE}
 library(dslabs)
@@ -236,7 +236,7 @@ ggplot(aes(x, prop)) +
 geom_point()
 ```
 
-Dado que los resultados del gráfico anterior [fix] parecen cercano a  lineal/casi lineal, y es el único enfoque que conocemos actualmente, intentaremos la regresión. Asumimos que:
+Dado que los resultados del gráfico anterior son casi lineal, y es el único enfoque que conocemos actualmente, intentaremos la regresión lineal. Asumimos que:
 
 $$p(x) = \mbox{Pr}( Y = 1 | X=x) = \beta_0 + \beta_1 x$$
 
@@ -295,7 +295,7 @@ La regresión logística es el GLM más utilizado. Es una extensión de regresi�
 
 $$ g(p) = \log \frac{p}{1-p}$$
 
-[fix] Esta transformación logística convierte probabilidad en riesgo relativo. Como se discutió en [fix lecture??] la conferencia de visualización de datos, las probabilidades nos dicen cuánto más probable es que algo suceda en comparación con no suceder. $p=0.5$ significa que las probabilidades son de 1 a 1, por lo tanto, las probabilidades son 1. Si $p=0.75$, las probabilidades son de 3 a 1. Una buena característica de esta transformación es que convierte las probabilidades en simétricas alrededor de 0. Aquí hay un gráfico de $g(p)$ versus $p$:
+Esta transformación logística convierte probabilidad en el logaritmo del riesgo relativo. Como se discutió en el sección de visualización de datos, los riesgos relativos nos dicen cuánto más probable es que algo suceda en comparación con no suceder. $p=0.5$ significa que las probabilidades son de 1 a 1, por lo tanto, el riesgo relativo es 1. Si $p=0.75$, las probabilidades son de 3 a 1. Una buena característica de esta transformación es que convierte las probabilidades en simétricas alrededor de 0. Aquí hay un gráfico de $g(p)$ versus $p$:
 
 ```{r p-versus-logistic-of-p, echo=FALSE}
 p <- seq(0.01,.99,len=100)
@@ -311,7 +311,7 @@ $$
 
 Con este modelo, ya no podemos usar mínimos cuadrados. En su lugar, calculamos el _estimado de probabilidad máxima_ (_maximum likelihood estimation_ o MLE por sus siglas en inglés). Pueden obtener más información sobre este concepto en un libro de texto de teoría estadística^[http://www.amazon.com/Mathematical-Statistics-Analysis-Available-Enhanced/dp/0534399428].
 
-[fix odd sent] En R, podemos ajustar el modelo de regresión logística con la función `glm`: modelos lineales generalizados. Esta función es más general que la regresión logística, por lo que debemos especificar el modelo que queremos a través del parámetro `family`:
+En R, podemos ajustar el modelo de regresión logística con la función `glm`: modelos lineales generalizados (generalized linear models en inglés). Esta función puede ajustar varios modelos, no solo regresión logística, por lo que debemos especificar el modelo que queremos a través del parámetro `family`:
 
 ```{r}
 glm_fit <- train_set %>%
@@ -325,7 +325,7 @@ Podemos obtener predicciones usando la función de predicción:
 p_hat_logit <- predict(glm_fit, newdata = test_set, type = "response")
 ```
 
-Cuando usamos `predict` con un pbjeto `glm`, tenemos que especificar que queremos `type="response"` si queremos las probabilidades condicionales, ya que el valor por defecto es devolver [fix check this term] los valores transformados logísticos.
+Cuando usamos `predict` con un objeto `glm`, tenemos que especificar que queremos `type="response"` si queremos las probabilidades condicionales, ya que el valor por defecto es devolver `term` que da los valores transformados logísticos.
 
 Este modelo se ajusta a los datos un poco mejor que la línea:
 
@@ -418,7 +418,7 @@ scale_fill_gradientn(colors=c("#F8766D","white","#00BFC4")) +
 stat_contour(breaks=c(0.5), color="black")
 ```
 
-Al igual que la regresión, [fix] la regla de decisión es una línea, un hecho que puede corroborarse matemáticamente desde:
+Al igual que con regresión lineal, la regla de decisión es una línea, un hecho que puede corroborarse matemáticamente ya que:
 
 $$
 g^{-1}(\hat{\beta}_0 + \hat{\beta}_1 x_1 + \hat{\beta}_2 x_2) = 0.5 \implies
