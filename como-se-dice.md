@@ -55,7 +55,7 @@
 | feature (for machine learning) | atributo | | | |
 | file (verb) | archivar | to file |  |  |
 | file (noun)| archivo |save the script in a file | Archivo | archivo o fichero |
-| folds |  |  |  |
+| folds | pliegues |  |  |
 | for-loop | bucle-for |  | |bucle-for | bucle-for |
 | functions | funciones | We will use the functions `mean` and `sd` | funciones | funciones o rutina |
 | function call | llamada a función | there is no difference between this function call and the previous one | llamada a función | llamadas a funciones, invocar función|
@@ -68,14 +68,15 @@
 | index (verb) | indexar | integers are used to index vectors | indexar, indizar  | indexar | 
 | indexing | indexación |R provides a convenient way of indexing vectors |  | indexación |
 | input (noun) | | entrada | `mean` takes a vector as input | input (no se traduce; anglicismo aceptado), entrada | entrada |
-| input (adjetive) | _input_, de entrada | `x` is the input vector | input, de entrada | de entrada |
+| input (adjetive) | input, de entrada | `x` is the input vector | input, de entrada | de entrada |
 | input function (for machine learning) | atributo de entrada | | | |
 | input layer (for machine learning) | capa de entrada | | | |
 | intercept | intercepto | | intercepto, intersección |  |
 | __J__ | | | | |
 | __K__ | | | | |
+| K-fold cross validation | validación cruzada K-fold | | | |
 | K-means | K-medios | | | |
-| K-nearest neighbors | _K-nearest neighbors_ | | K-nearest neighbors, K vecinos más cercanos | K-vecinos mas cercanos |
+| K-nearest neighbors | K-nearest neighbors | | K-nearest neighbors, K vecinos más cercanos | K-vecinos mas cercanos |
 | kernel | kernel | | | |
 | key bindings | | combinaciones de teclas | combinaciones de teclas |
 | keyboard shortcut | Use the keyboard shortcut command-S | atajo del teclado | atajo de teclado |
