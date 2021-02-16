@@ -24,7 +24,7 @@
 <meta name="author" content="Rafael A. Irizarry" />
 
 
-<meta name="date" content="2021-02-15" />
+<meta name="date" content="2021-02-16" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -1331,8 +1331,8 @@ No es sorprendente que los puntos físicamente cercanos estén matemáticamente 
 </div>
 <div id="reducción-de-dimensiones" class="section level2">
 <h2><span class="header-section-number">33.5</span> Reducción de dimensiones</h2>
-<p>Un desafío típico de aprendizaje automático incluirá una gran cantidad de predictores, lo que hace que la visualización sea algo desafiante. Hemos mostrado métodos para visualizar datos univariados y emparejados, pero las gráficas que revelan relaciones entre muchas variables son más complicadas en dimensiones más altas. Por ejemplo, para comparar cada una de las 784 características en nuestro ejemplo de predicción de dígitos, tendríamos que crear, por ejemplo, 306,936 diagramas de dispersión. La creación de un único diagrama de dispersión de los datos es imposible debido a la alta dimensionalidad.</p>
-<p>Aquí describimos técnicas poderosas útiles para el análisis exploratorio de datos, entre otras cosas, generalmente conocidas como <em>dimension reducción</em>. La idea general es reducir la dimensión del conjunto de datos mientras se conservan características importantes, como la distancia entre características u observaciones. Con menos dimensiones, la visualización se vuelve más factible. La técnica detrás de todo, la descomposición de valores singulares, también es útil en otros contextos. El análisis de componentes principales (PCA) es el enfoque que mostraremos. Antes de aplicar PCA a conjuntos de datos de alta dimensión, motivaremos las ideas detrás con un ejemplo simple.</p>
+<p>Un reto típico de <em>machinte learning</em> incluirá una gran cantidad de predictores, lo que hace que la visualización sea algo desafiante. Hemos mostrado métodos para visualizar datos univariados y emparejados, pero los gráficos que revelan relaciones entre muchas variables son más complicados en dimensiones más altas. Por ejemplo, para comparar cada una de las 784 características en nuestro ejemplo de predicción de dígitos, tendríamos que crear, por ejemplo, 306,936 diagramas de dispersión. La creación de un único diagrama de dispersión de los datos es imposible debido a la alta dimensionalidad.</p>
+<p>Aquí describimos técnicas poderosas útiles para el análisis exploratorio de datos, entre otras cosas, generalmente conocidas como <em>reducción de dimensiones</em>. La idea general es reducir la dimensión del set de datos mientras se conservan características importantes, como la distancia entre características u observaciones. Con menos dimensiones, la visualización se vuelve más factible. La técnica detrás de todo, la descomposición de valores singulares, también es útil en otros contextos. El análisis de componentes principales (PCA) es el enfoque que mostraremos. Antes de aplicar PCA a conjuntos de datos de alta dimensión, motivaremos las ideas detrás con un ejemplo simple.</p>
 <div id="preservando-la-distancia" class="section level3">
 <h3><span class="header-section-number">33.5.1</span> Preservando la distancia</h3>
 <p>Consideramos un ejemplo con alturas gemelas. Algunas parejas son adultas, otras son niños. Aquí simulamos 100 puntos bidimensionales que representan el número de desviaciones estándar que cada individuo tiene respecto a la altura media. Cada punto es un par de gemelos. Utilizamos el <code>mvrnorm</code> función del paquete <strong>MASS</strong> para simular datos normales bivariados.</p>
@@ -1423,7 +1423,7 @@ A^{-1} = \,
 a_{1,1} a_{1,2} + a_{2,1} a_{2,2} = 0.
 \]</span></p>
 <p>Recuerde que si las columnas están centradas para tener un promedio de 0, entonces la suma de los cuadrados es equivalente a la varianza o desviación estándar al cuadrado.</p>
-<p>En nuestro ejemplo, para lograr la ortogonalidad, multiplicamos el primer conjunto de coeficientes (primera columna de <span class="math inline">\(A\)</span>) por <span class="math inline">\(\sqrt{2}\)</span> y el segundo por <span class="math inline">\(1/\sqrt{2}\)</span>, entonces obtenemos la misma distancia exacta si usamos ambas dimensiones:</p>
+<p>En nuestro ejemplo, para lograr la ortogonalidad, multiplicamos el primer set de coeficientes (primera columna de <span class="math inline">\(A\)</span>) por <span class="math inline">\(\sqrt{2}\)</span> y el segundo por <span class="math inline">\(1/\sqrt{2}\)</span>, entonces obtenemos la misma distancia exacta si usamos ambas dimensiones:</p>
 <div class="sourceCode" id="cb1269"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1269-1"><a href="grandes-conjuntos-de-datos.html#cb1269-1"></a>z[,<span class="dv">1</span>] &lt;-<span class="st"> </span>(x[,<span class="dv">1</span>] <span class="op">+</span><span class="st"> </span>x[,<span class="dv">2</span>])<span class="op">/</span><span class="st"> </span><span class="kw">sqrt</span>(<span class="dv">2</span>)</span>
 <span id="cb1269-2"><a href="grandes-conjuntos-de-datos.html#cb1269-2"></a>z[,<span class="dv">2</span>] &lt;-<span class="st"> </span>(x[,<span class="dv">2</span>] <span class="op">-</span><span class="st"> </span>x[,<span class="dv">1</span>])<span class="op">/</span><span class="st"> </span><span class="kw">sqrt</span>(<span class="dv">2</span>)</span></code></pre></div>
 <p>Esto nos da una transformación que preserva la distancia entre dos puntos:</p>
@@ -1447,7 +1447,7 @@ a_{1,1} a_{1,2} + a_{2,1} a_{2,2} = 0.
 <p>y la transformación produjo columnas no correlacionadas con información “independiente” en cada columna:</p>
 <div class="sourceCode" id="cb1274"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1274-1"><a href="grandes-conjuntos-de-datos.html#cb1274-1"></a><span class="kw">cor</span>(z[,<span class="dv">1</span>], z[,<span class="dv">2</span>])</span>
 <span id="cb1274-2"><a href="grandes-conjuntos-de-datos.html#cb1274-2"></a><span class="co">#&gt; [1] 0.0876</span></span></code></pre></div>
-<p>Una forma en que esta información puede ser útil en una aplicación de aprendizaje automático es que podemos reducir la complejidad de un modelo utilizando solo <span class="math inline">\(Z_1\)</span> en lugar de ambos <span class="math inline">\(X_1\)</span> y <span class="math inline">\(X_2\)</span>.</p>
+<p>Una forma en que esta información puede ser útil en una aplicación de <em>machinte learning</em> es que podemos reducir la complejidad de un modelo utilizando solo <span class="math inline">\(Z_1\)</span> en lugar de ambos <span class="math inline">\(X_1\)</span> y <span class="math inline">\(X_2\)</span>.</p>
 <p>En realidad, es común obtener datos con varios predictores altamente correlacionados. En estos casos, PCA, que describimos a continuación, puede ser bastante útil para reducir la complejidad del modelo que se está ajustando.</p>
 </div>
 <div id="análisis-de-componentes-principales" class="section level3">
@@ -1535,7 +1535,7 @@ v_1 + v_2, \mbox{ with } v_1 = \frac{1}{N}\sum_{i=1}^N X_{i,1}^2 \mbox{ and } v_
 </div>
 <div id="ejemplo-de-mnist" class="section level3">
 <h3><span class="header-section-number">33.5.6</span> Ejemplo de MNIST</h3>
-<p>El ejemplo de dígitos escritos tiene 784 características. ¿Hay espacio para la reducción de datos? ¿Podemos crear algoritmos simples de aprendizaje automático con menos funciones?</p>
+<p>El ejemplo de dígitos escritos tiene 784 características. ¿Hay espacio para la reducción de datos? ¿Podemos crear algoritmos sencillos de <em>machinte learning</em> con menos funciones?</p>
 <p>Carguemos los datos:</p>
 <div class="sourceCode" id="cb1287"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1287-1"><a href="grandes-conjuntos-de-datos.html#cb1287-1"></a><span class="kw">library</span>(dslabs)</span>
 <span id="cb1287-2"><a href="grandes-conjuntos-de-datos.html#cb1287-2"></a><span class="cf">if</span>(<span class="op">!</span><span class="kw">exists</span>(<span class="st">&quot;mnist&quot;</span>)) mnist &lt;-<span class="st"> </span><span class="kw">read_mnist</span>()</span></code></pre></div>
@@ -1570,7 +1570,7 @@ v_1 + v_2, \mbox{ with } v_1 = \frac{1}{N}\sum_{i=1}^N X_{i,1}^2 \mbox{ and } v_
 <span id="cb1292-3"><a href="grandes-conjuntos-de-datos.html#cb1292-3"></a>x_train &lt;-<span class="st"> </span>pca<span class="op">$</span>x[,<span class="dv">1</span><span class="op">:</span>k]</span>
 <span id="cb1292-4"><a href="grandes-conjuntos-de-datos.html#cb1292-4"></a>y &lt;-<span class="st"> </span><span class="kw">factor</span>(mnist<span class="op">$</span>train<span class="op">$</span>labels)</span>
 <span id="cb1292-5"><a href="grandes-conjuntos-de-datos.html#cb1292-5"></a>fit &lt;-<span class="st"> </span><span class="kw">knn3</span>(x_train, y)</span></code></pre></div>
-<p>Ahora transforma el conjunto de prueba:</p>
+<p>Ahora transforma el set de evaluación:</p>
 <div class="sourceCode" id="cb1293"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1293-1"><a href="grandes-conjuntos-de-datos.html#cb1293-1"></a>x_test &lt;-<span class="st"> </span><span class="kw">sweep</span>(mnist<span class="op">$</span>test<span class="op">$</span>images, <span class="dv">2</span>, col_means) <span class="op">%*%</span><span class="st"> </span>pca<span class="op">$</span>rotation</span>
 <span id="cb1293-2"><a href="grandes-conjuntos-de-datos.html#cb1293-2"></a>x_test &lt;-<span class="st"> </span>x_test[,<span class="dv">1</span><span class="op">:</span>k]</span></code></pre></div>
 <p>Y estamos listos para predecir y ver cómo lo hacemos:</p>
