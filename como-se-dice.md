@@ -61,6 +61,7 @@
 | function call | llamada a función | there is no difference between this function call and the previous one | llamada a función | llamadas a funciones, invocar función|
 | __G__ | | | | |
 | __H__ | | | | |
+| harmonic average | media armónica | | | |
 | __I__ | | | | |
 | image plot | mapa de matriz| | | | 
 | indentation | indentación | | indentar | indentación |
@@ -95,6 +96,7 @@ transformación logarítmica   |  |
 | (aesthetic) mappings | mapeos estéticos | |  |  |
 | match (verb)| aparear  | | coincidencia |  |
 | match (noun)| apareado |  | coincidencia |  |
+| mean absolute error | | |  |  |
 | missing data | datos faltantes| | datos perdidos |
 | missing value | valor faltante | | valor faltante |  |  
 | modelling|  modelando ||modelado  |  |
@@ -157,6 +159,7 @@ transformación logarítmica   |  |
 | standard normal random variable | variable aleatoria con distribution normal unitaria | | | |
 | string | cadenas | | | |
 | summary statistics | resumen estadístico | | | |
+| squared loss function | función de pérdida cuadrática | | | |
 | __T__ | | | | |
 | t statistic | estadística t o prueba t |  |  |  |
 | tabs | pestañas | RStudio has a Viewer tab | pestañas | pestañas |
