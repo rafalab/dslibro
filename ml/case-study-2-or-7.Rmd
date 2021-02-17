@@ -1,6 +1,6 @@
 ## Estudio de caso: ¿es un 2 o un 7? {#two-or-seven}
 
-En los dos ejemplos sencillos anteriores, solo teníamos un predictor. En realidad, no consideramos estos desafíos de _machine learning_, que se caracterizan por casos con muchos predictores. Volvamos al ejemplo de dígitos en el que teníamos 784 predictores. Para fines ilustrativos, comenzaremos simplificando este problema a uno con dos predictores y dos clases. Específicamente, definimos el desafío como construir un algoritmo que pueda determinar si un dígito es un 2 o 7 de los predictores. No estamos del todo listos para construir algoritmos con 784 predictores, por lo que extraeremos dos predictores sencillos de los 784: la proporción de píxeles oscuros que están en el cuadrante superior izquierdo ($X_1$) y el cuadrante inferior derecho ($X_2$).
+En los dos ejemplos sencillos anteriores, solo teníamos un predictor. Realmente no consideramos estos retos de _machine learning_, que se caracterizan por casos con muchos predictores. Volvamos al ejemplo de dígitos en el que teníamos 784 predictores. Para fines ilustrativos, comenzaremos simplificando este problema a uno con dos predictores y dos clases. Específicamente, definimos el desafío como construir un algoritmo que pueda determinar si un dígito es un 2 o 7 de los predictores. No estamos del todo listos para construir algoritmos con 784 predictores, por lo que extraeremos dos predictores sencillos de los 784: la proporción de píxeles oscuros que están en el cuadrante superior izquierdo ($X_1$) y el cuadrante inferior derecho ($X_2$).
 
 Entonces seleccionamos una muestra aleatoria de 1,000 dígitos, 500 en el set de entrenamiento y 500 en el set de evaluación. Proveemos este set de datos en el paquete `dslabs`:
 
@@ -10,16 +10,15 @@ library(dslabs)
 data("mnist_27")
 ```
 
-Podemos explorar los datos trazando los dos predictores y usando colores para denotar las etiquetas:
+Podemos explorar los datos graficando los dos predictores y usando colores para denotar las etiquetas:
 
 ```{r two-or-seven-scatter}
 mnist_27$train %>% ggplot(aes(x_1, x_2, color = y)) + geom_point()
 ```
 
-Podemos ver de inmediato algunos patrones. Por ejemplo, si $X_1$ (el panel superior izquierdo) es muy grande, entonces el dígito es probablemente un 7. Además, para valores más pequeños de $X_1$, los 2s parecen estar en los valores de rango medio de $X_2$.
+Inmediatamente podemos ver algunos patrones. Por ejemplo, si $X_1$ (el panel superior izquierdo) es muy grande, entonces el dígito es probablemente un 7. Además, para valores más pequeños de $X_1$, los 2s parecen estar en los valores de rango medio de $X_2$.
 
-[fix eng display too] Estas son las imágenes de los dígitos con los valores más grandes y más pequeños para $X_1$:
-Y aquí están las imágenes originales correspondientes al mayor y menor valor de $X_2$:
+[fix check ok] Para ilustrar como interpretar $X_1$ y $X_2$, incluimos cuatro imágenes de ejemplo. A la izquierda están las imágenes originales de los dos dígitos con los valores más grandes y más pequeños para $X_1$ y a la derecha tenemos las imágenes correspondientes a los valores más grandes y más pequeños de $X_2$:
 
 ```{r two-or-seven-images-large-x1, echo=FALSE, out.width="100%", fig.height=3, fig.width=6.5}
 if(!exists("mnist")) mnist <- read_mnist()
@@ -61,7 +60,7 @@ ggtitle("Largest and smallest x_2")
 gridExtra::grid.arrange(p1, p2, ncol = 2)
 ```
 
-Podemos comenzar a tener una idea de por qué estos predictores son útiles, pero también por qué el problema será algo desafiante.
+Comenzamos a tener una idea de por qué estos predictores son útiles, pero también por qué el problema será algo desafiante.
 
 Realmente no hemos aprendido ningún algoritmo todavía, así que intentemos construir un algoritmo usando regresión. El modelo es simplemente:
 
@@ -78,7 +77,7 @@ mutate(y = ifelse(y==7, 1, 0)) %>%
 lm(y ~ x_1 + x_2, data = .)
 ```
 
-Ahora podemos construir una regla de decisión basada en [fix estimacion o estimado] el estimado de $\hat{p}(x_1, x_2)$:
+Ahora podemos construir una regla de decisión basada en el estimado de $\hat{p}(x_1, x_2)$:
 
 ```{r}
 library(caret)
@@ -89,7 +88,7 @@ confusionMatrix(y_hat, mnist_27$test$y)$overall[["Accuracy"]]
 
 Obtenemos una exactidud muy superior al 50%. No está mal para nuestro primer intento. ¿Pero podemos mejorar?
 
-Porque construimos el ejemplo `mnist_27` y teníamos a nuestra disposición 60,000 dígitos solo en el set de datos MNIST, lo usamos para construir la distribución condicional _verdadera_ $p(x_1, x_2)$. Tengan en cuenta que esto es algo a lo que no tenemos acceso en la práctica, pero lo incluimos en este ejemplo porque permite la comparación de $\hat{p}(x_1, x_2)$ a la verdadera $p(x_1, x_2)$. Esta comparación nos enseña las limitaciones de diferentes algoritmos. Hagamos eso aquí. Hemos almacenado el verdadero $p(x_1,x_2)$ en el objeto `mnist_27` y podemos graficar la imagen usando la función `geom_raster()` de __ggplot2__ . Elegimos mejores colores y usamos la  función `stat_contour` para dibujar una curva que separe pares $(x_1,x_2)$ para cual $p(x_1,x_2) > 0.5$ y pares para los cuales $p(x_1,x_2) < 0.5$:
+Porque construimos el ejemplo `mnist_27` y teníamos a nuestra disposición 60,000 dígitos solo en el set de datos MNIST, lo usamos para construir la distribución condicional _verdadera_ $p(x_1, x_2)$. [fix check 'verdadera'] Tengan en cuenta que esto es algo a lo que no tenemos acceso en la práctica, pero lo incluimos en este ejemplo porque permite comparar $\hat{p}(x_1, x_2)$ con la verdadera $p(x_1, x_2)$. Esta comparación nos enseña las limitaciones de diferentes algoritmos. Hagamos eso aquí. Hemos almacenado el verdadero $p(x_1,x_2)$ en el objeto `mnist_27` y podemos graficar la imagen usando la función `geom_raster()` de __ggplot2__ . Elegimos mejores colores y usamos la  función `stat_contour` para dibujar una curva que separe pares $(x_1,x_2)$ para cual $p(x_1,x_2) > 0.5$ y pares para los cuales $p(x_1,x_2) < 0.5$:
 
 ```{r true-p-better-colors}
 mnist_27$true_p %>% ggplot(aes(x_1, x_2, z = p, fill = p)) +
@@ -106,7 +105,7 @@ $$
 \hat{\beta}_0 + \hat{\beta}_1 x_1 + \hat{\beta}_2 x_2 = 0.5 \implies
 x_2 = (0.5-\hat{\beta}_0)/\hat{\beta}_2 -\hat{\beta}_1/\hat{\beta}_2 x_1
 $$
-Tengan en cuenta que para este límite, $x_2$ es una función lineal de $x_1$. Esto implica que nuestro enfoque de regresión logística no tiene posibilidades de capturar la naturaleza no lineal [fix check all] de la verdadera $p(x_1,x_2)$. A continuación se muestra una representación visual de $\hat{p}(x_1, x_2)$. Utilizamos la función `squish` del el paquete __scales__ para restringir las estimaciones entre 0 y 1. Podemos ver dónde se cometieron los errores al mostrar también los datos y el límite. Principalmente provienen de valores bajos $x_1$ que tienen un valor alto o bajo de $x_2$. La regresión no puede detectar esto.
+Tengan en cuenta que para este límite, $x_2$ es una función lineal de $x_1$. Esto implica que nuestro enfoque de regresión logística no tiene posibilidades de capturar la naturaleza no lineal [fix check all] de la verdadera $p(x_1,x_2)$. A continuación se muestra una representación visual de $\hat{p}(x_1, x_2)$. Utilizamos la función `squish` del paquete __scales__ para restringir los estimados entre 0 y 1. Podemos ver dónde se cometieron los errores al mostrar también los datos y el límite. Principalmente provienen de valores bajos $x_1$ que tienen un valor alto o bajo de $x_2$. La regresión no puede detectar esto.
 
 ```{r regression-p-hat, echo=FALSE, out.width="100%", fig.height=3, fig.width=7}
 p_hat <- predict(fit, newdata = mnist_27$true_p)
@@ -124,7 +123,7 @@ geom_point(mapping = aes(x_1, x_2, color=y), data = mnist_27$test)
 gridExtra::grid.arrange(p1, p2, ncol = 2)
 ```
 
-Necesitamos algo más flexible: un método que permita estimaciones con formas distintas a un plano.
+Necesitamos algo más flexible: un método que permita estimados con formas distintas a un plano.
 
-Vamos a aprender algunos algoritmos nuevos basados en diferentes ideas y conceptos. Pero lo que todos tienen en común es que permiten enfoques más flexibles. Comenzaremos describiendo [fix] enfoques _nearest neighbor_ y _kernel_. Para introducir los conceptos detrás de estos enfoques, comenzaremos nuevamente con un ejemplo unidimensional simple y describiremos [fix] el concepto de _smoothing_.
+Vamos a aprender algunos algoritmos nuevos basados en diferentes ideas y conceptos. Pero lo que todos tienen en común es que permiten enfoques más flexibles. Comenzaremos describiendo [fix] enfoques _nearest neighbor_ y _kernel_. Para introducir los conceptos detrás de estos enfoques, comenzaremos nuevamente con un ejemplo unidimensional sencillo y describiremos [fix] el concepto de _suavización_ (_smoothing_ en inglés).
 

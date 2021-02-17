@@ -1,8 +1,8 @@
 ## Probabilidades y expectativas condicionales
 
-En las aplicaciones de _machine learning_, rara vez podemos predecir los resultados perfectamente. Por ejemplo, los detectores de spam a menudo no detectan correos electrónicos que son claramente spam, Siri a menudo no entiende las palabras que estamos diciendo y su banco a veces piensa que su tarjeta fue robada cuando no fue así. La razón más común para no poder construir algoritmos perfectos es que es imposible. Para ver esto, tengan en cuenta que la mayoría de los sets de datos incluirán grupos de observaciones con los mismos valores exactos observados para todos los predictores, pero con diferentes resultados. Debido a que nuestras reglas de predicción son funciones, entradas iguales (los predictores) implican que los resultados (las predicciones) tienen que ser iguales . Por lo tanto, para un set de datos en el que los mismos predictores se asocian con diferentes resultados en diferentes observaciones individuales, es imposible predecir correctamente para todos estos casos. Vimos un ejemplo sencillo de esto en la sección anterior: para cualquier altura dada $x$, tendrán hombres y mujeres que son $x$ pulgadas de alto.
+En las aplicaciones de _machine learning_, rara vez podemos predecir los resultados perfectamente. Por ejemplo, los detectores de spam a menudo no detectan correos electrónicos que son claramente spam, Siri no siempre entiende las palabras que estamos diciendo y su banco a veces piensa que su tarjeta fue robada cuando no fue así. La razón más común para no poder construir algoritmos perfectos es que es imposible. [fix] Para ver esto/para entender esto, noten que la mayoría de los sets de datos incluirán grupos de observaciones con los mismos valores exactos observados para todos los predictores, pero con diferentes resultados. Debido a que nuestras reglas de predicción son funciones, entradas iguales (los predictores) implican que los resultados (las predicciones) tienen que ser iguales . Por lo tanto, para un set de datos en el que los mismos predictores se asocian con diferentes resultados en diferentes observaciones individuales, es imposible predecir correctamente para todos estos casos. Vimos un ejemplo sencillo de esto en la sección anterior: para cualquier altura dada $x$, tendrán hombres y mujeres que son $x$ pulgadas de alto.
 
-Sin embargo, nada de esto significa que no podamos construir algoritmos útiles que sean mucho mejores que adivinar, y en algunos casos mejores que las opiniones de expertos. Para lograr esto de manera óptima, hacemos uso de representaciones probabilísticas del problema basadas en las ideas presentadas en la Sección \@ref(conditional-expectation). Las observaciones con los mismos valores observados para los predictores pueden ser desiguales, pero podemos suponer que todas tienen la misma probabilidad de esta clase o de esa clase. Escribiremos esta idea matemáticamente para el caso de datos categóricos.
+Sin embargo, nada de esto significa que no podamos construir algoritmos útiles que sean mucho mejores que adivinar, y que en algunos casos sean mejores que las opiniones de expertos. Para lograr esto de manera óptima, hacemos uso de representaciones probabilísticas del problema basadas en las ideas presentadas en la Sección \@ref(conditional-expectation). Las observaciones con los mismos valores observados para los predictores pueden ser desiguales, pero podemos suponer que todas tienen la misma probabilidad de esta clase o de esa clase. Escribiremos esta idea matemáticamente para el caso de datos categóricos.
 
 ### Probabilidades condicionales
 
@@ -12,28 +12,28 @@ $$
 \mbox{Pr}(Y=k \mid X_1 = x_1,\dots,X_p=x_p), \, \mbox{for}\,k=1,\dots,K
 $$
 
-Para evitar escribir todos los predictores, usaremos las letras en negrita como esta: $\mathbf{X} \equiv (X_1,\dots,X_p)$ y $\mathbf{x} \equiv (x_1,\dots,x_p)$. También usaremos la siguiente notación para la probabilidad condicional de ser clase $k$:
+Para evitar escribir todos los predictores, usaremos fuente negra así: $\mathbf{X} \equiv (X_1,\dots,X_p)$ y $\mathbf{x} \equiv (x_1,\dots,x_p)$. También usaremos la siguiente notación para la probabilidad condicional de ser clase $k$:
 
 $$
 p_k(\mathbf{x}) = \mbox{Pr}(Y=k \mid \mathbf{X}=\mathbf{x}), \, \mbox{for}\, k=1,\dots,K
 $$
 
-Nota: utilizaremos la notación $p(x)$ para representar probabilidades condicionales como funciones de los predictores. No lo confundan con el $p$ que representa el número de predictores.
+Ojo: Utilizaremos la notación $p(x)$ para representar probabilidades condicionales como funciones de los predictores. No lo confundan con el $p$ que representa el número de predictores.
 
 Estas probabilidades guían la construcción de un algoritmo que mejora la predicción: para cualquier $\mathbf{x}$, vamos a predecir la clase $k$ con la mayor probabilidad entre $p_1(x), p_2(x), \dots p_K(x)$. En notación matemática, lo escribimos así: $\hat{Y} = \max_k p_k(\mathbf{x})$.
 
-En _machine learning_, nos referimos a esto como la _Regla de Bayes_. Pero tengan en cuenta que esta es una regla teórica ya que en la práctica no sabemos $p_k(\mathbf{x}), k=1,\dots,K$. De hecho, estimar estas probabilidades condicionales puede considerarse como el principal desafío de _machine learning_. Cuanto mejores sean nuestras estimaciones de la probabilidad $\hat{p}_k(\mathbf{x})$, mejor será nuestro predictor:
+En _machine learning_, nos referimos a esto como la _Regla de Bayes_. Pero tengan en cuenta que esta es una regla teórica ya que en la práctica no sabemos $p_k(\mathbf{x}), k=1,\dots,K$. De hecho, estimar estas probabilidades condicionales puede considerarse como el principal desafío de _machine learning_. Cuanto mejores sean nuestros estimados de la probabilidad $\hat{p}_k(\mathbf{x})$, mejor será nuestro predictor:
 
 $$\hat{Y} = \max_k \hat{p}_k(\mathbf{x})$$
 
 Entonces, lo que predeciremos depende de dos cosas: 1) cuán cerca están las $\max_k p_k(\mathbf{x})$ a 1 o 0 (certeza perfecta)
-y 2) cuán cerca están nuestras estimaciones $\hat{p}_k(\mathbf{x})$ a $p_k(\mathbf{x})$. No podemos hacer nada con respecto a la primera restricción, ya que está determinada por la naturaleza del problema, por lo tanto, nos dedicaremos a encontrar buenas formas de estimar las probabilidades condicionales. La primera restricción implica que tenemos límites en cuanto a cuán bien puede funcionar hasta el mejor algoritmo posible. Deberían acostumbrarse a la idea de que, si bien en algunos desafíos podremos lograr una precisión casi perfecta, por ejemplo con lectores de dígitos, en otros nuestro éxito está restringido por la aleatoriedad del proceso, como con recomendaciones de películas.
+y 2) cuán cerca están nuestros estimados de $\hat{p}_k(\mathbf{x})$ a $p_k(\mathbf{x})$. No podemos hacer nada con respecto a la primera restricción, ya que está determinada por la naturaleza del problema y, por lo tanto, nos dedicaremos a encontrar buenas formas de estimar las probabilidades condicionales. La primera restricción implica que tenemos límites en cuanto a cuán bien puede funcionar hasta el mejor algoritmo posible. Deberían acostumbrarse a la idea de que, si bien en algunos retos podremos lograr una exactitud casi perfecta, por ejemplo con lectores de dígitos, en otros nuestro éxito está restringido por la aleatoriedad del proceso, como con recomendaciones de películas.
 
-Antes de continuar, es importante recordar que definir nuestra predicción maximizando la probabilidad no siempre es óptimo en la práctica y depende del contexto. Como se discutió anteriormente, la sensibilidad y la especificidad pueden diferir en importancia. Pero incluso en estos casos, tener una buena estimación de la $p_k(x), k=1,\dots,K$ nos bastará para construir modelos de predicción óptimos, ya que podemos controlar el equilibrio entre especificidad y sensibilidad como queramos. Por ejemplo, simplemente podemos cambiar los límites utilizados para predecir un resultado u otro. En el ejemplo del avión, podemos aterrizar el avión en cualquier momento en que la probabilidad de mal funcionamiento sea superior a 1 en un millón, en lugar del 1/2 predeterminado utilizado cuando los tipos de error son igualmente indeseados.
+Antes de continuar, es importante recordar que definir nuestra predicción maximizando la probabilidad no siempre es óptimo en la práctica y depende del contexto. Como se discutió anteriormente, la sensibilidad y la especificidad pueden diferir en importancia. Pero incluso en estos casos, tener un buen estimado de la $p_k(x), k=1,\dots,K$ nos bastará para construir modelos de predicción óptimos, ya que podemos controlar el equilibrio entre especificidad y sensibilidad como queramos. Por ejemplo, simplemente podemos cambiar los umbrales utilizados para predecir un resultado u otro. En el ejemplo del avión, podemos aterrizar el avión en cualquier momento en que la probabilidad de mal funcionamiento sea superior a 1 en un millón, en lugar del 1/2 predeterminado que se usa cuando los tipos de error son igualmente indeseados.
 
 ### Expectativas condicionales
 
-Para datos binarios, puedes pensar en la probabilidad $\mbox{Pr}(Y=1 \mid \mathbf{X}=\mathbf{x})$ como la proporción de 1s en el estrato de la población para la cual $\mathbf{X}=\mathbf{x}$. Muchos de los algoritmos que aprenderemos se pueden aplicar tanto a datos categóricos como continuos debido a la conexión entre las _probabilidades condicionales_ y las _expectativas condicionales_.
+Para datos binarios, pueden pensar en la probabilidad $\mbox{Pr}(Y=1 \mid \mathbf{X}=\mathbf{x})$ como la proporción de 1s en el estrato de la población para la cual $\mathbf{X}=\mathbf{x}$. Muchos de los algoritmos que aprenderemos se pueden aplicar tanto a datos categóricos como continuos debido a la conexión entre las _probabilidades condicionales_ y las _expectativas condicionales_.
 
 Porque la expectativa es el promedio de los valores $y_1,\dots,y_n$ en la población, en el caso en que las $y$s son 0 o 1, la expectativa es equivalente a la probabilidad de elegir aleatoriamente un uno ya que el promedio es simplemente la proporción de unos:
 
@@ -46,9 +46,9 @@ Como resultado, a menudo solo usamos la expectativa para denotar tanto la probab
 Al igual que con los resultados categóricos, en la mayoría de las aplicaciones, los mismos predictores observados no garantizan los mismos resultados continuos. En cambio, suponemos que el resultado sigue la misma distribución condicional. Ahora explicaremos por qué usamos la expectativa condicional para definir nuestros predictores.
 
 
-### La expectativa condicional minimiza la función de pérdida al cuadrado
+### La expectativa condicional minimiza la función de pérdida cuadrática
 
-¿Por qué nos importa la expectativa condicional en _machine learning_? Esto se debe a que el valor esperado tiene una propiedad matemática atractiva: minimiza el MSE. Específicamente, de todas las predicciones posibles $\hat{Y}$,
+¿Por qué nos importa la expectativa condicional en _machine learning_? Se debe a que el valor esperado tiene una propiedad matemática atractiva: minimiza el MSE. Específicamente, de todas las predicciones posibles $\hat{Y}$,
 
 $$
 \hat{Y} = \mbox{E}(Y \mid \mathbf{X}=\mathbf{x}) \, \mbox{ minimizes } \, \mbox{E}\{ (\hat{Y} - Y)^2 \mid \mathbf{X}=\mathbf{x} \}
@@ -60,7 +60,7 @@ $$
 f(\mathbf{x}) \equiv \mbox{E}( Y \mid \mathbf{X}=\mathbf{x} )
 $$
 
-para cualquier conjunto de características $\mathbf{x} = (x_1, \dots, x_p)$. Por supuesto, esto es más fácil decirlo que hacerlo, ya que esta función puede tomar cualquier forma y $p$ puede ser muy grande. Consideren un caso en el que solo tenemos un predictor $x$. La expectativa $\mbox{E}\{ Y \mid X=x \}$ puede ser cualquier función de $x$: una línea, una parábola, una onda sinusoidal, una función escanolada, cualquier cosa. Se vuelve aún más complicado cuando consideramos instancias con grandes $p$, en ese caso $f(\mathbf{x})$ es una función de un vector multidimensional $\mathbf{x}$. Por ejemplo, en nuestro ejemplo de lector de dígitos $p = 784$! **La principal forma en que los algoritmos competitivos de _machine learning_ difieren es en su enfoque para estimar esta expectativa. **
+para cualquier conjunto de características $\mathbf{x} = (x_1, \dots, x_p)$. Por supuesto, esto es más fácil decirlo que hacerlo, ya que esta función puede tomar cualquier forma y $p$ puede ser muy grande. Consideren un caso en el que solo tenemos un predictor $x$. La expectativa $\mbox{E}\{ Y \mid X=x \}$ puede ser cualquier función de $x$: una línea, una parábola, una onda sinusoidal, una función escalón, etc.. Se vuelve aún más complicado cuando consideramos instancias con grandes $p$, en cual caso $f(\mathbf{x})$ es una función de un vector multidimensional $\mathbf{x}$. Por ejemplo, en nuestro ejemplo de lector de dígitos $p = 784$! **La principal forma en que los algoritmos competitivos de _machine learning_ difieren es en su enfoque para estimar esta expectativa. **
 
 
 ## Ejercicios
@@ -68,13 +68,13 @@ para cualquier conjunto de características $\mathbf{x} = (x_1, \dots, x_p)$. Po
 1\. Calcule las probabilidades condicionales de ser hombre para el set the datos `heights`. Redondee las alturas a la pulgada más cercana. Grafique la probabilidad condicional estimada $P(x) = \mbox{Pr}(\mbox{Male} | \mbox{height}=x)$ para cada $x$.
 
 
-2\. En el gráfico que acabamos de hacer, vemos una gran variabilidad para valores bajos de altura. Esto se debe a que tenemos pocos puntos de datos en estos estratos. Esta vez use la función `quantile` para cuantiles $0.1,0.2,\dots,0.9$ y la función `cut` para asegurar que cada grupo tenga el mismo número de puntos. Sugerencia: para cualquier vector numérico `x`, puede crear grupos basados en cuantiles como este:
+2\. En el gráfico que acabamos de hacer, vemos una gran variabilidad para valores bajos de altura. Esto se debe a que tenemos pocos puntos de datos en estos estratos. Use la función `quantile` para cuantiles $0.1,0.2,\dots,0.9$ y la función `cut` para asegurar que cada grupo tenga el mismo número de puntos. Sugerencia: para cualquier vector numérico `x`, puede crear grupos basados en cuantiles como este:
 
 ```{r, eval=FALSE}
 cut(x, quantile(x, seq(0, 1, 0.1)), include.lowest = TRUE)
 ```
 
-3\. Genere datos a partir de una distribución normal bivariada utilizando el paquete __MASS__ como este:
+3\. Genere datos a partir de una distribución normal de dos variables utilizando el paquete __MASS__ como este:
 
 ```{r, eval=FALSE}
 Sigma <- 9*matrix(c(1,0.5,0.5,1), 2, 2)
@@ -82,6 +82,6 @@ dat <- MASS::mvrnorm(n = 10000, c(69, 69), Sigma) %>%
 data.frame() %>% setNames(c("x", "y"))
 ```
 
-Puede hacer un diagrama rápido de los datos usando `plot(dat)`. Use un enfoque similar al ejercicio anterior para estimar las expectativas condicionales y hacer un gráfico.
+Puede hacer un gráfico rápido de los datos usando `plot(dat)`. Use un enfoque similar al ejercicio anterior para estimar las expectativas condicionales y haga un gráfico.
 
 
