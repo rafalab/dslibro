@@ -31,15 +31,15 @@ data("polls_2008")
 qplot(day, margin, data = polls_2008)
 ```
 
-Para los propósitos de este ejemplo, no lo piensem como un problema de pronóstico. En cambio, simplemente estamos interesados en aprender la forma de la tendencia *después* de que terminen las elecciones.
+Para los propósitos de este ejemplo, no lo piensen como un problema de pronóstico. En cambio, simplemente estamos interesados en entender la forma de la tendencia *después* de que terminen las elecciones.
 
-Suponemos que para cualquier día $x$, hay una verdadera preferencia entre el electorado $f(x)$, pero debido a la incertidumbre introducida por el sondeo, cada punto de datos viene con un error $\varepsilon$. Un modelo matemático para el margen de encuesta observado $Y_i$ es:
+Suponemos que para cualquier día $x$, [fix verdadera?] hay una verdadera preferencia entre el electorado $f(x)$, pero debido a la incertidumbre introducida por el sondeo, cada punto de datos viene con un error $\varepsilon$. Un modelo matemático para el margen de encuesta observado $Y_i$ es:
 
 $$
 Y_i = f(x_i) + \varepsilon_i
 $$
 
-Para pensar en esto como un problema de _machine learning_, tengan en cuenta que queremos predecir $Y$ dado un día $x$. Si supiéramos la expectativa condicional $f(x) = \mbox{E}(Y \mid X=x)$, lo usaríamos Pero como no conocemos esta expectativa condicional, tenemos que estimarla. Usemos la regresión, ya que es el único método que hemos aprendido hasta ahora.
+Para pensar en esto como un problema de _machine learning_, tengan en cuenta que queremos predecir $Y$ dado un día $x$. Si supiéramos la expectativa condicional $f(x) = \mbox{E}(Y \mid X=x)$, lo usaríamos. Pero como no conocemos esta expectativa condicional, tenemos que estimarla. Usemos la regresión, ya que es el único método que hemos aprendido hasta ahora.
 
 ```{r linear-regression-not-flexible, echo=FALSE}
 resid <- ifelse(lm(margin~day, data = polls_2008)$resid > 0, "+", "-")
@@ -50,18 +50,18 @@ geom_smooth(method = "lm", se = FALSE, color = "black") +
 geom_point(aes(color = resid), size = 3)
 ```
 
-La línea que vemos no parece describir muy bien la tendencia. Por ejemplo, el 4 de septiembre (día -62), se celebró la Convención Republicana y los datos sugieren que le dio a John McCain un impulso en las encuestas. Sin embargo, la línea de regresión no captura esta tendencia potencial. Para ver más claramente la falta de ajuste, observamos que los puntos por encima de la línea ajustada (azul) y los de abajo (rojo) no se distribuyen uniformemente entre los días. Por lo tanto, necesitamos un enfoque alternativo más flexible.
+La línea que vemos no parece describir muy bien la tendencia. Por ejemplo, el 4 de septiembre (día -62), se celebró la Convención Republicana y los datos sugieren que este evento le dio a John McCain un impulso en las encuestas. Sin embargo, la línea de regresión no captura esta tendencia potencial. Para ver más claramente la _falta de ajuste_, observamos que los puntos por encima de la línea ajustada (azul) y los de abajo (rojo) no se distribuyen uniformemente entre los días. Por lo tanto, necesitamos un enfoque alternativo más flexible.
 
 ## Suavización de compartimientos
 
-La idea general del suavización es agrupar los puntos de datos en estratos en los que el valor de $f(x)$ se puede suponer que es constante. Podemos hacer esta suposición porque pensamos $f(x)$ cambia lentamente y, como resultado, $f(x)$ es casi constante en pequeñas ventanas de tiempo. Un ejemplo de esta idea para los datos `poll_2008` es suponer que la opinión pública se mantuvo aproximadamente igual en el plazo de una semana. Con este supuesto, tenemos varios puntos de datos con el mismo valor esperado.
+La idea general del suavización es agrupar los puntos de datos en estratos en los que el valor de $f(x)$ se puede suponer que es constante. Podemos hacer esta suposición porque pensamos que $f(x)$ cambia lentamente y, como resultado, $f(x)$ es casi constante en pequeñas ventanas de tiempo. Un ejemplo de esta idea para los datos `poll_2008` es suponer que la opinión pública se mantuvo aproximadamente igual en el plazo de una semana. Con este supuesto, tenemos varios puntos de datos con el mismo valor esperado.
 
-Si fijamos un día para estar en el centro de nuestra semana, llámelo $x_0$, entonces para cualquier otro día $x$ tal que $|x - x_0| \leq 3.5$, asumimos que $f(x)$ es una constante $f(x) = \mu$. Esta suposición implica que:
+Si fijamos un día para estar en el centro de nuestra semana, llámelo $x_0$, entonces para cualquier otro día $x$ tal que $|x - x_0| \leq 3.5$, suponemos que $f(x)$ es una constante $f(x) = \mu$. Esta suposición implica que:
 $$
 E[Y_i | X_i = x_i ] \approx \mu \mbox{ if } |x_i - x_0| \leq 3.5
 $$
 
-Al suavizar, llamamos al tamaño del intervalo que satisface $|x_i - x_0| \leq 3.5$, el _tamaño de la ventana_, _parámetro de suavizado_ o _span_. Más adelante veremos que intentamos optimizar este parámetro.
+En la suavización, llamamos el tamaño del intervalo que satisface $|x_i - x_0| \leq 3.5$, el _tamaño de la ventana_, _parámetro de suavizado_ o _span_. Más adelante veremos que intentamos optimizar este parámetro.
 
 Esta suposición implica que una buen estimado de $f(x)$ es el promedio de $Y_i$ valores en la ventana. Si definimos $A_0$ como el conjunto de índices $i$ tal que $|x_i - x_0| \leq 3.5$ y $N_0$ como el número de índices en $A_0$, entonces nuestro estimado es:
 
@@ -141,7 +141,7 @@ geom_line(aes(day, smooth), color="red")
 
 ## Kernels
 
-El resultado final de suavización de compartimiento es bastante ondulante. Una razón para esto es que cada vez que la ventana se mueve, cambian dos puntos. Podemos atenuar esto algo tomando promedios ponderados que le dan al punto central más peso que a los puntos lejanos, con los dos puntos en los bordes recibiendo muy poco peso.
+El resultado final de la suavización de compartimiento es bastante ondulante. Una razón para esto es que cada vez que la ventana se mueve, cambian dos puntos. Podemos atenuar esto algo tomando promedios ponderados que le dan al punto central más peso que a los puntos lejanos, con los dos puntos en los bordes recibiendo muy poco peso.
 
 Pueden pensar en el enfoque de suavización de compartimiento como un promedio ponderado:
 
@@ -149,7 +149,7 @@ $$
 \hat{f}(x_0) = \sum_{i=1}^N w_0(x_i) Y_i
 $$
 
-en el que cada punto recibe un peso de $0$ o $1/N_0$, con $N_0$ el número de puntos en la semana. En el código anterior, usamos el argumento `kernel="box"` en nuestra llamada a la función `ksmooth`. Esto se debe a que [fix] la función de peso parece una caja. La función `ksmooth` ofrece una opción "más suave" que utiliza la densidad normal para asignar pesos.
+en el que cada punto recibe un peso de $0$ o $1/N_0$, con $N_0$ el número de puntos en la semana. En el código anterior, usamos el argumento `kernel="box"` en nuestra llamada a la función `ksmooth`. Esto se debe a que [fix check eng] la función de peso parece una caja. La función `ksmooth` ofrece una opción "más suave" que utiliza la densidad normal para asignar pesos.
 
 ```{r gaussian-kernel, echo=FALSE, out.width="80%", fig.height=3, fig.width=6}
 x_0 <- -125
