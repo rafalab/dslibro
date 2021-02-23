@@ -21,6 +21,7 @@
 | bandwidth (window size) | ventana o parámetro de suavizado  |  |  |
 | bar plots| diagrama de barras  | |  |
 | bin | compartimiento |  |  |
+| bin smoothing | suavización de compartimiento |  |  |
 | bindwidth | tamaño de compartimiento |  |  |
 | bivariate normal distribution | distribución normal de dos variables  |  |  |
 | boxplot | diagrama de caja | display the data in a boxplot| diagrama de caja y bigote | | 
@@ -52,6 +53,7 @@
 | execute (verb)| ejecutar |to execute the code | ejecutar | ejecutar |
 | __F__ | | | | |
 | F score| medida F |  |  |
+| false positive rate  | tasa de falsos positivos |  |  |
 | feature (for machine learning) | atributo | | | |
 | file (verb) | archivar | to file |  |  |
 | file (noun)| archivo |save the script in a file | Archivo | archivo o fichero |
@@ -168,6 +170,7 @@ transformación logarítmica   |  |
 | tidy format | formato _tidy_ | this data is in tidy format | | | 
 | time series plot | gráfico de series de tiempo  | |  |
 | training set |  set de entrenamiento |  set/datos de entrenamiento  |  |
+| true positive rate  | tasa de positivos verdaderos |  |  |
 | __U__ | | | | |
 | __V__ | | | | |
 | validation set | set de validación |  |  |  |
