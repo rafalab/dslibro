@@ -2,7 +2,7 @@
 
 Antes de comenzar a describir enfoques para optimizar la forma en que construimos algoritmos, primero debemos definir a qué nos referimos cuando decimos que un enfoque es mejor que otro. En esta sección, nos centramos en describir las formas en que se evalúan los algoritmos de _machine learning_. Específicamente, necesitamos cuantificar lo que queremos decir con "mejor".
 
-Para nuestra primera introducción a los conceptos de _machine learning_, comenzaremos con un ejemplo aburrido y sencillo:  cómo predecir sexo basado altura. A medida que explicamos _machine learning_ paso a paso, este ejemplo nos permitirá establecer el primer componente básico. Muy pronto, estaremos atacando desafíos más interesantes. Utilizamos el paquete __caret__, que tiene varias funciones útiles para construir y evaluar métodos de _machine learning_. Presentamos los detalles de este paquete en la Sección \@ref(caret).
+Para nuestra primera introducción a los conceptos de _machine learning_, comenzaremos con un ejemplo aburrido y sencillo:  cómo predecir sexo basado en altura. A medida que explicamos _machine learning_ paso a paso, este ejemplo nos permitirá establecer el primer componente básico. Muy pronto, estaremos atacando desafíos más interesantes. Utilizamos el paquete __caret__, que tiene varias funciones útiles para construir y evaluar métodos de _machine learning_. Presentamos los detalles de este paquete en la [fix eng says 'section 30' no debe ser chapter?] Sección \@ref(caret).
 
 ```{r, message=FALSE, warning=FALSE}
 library(tidyverse)
@@ -27,7 +27,7 @@ En este caso, solo tenemos un predictor, altura, mientras que `y` es claramente 
 
 ### Sets de entrenamiento y de evaluación
 
-En última instancia, un algoritmo de _machine learning_ se evalúa basado en cómo funciona en el mundo real con sets de datos completamente nuevos. Sin embargo, cuando desarrollamos un algoritmo, generalmente tenemos un set de datos para el que conocemos los resultados, como lo hacemos con las alturas: sabemos el sexo de cada estudiante en nuestro set de datos. Por lo tanto, para imitar el proceso de evaluación final, generalmente dividimos los datos en dos partes y actuamos como si no supiéramos el resultado de una de estas. Dejamos de fingir que no conocemos el resultado para evaluar el algoritmo, pero solo _después_ de haber terminado de construirlo. Nos referimos al grupo para el que conocemos el resultado  y que usamos para desarrollar el algoritmo como el _set de entrenamiento_ (_training set_ en inglés). Nos referimos al grupo para el que pretendemos que no conocer el resultado como el _set de evaluación_ (_test set_ en inglés).
+En última instancia, un algoritmo de _machine learning_ se evalúa basado en cómo funciona en el mundo real con sets de datos completamente nuevos. Sin embargo, cuando desarrollamos un algoritmo, generalmente tenemos un set de datos [fix] para el cual/que conocemos los resultados, como lo hacemos con las alturas: sabemos el sexo de cada estudiante en nuestro set de datos. Por lo tanto, para imitar el proceso de evaluación final, generalmente dividimos los datos en dos partes y actuamos como si no supiéramos el resultado de una de estas. Dejamos de fingir que no conocemos el resultado para evaluar el algoritmo, pero solo _después_ de haber terminado de construirlo. Nos referimos al grupo para el que conocemos el resultado  y que usamos para desarrollar el algoritmo como el _set de entrenamiento_ (_training set_ en inglés). Nos referimos al grupo para el que pretendemos que no conocer el resultado como el _set de evaluación_ (_test set_ en inglés).
 
 Una forma estándar de generar los sets de entrenamiento y de evaluación es dividiendo aleatoriamente los datos. El paquete __caret__ incluye la función `createDataPartition` que nos ayuda a generar índices para dividir aleatoriamente los datos en sets de entrenamiento y de evaluación:
 
@@ -92,7 +92,7 @@ La exactidud aumenta de 0.50 a aproximadamente 0.80:
 mean(y == y_hat)
 ```
 
-¿Pero podemos mejorarla aún más? En el ejemplo anterior, utilizamos un umbral de 62, pero podemos examinar la exactidud obtenida para otros umbrales y luego elegir el valor que provee los mejores resultados. Sin embargo,recuerden, **es importante que optimicemos el umbral utilizando solo el set de entrenamiento**: el set de evaluación es solo para evaluación. Aunque para este ejemplo simplista no es un problema, más adelante aprenderemos que evaluar un algoritmo en el set de entrenamiento puede conducir a un _sobreajuste_ (_overfitting_ en inglés), que a menudo resulta en evaluaciones peligrosamente sobre optimistas.
+¿Pero podemos mejorarla aún más? En el ejemplo anterior, utilizamos un umbral de 62, pero podemos examinar la exactidud obtenida para otros umbrales y luego elegir el valor que provee los mejores resultados. Sin embargo, recuerden que **es importante que optimicemos el umbral utilizando solo el set de entrenamiento**: el set de evaluación es solo para evaluación. Aunque para este ejemplo sencillo no es un problema, más adelante aprenderemos que evaluar un algoritmo en el set de entrenamiento puede conducir a un _sobreajuste_ (_overfitting_ en inglés), que a menudo resulta en evaluaciones peligrosamente sobre optimistas.
 
 Aquí examinamos la exactidud de 10 umbrales diferentes y elegimos el que produce el mejor resultado:
 
@@ -120,7 +120,7 @@ Vemos que el valor máximo es:
 max(accuracy)
 ```
 
-que es mucho más grande que 0.5. El umbral que resulta en esta exactitud es:
+que es mucho más grande que 0.5. El umbral que resulta [fix] de/con/en esta exactitud es:
 
 ```{r}
 best_cutoff <- cutoff[which.max(accuracy)]
@@ -167,11 +167,11 @@ prev
 
 Entonces, al calcular la exactitud general, el alto porcentaje de errores cometidos para las mujeres se ve superado por las ganancias en las predicciones acertadas para los hombres. **Esto puede ser un gran problema en _machine learning_.** Si sus datos de entrenamiento están sesgados de alguna manera, es probable que también desarrolle algoritmos sesgados. El hecho de que hayamos utilizado un set de evaluación no importa porque también se deriva del  original set de datos sesgado. Esta es una de las razones por las que observamos métricas distintas de la exactitud general al evaluar un algoritmo de _machine learning_.
 
-Hay varias métricas que podemos usar para evaluar un algoritmo de manera que la prevalencia no afecte nuestra evaluación, y todas estas pueden derivarse de la matriz de confusión. Una forma general de mejorar el uso de la exactitud general es estudiar _sensibilidad_ y _especificidad_ por separado.
+Hay varias métricas que podemos usar para evaluar un algoritmo de manera que la prevalencia no afecte nuestra evaluación y todas estas pueden derivarse de la matriz de confusión. Una forma general de mejorar el uso de la exactitud general es estudiar _sensibilidad_ y _especificidad_ por separado.
 
 ### Sensibilidad y especificidad
 
-Para definir la sensibilidad y especificidad, necesitamos un resultado binario. Cuando los resultados son categóricos, podemos definir estos términos para una categoría específica. En el ejemplo de dígitos, podemos pedir la especificidad en el caso de predecir correctamente 2 en lugar de algún otro dígito. Una vez que especificamos una categoría de interés, podemos hablar sobre resultados positivos, $Y=1$ y resultados negativos, $Y=0$.
+Para definir la sensibilidad y especificidad, necesitamos un resultado binario. Cuando los resultados son categóricos, podemos definir estos términos para una categoría específica. En el ejemplo de dígitos, podemos pedir la especificidad en el caso de predecir correctamente 2 en lugar de algún otro dígito. Una vez que especifiquemos una categoría de interés, podemos hablar sobre resultados positivos, $Y=1$ y resultados negativos, $Y=0$.
 
 En general, la _sensibilidad_ se define como la capacidad de un algoritmo para predecir un resultado positivo cuando el resultado real es positivo: $\hat{Y}=1$ cuando $Y=1$. Un algoritmo que predice que todo es positivo ( $\hat{Y}=1$ pase lo que pase) tiene una sensibilidad perfecta, pero esta métrica por sí sola no es suficiente para evaluar un algoritmo. Por esta razón, también examinamos la _especificidad_, que generalmente se define como la capacidad de un algoritmo para no predecir un resultado positivo $\hat{Y}=0$ cuando el resultado real no es positivo $Y=0$. Podemos resumir de la siguiente manera:
 
@@ -199,9 +199,9 @@ kableExtra::kable_styling(font_size = 8)
 }
 ```
 
-La sensibilidad se cuantifica típicamente por $TP/(TP+FN)$, la proporción de positivos reales (la primera columna = $TP+FN$) que se predicen ser positivos ($TP$). Esta cantidad se conoce como la _tasa positiva verdadera_ (_true positive rate_ o TPR por sus siglas en inglés) o _recall_.
+[fix check vocab in these 2 paragraphs] La sensibilidad se cuantifica típicamente por $TP/(TP+FN)$, la proporción de positivos verdaderos (la primera columna = $TP+FN$) que se predicen ser positivos ($TP$). Esta cantidad se conoce como la _tasa de positivos verdaderos_ (_true positive rate_ o TPR por sus siglas en inglés) o _recall_.
 
-La especificidad se define como $TN/(TN+FP)$ o la proporción de negativos (la segunda columna = $FP+TN$) que se llaman negativos ($TN$). Esta cantidad también se denomina la _tasa negativa verdadera_ (_true negative rate_ o TNR por sus siglas en inglés). Hay otra forma de cuantificar la especificidad que es $TP/(TP+FP)$ o la proporción de resultados que se llaman positivos (la primera fila o $TP+FP$) que realmente son positivos ($TP$). Esta cantidad se conoce como _valor predictivo positivo_ (_positive predictive value_ o PPV por sus siglas en inglés) y también como _precisión_ (_precision_ en inglés). Tengan en cuenta que, a diferencia de TPR y TNR, la precisión depende de la prevalencia, ya que una mayor prevalencia implica que pueden obtener una mayor precisión incluso cuando adivinando.
+La especificidad se define como $TN/(TN+FP)$ o la proporción de negativos (la segunda columna = $FP+TN$) que se llaman negativos ($TN$). Esta cantidad también se denomina la _tasa de falsos positivos_ (_true negative rate_ o TNR por sus siglas en inglés). Hay otra forma de cuantificar la especificidad que es $TP/(TP+FP)$ o la proporción de resultados que se llaman positivos (la primera fila o $TP+FP$) que realmente son positivos ($TP$). Esta cantidad se conoce como _valor predictivo positivo_ (_positive predictive value_ o PPV por sus siglas en inglés) y también como _precisión_. Tengan en cuenta que, a diferencia de TPR y TNR, la precisión depende de la prevalencia, ya que una mayor prevalencia implica que pueden obtener una mayor precisión incluso cuando están adivinando.
 
 Los diferentes nombres pueden ser confusos, por lo que incluimos una tabla para ayudarnos a recordar los términos. La tabla incluye una columna que muestra la definición si pensamos en las proporciones como probabilidades.
 
@@ -212,13 +212,13 @@ sensibilidad | TPR | Recall | $\frac{\mbox{TP}}{\mbox{TP} + \mbox{FN}}$ | $\mbox
 especificidad | TNR | 1-FPR | $\frac{\mbox{TN}}{\mbox{TN}+\mbox{FP}}$ | $\mbox{Pr}(\hat{Y}=0 \mid Y=0)$ |
 especificidad | PPV | Precisión | $\frac{\mbox{TP}}{\mbox{TP}+\mbox{FP}}$ | $\mbox{Pr}(Y=1 \mid \hat{Y}=1)$|
 
-Aquí, TPR es tasa de positivos verdaderos, FPR es tasa de positivos falsos y PPV es valor predictivo positivo. La función `confusionMatrix` del paquete __caret__ calcula todas estas métricas para nosotros una vez que definimos qué categoría es "positiva". La función espera factores como entrada, y el primer nivel se considera el resultado positivo o $Y=1$. En nuestro ejemplo, `Female` es el primer nivel porque viene antes de `Male` alfabéticamente. Si escriben esto en R, verán varias métricas que incluyen exactitud, sensibilidad, especificidad y PPV.
+Aquí, TPR es tasa de positivos verdaderos, FPR es tasa de falsos positivos y PPV es valor predictivo positivo. La función `confusionMatrix` del paquete __caret__ calcula todas estas métricas para nosotros una vez que definamos qué categoría es "positiva". La función espera factores como entrada, y el primer nivel se considera el resultado positivo o $Y=1$. En nuestro ejemplo, `Female` es el primer nivel porque viene antes de `Male` alfabéticamente. Si escriben esto en R, verán varias métricas que incluyen exactitud, sensibilidad, especificidad y PPV.
 
 ```{r}
 cm <- confusionMatrix(data = y_hat, reference = test_set$sex)
 ```
 
-Puede acceder a estos directamente, por ejemplo, así:
+Pueden acceder a estos directamente, por ejemplo, así:
 
 ```{r}
 cm$overall["Accuracy"]

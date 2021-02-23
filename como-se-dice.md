@@ -115,7 +115,7 @@ transformación logarítmica   |  |
 | output | _output_, resultado, salida | the output of the function is a vector |un _output_ (no se traduce),resultado, salida  | salida |
 | output layer| capa de salida || |  |
 | overall accuracy | exactitud general |  |  |  |
-| overtraining | sobreajuste |  |  |  |
+| overfitting | sobreajuste |  |  |  |
 | __P__ | | | | |
 | parse | leer y procesar |  |  |  |
 | path  |ruta | Relative and full paths, the path of a file list | rutas | ruta |
