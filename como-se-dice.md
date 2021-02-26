@@ -132,6 +132,7 @@ transformación logarítmica   |  |
 | query | consulta | | consulta |  |
 | quote (verb) | entrecomillar  | we need to quote strings |entrecomillar |  |
 | __R__ | | | | |
+| recall | recall  | |  |
 | R software environment | ambiente de _software_ R | |ambiente de trabajo en R | entorno de R |
 | R environment | ambiente de R | | ambiente de R/ambiente de trabajo | entorno de R |
 | random forests | _random forest_| | random forest | [árbol aleatorio](https://iartificial.net/random-forest-bosque-aleatorio)|

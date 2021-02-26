@@ -1,6 +1,6 @@
 ## Estudio de caso: ¿es un 2 o un 7? {#two-or-seven}
 
-En los dos ejemplos sencillos anteriores, solo teníamos un predictor. Realmente no consideramos estos retos de _machine learning_, que se caracterizan por casos con muchos predictores. Volvamos al ejemplo de dígitos en el que teníamos 784 predictores. Para fines ilustrativos, comenzaremos simplificando este problema a uno con dos predictores y dos clases. Específicamente, definimos el desafío como construir un algoritmo que pueda determinar si un dígito es un 2 o 7 de los predictores. No estamos del todo listos para construir algoritmos con 784 predictores, por lo que extraeremos dos predictores sencillos de los 784: la proporción de píxeles oscuros que están en el cuadrante superior izquierdo ($X_1$) y el cuadrante inferior derecho ($X_2$).
+En los dos ejemplos anteriores, solo teníamos un predictor. Realmente no consideramos estos retos de _machine learning_, que se caracterizan por casos con muchos predictores. Volvamos al ejemplo de dígitos en el que teníamos 784 predictores. Para fines ilustrativos, comenzaremos simplificando este problema a uno con dos predictores y dos clases. Específicamente, definimos el desafío como construir un algoritmo que pueda determinar si un dígito es un 2 o 7 de los predictores. No estamos del todo listos para construir algoritmos con 784 predictores, por lo que extraeremos dos predictores sencillos de los 784: la proporción de píxeles oscuros que están en el cuadrante superior izquierdo ($X_1$) y el cuadrante inferior derecho ($X_2$).
 
 Entonces seleccionamos una muestra aleatoria de 1,000 dígitos, 500 en el set de entrenamiento y 500 en el set de evaluación. Proveemos este set de datos en el paquete `dslabs`:
 
@@ -88,7 +88,7 @@ confusionMatrix(y_hat, mnist_27$test$y)$overall[["Accuracy"]]
 
 Obtenemos una exactidud muy superior al 50%. No está mal para nuestro primer intento. ¿Pero podemos mejorar?
 
-Porque construimos el ejemplo `mnist_27` y teníamos a nuestra disposición 60,000 dígitos solo en el set de datos MNIST, lo usamos para construir la distribución condicional _verdadera_ $p(x_1, x_2)$.  Tengan en cuenta que esto es algo a lo que no tenemos acceso en la práctica, pero lo incluimos en este ejemplo porque permite comparar $\hat{p}(x_1, x_2)$ con la verdadera $p(x_1, x_2)$. Esta comparación nos enseña las limitaciones de diferentes algoritmos. Hagamos eso aquí. Hemos almacenado el verdadero $p(x_1,x_2)$ en el objeto `mnist_27` y podemos graficar la imagen usando la función `geom_raster()` de __ggplot2__ . Elegimos mejores colores y usamos la  función `stat_contour` para dibujar una curva que separe pares $(x_1,x_2)$ para cual $p(x_1,x_2) > 0.5$ y pares para los cuales $p(x_1,x_2) < 0.5$:
+[fix check use of 'verdadera'] Como construimos el ejemplo `mnist_27` y teníamos a nuestra disposición 60,000 dígitos solo en el set de datos MNIST, lo usamos para construir la distribución condicional _verdadera_ $p(x_1, x_2)$. Recuerden que esto es algo a lo que no tenemos acceso en la práctica, pero lo incluimos en este ejemplo porque permite comparar $\hat{p}(x_1, x_2)$ con la verdadera $p(x_1, x_2)$. Esta comparación nos enseña las limitaciones de diferentes algoritmos. Hagamos eso aquí. Hemos almacenado el verdadero $p(x_1,x_2)$ en el objeto `mnist_27` y podemos graficar la imagen usando la función `geom_raster()` de __ggplot2__ . Elegimos mejores colores y usamos la  función `stat_contour` para dibujar una curva que separe pares $(x_1,x_2)$ para cual $p(x_1,x_2) > 0.5$ y pares para los cuales $p(x_1,x_2) < 0.5$:
 
 ```{r true-p-better-colors}
 mnist_27$true_p %>% ggplot(aes(x_1, x_2, z = p, fill = p)) +
@@ -125,5 +125,5 @@ gridExtra::grid.arrange(p1, p2, ncol = 2)
 
 Necesitamos algo más flexible: un método que permita estimados con formas distintas a un plano.
 
-Vamos a aprender algunos algoritmos nuevos basados en diferentes ideas y conceptos. Pero lo que todos tienen en común es que permiten enfoques más flexibles. Comenzaremos describiendo alogoritmos basados en _nearest neighbor_ o _kernels_. Para introducir los conceptos detrás de estos enfoques, comenzaremos nuevamente con un ejemplo unidimensional sencillo y que describiremos el concepto de _suavización_ (_smoothing_ en inglés).
+Vamos a aprender algunos algoritmos nuevos basados en diferentes ideas y conceptos. Pero lo que todos tienen en común es que permiten enfoques más flexibles. Comenzaremos describiendo alogoritmos basados en _nearest neighbor_ o _kernels_. Para introducir los conceptos detrás de estos enfoques, comenzaremos nuevamente con un ejemplo unidimensional sencillo y describiremos el concepto de _suavización_ (_smoothing_ en inglés).
 

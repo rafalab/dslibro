@@ -4,7 +4,7 @@
 img_path <- "ml/img/"
 ```
 
-Antes de continuar aprendiendo sobre algoritmos de _machine learning_, presentamos el importante concepto de _suavización_ (_smoothing_ en inglés). La suavización es una técnica muy poderosa muy comunmente usada en el análisis de datos. Otros nombres dados a esta técnica son _ajustamiento de curvas_ y _filtrado de paso bajo_ (_curve fitting_ y _low pass filtering_ en inglés). La suavización está diseñada para detectar tendencias en presencia de datos ruidosos en casos en los que se desconoce la forma de la tendencia. El nombre _suavización_ proviene del hecho de que para lograr esta hazaña, asumimos que la tendencia es _suave_, como en una superficie lisa. En contraste, el ruido, o la desviación de la tendencia, es impredeciblemente ondulante:
+Antes de continuar aprendiendo sobre algoritmos de _machine learning_, presentamos el importante concepto de _suavización_ (_smoothing_ en inglés). La suavización es una técnica muy poderosa comunmente usada en el análisis de datos. Otros nombres dados a esta técnica son _ajustamiento de curvas_ y _filtro de paso bajo_ (_curve fitting_ y _low pass filtering_ en inglés). La suavización está diseñada para detectar tendencias en presencia de datos ruidosos en casos en los que se desconoce la forma de la tendencia. El nombre _suavización_ proviene del hecho de que para lograr esta hazaña, asumimos que la tendencia es _suave_, como en una superficie lisa. En contraste, el ruido, o la desviación de la tendencia, es impredeciblemente ondulante:
 
 ```{r signal-plus-noise-example, message=FALSE, warning=FALSE, fig.height=6, echo=FALSE}
 library(tidyverse)
@@ -149,7 +149,7 @@ $$
 \hat{f}(x_0) = \sum_{i=1}^N w_0(x_i) Y_i
 $$
 
-en el que cada punto recibe un peso de $0$ o $1/N_0$, con $N_0$ el número de puntos en la semana. En el código anterior, usamos el argumento `kernel="box"` en nuestra llamada a la función `ksmooth`. Esto se debe a que [fix check eng] la función de peso parece una caja. La función `ksmooth` ofrece una opción "más suave" que utiliza la densidad normal para asignar pesos.
+en el que cada punto recibe un peso de $0$ o $1/N_0$, con $N_0$ el número de puntos en la semana. En el código anterior, usamos el argumento `kernel="box"` en nuestra llamada a la función `ksmooth`. Esto se debe a que la _función de peso_ $w_0(x)$ parece una caja. La función `ksmooth` ofrece una opción "más suave" que utiliza la densidad normal para asignar pesos.
 
 ```{r gaussian-kernel, echo=FALSE, out.width="80%", fig.height=3, fig.width=6}
 x_0 <- -125
@@ -231,19 +231,19 @@ geom_line(aes(day, smooth), color="red")
 
 Observen que el estimado final ahora se ve más suave.
 
-Hay varias funciones en R que implementan suavizadores de compartimientos. Un ejemplo es `ksmooth`, que se muestra arriba. En la práctica, sin embargo, generalmente preferimos métodos que usan modelos ligeramente más complejos que ajustar una constante. El resultado final arriba, por ejemplo, todavía es algo ondulante en partes que no esperamos que sea (entre -125 y -75, por ejemplo). Métodos como `loess`, que explicamos a continuación, mejoran esto.
+Hay varias funciones en R que implementan suavizadores de compartimientos. Un ejemplo es `ksmooth`, que mostramos arriba. En la práctica, sin embargo, generalmente preferimos métodos que usan modelos ligeramente más complejos que ajustar una constante. El resultado final arriba, por ejemplo, todavía es algo ondulante en partes que no esperamos que sea (entre -125 y -75, por ejemplo). Métodos como `loess`, que explicamos a continuación, mejoran esto.
 
 ## Regresión ponderada local (loess)
 
-Una limitación del enfoque de suavización de compartimientos que acabamos de describir es que necesitamos ventanas pequeñas para que se cumpla el supuestos de que la función es aproximadamente constante. Como resultado, terminamos con un pequeño número de puntos de datos para promediar y obtener estimaciones imprecisas $\hat{f}(x)$. Aquí describimos cómo _la regresión ponderada local_ (loess o _local weighted regression_ en inglés) nos permite considerar tamaños de ventana más grandes. Para hacer esto, usaremos un resultado matemático, conocido como el teorema de Taylor, que nos dice que para cualquier función suave $f(x)$, si la miramos suficientemente de cerca, parecerá como una línea. Para ver por qué esto tiene sentido, consideren los bordes curvos que hacen los jardineros con espadas de bordes rectos:
+Una limitación del enfoque de suavización de compartimientos que acabamos de describir es que necesitamos ventanas pequeñas para que se cumpla el supuesto de que la función es aproximadamente constante. Como resultado, terminamos con un pequeño número de puntos de datos para promediar y obtener estimaciones imprecisas $\hat{f}(x)$. Aquí describimos cómo _la regresión ponderada local_ (loess o _local weighted regression_ en inglés) nos permite considerar tamaños de ventana más grandes. Para hacer esto, usaremos un resultado matemático, conocido como el teorema de Taylor, que nos dice que para cualquier función suave $f(x)$, si la miramos suficientemente de cerca, parecerá como una línea. Para ver por qué esto tiene sentido, consideren los bordes curvos que hacen los jardineros con espadas de bordes rectos:
 
 ```{r, echo=FALSE}
 knitr::include_graphics(file.path(img_path, "garden.png"))
 ```
 
-("Downing Street garden path edge"^[https://www.flickr.com/photos/49707497@N06/7361631644] por el usuario de Flckr Número 10^[https://www.flickr.com/photos/number10gov/] Licencia CC-BY 2.0^[https://creativecommons.org/licenses/by/2.0/].)
+("Downing Street garden path edge"^[https://www.flickr.com/photos/49707497@N06/7361631644] por el usuario de Flckr Número 10^[https://www.flickr.com/photos/number10gov/]. Licencia CC-BY 2.0^[https://creativecommons.org/licenses/by/2.0/].)
 
-En lugar de suponer que la función es aproximadamente constante en una ventana, suponemos que la función es localmente lineal. Podemos considerar tamaños de ventana más grandes con el supuesto lineal que con el supuesto constante. En lugar de la ventana de una semana, consideramos una ventana más grande en la que la tendencia es aproximadamente lineal. Comenzamos con una ventana de tres semanas y luego consideramos y evaluamos otras opciones:
+En lugar de suponer que la función es aproximadamente constante en una ventana, suponemos que la función es localmente lineal. Podemos considerar tamaños de ventana más grandes cuando suponemos que la función es localmente lineal que cuando suponemos que es localmente constante. En lugar de la ventana de una semana, consideramos una ventana más grande en la que la tendencia es aproximadamente lineal. Comenzamos con una ventana de tres semanas y luego consideramos y evaluamos otras opciones:
 
 $$
 E[Y_i | X_i = x_i ] = \beta_0 + \beta_1 (x_i-x_0) \mbox{ if } |x_i - x_0| \leq 21
@@ -308,7 +308,7 @@ facet_wrap(~center, nrow = 2)
 }
 ```
 
-El resultado final es un ajuste más suave que el producido por la suavización de compartimiento porque utilizamos tamaños de muestra más grandes para estimar nuestros parámetros locales:
+El resultado final es un ajuste más suave que ese producido por la suavización de compartimiento porque utilizamos tamaños de muestra más grandes para estimar nuestros parámetros locales:
 
 ```{r final-loess}
 total_days <- diff(range(polls_2008$day))
@@ -426,7 +426,7 @@ gridExtra::grid.arrange(p1, p2, ncol = 2)
 
 ### Ajustando con parábolas
 
-El teorema de Taylor también nos dice que si miramos cualquier función matemática lo suficientemente cerca, parece una parábola. El teorema también establece que no tienen que mirar tan de cerca cuando se aproxima con parábolas como cuando se aproxima con líneas. Esto significa que podemos hacer que nuestras ventanas sean aún más grandes y ajustar parábolas en lugar de líneas.
+El teorema de Taylor también nos dice que si miramos cualquier función matemática lo suficientemente cerca, parece una parábola. El teorema además establece que no tienen que mirar tan de cerca cuando se aproxima con parábolas como cuando se aproxima con líneas. Esto significa que podemos hacer que nuestras ventanas sean aún más grandes y ajustar parábolas en lugar de líneas.
 
 
 $$
@@ -463,8 +463,7 @@ geom_point() +
 geom_smooth()
 ```
 
-Pero tengan cuidado con los parámetros predeterminados, ya que rara vez son óptimos.
-Sin embargo, pueden cambiarlos convenientemente:
+Pero tengan cuidado con los parámetros predeterminados, ya que rara vez son óptimos. Afortunadamente, pueden cambiarlos convenientemente:
 
 ```{r ggplot-loess-degree-1, warning=FALSE, message=FALSE}
 polls_2008 %>% ggplot(aes(day, margin)) +
@@ -474,7 +473,7 @@ geom_smooth(span = 0.15, method.args = list(degree=1))
 
 ## Conectando la suavización al _machine learning_ {#smoothing-ml-connection}
 
-Para ver cómo la suavización se relaciona con _machine learning_ usando un ejemplo concreto, consideren nuestro ejemplo \@ref(two-or-seven). [fix eng sound off too ] Si definimos el resultado $Y = 1$ para dígitos que son siete y $Y=0$ para dígitos que son 2, entonces estamos interesados en estimar la probabilidad condicional:
+Para ver cómo la suavización se relaciona con _machine learning_ usando un ejemplo concreto, consideren nuestro ejemplo introducido en la Sección \@ref(two-or-seven).  Si definimos el resultado $Y = 1$ para dígitos que son siete y $Y=0$ para dígitos que son 2, entonces estamos interesados en estimar la probabilidad condicional:
 
 $$
 p(x_1, x_2) = \mbox{Pr}(Y=1 \mid X_1=x_1 , X_2 = x_2).
@@ -519,11 +518,11 @@ mutate(date = make_date(year, month, day)) %>%
 filter(date <= "2018-05-01")
 ```
 
-Utilice la función `loess` para obtener un estimado uniforme del número esperado de muertes como función de la fecha. Grafique la función suave que resulta. Haga el _span_ de dos meses.
+Utilice la función `loess` para obtener un estimado uniforme del número esperado de muertes como función de la fecha. Grafique la función suave que resulta. Use un _span_ de dos meses.
 
 2\. Grafique los estimados suaves como función del día del año, todas en el mismo gráfico pero con diferentes colores.
 
-3\. Supongamos que queremos predecir 2s y 7s en nuestro set de datos  `mnist_27` con solo la segunda covariable. ¿Podemos hacer esto? En la primera inspección parece que los datos no tienen mucho poder predictivo. De hecho, si ajustamos una regresión logística regular, el coeficiente para `x_2` no es significativo!
+3\. Supongamos que queremos predecir 2s y 7s en nuestro set de datos  `mnist_27` con solo la segunda covariable. ¿Podemos hacer esto? En la primera inspección parece que los datos no tienen mucho poder predictivo. De hecho, si ajustamos una regresión logística regular, ¡el coeficiente para `x_2` no es significativo!
 
 ```{r, eval = FALSE}
 library(broom)
