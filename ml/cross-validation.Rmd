@@ -1,11 +1,11 @@
 # Validación cruzada {#cross-validation}
 
 
-En este capítulo presentamos la validación cruzada (_cross validation_ en inglés), una de las ideas más importantes de _machine learning_. Aquí nos centramos en los aspectos conceptuales y matemáticos. Describiremos cómo implementar la validación cruzada en la práctica con el paquete __caret__ más adelante, en la Sección \@ref(caret-cv) del proximo capitulo. Para motivar el concepto, utilizaremos los dos datos de dígitos predictores presentados en la Sección \@ref(two-or-seven) e introducir, por primera vez, un algoritmo real de _machine learning_: _k-nearest neighbors_ (kNN).
+En este capítulo presentamos la validación cruzada (_cross validation_ en inglés), una de las ideas más importantes de _machine learning_. Aquí nos centramos en los aspectos conceptuales y matemáticos. Describiremos cómo implementar la validación cruzada en la práctica con el paquete __caret__ en la Sección \@ref(caret-cv) del proximo capitulo. Para motivar el concepto, utilizaremos los dos datos de dígitos predictores presentados en la Sección \@ref(two-or-seven) e introduciremos, por primera vez, un algoritmo real de _machine learning_: _k-nearest neighbors_ (kNN).
 
 ## Motivación con _k-nearest neighbors_ {#knn-cv-intro}
 
-Comencemos cargando los datos y mostrando una gráfica de los predictores con resultados representados con color.
+Comencemos cargando los datos y mostrando un gráfico de los predictores con resultados representados con color.
 
 ```{r mnist-27-data, warning=FALSE, message=FALSE}
 library(tidyverse)
@@ -14,7 +14,7 @@ data("mnist_27")
 mnist_27$test%>% ggplot(aes(x_1, x_2, color = y)) + geom_point()
 ```
 
-Utilizaremos estos datos para estimar la función de probabilidad condicional
+Utilizaremos estos datos para estimar la función de probabilidad condicional:
 
 $$
 p(x_1, x_2) = \mbox{Pr}(Y=1 \mid X_1=x_1 , X_2 = x_2)
@@ -227,7 +227,7 @@ Cuando todo lo que tenemos a nuestra disposición es un set de datos, podemos es
 $$
 \hat{\mbox{MSE}} = \frac{1}{N}\sum_{i=1}^N (\hat{y}_i - y_i)^2
 $$
-Estos dos a menudo se conocen como el _error verdadero_ (_true error_ en inglés) y el _error aparente_ (_apparent error_ en inglés), respectivamente.
+Estos dos a menudo se conocen como el _error verdadero_ y el _error aparente_ (_true error_ y _apparent error_ en inglés), respectivamente.
 
 Hay dos características importantes del error aparente que siempre debemos tener en cuenta:
 
@@ -235,7 +235,7 @@ Hay dos características importantes del error aparente que siempre debemos tene
 
 2. Si entrenamos un algoritmo en el mismo set de datos que usamos para calcular el error aparente, podríamos estar entrenando demasiado. En general, cuando hacemos esto, el error aparente será una subestimación del error verdadero. Veremos un ejemplo extremo de esto con _k-nearest neighbors_.
 
-La validación cruzada es una técnica que nos permite aliviar estos dos problemas. Para comprender la validación cruzada, es útil pensar en el error verdadero, una cantidad teórica, como el promedio de muchos errores aparentes obtenidos al aplicar el algoritmo a $B$ nuevas muestras aleatorias de los datos, ninguna de ellas utilizada para entrenar el algoritmo. Como se muestra en un capítulo anterior, pensamos en el verdadero error como:
+La validación cruzada es una técnica que nos permite [fix arreglar?] aliviar estos dos problemas. Para entender la validación cruzada, es útil pensar en el error verdadero, una cantidad teórica, como el promedio de muchos errores aparentes obtenidos al aplicar el algoritmo a $B$ nuevas muestras aleatorias de los datos, ninguna de ellas utilizada para entrenar el algoritmo. Como se muestra en un capítulo anterior, pensamos en el verdadero error como:
 
 
 $$
