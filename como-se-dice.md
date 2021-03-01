@@ -79,7 +79,7 @@
 | __K__ | | | | |
 | K-fold cross validation | validación cruzada K-fold | | | |
 | K-means | K-medios | | | |
-| K-nearest neighbors | K-nearest neighbors | | K-nearest neighbors, K vecinos más cercanos | K-vecinos mas cercanos |
+| k nearest neighbors | k vecinos más cercanos | | k-nearest neighbors, k vecinos más cercanos | k vecinos más cercanos |
 | kernel | kernel | | | |
 | key bindings | | combinaciones de teclas | combinaciones de teclas |
 | keyboard shortcut | Use the keyboard shortcut command-S | atajo del teclado | atajo de teclado |
