@@ -103,6 +103,7 @@ transformación logarítmica   |  |
 | missing value | valor faltante | | valor faltante |  |  
 | modelling|  modelando ||modelado  |  |
 | motivating| motivantes |motivating examples, motivating case studies |ilustrativo, estimulante, motivante| ilustrativo | 
+| maximum likelihood estimation | estimación de máxima verosimilitud | | | |
 | __N__ | | | | |
 | named list | lista con nombres |  | lista nombrada  |  |
 | nested | anidado o anidada | nested sorting, nested design | ordenar por categorías? orden anidado?, diseño anidado| diseño anidado |
