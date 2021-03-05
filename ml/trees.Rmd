@@ -6,9 +6,9 @@ img_path <- "ml/img"
 
 ### La maldición de la dimensionalidad
 
-Describimos cómo métodos como LDA y QDA no deben usarse con muchos predictores $p$ porque el número de parámetros que necesitamos estimar se vuelve demasiado grande. Por ejemplo, con el ejemplo de dígitos $p=784$, tendríamos más de 600,000 parámetros con LDA, y lo multiplicaríamos por el número de clases para QDA. Los métodos de _kernel_, como kNN o regresión local, no tienen parámetros de modelo para estimar. Sin embargo, también se enfrentan a un desafío cuando se utilizan predictores múltiples debido a lo que se conoce como la _maldición de la dimensionalidad_. La _dimensión_ aquí se refiere al hecho de que cuando tenemos $p$ predictores, la distancia entre dos observaciones se calcula en un espacio $p$-dimensional.
+[fix above title ok?] Describimos cómo métodos como LDA y QDA no deben usarse con muchos predictores $p$ porque el número de parámetros que necesitamos estimar se vuelve demasiado grande. Por ejemplo, con el ejemplo de dígitos $p=784$, tendríamos más de 600,000 parámetros con LDA, y lo multiplicaríamos por el número de clases para QDA. Los métodos de _kernel_, como kNN o regresión local, no tienen parámetros de modelo para estimar. Sin embargo, también se enfrentan a un desafío cuando se utilizan predictores múltiples debido a lo que se conoce como la _maldición de la dimensionalidad_. La _dimensión_ aquí se refiere al hecho de que cuando tenemos $p$ predictores, la distancia entre dos observaciones se calcula en un espacio $p$-dimensional.
 
-Una forma útil de comprender la maldición de la dimensionalidad es considerar cuán grande tenemos que hacer un vecindario (_neighborhood_) para incluir un porcentaje dado de los datos. Recuerden que con vecindarios más grandes, nuestros métodos pierden flexibilidad.
+Una forma útil de comprender la maldición de la dimensionalidad es considerar cuán grande tenemos que hacer un [fix check ok en ingles es "span/neighborhood/window"] _span_/vecindario/ventana para incluir un porcentaje dado de los datos. Recuerden que con vecindarios más grandes, nuestros métodos pierden flexibilidad.
 
 Por ejemplo, supongamos que tenemos un predictor continuo con puntos igualmente espaciados en el intervalo [0,1] y queremos crear ventanas que incluyan 1/10 de datos. Entonces es fácil ver que nuestras ventanas tienen que ser de tamaño 0.1:
 
@@ -57,10 +57,10 @@ Cuando llegamos a 100 predictores, el vecindario ya no es muy local, ya que cada
 
 Aquí observamos un conjunto de métodos elegantes y versátiles que se adaptan a dimensiones más altas y también permiten que estas regiones tomen formas más complejas mientras producen modelos que son interpretables. Estos son métodos muy populares, conocidos y estudiados. Nos concentraremos en los árboles de regresión y decisión y su extensión a bosques aleatorios.
 
-### CARRERA motivación
+### Motivación CART
 
-Para motivar esta sección, utilizaremos un nuevo set de datos.
-eso incluye el desglose de la composición del aceite de oliva en 8 ácidos grasos:
+Para motivar esta sección, utilizaremos un nuevo set de datos
+que incluye el desglose de la composición del aceite de oliva en 8 ácidos grasos:
 
 ```{r}
 library(tidyverse)
@@ -75,7 +75,7 @@ Con fines ilustrativos, intentaremos predecir la región utilizando los valores 
 table(olive$region)
 ```
 
-Quitamos el `area` columna porque no lo usaremos como predictor.
+Quitamos la columna `area` porque no la usaremos como predictor.
 
 ```{r}
 olive <- select(olive, -area)
@@ -91,7 +91,7 @@ data = olive)
 ggplot(fit)
 ```
 
-Vemos que usando solo un vecino, podemos predecir relativamente bien. Sin embargo, un poco de exploración de datos revela que deberíamos poder hacerlo aún mejor. Por ejemplo, si observamos la distribución de cada predictor estratificado por región, vemos que el eicosenoico solo está presente en el sur de Italia y que el linoleico separa el norte de Italia de Cerdeña.
+Vemos que usando solo un vecino, podemos predecir relativamente bien. Sin embargo, un poco de exploración de datos revela que deberíamos poder hacerlo aún mejor. Por ejemplo, si observamos la distribución de cada predictor estratificado por región, vemos que el _eicosenoic_ solo está presente en el sur de Italia y que el _linoleic_ separa el norte de Italia de Cerdeña.
 
 ```{r olive-eda, fig.height=3, fig.width=6}
 olive %>% gather(fatty_acid, percentage, -region) %>%
@@ -101,7 +101,7 @@ facet_wrap(~fatty_acid, scales = "free", ncol = 4) +
 theme(axis.text.x = element_blank(), legend.position="bottom")
 ```
 
-¡Esto implica que deberíamos ser capaces de construir un algoritmo que prediga perfectamente! Podemos ver esto claramente al trazar los valores para eicosenoico y linoleico.
+¡Esto implica que deberíamos ser capaces de construir un algoritmo que prediga perfectamente! Podemos ver esto claramente al trazar los valores para _eicosenoic_ y _linoleic_.
 
 ```{r olive-two-predictors}
 olive %>%
@@ -112,8 +112,8 @@ geom_segment(x = -0.2, y = 10.54, xend = 0.065, yend = 10.54,
 color = "black", lty = 2)
 ```
 
-En la sección \@ref(predictor-space) definimos espacios predictores. El espacio predictivo aquí consiste en puntos de ocho dimensiones con valores entre 0 y 100. En la gráfica anterior, mostramos el espacio definido por los dos predictores eicosenoico y linoleico y, a simple vista,
-podemos construir una regla de predicción que particione el espacio del predictor para que cada partición contenga solo resultados de una categoría. Esto a su vez se puede utilizar para definir un algoritmo con una precisión perfecta. Específicamente, definimos la siguiente regla de decisión. Si el eicosenoico es mayor que 0.065, prediga el sur de Italia. Si no, entonces si linoleico es más grande que $10.535$, predicen Cerdeña, y si es más bajo, predicen el norte de Italia. Podemos dibujar este árbol de decisión así:
+En la Sección \@ref(predictor-space) definimos espacios predictores. El espacio predictivo aquí consiste en puntos de ocho dimensiones con valores entre 0 y 100. En el gráfico anterior, mostramos el espacio definido por los dos predictores _eicosenoic_ y _linoleic_ y, a simple vista,
+podemos construir una regla de predicción que divida el espacio del predictor para que cada partición contenga solo resultados de una categoría. Esto a su vez se puede utilizar para definir un algoritmo con una precisión perfecta. [fix check rest of htis paragraph] Específicamente, definimos la siguiente regla de decisión. Si el _eicosenoic_ es mayor que 0.065, predecir el sur de Italia. Si no, entonces si _linoleic_ es más grande que $10.535$, predecir Cerdeña, y si es más bajo, predecir el norte de Italia. Podemos dibujar este árbol de decisión así:
 
 ```{r olive-tree, echo=FALSE, warning=FALSE, message=FALSE, fig.height=4.5, out.width="50%"}
 library(caret)
@@ -134,13 +134,12 @@ knitr::include_graphics(file.path(img_path,"Decision-Tree-for-Heart-Attack-Victi
 
 (Fuente: Walton 2010 Informal Logic, Vol. 30, No. 2, pp. 159-184^[https://papers.ssrn.com/sol3/Delivery.cfm/SSRN_ID1759289_code1486039.pdf?abstractid=1759289&amp;mirid=1&amp;type=2 ].)
 
-Un árbol es básicamente un diagrama de flujo de preguntas de sí o no. La idea general de los métodos que estamos describiendo es definir un algoritmo que use datos para crear estos árboles con predicciones en los extremos, conocidos como _nodes_.
-Los árboles de regresión y decisión operan prediciendo una variable de resultado $Y$ dividiendo los predictores.
+Un árbol es básicamente un diagrama de flujo de preguntas de sí o no. La idea general de los métodos que estamos describiendo es definir un algoritmo que use datos para crear estos árboles con predicciones en los extremos, conocidos como _nodos_ (_nodes_ en inglés). Los árboles de regresión y decisión operan prediciendo una variable de resultado $Y$ al dividir los predictores.
 
 
 ### Árboles de regresión
 
-Cuando el resultado es continuo, llamamos al método un árbol _regresión_. Para introducir árboles de regresión, utilizaremos los datos de la encuesta de 2008 utilizados en secciones anteriores para describir la idea básica de cómo construimos estos algoritmos. Al igual que con otros algoritmos de _machine learning_, intentaremos estimar la expectativa condicional $f(x) = \mbox{E}(Y | X = x)$ con $Y$ el margen de la encuesta y $x$ el dia.
+Cuando el resultado es continuo, llamamos al método un árbol de _regresión_. Para introducir árboles de regresión, utilizaremos los datos de la encuesta de 2008 utilizados en secciones anteriores para describir la idea básica de cómo construimos estos algoritmos. Al igual que con otros algoritmos de _machine learning_, intentaremos estimar la expectativa condicional $f(x) = \mbox{E}(Y | X = x)$ con $Y$ el margen de la encuesta y $x$ el dia.
 
 ```{r polls-2008-again}
 data("polls_2008")
@@ -149,35 +148,35 @@ qplot(day, margin, data = polls_2008)
 
 La idea general aquí es construir un árbol de decisión y, al final de cada _nodo_, obtener un predictor $\hat{y}$. Una forma matemática de describir esto es decir que estamos dividiendo el espacio predictivo en $J$ regiones no superpuestas, $R_1, R_2, \ldots, R_J$, y luego para cualquier predictor $x$ que cae dentro de la región $R_j$, estimar $f(x)$ con el promedio de las observaciones de entrenamiento $y_i$ para el cual el predictor asociado $x_i$ también está en $R_j$.
 
-¿Pero cómo decidimos la partición? $R_1, R_2, \ldots, R_J$ y como elegimos $J$? Aquí es donde el algoritmo se vuelve un poco complicado.
+¿Pero cómo decidimos la partición $R_1, R_2, \ldots, R_J$ y como elegimos $J$? Aquí es donde el algoritmo se vuelve un poco complicado.
 
-Los árboles de regresión crean particiones recursivamente. Comenzamos el algoritmo con una partición, el espacio predictor completo. En nuestro primer ejemplo simple, este espacio es el intervalo [-155, 1]. Pero después del primer paso tendremos dos particiones. Después del segundo paso, dividiremos una de estas particiones en dos y tendremos tres particiones, luego cuatro, luego cinco, y así sucesivamente. Describimos cómo elegimos la partición para una partición adicional, y cuándo parar, más adelante.
+Los árboles de regresión crean particiones de manera recursiva. Comenzamos el algoritmo con una partición, el espacio predictor completo. En nuestro primer ejemplo sencillo, este espacio es el intervalo [-155, 1]. Pero después del primer paso tendremos dos particiones. Después del segundo paso, dividiremos una de estas particiones en dos y tendremos tres particiones, luego cuatro, luego cinco, y así sucesivamente. Describimos cómo elegimos la partición para una partición adicional, y cuándo parar, más adelante.
 
-Una vez que seleccionamos una partición $\mathbf{x}$ para dividir para crear las nuevas particiones, encontramos un predictor $j$ y valor $s$ que definen dos nuevas particiones, que llamaremos $R_1(j,s)$ y $R_2(j,s)$, que divide nuestras observaciones en la partición actual preguntando si $x_j$ es mayor que $s$:
+Una vez que seleccionamos una partición $\mathbf{x}$ para dividir para crear las nuevas particiones, encontramos un predictor $j$ y un valor $s$ que definen dos nuevas particiones, que llamaremos $R_1(j,s)$ y $R_2(j,s)$, que divide nuestras observaciones en la partición actual al preguntar si $x_j$ es mayor que $s$:
 
 $$
 R_1(j,s) = \{\mathbf{x} \mid x_j < s\} \mbox{ and } R_2(j,s) = \{\mathbf{x} \mid x_j \geq s\}
 $$
 
-En nuestro ejemplo actual solo tenemos un predictor, por lo que siempre elegiremos $j=1$, pero en general este no será el caso. Ahora, después de definir las nuevas particiones. $R_1$ y $R_2$ y decidimos detener la partición, calculamos predictores tomando el promedio de todas las observaciones $y$ para lo cual el asociado $\mathbf{x}$ es en $R_1$ y $R_2$. Nos referimos a estos dos como $\hat{y}_{R_1}$ y $\hat{y}_{R_2}$ respectivamente.
+En nuestro ejemplo actual solo tenemos un predictor, por lo que siempre elegiremos $j=1$, pero en general este no será el caso. [ fix check ok] Ahora, después de definir las nuevas particiones $R_1$ y $R_2$ y decidimos parar la partición, calculamos predictores tomando el promedio de todas las observaciones $y$ para el cual el asociado $\mathbf{x}$ está en $R_1$ y $R_2$. Nos referimos a estos dos como $\hat{y}_{R_1}$ y $\hat{y}_{R_2}$ respectivamente.
 
-Pero como elegimos $j$ y $s$? Básicamente encontramos el par que minimiza la suma residual del cuadrado (RSS):
+¿Pero cómo elegimos $j$ y $s$? Básicamente encontramos el par que minimiza la suma de errores cuadrados (_residual sum of squares_ o RSS por sus siglas en inglés):
 $$
 \sum_{i:\, x_i \in R_1(j,s)} (y_i - \hat{y}_{R_1})^2 +
 \sum_{i:\, x_i \in R_2(j,s)} (y_i - \hat{y}_{R_2})^2
 $$
 
 
-Esto se aplica recursivamente a las nuevas regiones. $R_1$ y $R_2$. Describimos cómo nos detenemos más tarde, pero una vez que terminamos de dividir el espacio del predictor en regiones, en cada región se realiza una predicción utilizando las observaciones en esa región.
+Esto se aplica de manera recursiva a las nuevas regiones $R_1$ y $R_2$. Describimos cómo nos detenemos más tarde, pero una vez que terminemos de dividir el espacio del predictor en regiones, en cada región se realiza una predicción utilizando las observaciones en esa región.
 
-Echemos un vistazo a lo que hace este algoritmo en los datos de la encuesta de elecciones presidenciales de 2008. Utilizaremos el `rpart` funcionar en el paquete __rpart__.
+Echemos un vistazo a lo que hace este algoritmo en los datos de la encuesta de elecciones presidenciales de 2008. Utilizaremos la funcion `rpart` del paquete __rpart__.
 
 ```{r}
 library(rpart)
 fit <- rpart(margin ~ ., data = polls_2008)
 ```
 
-Aquí, solo hay un predictor. Por lo tanto, no tenemos que decidir qué predictor $j$ para dividir, simplemente tenemos que decidir qué valor $s$ solíamos dividirnos. Podemos ver visualmente dónde se hicieron las divisiones:
+Aquí, solo hay un predictor. [fix check ok] Por lo tanto, no tenemos que decidir qué predictor $j$ para dividir, simplemente tenemos que decidir qué valor $s$ utilizaremos para dividir. Podemos ver visualmente dónde se hicieron las divisiones:
 
 
 ```{r, eval=FALSE}
@@ -191,7 +190,7 @@ plot(fit, margin = 0.1)
 text(fit, cex = 0.75)
 ```
 
-La primera división se realiza el día 39.5. Una de esas regiones se divide en el día 86.5. Las dos nuevas particiones resultantes se dividen en los días 49.5 y 117.5, respectivamente, y así sucesivamente. Terminamos con 8 particiones. La estimación final $\hat{f}(x)$ se ve como esto:
+La primera división se realiza el día 39.5. Una de esas regiones se divide en el día 86.5. Las dos nuevas particiones que resultan se dividen en los días 49.5 y 117.5, respectivamente, y así sucesivamente. Terminamos con 8 particiones. La estimación final $\hat{f}(x)$ se ve así:
 
 ```{r polls-2008-tree-fit}
 polls_2008 %>%
@@ -201,11 +200,11 @@ geom_point(aes(day, margin)) +
 geom_step(aes(day, y_hat), col="red")
 ```
 
-Tenga en cuenta que el algoritmo dejó de particionar a las 8. Ahora explicamos cómo se toma esta decisión.
+Tengan en cuenta que el algoritmo dejó de [fix] dividir/particionar a las 8. Ahora explicamos cómo se toma esta decisión.
 
-Primero necesitamos definir el término _parámetro de complejidad_ (cp). Cada vez que dividimos y definimos dos nuevas particiones, nuestro set de entrenamiento RSS disminuye. Esto se debe a que con más particiones, nuestro modelo tiene más flexibilidad para adaptarse a los datos de entrenamiento. De hecho, si divide hasta que cada punto sea su propia partición, entonces RSS baja hasta 0 ya que el promedio de un valor es el mismo valor. Para evitar esto, el algoritmo establece un mínimo de cuánto debe mejorar el RSS para que se agregue otra partición. Este parámetro se conoce como _parámetro de complejidad_ (cp). El RSS debe mejorar por un factor de cp para que se agregue la nueva partición. Por lo tanto, los valores grandes de cp obligarán al algoritmo a detenerse antes, lo que resulta en menos nodos.
+Primero necesitamos definir el término _parámetro de complejidad_ (_complexity parameter_ o CP en inglés). Cada vez que dividimos y definimos dos nuevas particiones, nuestro set de entrenamiento RSS disminuye. Esto se debe a que con más particiones, nuestro modelo tiene más flexibilidad para adaptarse a los datos de entrenamiento. De hecho, si se divide hasta que cada punto sea su propia partición, entonces RSS baja hasta 0 ya que el promedio de un valor es el mismo valor. Para evitar esto, el algoritmo establece un mínimo de cuánto debe mejorar el RSS para que se agregue otra partición. Este parámetro se conoce como _parámetro de complejidad_. El RSS debe mejorar por un factor de CP para que se agregue la nueva partición. Por lo tanto, los valores grandes de cp obligarán al algoritmo a detenerse antes, lo que resulta en menos nodos.
 
-Sin embargo, cp no es el único parámetro utilizado para decidir si debemos particionar una partición actual o no. Otro parámetro común es el número mínimo de observaciones requeridas en una partición antes de dividirla más. El argumento usado en el `rpart` la función es `minsplit` y el valor predeterminado es 20. El `rpart` la implementación de árboles de regresión también permite a los usuarios determinar un número mínimo de observaciones en cada nodo. El argumento es `minbucket` y por defecto a `round(minsplit/3)`.
+Sin embargo, CP no es el único parámetro utilizado para decidir si debemos particionar una partición actual o no. Otro parámetro común es el número mínimo de observaciones requeridas en una partición antes de dividirla más. El argumento usado en la función `rpart`  es `minsplit` y el valor predeterminado es 20. La implementación `rpart` de árboles de regresión también permite a los usuarios determinar un número mínimo de observaciones en cada nodo. [fix check "and defaults to" ] El argumento es `minbucket` y por defecto `round(minsplit/3)`.
 
 Como se esperaba, si establecemos `cp = 0` y `minsplit = 2`, nuestra predicción es lo más flexible posible y nuestro predictor son nuestros datos originales:
 
@@ -256,7 +255,7 @@ geom_point(aes(day, margin)) +
 geom_step(aes(day, y_hat), col="red")
 ```
 
-Tenga en cuenta que si ya tenemos un árbol y queremos aplicar un valor de cp más alto, podemos usar el `prune` función. Llamamos a esto _poda_ un árbol porque estamos cortando particiones que no cumplen con un `cp` criterio. Anteriormente creamos un árbol que usaba un `cp = 0` y lo guardé en `fit`. Podemos podarlo así:
+Tenga en cuenta que si ya tenemos un árbol y queremos aplicar un valor de CP más alto, podemos usar el `prune` función. Llamamos a esto _poda_ un árbol porque estamos cortando particiones que no cumplen con un `cp` criterio. Anteriormente creamos un árbol que usaba un `cp = 0` y lo guardé en `fit`. Podemos podarlo así:
 
 ```{r polls-2008-prune}
 pruned_fit <- prune(fit, cp = 0.01)
@@ -337,7 +336,7 @@ Tenga en cuenta que con los árboles de decisión, es difícil suavizar los lím
 
 Los árboles de clasificación tienen ciertas ventajas que los hacen muy útiles. Son altamente interpretables, incluso más que los modelos lineales. Son fáciles de visualizar (si son lo suficientemente pequeños). Finalmente, pueden modelar procesos de decisión humanos y no requieren el uso de predictores ficticios para variables categóricas. Por otro lado, el enfoque a través de particiones recursivas puede sobreentrenar fácilmente y, por lo tanto, es un poco más difícil de entrenar que, por ejemplo, la regresión lineal o kNN. Además, en términos de precisión, rara vez es el método de mejor rendimiento ya que no es muy flexible y es muy inestable a los cambios en los datos de entrenamiento. Los bosques aleatorios, explicados a continuación, mejoran varias de estas deficiencias.
 
-## Bosques aleatiruis
+## Bosques aleatorios
 
 Los bosques aleatorios son un enfoque de _machine learning_ **muy popular** que aborda las deficiencias de los árboles de decisión utilizando una idea inteligente. El objetivo es mejorar el rendimiento de la predicción y reducir la inestabilidad mediante el promedio de árboles de decisión múltiple (un bosque de árboles construido con aleatoriedad). Tiene dos características que ayudan a lograr esto.
 
@@ -363,7 +362,7 @@ library(randomForest)
 fit <- randomForest(margin~., data = polls_2008)
 ```
 
-Tenga en cuenta que si aplicamos la función `plot` al objeto resultante, almacenado en `fit`, vemos cómo cambia la tasa de error de nuestro algoritmo a medida que agregamos árboles.
+Tengan en cuenta que si aplicamos la función `plot` al objeto resultante, almacenado en `fit`, vemos cómo cambia la tasa de error de nuestro algoritmo a medida que agregamos árboles.
 
 ```{r, eval=FALSE}
 rafalib::mypar()
