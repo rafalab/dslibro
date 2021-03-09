@@ -4,11 +4,11 @@
 
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <title>Capítulo 30 El paquete caret | Introducción a la Ciencia de Datos</title>
+  <title>Capítulo 37 Accediendo al terminal e instalando Git | Introducción a la Ciencia de Datos</title>
   <meta name="description" content="Este libro presenta conceptos y destrezas que les ayudarán abordar los retos de situaciones actuales del análisis de datos. Cubre conceptos de probabilidad, inferencia estadística, regresión lineal y machine learning. Además, les permitirá desarrollar destrezas como la programación R, el wrangling de datos con dplyr, la visualización de datos con ggplot2, la organización de archivos con Shell de UNIX / Linux, el control de versiones con GitHub y la preparación de documentos reproducibles con R markdown." />
   <meta name="generator" content="bookdown 0.21 and GitBook 2.6.7" />
 
-  <meta property="og:title" content="Capítulo 30 El paquete caret | Introducción a la Ciencia de Datos" />
+  <meta property="og:title" content="Capítulo 37 Accediendo al terminal e instalando Git | Introducción a la Ciencia de Datos" />
   <meta property="og:type" content="book" />
   
   
@@ -16,7 +16,7 @@
   
 
   <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="Capítulo 30 El paquete caret | Introducción a la Ciencia de Datos" />
+  <meta name="twitter:title" content="Capítulo 37 Accediendo al terminal e instalando Git | Introducción a la Ciencia de Datos" />
   
   <meta name="twitter:description" content="Este libro presenta conceptos y destrezas que les ayudarán abordar los retos de situaciones actuales del análisis de datos. Cubre conceptos de probabilidad, inferencia estadística, regresión lineal y machine learning. Además, les permitirá desarrollar destrezas como la programación R, el wrangling de datos con dplyr, la visualización de datos con ggplot2, la organización de archivos con Shell de UNIX / Linux, el control de versiones con GitHub y la preparación de documentos reproducibles con R markdown." />
   
@@ -31,8 +31,8 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black" />
   
   
-<link rel="prev" href="cross-validation.html"/>
-<link rel="next" href="ejemplos-de-algoritmos.html"/>
+<link rel="prev" href="installing-r-rstudio.html"/>
+<link rel="next" href="unix.html"/>
 <script src="libs/jquery-2.2.3/jquery.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
 <link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
@@ -903,140 +903,94 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
           <div class="page-inner">
 
             <section class="normal" id="section-">
-<div id="caret" class="section level1">
-<h1><span class="header-section-number">Capítulo 30</span> El paquete caret</h1>
-<p>Ya hemos aprendido acerca de la regresión y kNN como algoritmos de <em>machine learning</em>. En secciones posteriores, aprendemos varios otros, y esto es solo un pequeño subconjunto de todos los algoritmos disponibles. Muchos de estos algoritmos se implementan en R. Sin embargo, se distribuyen a través de diferentes paquetes, desarrollados por diferentes autores, y a menudo usan una sintaxis diferente. El paquete <strong>caret</strong> intenta consolidar estas diferencias y dar consistencia. Actualmente incluye 237 métodos diferentes que se resumen en el manual del paquete <strong>caret</strong><a href="#fn105" class="footnote-ref" id="fnref105"><sup>105</sup></a>. Tengan en cuenta que <strong>caret</strong> no incluye los paquetes necesarios y, para implementar un paquete a través de <strong>caret</strong>, aún necesitan instalar el paquete. Los paquetes requeridos para cada método se describen en el manual del paquete.</p>
-<p>El paquete <strong>caret</strong> también provee una función que realiza la validación cruzada para nosotros. Aquí oferecemos algunos ejemplos que muestran cómo utilizamos este paquete increíblemente útil. Usaremos el ejemplo 2 o 7 para ilustrar:</p>
-<div class="sourceCode" id="cb1074"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1074-1"><a href="caret.html#cb1074-1"></a><span class="kw">library</span>(tidyverse)</span>
-<span id="cb1074-2"><a href="caret.html#cb1074-2"></a><span class="kw">library</span>(dslabs)</span>
-<span id="cb1074-3"><a href="caret.html#cb1074-3"></a><span class="kw">data</span>(<span class="st">&quot;mnist_27&quot;</span>)</span></code></pre></div>
-<div id="la-función-train-de-caret" class="section level2">
-<h2><span class="header-section-number">30.1</span> La función <code>train</code> de caret</h2>
-<p>La función <code>train</code> de <strong>caret</strong> nos permite entrenar diferentes algoritmos utilizando una sintaxis similar. Entonces, por ejemplo, podemos escribir:</p>
-<div class="sourceCode" id="cb1075"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1075-1"><a href="caret.html#cb1075-1"></a><span class="kw">library</span>(caret)</span>
-<span id="cb1075-2"><a href="caret.html#cb1075-2"></a>train_glm &lt;-<span class="st"> </span><span class="kw">train</span>(y <span class="op">~</span><span class="st"> </span>., <span class="dt">method =</span> <span class="st">&quot;glm&quot;</span>, <span class="dt">data =</span> mnist_<span class="dv">27</span><span class="op">$</span>train)</span>
-<span id="cb1075-3"><a href="caret.html#cb1075-3"></a>train_knn &lt;-<span class="st"> </span><span class="kw">train</span>(y <span class="op">~</span><span class="st"> </span>., <span class="dt">method =</span> <span class="st">&quot;knn&quot;</span>, <span class="dt">data =</span> mnist_<span class="dv">27</span><span class="op">$</span>train)</span></code></pre></div>
-<p>Para hacer predicciones, podemos usar el resultado de esta función directamente sin necesidad de mirar los detalles de <code>predict.glm</code> y <code>predict.knn</code>. En cambio, podemos aprender cómo obtener predicciones de <code>predict.train</code>.</p>
-<p>El código se ve igual para ambos métodos:</p>
-<div class="sourceCode" id="cb1076"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1076-1"><a href="caret.html#cb1076-1"></a>y_hat_glm &lt;-<span class="st"> </span><span class="kw">predict</span>(train_glm, mnist_<span class="dv">27</span><span class="op">$</span>test, <span class="dt">type =</span> <span class="st">&quot;raw&quot;</span>)</span>
-<span id="cb1076-2"><a href="caret.html#cb1076-2"></a>y_hat_knn &lt;-<span class="st"> </span><span class="kw">predict</span>(train_knn, mnist_<span class="dv">27</span><span class="op">$</span>test, <span class="dt">type =</span> <span class="st">&quot;raw&quot;</span>)</span></code></pre></div>
-<p>Esto nos permite comparar rápidamente los algoritmos. Por ejemplo, podemos comparar la exactitud de esta manera:</p>
-<div class="sourceCode" id="cb1077"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1077-1"><a href="caret.html#cb1077-1"></a><span class="kw">confusionMatrix</span>(y_hat_glm, mnist_<span class="dv">27</span><span class="op">$</span>test<span class="op">$</span>y)<span class="op">$</span>overall[[<span class="st">&quot;Accuracy&quot;</span>]]</span>
-<span id="cb1077-2"><a href="caret.html#cb1077-2"></a><span class="co">#&gt; [1] 0.75</span></span>
-<span id="cb1077-3"><a href="caret.html#cb1077-3"></a><span class="kw">confusionMatrix</span>(y_hat_knn, mnist_<span class="dv">27</span><span class="op">$</span>test<span class="op">$</span>y)<span class="op">$</span>overall[[<span class="st">&quot;Accuracy&quot;</span>]]</span>
-<span id="cb1077-4"><a href="caret.html#cb1077-4"></a><span class="co">#&gt; [1] 0.84</span></span></code></pre></div>
+<div id="accediendo-al-terminal-e-instalando-git" class="section level1">
+<h1><span class="header-section-number">Capítulo 37</span> Accediendo al terminal e instalando Git</h1>
+<p>Antes de comenzar, debemos asegurarnos de que tenga acceso a un <em>terminal</em> y que Git esté instalado. El terminal está integrado en los sistemas Mac y Linux, pero los usuarios de Windows deberán instalar un <em>emulador</em>. Hay muchas opciones de emulador disponibles, pero aquí mostramos cómo instalar Git Bash porque se puede hacer como parte de la instalación de Windows Git. Debido a las diferencias en Mac y Windows, las secciones de este capítulo se dividen en consecuencia.</p>
+<div id="terminal-on-mac" class="section level2">
+<h2><span class="header-section-number">37.1</span> Accediendo al terminal en una Mac</h2>
+<p>En el capitulo <a href="unix.html#unix">38</a> describimos cómo el terminal es nuestra ventana al mundo de Unix. En una Mac, puede acceder a un terminal abriendo la aplicación en la carpeta Utilidades:</p>
+<p><img src="productivity/img/mac-screenshots/Screen-Shot-2018-04-11-at-10.35.44-AM.png" width="45%" style="display: block; margin: auto;" /><img src="productivity/img/mac-screenshots/Screen-Shot-2018-04-11-at-10.36.29-AM.png" width="45%" style="display: block; margin: auto;" /><img src="productivity/img/mac-screenshots/Screen-Shot-2018-04-11-at-10.36.48-AM.png" width="45%" style="display: block; margin: auto;" /></p>
+<p>También puede usar la función Spotlight en la Mac escribiendo command-spacebar, luego escriba <em>Terminal</em>.</p>
+<p>Otra forma de acceder al terminal es desde RStudio. En el panel <em>Consola_debería ver una pestaña_Terminal</em>. Si hace clic en esta pestaña, abrirá una ventana de terminal.</p>
 </div>
-<div id="caret-cv" class="section level2">
-<h2><span class="header-section-number">30.2</span> Validación cruzada</h2>
-<p>Cuando un algoritmo incluye parámetros de ajuste, <code>train</code> utiliza automáticamente la validación cruzada para decidir entre algunos valores predeterminados. Para saber qué parámetro o parámetros están optimizados, pueden leer el manual<a href="#fn106" class="footnote-ref" id="fnref106"><sup>106</sup></a> o estudiar lo que devuelve:</p>
-<div class="sourceCode" id="cb1078"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1078-1"><a href="caret.html#cb1078-1"></a><span class="kw">getModelInfo</span>(<span class="st">&quot;knn&quot;</span>)</span></code></pre></div>
-<p>También podemos usar una búsqueda rápida como esta:</p>
-<div class="sourceCode" id="cb1079"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1079-1"><a href="caret.html#cb1079-1"></a><span class="kw">modelLookup</span>(<span class="st">&quot;knn&quot;</span>)</span></code></pre></div>
-<p>Si lo ejecutamos con valores predeterminados:</p>
-<div class="sourceCode" id="cb1080"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1080-1"><a href="caret.html#cb1080-1"></a>train_knn &lt;-<span class="st"> </span><span class="kw">train</span>(y <span class="op">~</span><span class="st"> </span>., <span class="dt">method =</span> <span class="st">&quot;knn&quot;</span>, <span class="dt">data =</span> mnist_<span class="dv">27</span><span class="op">$</span>train)</span></code></pre></div>
-<p>pueden ver rápidamente los resultados de la validación cruzada utilizando la función <code>ggplot</code>. El argumento <code>highlight</code> destaca el máximo:</p>
-<div class="sourceCode" id="cb1081"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1081-1"><a href="caret.html#cb1081-1"></a><span class="kw">ggplot</span>(train_knn, <span class="dt">highlight =</span> <span class="ot">TRUE</span>)</span></code></pre></div>
-<p><img src="libro_files/figure-html/caret-highlight-1.png" width="70%" style="display: block; margin: auto;" /></p>
-<p>Por defecto, la validación cruzada se realiza tomando 25 muestras de <em>bootstrap</em> que comprenden el 25% de las observaciones. Para el método <code>kNN</code>, el valor predeterminado resulta en intentar <span class="math inline">\(k=5, 7, 9\)</span>. Cambiamos esto usando el parámetro <code>tuneGrid</code>. La cuadrícula de valores debe ser suministrada por un <em>data frame</em> con los nombres de los parámetros como se especifica en el output <code>modelLookup</code>.</p>
-<p>Aquí, presentamos un ejemplo donde probamos 30 valores entre 9 y 67. Para hacer esto con <strong>caret</strong>, necesitamos definir una columna llamada <code>k</code> de la siguiente manera: <code>data.frame(k = seq(9, 67, 2))</code>.</p>
-<p>Noten que al ejecutar este código, estamos ajustando 30 versiones de kNN a 25 muestras de <em>bootstrap</em>. Ya que estamos ajustando <span class="math inline">\(30 \times 25 = 750\)</span> kNN modelos, ejecutar este código tomará varios segundos. Fijamos la semilla porque la validación cruzada es un procedimiento aleatorio y queremos asegurarnos de que el resultado aquí sea reproducible.</p>
-<div class="sourceCode" id="cb1082"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1082-1"><a href="caret.html#cb1082-1"></a><span class="kw">set.seed</span>(<span class="dv">2008</span>)</span>
-<span id="cb1082-2"><a href="caret.html#cb1082-2"></a>train_knn &lt;-<span class="st"> </span><span class="kw">train</span>(y <span class="op">~</span><span class="st"> </span>., <span class="dt">method =</span> <span class="st">&quot;knn&quot;</span>,</span>
-<span id="cb1082-3"><a href="caret.html#cb1082-3"></a>                   <span class="dt">data =</span> mnist_<span class="dv">27</span><span class="op">$</span>train,</span>
-<span id="cb1082-4"><a href="caret.html#cb1082-4"></a>                   <span class="dt">tuneGrid =</span> <span class="kw">data.frame</span>(<span class="dt">k =</span> <span class="kw">seq</span>(<span class="dv">9</span>, <span class="dv">71</span>, <span class="dv">2</span>)))</span>
-<span id="cb1082-5"><a href="caret.html#cb1082-5"></a><span class="kw">ggplot</span>(train_knn, <span class="dt">highlight =</span> <span class="ot">TRUE</span>)</span></code></pre></div>
-<p><img src="libro_files/figure-html/train-knn-plot-1.png" width="70%" style="display: block; margin: auto;" /></p>
-<p>Para acceder al parámetro que maximiza la precisión, pueden usar esto:</p>
-<div class="sourceCode" id="cb1083"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1083-1"><a href="caret.html#cb1083-1"></a>train_knn<span class="op">$</span>bestTune</span>
-<span id="cb1083-2"><a href="caret.html#cb1083-2"></a><span class="co">#&gt;     k</span></span>
-<span id="cb1083-3"><a href="caret.html#cb1083-3"></a><span class="co">#&gt; 10 27</span></span></code></pre></div>
-<p>y para acceder el mejor modelo, pueden usar esto:</p>
-<div class="sourceCode" id="cb1084"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1084-1"><a href="caret.html#cb1084-1"></a>train_knn<span class="op">$</span>finalModel</span>
-<span id="cb1084-2"><a href="caret.html#cb1084-2"></a><span class="co">#&gt; 27-nearest neighbor model</span></span>
-<span id="cb1084-3"><a href="caret.html#cb1084-3"></a><span class="co">#&gt; Training set outcome distribution:</span></span>
-<span id="cb1084-4"><a href="caret.html#cb1084-4"></a><span class="co">#&gt; </span></span>
-<span id="cb1084-5"><a href="caret.html#cb1084-5"></a><span class="co">#&gt;   2   7 </span></span>
-<span id="cb1084-6"><a href="caret.html#cb1084-6"></a><span class="co">#&gt; 379 421</span></span></code></pre></div>
-<p>La función <code>predict</code> utilizará este modelo de mejor rendimiento. Aquí está la exactitud del mejor modelo cuando se aplica al set de evaluación, que todavía no hemos utilizado porque la validación cruzada se realizó en el set de entrenamiento:</p>
-<div class="sourceCode" id="cb1085"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1085-1"><a href="caret.html#cb1085-1"></a><span class="kw">confusionMatrix</span>(<span class="kw">predict</span>(train_knn, mnist_<span class="dv">27</span><span class="op">$</span>test, <span class="dt">type =</span> <span class="st">&quot;raw&quot;</span>),</span>
-<span id="cb1085-2"><a href="caret.html#cb1085-2"></a>                mnist_<span class="dv">27</span><span class="op">$</span>test<span class="op">$</span>y)<span class="op">$</span>overall[<span class="st">&quot;Accuracy&quot;</span>]</span>
-<span id="cb1085-3"><a href="caret.html#cb1085-3"></a><span class="co">#&gt; Accuracy </span></span>
-<span id="cb1085-4"><a href="caret.html#cb1085-4"></a><span class="co">#&gt;    0.835</span></span></code></pre></div>
-<p>Si queremos cambiar la forma en que realizamos la validación cruzada, podemos usar la función <code>trainControl</code>. Podemos hacer que el código anterior sea un poco más rápido mediante, por ejemplo, la validación cruzada <em>10 fold</em>. Esto significa que tenemos 10 muestras cada una usando el 10% de las observaciones. Logramos esto usando el siguiente código:</p>
-<div class="sourceCode" id="cb1086"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1086-1"><a href="caret.html#cb1086-1"></a>control &lt;-<span class="st"> </span><span class="kw">trainControl</span>(<span class="dt">method =</span> <span class="st">&quot;cv&quot;</span>, <span class="dt">number =</span> <span class="dv">10</span>, <span class="dt">p =</span> <span class="fl">.9</span>)</span>
-<span id="cb1086-2"><a href="caret.html#cb1086-2"></a>train_knn_cv &lt;-<span class="st"> </span><span class="kw">train</span>(y <span class="op">~</span><span class="st"> </span>., <span class="dt">method =</span> <span class="st">&quot;knn&quot;</span>,</span>
-<span id="cb1086-3"><a href="caret.html#cb1086-3"></a>                      <span class="dt">data =</span> mnist_<span class="dv">27</span><span class="op">$</span>train,</span>
-<span id="cb1086-4"><a href="caret.html#cb1086-4"></a>                      <span class="dt">tuneGrid =</span> <span class="kw">data.frame</span>(<span class="dt">k =</span> <span class="kw">seq</span>(<span class="dv">9</span>, <span class="dv">71</span>, <span class="dv">2</span>)),</span>
-<span id="cb1086-5"><a href="caret.html#cb1086-5"></a>                      <span class="dt">trControl =</span> control)</span>
-<span id="cb1086-6"><a href="caret.html#cb1086-6"></a><span class="kw">ggplot</span>(train_knn_cv, <span class="dt">highlight =</span> <span class="ot">TRUE</span>)</span></code></pre></div>
-<p><img src="libro_files/figure-html/cv-10-fold-accuracy-estimate-1.png" width="70%" style="display: block; margin: auto;" /></p>
-<p>Notamos que las estimados de exactitud son más variables, lo que se espera ya que cambiamos el número de muestras utilizadas para estimar la exactitud.</p>
-<p>Tengan en cuenta que el componente <code>results</code> de lo que devuelve <code>train</code> incluye varias estadísticas de resumen relacionadas con la variabilidad de los estimados de validación cruzada:</p>
-<div class="sourceCode" id="cb1087"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1087-1"><a href="caret.html#cb1087-1"></a><span class="kw">names</span>(train_knn<span class="op">$</span>results)</span>
-<span id="cb1087-2"><a href="caret.html#cb1087-2"></a><span class="co">#&gt; [1] &quot;k&quot;          &quot;Accuracy&quot;   &quot;Kappa&quot;      &quot;AccuracySD&quot; &quot;KappaSD&quot;</span></span></code></pre></div>
-<!--We can also see the standard deviation bars obtained from the cross validation samples:
-
-
-```r
-train_knn$results %>%
-ggplot(aes(x = k, y = Accuracy)) +
-geom_line() +
-geom_point() +
-geom_errorbar(aes(x = k,
-ymin = Accuracy - AccuracySD,
-ymax = Accuracy + AccuracySD))
-```
-
-<img src="libro_files/figure-html/accuracy-with-sd-bars-1.png" width="70%" style="display: block; margin: auto;" />
--->
-</div>
-<div id="ejemplo-ajuste-con-loess" class="section level2">
-<h2><span class="header-section-number">30.3</span> Ejemplo: ajuste con loess</h2>
-<p>El modelo kNN que da el mejor resultado, también da una buena aproximación de la probabilidad condicional verdadera:</p>
-<p><img src="libro_files/figure-html/mnist27-optimal-knn-fit-1.png" width="70%" style="display: block; margin: auto;" /></p>
-<p>Sin embargo, sí vemos que la frontera es algo ondulada. Esto se debe a que kNN, igual que el suavizador de compartimiento básico, no utiliza un <em>kernel</em>. Para mejorar esto, podríamos tratar loess. Al leer la parte sobre los modelos disponibles en el manual<a href="#fn107" class="footnote-ref" id="fnref107"><sup>107</sup></a>, vemos que podemos usar el método <code>gamLoess</code>.
-En el manual<a href="#fn108" class="footnote-ref" id="fnref108"><sup>108</sup></a> también vemos que necesitamos instalar el paquete <strong>gam</strong> si aún no lo hemos hecho:</p>
-<div class="sourceCode" id="cb1088"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1088-1"><a href="caret.html#cb1088-1"></a><span class="kw">install.packages</span>(<span class="st">&quot;gam&quot;</span>)</span></code></pre></div>
-<p>Luego vemos que tenemos dos parámetros para optimizar:</p>
-<div class="sourceCode" id="cb1089"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1089-1"><a href="caret.html#cb1089-1"></a><span class="kw">modelLookup</span>(<span class="st">&quot;gamLoess&quot;</span>)</span>
-<span id="cb1089-2"><a href="caret.html#cb1089-2"></a><span class="co">#&gt;      model parameter  label forReg forClass probModel</span></span>
-<span id="cb1089-3"><a href="caret.html#cb1089-3"></a><span class="co">#&gt; 1 gamLoess      span   Span   TRUE     TRUE      TRUE</span></span>
-<span id="cb1089-4"><a href="caret.html#cb1089-4"></a><span class="co">#&gt; 2 gamLoess    degree Degree   TRUE     TRUE      TRUE</span></span></code></pre></div>
-<p>Nos mantendremos en un grado de 1. Pero para probar diferentes valores para el <em>span</em>, todavía tenemos que incluir una columna en la tabla con el nombre <code>degree</code> para poder hacer esto:</p>
-<div class="sourceCode" id="cb1090"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1090-1"><a href="caret.html#cb1090-1"></a>grid &lt;-<span class="st"> </span><span class="kw">expand.grid</span>(<span class="dt">span =</span> <span class="kw">seq</span>(<span class="fl">0.15</span>, <span class="fl">0.65</span>, <span class="dt">len =</span> <span class="dv">10</span>), <span class="dt">degree =</span> <span class="dv">1</span>)</span></code></pre></div>
-<p>Utilizaremos los parámetros de control de validación cruzada predeterminados.</p>
-<div class="sourceCode" id="cb1091"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1091-1"><a href="caret.html#cb1091-1"></a>train_loess &lt;-<span class="st"> </span><span class="kw">train</span>(y <span class="op">~</span><span class="st"> </span>.,</span>
-<span id="cb1091-2"><a href="caret.html#cb1091-2"></a>                     <span class="dt">method =</span> <span class="st">&quot;gamLoess&quot;</span>,</span>
-<span id="cb1091-3"><a href="caret.html#cb1091-3"></a>                     <span class="dt">tuneGrid=</span>grid,</span>
-<span id="cb1091-4"><a href="caret.html#cb1091-4"></a>                     <span class="dt">data =</span> mnist_<span class="dv">27</span><span class="op">$</span>train)</span>
-<span id="cb1091-5"><a href="caret.html#cb1091-5"></a><span class="kw">ggplot</span>(train_loess, <span class="dt">highlight =</span> <span class="ot">TRUE</span>)</span></code></pre></div>
-<p><img src="libro_files/figure-html/loess-accuracy-1.png" width="70%" style="display: block; margin: auto;" /></p>
-<p>Podemos ver que el método funciona de manera similar a kNN:</p>
-<div class="sourceCode" id="cb1092"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1092-1"><a href="caret.html#cb1092-1"></a><span class="kw">confusionMatrix</span>(<span class="dt">data =</span> <span class="kw">predict</span>(train_loess, mnist_<span class="dv">27</span><span class="op">$</span>test),</span>
-<span id="cb1092-2"><a href="caret.html#cb1092-2"></a>                <span class="dt">reference =</span> mnist_<span class="dv">27</span><span class="op">$</span>test<span class="op">$</span>y)<span class="op">$</span>overall[<span class="st">&quot;Accuracy&quot;</span>]</span>
-<span id="cb1092-3"><a href="caret.html#cb1092-3"></a><span class="co">#&gt; Accuracy </span></span>
-<span id="cb1092-4"><a href="caret.html#cb1092-4"></a><span class="co">#&gt;     0.85</span></span></code></pre></div>
-<p>y produce una estimación más suave de la probabilidad condicional:</p>
-<p><img src="libro_files/figure-html/gam-smooth-1.png" width="100%" style="display: block; margin: auto;" /></p>
-
-</div>
-</div>
-<div class="footnotes">
-<hr />
-<ol start="105">
-<li id="fn105"><p><a href="https://topepo.github.io/caret/available-models.html" class="uri">https://topepo.github.io/caret/available-models.html</a><a href="caret.html#fnref105" class="footnote-back">↩︎</a></p></li>
-<li id="fn106"><p><a href="http://topepo.github.io/caret/available-models.html" class="uri">http://topepo.github.io/caret/available-models.html</a><a href="caret.html#fnref106" class="footnote-back">↩︎</a></p></li>
-<li id="fn107"><p><a href="https://topepo.github.io/caret/available-models.html" class="uri">https://topepo.github.io/caret/available-models.html</a><a href="caret.html#fnref107" class="footnote-back">↩︎</a></p></li>
-<li id="fn108"><p><a href="https://topepo.github.io/caret/train-models-by-tag.html" class="uri">https://topepo.github.io/caret/train-models-by-tag.html</a><a href="caret.html#fnref108" class="footnote-back">↩︎</a></p></li>
+<div id="instalando-git-en-la-mac" class="section level2">
+<h2><span class="header-section-number">37.2</span> Instalando Git en la Mac</h2>
+<p>** Advertencia: las instrucciones en esta subsección no son para usuarios de Windows. **</p>
+<ol style="list-style-type: decimal">
+<li><p>Comience abriendo un terminal como se describe en la sección anterior.</p></li>
+<li><p>Una vez que inicie el terminal, verá una consola como esta:</p></li>
 </ol>
+<p><img src="productivity/img/mac-screenshots/Screen-Shot-2018-04-11-at-10.36.48-AM.png" width="70%" style="display: block; margin: auto;" /></p>
+<ol start="3" style="list-style-type: decimal">
+<li>Es posible que ya tenga instalado Git. Una forma de verificarlo es preguntando por la versión escribiendo:</li>
+</ol>
+<div class="sourceCode" id="cb1387"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb1387-1"><a href="accediendo-al-terminal-e-instalando-git.html#cb1387-1"></a><span class="fu">git</span> --version</span></code></pre></div>
+<p>Si recupera un número de versión, ya está instalado. Si no, recibirá el siguiente mensaje:</p>
+<p><img src="productivity/img/mac-screenshots/Screen-Shot-2018-04-11-at-10.39.31-AM.png" width="70%" style="display: block; margin: auto;" /></p>
+<p>y se le preguntará si desea instalarlo. Debe hacer clic en <em>Instalar</em>:</p>
+<p><img src="productivity/img/mac-screenshots/Screen-Shot-2018-04-11-at-10.39.44-AM.png" width="70%" style="display: block; margin: auto;" /></p>
+<ol start="4" style="list-style-type: decimal">
+<li>Esto lo llevará a través del proceso de instalación:</li>
+</ol>
+<p><img src="productivity/img/mac-screenshots/Screen-Shot-2018-04-11-at-10.40.09-AM.png" width="45%"  style="display: block; margin: auto;" /><img src="productivity/img/mac-screenshots/Screen-Shot-2018-04-11-at-10.40.15-AM.png" width="45%"  style="display: block; margin: auto;" /><img src="productivity/img/mac-screenshots/Screen-Shot-2018-04-11-at-11.10.29-AM.png" width="45%"  style="display: block; margin: auto;" /></p>
+<ol start="5" style="list-style-type: decimal">
+<li>Una vez instalado, puede verificar la versión nuevamente y debería mostrarle algo como esto:</li>
+</ol>
+<p><img src="productivity/img/mac-screenshots/Screen-Shot-2018-04-11-at-11.10.47-AM.png" width="70%" style="display: block; margin: auto;" /></p>
+<p>Felicidades. Has instalado Git en tu Mac.</p>
+</div>
+<div id="instalación-de-git-y-git-bash-en-windows" class="section level2">
+<h2><span class="header-section-number">37.3</span> Instalación de Git y Git Bash en Windows</h2>
+<p>** Advertencia: las instrucciones en esta subsección no son para usuarios de Mac. **</p>
+<p>Hay varias piezas de software que le permitirán ejecutar comandos de Unix en Windows. Usaremos Git Bash ya que interactúa con RStudio y se instala automáticamente cuando instalamos Git para Windows.</p>
+<ol style="list-style-type: decimal">
+<li>Comience buscando <em>Git para Windows_en su navegador y haga clic en el enlace de_git-scm.com</em>.</li>
+</ol>
+<p><img src="productivity/img/windows-screenshots/VirtualBox_Windows-7-Enterprise_23_03_2018_09_31_15.png" width="70%" style="display: block; margin: auto;" /></p>
+<ol start="2" style="list-style-type: decimal">
+<li>Esto lo llevará a la página <em>Download Git_desde donde puede descargar la</em> compilación mantenida más reciente_:</li>
+</ol>
+<p><img src="productivity/img/windows-screenshots/VirtualBox_Windows-7-Enterprise_23_03_2018_09_31_45.png" width="70%" style="display: block; margin: auto;" /></p>
+<ol start="3" style="list-style-type: decimal">
+<li>Luego puede aceptar ejecutar el instalador y aceptar la licencia:</li>
+</ol>
+<p><img src="productivity/img/windows-screenshots/VirtualBox_Windows-7-Enterprise_23_03_2018_09_32_01.png" width="45%"  style="display: block; margin: auto;" /><img src="productivity/img/windows-screenshots/VirtualBox_Windows-7-Enterprise_23_03_2018_09_32_10.png" width="45%"  style="display: block; margin: auto;" /></p>
+<ol start="4" style="list-style-type: decimal">
+<li>En uno de los pasos de instalación, se le pedirá que elija el editor predeterminado para Git. A menos que ya sea un usuario <em>vi_o_vim</em>, le recomendamos que no seleccione <em>vim</em>, que podría ser el predeterminado. Si no reconoce un editor con el que está familiarizado entre las opciones ofrecidas, le recomendamos que seleccione <em>nano</em> como su editor predeterminado para Git, ya que es el más fácil de aprender:</li>
+</ol>
+<p><img src="productivity/img/windows-screenshots/VirtualBox_Windows-7-Enterprise_23_03_2018_09_32_55.png" width="70%" style="display: block; margin: auto;" /></p>
+<ol start="5" style="list-style-type: decimal">
+<li>La siguiente decisión de instalación es en realidad una <strong>importante</strong>. Este proceso de instalación instala Git Bash. Recomendamos que seleccione <em>Git y las herramientas opcionales de Unix desde el símbolo del sistema de Windows</em> ya que esto le permitirá aprender Unix desde RStudio. Sin embargo, si hace esto, <strong>algunos comandos que se ejecutan en su línea de comandos de Windows dejarán de funcionar</strong>. Si no usa su línea de comandos de Windows, entonces esto no debería ser un problema. Además, la mayoría, si no todas, de estas líneas de comando de Windows tienen un equivalente de Unix que podrá usar ahora.</li>
+</ol>
+<p><img src="productivity/img/windows-screenshots/VirtualBox_Windows-7-Enterprise_23_03_2018_09_34_52.png" width="70%" style="display: block; margin: auto;" /></p>
+<ol start="6" style="list-style-type: decimal">
+<li>Ahora puede continuar seleccionando las opciones predeterminadas.</li>
+</ol>
+<p><img src="productivity/img/windows-screenshots/VirtualBox_Windows-7-Enterprise_23_03_2018_09_35_03.png" width="45%"  style="display: block; margin: auto;" /><img src="productivity/img/windows-screenshots/VirtualBox_Windows-7-Enterprise_23_03_2018_09_35_29.png" width="45%"  style="display: block; margin: auto;" /><img src="productivity/img/windows-screenshots/VirtualBox_Windows-7-Enterprise_23_03_2018_09_35_42.png" width="45%"  style="display: block; margin: auto;" /></p>
+<p><img src="productivity/img/windows-screenshots/VirtualBox_Windows-7-Enterprise_23_03_2018_09_35_57.png" width="45%"  style="display: block; margin: auto;" /><img src="productivity/img/windows-screenshots/VirtualBox_Windows-7-Enterprise_23_03_2018_09_36_43.png" width="45%"  style="display: block; margin: auto;" /></p>
+<p>Ahora ha instalado Git en Windows.</p>
+</div>
+<div id="terminal-on-windows" class="section level2">
+<h2><span class="header-section-number">37.4</span> Accediendo a la terminal en Windows</h2>
+<p>Ahora que Git Bash está instalado, podemos acceder al terminal a través de RStudio o abriendo Git Bash directamente.</p>
+<p>Para acceder al terminal a través de RStudio, necesitamos cambiar una preferencia para que Git Bash se convierta en el shell predeterminado de Unix en RStudio. En RStudio, vaya a las preferencias (en el menú desplegable Archivo), luego seleccione <em>Terminal</em>, luego seleccione <em>Git Bash</em>:</p>
+<p><img src="productivity/img/windows-screenshots/VirtualBox_Windows-7-Enterprise_23_03_2018_09_38_00.png" width="70%" style="display: block; margin: auto;" /></p>
+<p>Para comprobar que, de hecho, está utilizando Git Bash en RStudio, puede abrir una <em>Nueva Terminal</em> en RStudio:</p>
+<p><img src="productivity/img/windows-screenshots/VirtualBox_Windows-7-Enterprise_23_03_2018_10_49_44.png" width="70%" style="display: block; margin: auto;" /></p>
+<p>Debería verse más o menos así:</p>
+<p><img src="productivity/img/windows-screenshots/VirtualBox_Windows-7-Enterprise_23_03_2018_10_49_51.png" width="70%" style="display: block; margin: auto;" /></p>
+<p>A menudo queremos acceder al terminal, pero no necesitamos RStudio. Puede hacer esto ejecutando el programa Git Bash directamente:</p>
+<p><img src="productivity/img/windows-screenshots/VirtualBox_Windows-7-Enterprise_23_03_2018_14_53_10.png" width="45%"  style="display: block; margin: auto;" /><img src="productivity/img/windows-screenshots/VirtualBox_Windows-7-Enterprise_23_03_2018_14_53_12.png" width="45%"  style="display: block; margin: auto;" /></p>
+
+</div>
 </div>
             </section>
 
           </div>
         </div>
       </div>
-<a href="cross-validation.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
-<a href="ejemplos-de-algoritmos.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+<a href="installing-r-rstudio.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="unix.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
     </div>
   </div>
 <script src="libs/gitbook-2.6.7/js/app.min.js"></script>
@@ -1067,7 +1021,7 @@ gitbook.start({
 "size": 2
 },
 "edit": {
-"link": "https://github.com/rafalab/dslibro/edit/master/ml/caret.Rmd",
+"link": "https://github.com/rafalab/dslibro/edit/master/productivity/installing-git.Rmd",
 "text": "Edit"
 },
 "history": {
