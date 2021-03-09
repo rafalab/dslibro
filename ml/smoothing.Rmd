@@ -44,10 +44,10 @@ Para pensar en esto como un problema de _machine learning_, tengan en cuenta que
 ```{r linear-regression-not-flexible, echo=FALSE}
 resid <- ifelse(lm(margin~day, data = polls_2008)$resid > 0, "+", "-")
 polls_2008 %>%
-mutate(resid = resid) %>%
-ggplot(aes(day, margin)) +
-geom_smooth(method = "lm", se = FALSE, color = "black") +
-geom_point(aes(color = resid), size = 3)
+  mutate(resid = resid) %>%
+  ggplot(aes(day, margin)) +
+  geom_smooth(method = "lm", se = FALSE, color = "black") +
+  geom_point(aes(color = resid), size = 3)
 ```
 
 La línea que vemos no parece describir muy bien la tendencia. Por ejemplo, el 4 de septiembre (día -62), se celebró la Convención Republicana y los datos sugieren que este evento le dio a John McCain un impulso en las encuestas. Sin embargo, la línea de regresión no captura esta tendencia potencial. Para ver más claramente la _falta de ajuste_, observamos que los puntos por encima de la línea ajustada (azul) y los de abajo (rojo) no se distribuyen uniformemente entre los días. Por lo tanto, necesitamos un enfoque alternativo más flexible.
@@ -74,17 +74,17 @@ La idea detrás de la _suavización de compartimientos_ (_bin smoothing_ en ingl
 ```{r binsmoother-expained, echo=FALSE}
 span <- 3.5
 tmp <- polls_2008 %>%
-crossing(center = polls_2008$day) %>%
-mutate(dist = abs(day - center)) %>%
-filter(dist <= span)
+  crossing(center = polls_2008$day) %>%
+  mutate(dist = abs(day - center)) %>%
+  filter(dist <= span)
 
 tmp %>% filter(center %in% c(-125, -55)) %>%
-ggplot(aes(day, margin)) +
-geom_point(data = polls_2008, size = 3, alpha = 0.5, color = "grey") +
-geom_point(size = 2) +
-geom_smooth(aes(group = center),
-method = "lm", formula=y~1, se = FALSE) +
-facet_wrap(~center)
+  ggplot(aes(day, margin)) +
+  geom_point(data = polls_2008, size = 3, alpha = 0.5, color = "grey") +
+  geom_point(size = 2) +
+  geom_smooth(aes(group = center),
+              method = "lm", formula=y~1, se = FALSE) +
+  facet_wrap(~center)
 ```
 
 Al calcular esta media para cada punto, formamos un estimado de la curva subyacente $f(x)$. A continuación, mostramos el procedimiento que se produce a medida que avanzamos de -155 a 0. En cada valor de $x_0$, mantenemos el estimado $\hat{f}(x_0)$ y continuamos al siguiente punto:
@@ -96,33 +96,33 @@ fit <- with(polls_2008, ksmooth(day, margin, kernel="box", x.points = day, bandw
 bin_fit <- data.frame(x = fit$x, .fitted=fit$y)
 
 if(!file.exists(file.path(img_path,"binsmoother-animation.gif"))){
-p <- tmp %>%
-ggplot() +
-geom_smooth(aes(day, margin, group = center, frame = center), method = "lm", formula=y~1, se = FALSE) +
-geom_point(aes(day, margin), data = polls_2008, size = 3, alpha = .5, color = "grey") +
-geom_point(aes(day, margin, frame = center)) +
-geom_line(aes(x=x, y = .fitted, frame = x, cumulative = TRUE), data = bin_fit, color = "red") +
-ggtitle("x0 = ")
-
-gganimate(p, filename = file.path(img_path,"binsmoother-animation.gif"), interval= .1)
+  p <- tmp %>%
+    ggplot() +
+    geom_smooth(aes(day, margin, group = center, frame = center), method = "lm", formula=y~1, se = FALSE) +
+    geom_point(aes(day, margin), data = polls_2008, size = 3, alpha = .5, color = "grey") +
+    geom_point(aes(day, margin, frame = center)) +
+    geom_line(aes(x=x, y = .fitted, frame = x, cumulative = TRUE), data = bin_fit, color = "red") +
+    ggtitle("x0 = ")
+  
+  gganimate(p, filename = file.path(img_path,"binsmoother-animation.gif"), interval= .1)
 }
 if(knitr::is_html_output()){
-knitr::include_graphics(file.path(img_path,"binsmoother-animation.gif"))
+  knitr::include_graphics(file.path(img_path,"binsmoother-animation.gif"))
 } else{
-centers <- quantile(tmp$center, seq(1,6)/6)
-tmp_bin_fit <- crossing(center=centers,bin_fit) %>%
-group_by(center) %>%
-filter(x <= center) %>%
-ungroup()
-
-tmp %>% filter(center %in% centers) %>%
-ggplot() +
-geom_smooth(aes(day, margin), method = "lm", formula=y~1, se = FALSE) +
-geom_point(aes(day, margin), data = polls_2008, size = 3, alpha = .5, color = "grey") +
-geom_point(aes(day, margin)) +
-geom_line(aes(x=x, y = .fitted), data = tmp_bin_fit, color = "red") +
-ggtitle("x0 = ") +
-facet_wrap(~center, nrow = 2)
+  centers <- quantile(tmp$center, seq(1,6)/6)
+  tmp_bin_fit <- crossing(center=centers,bin_fit) %>%
+    group_by(center) %>%
+    filter(x <= center) %>%
+    ungroup()
+  
+  tmp %>% filter(center %in% centers) %>%
+    ggplot() +
+    geom_smooth(aes(day, margin), method = "lm", formula=y~1, se = FALSE) +
+    geom_point(aes(day, margin), data = polls_2008, size = 3, alpha = .5, color = "grey") +
+    geom_point(aes(day, margin)) +
+    geom_line(aes(x=x, y = .fitted), data = tmp_bin_fit, color = "red") +
+    ggtitle("x0 = ") +
+    facet_wrap(~center, nrow = 2)
 }
 ```
 
@@ -131,12 +131,12 @@ El código final y el estimado resultante se ven así:
 ```{r binsmoother-final}
 span <- 7
 fit <- with(polls_2008,
-ksmooth(day, margin, kernel = "box", bandwidth = span))
+            ksmooth(day, margin, kernel = "box", bandwidth = span))
 
 polls_2008 %>% mutate(smooth = fit$y) %>%
-ggplot(aes(day, margin)) +
-geom_point(size = 3, alpha = .5, color = "grey") +
-geom_line(aes(day, smooth), color="red")
+  ggplot(aes(day, margin)) +
+  geom_point(size = 3, alpha = .5, color = "grey") +
+  geom_line(aes(day, smooth), color="red")
 ```
 
 ## Kernels
@@ -155,18 +155,18 @@ en el que cada punto recibe un peso de $0$ o $1/N_0$, con $N_0$ el número de pu
 x_0 <- -125
 
 p1 <- data.frame(x = polls_2008$day) %>% mutate(w_0 = 1*I(abs(x - x_0)<=span/2)) %>%
-mutate(w_0 = w_0/sum(w_0)) %>%
-ggplot(aes(x, w_0)) +
-geom_step() +
-ggtitle("Box")
+  mutate(w_0 = w_0/sum(w_0)) %>%
+  ggplot(aes(x, w_0)) +
+  geom_step() +
+  ggtitle("Box")
 
 tmp <- with(data.frame(day = seq(min(polls_2008$day), max(polls_2008$day), .25)),
-ksmooth(day, 1*I(day == x_0), kernel = "normal", x.points = day, bandwidth = span))
+            ksmooth(day, 1*I(day == x_0), kernel = "normal", x.points = day, bandwidth = span))
 p2 <- data.frame(x = tmp$x, w_0 = tmp$y) %>%
-mutate(w_0 = w_0/sum(w_0)) %>%
-ggplot(aes(x, w_0)) +
-geom_line() +
-ggtitle("Normal")
+  mutate(w_0 = w_0/sum(w_0)) %>%
+  ggplot(aes(x, w_0)) +
+  geom_line() +
+  ggtitle("Normal")
 gridExtra::grid.arrange(p1, p2, ncol = 2)
 ```
 
@@ -221,12 +221,12 @@ El código final y el gráfico resultante para el _kernel_ normal se ven así:
 ```{r final-ksmooth-normal-kernel}
 span <- 7
 fit <- with(polls_2008,
-ksmooth(day, margin, kernel = "normal", bandwidth = span))
+            ksmooth(day, margin, kernel = "normal", bandwidth = span))
 
 polls_2008 %>% mutate(smooth = fit$y) %>%
-ggplot(aes(day, margin)) +
-geom_point(size = 3, alpha = .5, color = "grey") +
-geom_line(aes(day, smooth), color="red")
+  ggplot(aes(day, margin)) +
+  geom_point(size = 3, alpha = .5, color = "grey") +
+  geom_line(aes(day, smooth), color="red")
 ```
 
 Observen que el estimado final ahora se ve más suave.
@@ -255,20 +255,20 @@ Por cada punto $x_0$, loess define una ventana y ajusta una línea dentro de esa
 span <- 21/diff(range(polls_2008$day))
 
 tmp <- polls_2008 %>%
-crossing(center = polls_2008$day) %>%
-mutate(dist = abs(day - center)) %>%
-filter(rank(dist)/ n() <= span) %>%
-mutate(weight = (1 - (dist/ max(dist))^3)^3)
+  crossing(center = polls_2008$day) %>%
+  mutate(dist = abs(day - center)) %>%
+  filter(rank(dist)/ n() <= span) %>%
+  mutate(weight = (1 - (dist/ max(dist))^3)^3)
 
 tmp %>%
-filter(center %in% c(-125, -55)) %>%
-ggplot(aes(day, margin)) +
-scale_size(range = c(0, 3)) +
-geom_smooth(aes(group = center, weight = weight),
-method = "lm", se = FALSE) +
-geom_point(data = polls_2008, size = 3, alpha = .5, color = "grey") +
-geom_point(aes(size = weight)) +
-facet_wrap(~center)
+  filter(center %in% c(-125, -55)) %>%
+  ggplot(aes(day, margin)) +
+  scale_size(range = c(0, 3)) +
+  geom_smooth(aes(group = center, weight = weight),
+              method = "lm", se = FALSE) +
+  geom_point(data = polls_2008, size = 3, alpha = .5, color = "grey") +
+  geom_point(aes(size = weight)) +
+  facet_wrap(~center)
 ```
 
 El valor ajustado en $x_0$ se convierte en nuestro estimado $\hat{f}(x_0)$. A continuación, mostramos el procedimiento que ocurre mientras cambiamos de -155 a 0.
@@ -279,32 +279,32 @@ fit <- loess(margin ~ day, degree=1, span = span, data=polls_2008)
 loess_fit <- augment(fit)
 
 if(!file.exists(file.path(img_path,"loess-animation.gif"))){
-p <- ggplot(tmp, aes(day, margin)) +
-scale_size(range = c(0, 3)) +
-geom_smooth(aes(group = center, frame = center, weight = weight), method = "lm", se = FALSE) +
-geom_point(data = polls_2008, size = 3, alpha = .5, color = "grey") +
-geom_point(aes(size = weight, frame = center)) +
-geom_line(aes(x=day, y = .fitted, frame = day, cumulative = TRUE),
-data = loess_fit, color = "red")
-
-gganimate(p, filename = file.path(img_path,"loess-animation.gif"), interval= .1)
+  p <- ggplot(tmp, aes(day, margin)) +
+    scale_size(range = c(0, 3)) +
+    geom_smooth(aes(group = center, frame = center, weight = weight), method = "lm", se = FALSE) +
+    geom_point(data = polls_2008, size = 3, alpha = .5, color = "grey") +
+    geom_point(aes(size = weight, frame = center)) +
+    geom_line(aes(x=day, y = .fitted, frame = day, cumulative = TRUE),
+              data = loess_fit, color = "red")
+  
+  gganimate(p, filename = file.path(img_path,"loess-animation.gif"), interval= .1)
 }
 if(knitr::is_html_output()){
-knitr::include_graphics(file.path(img_path,"loess-animation.gif"))
+  knitr::include_graphics(file.path(img_path,"loess-animation.gif"))
 } else{
-centers <- quantile(tmp$center, seq(1,6)/6)
-tmp_loess_fit <- crossing(center=centers, loess_fit) %>%
-group_by(center) %>%
-filter(day <= center) %>%
-ungroup()
-
-tmp %>% filter(center %in% centers) %>%
-ggplot() +
-geom_smooth(aes(day, margin), method = "lm", se = FALSE) +
-geom_point(aes(day, margin, size = weight), data = polls_2008, size = 3, alpha = .5, color = "grey") +
-geom_point(aes(day, margin)) +
-geom_line(aes(x=day, y = .fitted), data = tmp_loess_fit, color = "red") +
-facet_wrap(~center, nrow = 2)
+  centers <- quantile(tmp$center, seq(1,6)/6)
+  tmp_loess_fit <- crossing(center=centers, loess_fit) %>%
+    group_by(center) %>%
+    filter(day <= center) %>%
+    ungroup()
+  
+  tmp %>% filter(center %in% centers) %>%
+    ggplot() +
+    geom_smooth(aes(day, margin), method = "lm", se = FALSE) +
+    geom_point(aes(day, margin, size = weight), data = polls_2008, size = 3, alpha = .5, color = "grey") +
+    geom_point(aes(day, margin)) +
+    geom_line(aes(x=day, y = .fitted), data = tmp_loess_fit, color = "red") +
+    facet_wrap(~center, nrow = 2)
 }
 ```
 
@@ -317,9 +317,9 @@ span <- 21/total_days
 fit <- loess(margin ~ day, degree=1, span = span, data=polls_2008)
 
 polls_2008 %>% mutate(smooth = fit$fitted) %>%
-ggplot(aes(day, margin)) +
-geom_point(size = 3, alpha = .5, color = "grey") +
-geom_line(aes(day, smooth), color="red")
+  ggplot(aes(day, margin)) +
+  geom_point(size = 3, alpha = .5, color = "grey") +
+  geom_line(aes(day, smooth), color="red")
 ```
 
 Diferentes _spans_ producen diferentes estimados. Podemos ver cómo diferentes tamaños de ventana conducen a diferentes estimados:
@@ -338,33 +338,33 @@ tmp <- fits %>%
   mutate(weight = (1 - (dist / max(dist)) ^ 3) ^ 3)
 
 if(!file.exists(file.path(img_path, "loess-multi-span-animation.gif"))){
-p <- ggplot(tmp, aes(day, margin)) +
-scale_size(range = c(0, 2)) +
-geom_smooth(aes(group = center, frame = center, weight = weight), method = "lm", se = FALSE) +
-geom_point(data = polls_2008, size = 2, alpha = .5, color = "grey") +
-geom_line(aes(x=day, y = .fitted, frame = day, cumulative = TRUE),
-data = fits, color = "red") +
-geom_point(aes(size = weight, frame = center)) +
-facet_wrap(~span)
-
-gganimate(p, filename = file.path(img_path, "loess-multi-span-animation.gif"), interval= .1)
+  p <- ggplot(tmp, aes(day, margin)) +
+    scale_size(range = c(0, 2)) +
+    geom_smooth(aes(group = center, frame = center, weight = weight), method = "lm", se = FALSE) +
+    geom_point(data = polls_2008, size = 2, alpha = .5, color = "grey") +
+    geom_line(aes(x=day, y = .fitted, frame = day, cumulative = TRUE),
+              data = fits, color = "red") +
+    geom_point(aes(size = weight, frame = center)) +
+    facet_wrap(~span)
+  
+  gganimate(p, filename = file.path(img_path, "loess-multi-span-animation.gif"), interval= .1)
 }
 if(knitr::is_html_output()){
-knitr::include_graphics(file.path(img_path,"loess-multi-span-animation.gif"))
+  knitr::include_graphics(file.path(img_path,"loess-multi-span-animation.gif"))
 } else{
-centers <- quantile(tmp$center, seq(1,3)/3)
-tmp_fits <- crossing(center=centers, fits) %>%
-group_by(center) %>%
-filter(day <= center) %>%
-ungroup()
-
-tmp %>% filter(center %in% centers) %>%
-ggplot() +
-geom_smooth(aes(day, margin), method = "lm", se = FALSE) +
-geom_point(aes(day, margin, size = weight), data = polls_2008, size = 3, alpha = .5, color = "grey") +
-geom_point(aes(day, margin)) +
-geom_line(aes(x=day, y = .fitted), data = tmp_fits, color = "red") +
-facet_grid(span ~ center)
+  centers <- quantile(tmp$center, seq(1,3)/3)
+  tmp_fits <- crossing(center=centers, fits) %>%
+    group_by(center) %>%
+    filter(day <= center) %>%
+    ungroup()
+  
+  tmp %>% filter(center %in% centers) %>%
+    ggplot() +
+    geom_smooth(aes(day, margin), method = "lm", se = FALSE) +
+    geom_point(aes(day, margin, size = weight), data = polls_2008, size = 3, alpha = .5, color = "grey") +
+    geom_point(aes(day, margin)) +
+    geom_line(aes(x=day, y = .fitted), data = tmp_fits, color = "red") +
+    facet_grid(span ~ center)
 }
 
 ```
@@ -373,9 +373,9 @@ Aquí están los estimados finales:
 
 ```{r loess-final, echo=FALSE}
 tmp %>% ggplot(aes(day, margin)) +
-geom_point(size = 2, alpha = .5, color = "grey") +
-geom_line(aes(day, .fitted), data = fits, color = "red") +
-facet_wrap(~span)
+  geom_point(size = 2, alpha = .5, color = "grey") +
+  geom_line(aes(day, .fitted), data = fits, color = "red") +
+  facet_wrap(~span)
 ```
 
 Hay otras tres diferencias entre `loess` y el típico suavizador de compartimiento.
@@ -406,18 +406,18 @@ Este _kernel_ difiere del _kernel_ gaussiano en que más puntos obtienen valores
 x_0 <- -125
 
 tmp <- with(data.frame(day = seq(min(polls_2008$day), max(polls_2008$day), .25)),
-ksmooth(day, 1*I(day == x_0), kernel = "normal", x.points = day, bandwidth = 7))
+            ksmooth(day, 1*I(day == x_0), kernel = "normal", x.points = day, bandwidth = 7))
 p1 <- data.frame(x = tmp$x, w_0 = tmp$y) %>%
-mutate(w_0 = w_0/sum(w_0)) %>%
-ggplot(aes(x, w_0)) +
-geom_line() +
-ggtitle("Normal")
+  mutate(w_0 = w_0/sum(w_0)) %>%
+  ggplot(aes(x, w_0)) +
+  geom_line() +
+  ggtitle("Normal")
 
 p2 <- data.frame(x = seq(min(polls_2008$day), max(polls_2008$day), length.out = 100)) %>%
-mutate(w_0 = (1 - (abs(x-x_0)/21)^3)^3*I(abs(x-x_0)<=21)) %>%
-ggplot(aes(x, w_0)) +
-geom_line() +
-ggtitle("Tri-weight")
+  mutate(w_0 = (1 - (abs(x-x_0)/21)^3)^3*I(abs(x-x_0)<=21)) %>%
+  ggplot(aes(x, w_0)) +
+  geom_line() +
+  ggtitle("Tri-weight")
 gridExtra::grid.arrange(p1, p2, ncol = 2)
 ```
 
@@ -444,10 +444,10 @@ fit_2 <- loess(margin ~ day, span = span, data=polls_2008)
 
 
 polls_2008 %>% mutate(smooth_1 = fit_1$fitted, smooth_2 = fit_2$fitted) %>%
-ggplot(aes(day, margin)) +
-geom_point(size = 3, alpha = .5, color = "grey") +
-geom_line(aes(day, smooth_1), color="red", lty = 2) +
-geom_line(aes(day, smooth_2), color="orange", lty = 1)
+  ggplot(aes(day, margin)) +
+  geom_point(size = 3, alpha = .5, color = "grey") +
+  geom_line(aes(day, smooth_1), color="red", lty = 2) +
+  geom_line(aes(day, smooth_2), color="orange", lty = 1)
 ```
 
 `degree = 2` nos da resultados más ondulantes. Realmente preferimos `degree = 1` ya que es menos propenso a este tipo de ruido.
@@ -459,16 +459,16 @@ geom_line(aes(day, smooth_2), color="orange", lty = 1)
 
 ```{r ggplot-loess-default, warning=FALSE, message=FALSE}
 polls_2008 %>% ggplot(aes(day, margin)) +
-geom_point() +
-geom_smooth()
+  geom_point() +
+  geom_smooth()
 ```
 
 Pero tengan cuidado con los parámetros predeterminados, ya que rara vez son óptimos. Afortunadamente, pueden cambiarlos convenientemente:
 
 ```{r ggplot-loess-degree-1, warning=FALSE, message=FALSE}
 polls_2008 %>% ggplot(aes(day, margin)) +
-geom_point() +
-geom_smooth(span = 0.15, method.args = list(degree=1))
+  geom_point() +
+  geom_smooth(span = 0.15, method.args = list(degree=1))
 ```
 
 ## Conectando la suavización al _machine learning_ {#smoothing-ml-connection}
@@ -491,31 +491,31 @@ library(pdftools)
 library(dslabs)
 
 fn <- system.file("extdata", "RD-Mortality-Report_2015-18-180531.pdf",
-package="dslabs")
+                  package="dslabs")
 dat <- map_df(str_split(pdf_text(fn), "\n"), function(s){
-s <- str_trim(s)
-header_index <- str_which(s, "2015")[1]
-tmp <- str_split(s[header_index], "\\s+", simplify = TRUE)
-month <- tmp[1]
-header <- tmp[-1]
-tail_index <- str_which(s, "Total")
-n <- str_count(s, "\\d+")
-out <- c(1:header_index, which(n == 1),
-which(n >= 28), tail_index:length(s))
-s[-out] %>% str_remove_all("[^\\d\\s]") %>% str_trim() %>%
-str_split_fixed("\\s+", n = 6) %>% .[,1:5] %>% as_tibble() %>%
-setNames(c("day", header)) %>%
-mutate(month = month, day = as.numeric(day)) %>%
-gather(year, deaths, -c(day, month)) %>%
-mutate(deaths = as.numeric(deaths))
+  s <- str_trim(s)
+  header_index <- str_which(s, "2015")[1]
+  tmp <- str_split(s[header_index], "\\s+", simplify = TRUE)
+  month <- tmp[1]
+  header <- tmp[-1]
+  tail_index <- str_which(s, "Total")
+  n <- str_count(s, "\\d+")
+  out <- c(1:header_index, which(n == 1),
+           which(n >= 28), tail_index:length(s))
+  s[-out] %>% str_remove_all("[^\\d\\s]") %>% str_trim() %>%
+    str_split_fixed("\\s+", n = 6) %>% .[,1:5] %>% as_tibble() %>%
+    setNames(c("day", header)) %>%
+    mutate(month = month, day = as.numeric(day)) %>%
+    gather(year, deaths, -c(day, month)) %>%
+    mutate(deaths = as.numeric(deaths))
 }) %>%
-mutate(month = recode(month,
-"JAN" = 1, "FEB" = 2, "MAR" = 3,
-"APR" = 4, "MAY" = 5, "JUN" = 6,
-"JUL" = 7, "AGO" = 8, "SEP" = 9,
-"OCT" = 10, "NOV" = 11, "DEC" = 12)) %>%
-mutate(date = make_date(year, month, day)) %>%
-filter(date <= "2018-05-01")
+  mutate(month = recode(month,
+                        "JAN" = 1, "FEB" = 2, "MAR" = 3,
+                        "APR" = 4, "MAY" = 5, "JUN" = 6,
+                        "JUL" = 7, "AGO" = 8, "SEP" = 9,
+                        "OCT" = 10, "NOV" = 11, "DEC" = 12)) %>%
+  mutate(date = make_date(year, month, day)) %>%
+  filter(date <= "2018-05-01")
 ```
 
 Utilice la función `loess` para obtener un estimado uniforme del número esperado de muertes como función de la fecha. Grafique la función suave que resulta. Use un _span_ de dos meses.
@@ -529,8 +529,8 @@ library(broom)
 library(dslabs)
 data("mnist_27")
 mnist_27$train %>%
-glm(y ~ x_2, family = "binomial", data = .) %>%
-tidy()
+  glm(y ~ x_2, family = "binomial", data = .) %>%
+  tidy()
 ```
 
 Graficar un diagrama de dispersión aquí no es útil ya que `y` es binario:

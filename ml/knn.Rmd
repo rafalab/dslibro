@@ -7,14 +7,14 @@ library(dslabs)
 data("mnist_27")
 # We use this function to plot the estimated conditional probabilities
 plot_cond_prob <- function(p_hat=NULL){
-tmp <- mnist_27$true_p
-if(!is.null(p_hat)){
-tmp <- mutate(tmp, p=p_hat)
-}
-tmp %>% ggplot(aes(x_1, x_2, z=p, fill=p)) +
-geom_raster(show.legend = FALSE) +
-scale_fill_gradientn(colors=c("#F8766D","white","#00BFC4")) +
-stat_contour(breaks=c(0.5),color="black")
+  tmp <- mnist_27$true_p
+  if(!is.null(p_hat)){
+    tmp <- mutate(tmp, p=p_hat)
+  }
+  tmp %>% ggplot(aes(x_1, x_2, z=p, fill=p)) +
+    geom_raster(show.legend = FALSE) +
+    scale_fill_gradientn(colors=c("#F8766D","white","#00BFC4")) +
+    stat_contour(breaks=c(0.5),color="black")
 }
 ```
 
@@ -22,8 +22,8 @@ Introdujimos el algoritmo kNN en la Sección \@ref(knn-cv-intro) y demostramos c
 
 ```{r}
 train_knn <- train(y ~ ., method = "knn",
-data = mnist_27$train,
-tuneGrid = data.frame(k = seq(9, 71, 2)))
+                   data = mnist_27$train,
+                   tuneGrid = data.frame(k = seq(9, 71, 2)))
 ```
 
 Vimos que el parámetro que maximizaba la exactitud estimada era:
@@ -36,7 +36,7 @@ Este modelo resulta en una exactitud mejor que la de regresión y la de regresi�
 
 ```{r}
 confusionMatrix(predict(train_knn, mnist_27$test, type = "raw"),
-mnist_27$test$y)$overall["Accuracy"]
+                mnist_27$test$y)$overall["Accuracy"]
 ```
 
 Un gráfico de la probabilidad condicional estimada muestra que el estimado de kNN es lo suficientemente flexible y captura la forma de la probabilidad condicional verdadera.
@@ -45,7 +45,7 @@ Un gráfico de la probabilidad condicional estimada muestra que el estimado de k
 p1 <- plot_cond_prob() + ggtitle("True conditional probability")
 
 p2 <- plot_cond_prob(predict(train_knn, newdata = mnist_27$true_p, type = "prob")[,2]) +
-ggtitle("kNN")
+  ggtitle("kNN")
 
 grid.arrange(p2, p1, nrow=1)
 ```

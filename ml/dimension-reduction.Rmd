@@ -18,7 +18,7 @@ library(MASS)
 n <- 100
 Sigma <- matrix(c(9, 9 * 0.9, 9 * 0.92, 9 * 1), 2, 2)
 x <- rbind(mvrnorm(n/ 2, c(69, 69), Sigma),
-mvrnorm(n/ 2, c(55, 55), Sigma))
+           mvrnorm(n/ 2, c(55, 55), Sigma))
 ```
 
 Un diagrama de dispersión revela rápidamente que la correlación es alta y que hay dos grupos de gemelos, los adultos (puntos superiores derechos) y los niños (puntos inferiores izquierdos):
@@ -295,38 +295,38 @@ Podemos visualizarlos para ver cómo el primer componente resume los datos. En e
 
 ```{r illustrate-pca-twin-heights, echo=FALSE, height = 5, out.width="70%"}
 illustrate_pca <- function(x, flip=1,
-pad = round((nrow(x)/2-ncol(x))*1/4),
-cex = 5, center = TRUE){
-rafalib::mypar(1,5)
-## flip is because PCA chooses arbitrary sign for loadings and PC
-colors = rev(RColorBrewer::brewer.pal(9, "RdBu"))
-
-pca <- prcomp(x, center = center)
-if(center) z <- t(x) - rowMeans(t(x))
-
-cols <- 1:ncol(x)
-rows <- 1:nrow(x)
-image(cols, rows, z[,rev(1:ncol(z))], xaxt = "n", yaxt = "n",
-xlab="", ylab="", main= "X", col = colors)
-abline(h=rows + 0.5, v = cols + 0.5)
-
-rafalib::nullplot(xaxt="n",yaxt="n",bty="n")
-text(0.5, 0.5, "=", cex = cex)
-
-z <- flip*t(pca$x)
-image(cols, rows, z[,rev(1:ncol(z))], xaxt = "n", yaxt = "n",xlab="",ylab="", main= "Weights", col = colors)
-abline(h=rows + 0.5, v = cols + 0.5)
-
-rafalib::nullplot(xaxt="n",yaxt="n",bty="n")
-text(0.5, 0.5, "x", cex = cex)
-
-z <- flip*pca$rotation
-nz <- cbind(matrix(NA, ncol(z), pad), z, matrix(NA, ncol(z), pad))
-rows <- 1:ncol(nz)
-image(cols, rows, nz[,rev(1:ncol(nz))], xaxt = "n", yaxt = "n", bty = "n", xlab="",ylab="", col = colors)
-abline(h = pad+0:ncol(z)+1/2)
-lines(c(ncol(z)/2+0.5,ncol(z)/2+1/2),c(pad,pad+ncol(z))+0.5)
-text(ncol(z)/2+0.5, pad+ncol(z)+2 , expression(bold(Pattern^T)), font=2)
+                           pad = round((nrow(x)/2-ncol(x))*1/4),
+                           cex = 5, center = TRUE){
+  rafalib::mypar(1,5)
+  ## flip is because PCA chooses arbitrary sign for loadings and PC
+  colors = rev(RColorBrewer::brewer.pal(9, "RdBu"))
+  
+  pca <- prcomp(x, center = center)
+  if(center) z <- t(x) - rowMeans(t(x))
+  
+  cols <- 1:ncol(x)
+  rows <- 1:nrow(x)
+  image(cols, rows, z[,rev(1:ncol(z))], xaxt = "n", yaxt = "n",
+        xlab="", ylab="", main= "X", col = colors)
+  abline(h=rows + 0.5, v = cols + 0.5)
+  
+  rafalib::nullplot(xaxt="n",yaxt="n",bty="n")
+  text(0.5, 0.5, "=", cex = cex)
+  
+  z <- flip*t(pca$x)
+  image(cols, rows, z[,rev(1:ncol(z))], xaxt = "n", yaxt = "n",xlab="",ylab="", main= "Weights", col = colors)
+  abline(h=rows + 0.5, v = cols + 0.5)
+  
+  rafalib::nullplot(xaxt="n",yaxt="n",bty="n")
+  text(0.5, 0.5, "x", cex = cex)
+  
+  z <- flip*pca$rotation
+  nz <- cbind(matrix(NA, ncol(z), pad), z, matrix(NA, ncol(z), pad))
+  rows <- 1:ncol(nz)
+  image(cols, rows, nz[,rev(1:ncol(nz))], xaxt = "n", yaxt = "n", bty = "n", xlab="",ylab="", col = colors)
+  abline(h = pad+0:ncol(z)+1/2)
+  lines(c(ncol(z)/2+0.5,ncol(z)/2+1/2),c(pad,pad+ncol(z))+0.5)
+  text(ncol(z)/2+0.5, pad+ncol(z)+2 , expression(bold(Pattern^T)), font=2)
 }
 rafalib::mypar(1,1)
 illustrate_pca(x, flip = -1)
@@ -391,9 +391,9 @@ Podemos ver esto mejor al trazar las dos primeras PC con el color que representa
 
 ```{r iris-pca}
 data.frame(pca$x[,1:2], Species=iris$Species) %>%
-ggplot(aes(PC1,PC2, fill = Species))+
-geom_point(cex=3, pch=21) +
-coord_fixed(ratio = 1)
+  ggplot(aes(PC1,PC2, fill = Species))+
+  geom_point(cex=3, pch=21) +
+  coord_fixed(ratio = 1)
 ```
 
 Vemos que las dos primeras dimensiones preservan la distancia:
@@ -440,10 +440,10 @@ Y con solo mirar las dos primeras PC vemos información sobre la clase. Aquí ha
 
 ```{r mnist-pca-1-2-scatter}
 data.frame(PC1 = pca$x[,1], PC2 = pca$x[,2],
-label=factor(mnist$train$label)) %>%
-sample_n(2000) %>%
-ggplot(aes(PC1, PC2, fill=label))+
-geom_point(cex=3, pch=21)
+           label=factor(mnist$train$label)) %>%
+  sample_n(2000) %>%
+  ggplot(aes(PC1, PC2, fill=label))+
+  geom_point(cex=3, pch=21)
 ```
 
 También podemos ver las combinaciones lineales en la cuadrícula para tener una idea de lo que se está ponderando:
@@ -451,29 +451,29 @@ También podemos ver las combinaciones lineales en la cuadrícula para tener una
 ```{r mnist-pca-1-4, echo = FALSE, out.width="100%", fig.width=6, fig.height=1.75}
 library(RColorBrewer)
 tmp <- lapply( c(1:4,781:784), function(i){
-expand.grid(Row=1:28, Column=1:28) %>%
-mutate(id=i, label=paste0("PC",i),
-value = pca$rotation[,i])
+  expand.grid(Row=1:28, Column=1:28) %>%
+    mutate(id=i, label=paste0("PC",i),
+           value = pca$rotation[,i])
 })
 tmp <- Reduce(rbind, tmp)
 
 tmp %>% filter(id<5) %>%
-ggplot(aes(Row, Column, fill=value)) +
-geom_raster() +
-scale_y_reverse() +
-scale_fill_gradientn(colors = brewer.pal(9, "RdBu")) +
-facet_wrap(~label, nrow = 1)
+  ggplot(aes(Row, Column, fill=value)) +
+  geom_raster() +
+  scale_y_reverse() +
+  scale_fill_gradientn(colors = brewer.pal(9, "RdBu")) +
+  facet_wrap(~label, nrow = 1)
 ```
 
 Las PC de menor varianza aparecen relacionadas con la variabilidad sin importancia en las esquinas:
 
 ```{r mnist-pca-last,, echo = FALSE, out.width="100%", fig.width=6, fig.height=1.75}
 tmp %>% filter(id>5) %>%
-ggplot(aes(Row, Column, fill=value)) +
-geom_raster() +
-scale_y_reverse() +
-scale_fill_gradientn(colors = brewer.pal(9, "RdBu")) +
-facet_wrap(~label, nrow = 1)
+  ggplot(aes(Row, Column, fill=value)) +
+  geom_raster() +
+  scale_y_reverse() +
+  scale_fill_gradientn(colors = brewer.pal(9, "RdBu")) +
+  facet_wrap(~label, nrow = 1)
 ```
 
 Ahora apliquemos la transformación que aprendimos con los datos de entrenamiento a los datos de prueba, reduzca la dimensión y ejecute knn en solo un pequeño número de dimensiones.

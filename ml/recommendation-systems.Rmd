@@ -32,32 +32,32 @@ Podemos ver la cantidad de usuarios únicos que proporcionaron calificaciones y 
 
 ```{r}
 movielens %>%
-summarize(n_users = n_distinct(userId),
-n_movies = n_distinct(movieId))
+  summarize(n_users = n_distinct(userId),
+            n_movies = n_distinct(movieId))
 ```
 
 Si multiplicamos esos dos números, obtenemos un número mayor de 5 millones, sin embargo, nuestra tabla de datos tiene aproximadamente 100,000 filas. Esto implica que no todos los usuarios calificaron todas las películas. Por lo tanto, podemos pensar en estos datos como una matriz muy grande, con usuarios en las filas y películas en las columnas, con muchas celdas vacías. los `gather` la función nos permite convertirlo a este formato, pero si lo probamos para toda la matriz, se bloqueará R. Vamos a mostrar la matriz para siete usuarios y cuatro películas.
 
 ```{r, echo=FALSE}
 keep <- movielens %>%
-count(movieId) %>%
-top_n(4, n) %>%
-pull(movieId)
+  count(movieId) %>%
+  top_n(4, n) %>%
+  pull(movieId)
 
 tab <- movielens %>%
-filter(movieId%in%keep) %>%
-filter(userId %in% c(13:20)) %>%
-select(userId, title, rating) %>%
-mutate(title = str_remove(title, ", The"),
-title = str_remove(title, ":.*")) %>%
-spread(title, rating)
+  filter(movieId%in%keep) %>%
+  filter(userId %in% c(13:20)) %>%
+  select(userId, title, rating) %>%
+  mutate(title = str_remove(title, ", The"),
+         title = str_remove(title, ":.*")) %>%
+  spread(title, rating)
 
 if(knitr::is_html_output()){
-knitr::kable(tab, "html") %>%
-kableExtra::kable_styling(bootstrap_options = "striped", full_width = FALSE)
+  knitr::kable(tab, "html") %>%
+    kableExtra::kable_styling(bootstrap_options = "striped", full_width = FALSE)
 } else{
-knitr::kable(tab, "latex", booktabs = TRUE) %>%
-kableExtra::kable_styling(font_size = 8)
+  knitr::kable(tab, "latex", booktabs = TRUE) %>%
+    kableExtra::kable_styling(font_size = 8)
 }
 ```
 
@@ -67,11 +67,11 @@ Puede pensar en la tarea de un sistema de recomendación como completar el `NA` 
 users <- sample(unique(movielens$userId), 100)
 rafalib::mypar()
 movielens %>% filter(userId %in% users) %>%
-select(userId, movieId, rating) %>%
-mutate(rating = 1) %>%
-spread(movieId, rating) %>% select(sample(ncol(.), 100)) %>%
-as.matrix() %>% t(.) %>%
-image(1:100, 1:100,. , xlab="Movies", ylab="Users")
+  select(userId, movieId, rating) %>%
+  mutate(rating = 1) %>%
+  spread(movieId, rating) %>% select(sample(ncol(.), 100)) %>%
+  as.matrix() %>% t(.) %>%
+  image(1:100, 1:100,. , xlab="Movies", ylab="Users")
 ```
 
 Este desafío de aprendizaje automático es más complicado que lo que hemos estudiado hasta ahora porque cada resultado $Y$ tiene un conjunto diferente de predictores. Para ver esto, tenga en cuenta que si estamos prediciendo la calificación de la película $i$ por usuario $u$, en principio, todas las otras clasificaciones relacionadas con la película $i$ y por usuario $u$ pueden usarse como predictores, pero diferentes usuarios califican diferentes películas y un número diferente de películas. Además, podemos usar información de otras películas que hemos determinado que son similares a las películas. $i$ o de usuarios que se consideran similares al usuario $u$. En esencia, toda la matriz se puede utilizar como predictores para cada celda.
@@ -82,18 +82,18 @@ Lo primero que notamos es que algunas películas se califican más que otras. A 
 
 ```{r movie-id-and-user-hists, echo=FALSE, fig.width=6, fig.height=3}
 p1 <- movielens %>%
-count(movieId) %>%
-ggplot(aes(n)) +
-geom_histogram(bins = 30, color = "black") +
-scale_x_log10() +
-ggtitle("Movies")
+  count(movieId) %>%
+  ggplot(aes(n)) +
+  geom_histogram(bins = 30, color = "black") +
+  scale_x_log10() +
+  ggtitle("Movies")
 
 p2 <- movielens %>%
-count(userId) %>%
-ggplot(aes(n)) +
-geom_histogram(bins = 30, color = "black") +
-scale_x_log10() +
-ggtitle("Users")
+  count(userId) %>%
+  ggplot(aes(n)) +
+  geom_histogram(bins = 30, color = "black") +
+  scale_x_log10() +
+  ggtitle("Users")
 gridExtra::grid.arrange(p1, p2, ncol = 2)
 ```
 
@@ -106,7 +106,7 @@ Para ver cómo se trata de un tipo de aprendizaje automático, tenga en cuenta q
 library(caret)
 set.seed(755)
 test_index <- createDataPartition(y = movielens$rating, times = 1, p = 0.2,
-list = FALSE)
+                                  list = FALSE)
 train_set <- movielens[-test_index,]
 test_set <- movielens[test_index,]
 ```
@@ -115,8 +115,8 @@ Para asegurarnos de que no incluimos usuarios y películas en el conjunto de pru
 
 ```{r}
 test_set <- test_set %>%
-semi_join(train_set, by = "movieId") %>%
-semi_join(train_set, by = "userId")
+  semi_join(train_set, by = "movieId") %>%
+  semi_join(train_set, by = "userId")
 ```
 
 
@@ -135,7 +135,7 @@ Escribamos una función que calcule el RMSE para vectores de clasificaciones y s
 
 ```{r}
 RMSE <- function(true_ratings, predicted_ratings){
-sqrt(mean((true_ratings - predicted_ratings)^2))
+  sqrt(mean((true_ratings - predicted_ratings)^2))
 }
 ```
 
@@ -200,8 +200,8 @@ Porque hay miles de $b_i$ a medida que cada película obtiene una, la `lm()` la 
 ```{r}
 mu <- mean(train_set$rating)
 movie_avgs <- train_set %>%
-group_by(movieId) %>%
-summarize(b_i = mean(rating - mu))
+  group_by(movieId) %>%
+  summarize(b_i = mean(rating - mu))
 ```
 
 Podemos ver que estas estimaciones varían sustancialmente:
@@ -216,16 +216,16 @@ Veamos cuánto mejora nuestra predicción una vez que usamos $\hat{y}_{u,i} = \h
 
 ```{r}
 predicted_ratings <- mu + test_set %>%
-left_join(movie_avgs, by='movieId') %>%
-pull(b_i)
+  left_join(movie_avgs, by='movieId') %>%
+  pull(b_i)
 RMSE(predicted_ratings, test_set$rating)
 ```
 
 ```{r echo=FALSE}
 model_1_rmse <- RMSE(predicted_ratings, test_set$rating)
 rmse_results <- bind_rows(rmse_results,
-tibble(method="Movie Effect Model",
-RMSE = model_1_rmse))
+                          tibble(method="Movie Effect Model",
+                                 RMSE = model_1_rmse))
 ```
 
 Ya vemos una mejora. ¿Pero podemos hacerlo mejor?
@@ -236,11 +236,11 @@ Calculemos la calificación promedio para el usuario $u$ para aquellos que han c
 
 ```{r user-effect-hist}
 train_set %>%
-group_by(userId) %>%
-summarize(b_u = mean(rating)) %>%
-filter(n()>=100) %>%
-ggplot(aes(b_u)) +
-geom_histogram(bins = 30, color = "black")
+  group_by(userId) %>%
+  summarize(b_u = mean(rating)) %>%
+  filter(n()>=100) %>%
+  ggplot(aes(b_u)) +
+  geom_histogram(bins = 30, color = "black")
 ```
 
 Tenga en cuenta que existe una variabilidad sustancial entre los usuarios
@@ -263,27 +263,27 @@ pero, por las razones descritas anteriormente, no lo haremos. En cambio, calcula
 
 ```{r}
 user_avgs <- train_set %>%
-left_join(movie_avgs, by='movieId') %>%
-group_by(userId) %>%
-summarize(b_u = mean(rating - mu - b_i))
+  left_join(movie_avgs, by='movieId') %>%
+  group_by(userId) %>%
+  summarize(b_u = mean(rating - mu - b_i))
 ```
 
 Ahora podemos construir predictores y ver cuánto mejora el RMSE:
 
 ```{r}
 predicted_ratings <- test_set %>%
-left_join(movie_avgs, by='movieId') %>%
-left_join(user_avgs, by='userId') %>%
-mutate(pred = mu + b_i + b_u) %>%
-pull(pred)
+  left_join(movie_avgs, by='movieId') %>%
+  left_join(user_avgs, by='userId') %>%
+  mutate(pred = mu + b_i + b_u) %>%
+  pull(pred)
 RMSE(predicted_ratings, test_set$rating)
 ```
 
 ```{r echo=FALSE}
 model_2_rmse <- RMSE(predicted_ratings, test_set$rating)
 rmse_results <- bind_rows(rmse_results,
-tibble(method="Movie + User Effects Model",
-RMSE = model_2_rmse))
+                          tibble(method="Movie + User Effects Model",
+                                 RMSE = model_2_rmse))
 ```
 
 ## Ejercicios
@@ -353,55 +353,55 @@ A pesar de la gran variación de película a película, nuestra mejora en RMSE f
 
 ```{r}
 test_set %>%
-left_join(movie_avgs, by='movieId') %>%
-mutate(residual = rating - (mu + b_i)) %>%
-arrange(desc(abs(residual))) %>%
-slice(1:10) %>%
-pull(title)
+  left_join(movie_avgs, by='movieId') %>%
+  mutate(residual = rating - (mu + b_i)) %>%
+  arrange(desc(abs(residual))) %>%
+  slice(1:10) %>%
+  pull(title)
 ```
 
 Todo esto parece películas oscuras. Muchos de ellos tienen grandes predicciones. Echemos un vistazo a las 10 peores y mejores películas basadas en $\hat{b}_i$. Primero, creemos una base de datos que se conecte `movieId` al título de la película:
 
 ```{r}
 movie_titles <- movielens %>%
-select(movieId, title) %>%
-distinct()
+  select(movieId, title) %>%
+  distinct()
 ```
 
 Aquí están las 10 mejores películas según nuestra estimación:
 
 ```{r}
 movie_avgs %>% left_join(movie_titles, by="movieId") %>%
-arrange(desc(b_i)) %>%
-slice(1:10) %>%
-pull(title)
+  arrange(desc(b_i)) %>%
+  slice(1:10) %>%
+  pull(title)
 ```
 
 Y aquí están los 10 peores:
 
 ```{r}
 movie_avgs %>% left_join(movie_titles, by="movieId") %>%
-arrange(b_i) %>%
-slice(1:10) %>%
-pull(title)
+  arrange(b_i) %>%
+  slice(1:10) %>%
+  pull(title)
 ```
 
 Todos parecen ser bastante oscuros. Veamos con qué frecuencia son calificados.
 
 ```{r}
 train_set %>% count(movieId) %>%
-left_join(movie_avgs, by="movieId") %>%
-left_join(movie_titles, by="movieId") %>%
-arrange(desc(b_i)) %>%
-slice(1:10) %>%
-pull(n)
+  left_join(movie_avgs, by="movieId") %>%
+  left_join(movie_titles, by="movieId") %>%
+  arrange(desc(b_i)) %>%
+  slice(1:10) %>%
+  pull(n)
 
 train_set %>% count(movieId) %>%
-left_join(movie_avgs) %>%
-left_join(movie_titles, by="movieId") %>%
-arrange(b_i) %>%
-slice(1:10) %>%
-pull(n)
+  left_join(movie_avgs) %>%
+  left_join(movie_titles, by="movieId") %>%
+  arrange(b_i) %>%
+  slice(1:10) %>%
+  pull(n)
 ```
 
 Las supuestas películas "mejores" y "peores" fueron calificadas por muy pocos usuarios, en la mayoría de los casos solo 1. Estas películas eran en su mayoría oscuras. Esto se debe a que con solo unos pocos usuarios, tenemos más incertidumbre. Por lo tanto, mayores estimaciones de $b_i$, negativo o positivo, son más probables.
@@ -443,60 +443,60 @@ $\lambda=3$. Más adelante, veremos por qué elegimos 3.
 lambda <- 3
 mu <- mean(train_set$rating)
 movie_reg_avgs <- train_set %>%
-group_by(movieId) %>%
-summarize(b_i = sum(rating - mu)/(n()+lambda), n_i = n())
+  group_by(movieId) %>%
+  summarize(b_i = sum(rating - mu)/(n()+lambda), n_i = n())
 ```
 
 Para ver cómo se reducen las estimaciones, hagamos un gráfico de las estimaciones regularizadas versus las estimaciones de mínimos cuadrados.
 
 ```{r regularization-shrinkage}
 tibble(original = movie_avgs$b_i,
-regularlized = movie_reg_avgs$b_i,
-n = movie_reg_avgs$n_i) %>%
-ggplot(aes(original, regularlized, size=sqrt(n))) +
-geom_point(shape=1, alpha=0.5)
+       regularlized = movie_reg_avgs$b_i,
+       n = movie_reg_avgs$n_i) %>%
+  ggplot(aes(original, regularlized, size=sqrt(n))) +
+  geom_point(shape=1, alpha=0.5)
 ```
 
 Ahora, echemos un vistazo a las 10 mejores películas basadas en las estimaciones penalizadas $\hat{b}_i(\lambda)$:
 
 ```{r}
 train_set %>%
-count(movieId) %>%
-left_join(movie_reg_avgs, by = "movieId") %>%
-left_join(movie_titles, by = "movieId") %>%
-arrange(desc(b_i)) %>%
-slice(1:10) %>%
-pull(title)
+  count(movieId) %>%
+  left_join(movie_reg_avgs, by = "movieId") %>%
+  left_join(movie_titles, by = "movieId") %>%
+  arrange(desc(b_i)) %>%
+  slice(1:10) %>%
+  pull(title)
 ```
 
 ¡Esto tiene mucho más sentido! Estas películas se ven más y tienen más calificaciones. Aquí están las 10 peores películas principales:
 
 ```{r}
 train_set %>%
-count(movieId) %>%
-left_join(movie_reg_avgs, by = "movieId") %>%
-left_join(movie_titles, by="movieId") %>%
-arrange(b_i) %>%
-select(title, b_i, n) %>%
-slice(1:10) %>%
-pull(title)
+  count(movieId) %>%
+  left_join(movie_reg_avgs, by = "movieId") %>%
+  left_join(movie_titles, by="movieId") %>%
+  arrange(b_i) %>%
+  select(title, b_i, n) %>%
+  slice(1:10) %>%
+  pull(title)
 ```
 
 ¿Mejoramos nuestros resultados?
 
 ```{r}
 predicted_ratings <- test_set %>%
-left_join(movie_reg_avgs, by = "movieId") %>%
-mutate(pred = mu + b_i) %>%
-pull(pred)
+  left_join(movie_reg_avgs, by = "movieId") %>%
+  mutate(pred = mu + b_i) %>%
+  pull(pred)
 RMSE(predicted_ratings, test_set$rating)
 ```
 
 ```{r echo=FALSE}
 model_3_rmse <- RMSE(predicted_ratings, test_set$rating)
 rmse_results <- bind_rows(rmse_results,
-tibble(method="Regularized Movie Effect Model",
-RMSE = model_3_rmse))
+                          tibble(method="Regularized Movie Effect Model",
+                                 RMSE = model_3_rmse))
 rmse_results
 ```
 
@@ -511,16 +511,16 @@ lambdas <- seq(0, 10, 0.25)
 
 mu <- mean(train_set$rating)
 just_the_sum <- train_set %>%
-group_by(movieId) %>%
-summarize(s = sum(rating - mu), n_i = n())
+  group_by(movieId) %>%
+  summarize(s = sum(rating - mu), n_i = n())
 
 rmses <- sapply(lambdas, function(l){
-predicted_ratings <- test_set %>%
-left_join(just_the_sum, by='movieId') %>%
-mutate(b_i = s/(n_i+l)) %>%
-mutate(pred = mu + b_i) %>%
-pull(pred)
-return(RMSE(predicted_ratings, test_set$rating))
+  predicted_ratings <- test_set %>%
+    left_join(just_the_sum, by='movieId') %>%
+    mutate(b_i = s/(n_i+l)) %>%
+    mutate(pred = mu + b_i) %>%
+    pull(pred)
+  return(RMSE(predicted_ratings, test_set$rating))
 })
 qplot(lambdas, rmses)
 lambdas[which.min(rmses)]
@@ -541,26 +541,26 @@ Las estimaciones que minimizan esto se pueden encontrar de manera similar a lo q
 lambdas <- seq(0, 10, 0.25)
 
 rmses <- sapply(lambdas, function(l){
-
-mu <- mean(train_set$rating)
-
-b_i <- train_set %>%
-group_by(movieId) %>%
-summarize(b_i = sum(rating - mu)/(n()+l))
-
-b_u <- train_set %>%
-left_join(b_i, by="movieId") %>%
-group_by(userId) %>%
-summarize(b_u = sum(rating - b_i - mu)/(n()+l))
-
-predicted_ratings <-
-test_set %>%
-left_join(b_i, by = "movieId") %>%
-left_join(b_u, by = "userId") %>%
-mutate(pred = mu + b_i + b_u) %>%
-pull(pred)
-
-return(RMSE(predicted_ratings, test_set$rating))
+  
+  mu <- mean(train_set$rating)
+  
+  b_i <- train_set %>%
+    group_by(movieId) %>%
+    summarize(b_i = sum(rating - mu)/(n()+l))
+  
+  b_u <- train_set %>%
+    left_join(b_i, by="movieId") %>%
+    group_by(userId) %>%
+    summarize(b_u = sum(rating - b_i - mu)/(n()+l))
+  
+  predicted_ratings <-
+    test_set %>%
+    left_join(b_i, by = "movieId") %>%
+    left_join(b_u, by = "userId") %>%
+    mutate(pred = mu + b_i + b_u) %>%
+    pull(pred)
+  
+  return(RMSE(predicted_ratings, test_set$rating))
 })
 
 qplot(lambdas, rmses)
@@ -576,15 +576,15 @@ lambda
 
 ```{r, echo=FALSE}
 rmse_results <- bind_rows(
-rmse_results,
-tibble(method="Regularized Movie + User Effect Model",
-RMSE = min(rmses)))
+  rmse_results,
+  tibble(method="Regularized Movie + User Effect Model",
+         RMSE = min(rmses)))
 if(knitr::is_html_output()){
-knitr::kable(rmse_results, "html") %>%
-kableExtra::kable_styling(bootstrap_options = "striped", full_width = FALSE)
+  knitr::kable(rmse_results, "html") %>%
+    kableExtra::kable_styling(bootstrap_options = "striped", full_width = FALSE)
 } else{
-knitr::kable(rmse_results, "latex", booktabs = TRUE) %>%
-kableExtra::kable_styling(font_size = 8)
+  knitr::kable(rmse_results, "latex", booktabs = TRUE) %>%
+    kableExtra::kable_styling(font_size = 8)
 }
 ```
 
@@ -604,9 +604,9 @@ Ahora asignemos una calidad verdadera para cada escuela completamente independie
 mu <- round(80 + 2 * rt(1000, 5))
 range(mu)
 schools <- data.frame(id = paste("PS",1:100),
-size = n,
-quality = mu,
-rank = rank(-mu))
+                      size = n,
+                      quality = mu,
+                      rank = rank(-mu))
 ```
 
 Podemos ver que las 10 mejores escuelas son:
@@ -619,8 +619,8 @@ Ahora hagamos que los estudiantes en la escuela tomen un examen. Existe una vari
 
 ```{r, eval=FALSE}
 scores <- sapply(1:nrow(schools), function(i){
-scores <- rnorm(schools$size[i], schools$quality[i], 30)
-scores
+  scores <- rnorm(schools$size[i], schools$quality[i], 30)
+  scores
 })
 schools <- schools %>% mutate(score = sapply(scores, mean))
 ```
@@ -676,15 +676,15 @@ Para ver esto, convertiremos los datos en una matriz para que cada usuario obten
 
 ```{r}
 train_small <- movielens %>%
-group_by(movieId) %>%
-filter(n() >= 50 | movieId == 3252) %>% ungroup() %>%
-group_by(userId) %>%
-filter(n() >= 50) %>% ungroup()
+  group_by(movieId) %>%
+  filter(n() >= 50 | movieId == 3252) %>% ungroup() %>%
+  group_by(userId) %>%
+  filter(n() >= 50) %>% ungroup()
 
 y <- train_small %>%
-select(userId, movieId, rating) %>%
-spread(movieId, rating) %>%
-as.matrix()
+  select(userId, movieId, rating) %>%
+  spread(movieId, rating) %>%
+  as.matrix()
 ```
 
 Agregamos nombres de fila y columna:
@@ -694,8 +694,8 @@ rownames(y)<- y[,1]
 y <- y[,-1]
 
 movie_titles <- movielens %>%
-select(movieId, title) %>%
-distinct()
+  select(movieId, title) %>%
+  distinct()
 
 colnames(y) <- with(movie_titles, title[match(colnames(y), movieId)])
 ```
@@ -732,7 +732,7 @@ Al observar la correlación entre películas, podemos ver un patrón (cambiamos 
 ```{r}
 x <- y[, c(m_1, m_2, m_3, m_4, m_5)]
 short_names <- c("Godfather", "Godfather2", "Goodfellas",
-"You've Got", "Sleepless")
+                 "You've Got", "Sleepless")
 colnames(x) <- short_names
 cor(x, use="pairwise.complete")
 ```
@@ -798,10 +798,10 @@ Sin embargo, motivamos la necesidad de $p_u q_i$ término con una simulación si
 set.seed(1988)
 m_6 <- "Scent of a Woman"
 q <- cbind(c(1 , 1, 1, -1, -1, -1),
-c(1 , 1, -1, -1, -1, 1))
+           c(1 , 1, -1, -1, -1, 1))
 rownames(q) <- c(short_names, "Scent")
 p <- cbind(rep(c(2,0,-2), c(3,5,4)),
-c(-1,1,1,0,0,1,1,1,0,-1,-1,-1))/2
+           c(-1,1,1,0,0,1,1,1,0,-1,-1,-1))/2
 rownames(p) <- 1:nrow(p)
 
 r <- jitter(p %*% t(q), factor=1)
@@ -902,13 +902,13 @@ También notamos que los dos primeros componentes principales están relacionado
 library(ggrepel)
 
 pcs <- data.frame(pca$rotation, name = str_trunc(colnames(y), 30),
-stringsAsFactors = FALSE)
+                  stringsAsFactors = FALSE)
 
 highlight <- filter(pcs, PC1 < -0.1 | PC1 > 0.1 | PC2 < -0.075 | PC2 > 0.1)
 
 pcs %>% ggplot(aes(PC1, PC2)) + geom_point() +
-geom_text_repel(aes(PC1, PC2, label=name),
-data = highlight, size = 2)
+  geom_text_repel(aes(PC1, PC2, label=name),
+                  data = highlight, size = 2)
 ```
 
 Con solo mirar los 10 primeros en cada dirección, vemos un patrón significativo. La primera PC muestra la diferencia entre las películas aclamadas por la crítica en un lado:
@@ -961,10 +961,10 @@ Sigma <- 64 * matrix(c(1, .75, .5, .75, 1, .5, .5, .5, 1), 3, 3)
 m <- MASS::mvrnorm(n, rep(0, 3), Sigma)
 m <- m[order(rowMeans(m), decreasing = TRUE),]
 y <- m %x% matrix(rep(1, k), nrow = 1) +
-matrix(rnorm(matrix(n * k * 3)), n, k * 3)
+  matrix(rnorm(matrix(n * k * 3)), n, k * 3)
 colnames(y) <- c(paste(rep("Math",k), 1:k, sep="_"),
-paste(rep("Science",k), 1:k, sep="_"),
-paste(rep("Arts",k), 1:k, sep="_"))
+                 paste(rep("Science",k), 1:k, sep="_"),
+                 paste(rep("Arts",k), 1:k, sep="_"))
 ```
 
 Nuestro objetivo es describir las actuaciones de los estudiantes de la manera más sucinta posible. Por ejemplo, queremos saber si los resultados de estas pruebas son solo números independientes aleatorios. ¿Todos los estudiantes son igual de buenos? ¿Ser bueno en un tema implica que serás bueno en otro? ¿Cómo ayuda la SVD con todo esto? Iremos paso a paso para mostrar que con solo tres pares relativamente pequeños de vectores podemos explicar gran parte de la variabilidad en este $100 \times 24$ conjunto de datos
@@ -973,13 +973,13 @@ Puede visualizar los 24 puntajes de las pruebas para los 100 estudiantes al traz
 
 ```{r, eval=FALSE}
 my_image <- function(x, zlim = range(x), ...){
-colors = rev(RColorBrewer::brewer.pal(9, "RdBu"))
-cols <- 1:ncol(x)
-rows <- 1:nrow(x)
-image(cols, rows, t(x[rev(rows),,drop=FALSE]), xaxt = "n", yaxt = "n",
-xlab="", ylab="", col = colors, zlim = zlim, ...)
-abline(h=rows + 0.5, v = cols + 0.5)
-axis(side = 1, cols, colnames(x), las = 2)
+  colors = rev(RColorBrewer::brewer.pal(9, "RdBu"))
+  cols <- 1:ncol(x)
+  rows <- 1:nrow(x)
+  image(cols, rows, t(x[rev(rows),,drop=FALSE]), xaxt = "n", yaxt = "n",
+        xlab="", ylab="", col = colors, zlim = zlim, ...)
+  abline(h=rows + 0.5, v = cols + 0.5)
+  axis(side = 1, cols, colnames(x), las = 2)
 }
 
 my_image(y)

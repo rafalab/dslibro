@@ -62,7 +62,7 @@ En las aplicaciones de _machine learning_, es útil usar factores para represent
 
 ```{r}
 y_hat <- sample(c("Male", "Female"), length(test_index), replace = TRUE) %>%
-factor(levels = levels(test_set$sex))
+  factor(levels = levels(test_set$sex))
 ```
 
 La _exactidud general_ se define simplemente como la proporción general que se predice correctamente:
@@ -83,7 +83,7 @@ Pero, ¿cómo usamos esta información? Probemos con otro enfoque sencillo: pred
 
 ```{r}
 y_hat <- ifelse(x > 62, "Male", "Female") %>%
-factor(levels = levels(test_set$sex))
+  factor(levels = levels(test_set$sex))
 ```
 
 La exactidud aumenta de 0.50 a aproximadamente 0.80:
@@ -99,9 +99,9 @@ Aquí examinamos la exactidud de 10 umbrales diferentes y elegimos el que produc
 ```{r}
 cutoff <- seq(61, 70)
 accuracy <- map_dbl(cutoff, function(x){
-y_hat <- ifelse(train_set$height > x, "Male", "Female") %>%
-factor(levels = levels(test_set$sex))
-mean(y_hat == train_set$sex)
+  y_hat <- ifelse(train_set$height > x, "Male", "Female") %>%
+    factor(levels = levels(test_set$sex))
+  mean(y_hat == train_set$sex)
 })
 ```
 
@@ -109,9 +109,9 @@ Podemos hacer un gráfico que muestra la exactitud obtenida en el set de entrena
 
 ```{r accuracy-vs-cutoff, echo=FALSE}
 data.frame(cutoff, accuracy) %>%
-ggplot(aes(cutoff, accuracy)) +
-geom_point() +
-geom_line()
+  ggplot(aes(cutoff, accuracy)) +
+  geom_point() +
+  geom_line()
 ```
 
 Vemos que el valor máximo es:
@@ -131,7 +131,7 @@ Ahora podemos evaluar el uso de este umbral en nuestro set de evaluaciones para 
 
 ```{r}
 y_hat <- ifelse(test_set$height > best_cutoff, "Male", "Female") %>%
-factor(levels = levels(test_set$sex))
+  factor(levels = levels(test_set$sex))
 y_hat <- factor(y_hat)
 mean(y_hat == test_set$sex)
 ```
@@ -152,9 +152,9 @@ Si estudiamos esta tabla detenidamente, revela un problema. Si calculamos la exa
 
 ```{r}
 test_set %>%
-mutate(y_hat = y_hat) %>%
-group_by(sex) %>%
-summarize(accuracy = mean(y_hat == sex))
+  mutate(y_hat = y_hat) %>%
+  group_by(sex) %>%
+  summarize(accuracy = mean(y_hat == sex))
 ```
 
 Hay un desequilibrio en la exactitud para hombres y mujeres: se predice que demasiadas mujeres son hombres. ¡Estamos prediciendo que casi la mitad de las mujeres son hombres! ¿Cómo es que nuestra exactitud general sea tan alta? Esto se debe a que la _prevalencia_ de los hombres en este set de datos es alta. Estas alturas se obtuvieron de tres cursos de ciencias de datos, dos de los cuales tenían más hombres matriculados:
@@ -186,16 +186,16 @@ Para ofrecer definiciones precisas, nombramos las cuatro entradas de la matriz d
 
 ```{r, echo=FALSE}
 mat <- matrix(c("True positives (TP)", "False negatives (FN)",
-"False positives (FP)", "True negatives (TN)"), 2, 2)
+                "False positives (FP)", "True negatives (TN)"), 2, 2)
 colnames(mat) <- c("Actually Positive", "Actually Negative")
 rownames(mat) <- c("Predicted positive", "Predicted negative")
 tmp <- as.data.frame(mat)
 if(knitr::is_html_output()){
-knitr::kable(tmp, "html") %>%
-kableExtra::kable_styling(bootstrap_options = "striped", full_width = FALSE)
+  knitr::kable(tmp, "html") %>%
+    kableExtra::kable_styling(bootstrap_options = "striped", full_width = FALSE)
 } else{
-knitr::kable(tmp, "latex", booktabs = TRUE) %>%
-kableExtra::kable_styling(font_size = 8)
+  knitr::kable(tmp, "latex", booktabs = TRUE) %>%
+    kableExtra::kable_styling(font_size = 8)
 }
 ```
 
@@ -262,9 +262,9 @@ Reconstruyamos nuestro algoritmo de predicción, pero esta vez maximizando la me
 ```{r}
 cutoff <- seq(61, 70)
 F_1 <- map_dbl(cutoff, function(x){
-y_hat <- ifelse(train_set$height > x, "Male", "Female") %>%
-factor(levels = levels(test_set$sex))
-F_meas(data = y_hat, reference = factor(train_set$sex))
+  y_hat <- ifelse(train_set$height > x, "Male", "Female") %>%
+    factor(levels = levels(test_set$sex))
+  F_meas(data = y_hat, reference = factor(train_set$sex))
 })
 ```
 
@@ -272,9 +272,9 @@ Como antes, podemos trazar estas medidas $F_1$ versus los umbrales:
 
 ```{r f_1-vs-cutoff, echo=FALSE}
 data.frame(cutoff, F_1) %>%
-ggplot(aes(cutoff, F_1)) +
-geom_point() +
-geom_line()
+  ggplot(aes(cutoff, F_1)) +
+  geom_point() +
+  geom_line()
 ```
 
 Vemos que el maximo de la medida $F_1$ es:
@@ -293,7 +293,7 @@ Un umbral de 65 tiene más sentido que de 64. Además, equilibra la especificida
 
 ```{r}
 y_hat <- ifelse(test_set$height > best_cutoff, "Male", "Female") %>%
-factor(levels = levels(test_set$sex))
+  factor(levels = levels(test_set$sex))
 sensitivity(data = y_hat, reference = test_set$sex)
 specificity(data = y_hat, reference = test_set$sex)
 ```
@@ -319,7 +319,7 @@ Al comparar los dos métodos (adivinar versus usar un umbral de altura), compara
 p <- 0.9
 n <- length(test_index)
 y_hat <- sample(c("Male", "Female"), n, replace = TRUE, prob=c(p, 1-p)) %>%
-factor(levels = levels(test_set$sex))
+  factor(levels = levels(test_set$sex))
 mean(y_hat == test_set$sex)
 ```
 
@@ -334,12 +334,12 @@ La curva ROC representa la sensibilidad (TPR) frente a la especificidad 1 o la t
 ```{r roc-1}
 probs <- seq(0, 1, length.out = 10)
 guessing <- map_df(probs, function(p){
-y_hat <-
-sample(c("Male", "Female"), n, replace = TRUE, prob=c(p, 1-p)) %>%
-factor(levels = c("Female", "Male"))
-list(method = "Guessing",
-FPR = 1 - specificity(y_hat, test_set$sex),
-TPR = sensitivity(y_hat, test_set$sex))
+  y_hat <-
+    sample(c("Male", "Female"), n, replace = TRUE, prob=c(p, 1-p)) %>%
+    factor(levels = c("Female", "Male"))
+  list(method = "Guessing",
+       FPR = 1 - specificity(y_hat, test_set$sex),
+       TPR = sensitivity(y_hat, test_set$sex))
 })
 ```
 
@@ -350,11 +350,11 @@ Podemos usar un código similar para calcular estos valores para nuestro segundo
 ```{r, echo=FALSE}
 cutoffs <- c(50, seq(60, 75), 80)
 height_cutoff <- map_df(cutoffs, function(x){
-y_hat <- ifelse(test_set$height > x, "Male", "Female") %>%
-factor(levels = c("Female", "Male"))
-list(method = "Height cutoff",
-FPR = 1-specificity(y_hat, test_set$sex),
-TPR = sensitivity(y_hat, test_set$sex))
+  y_hat <- ifelse(test_set$height > x, "Male", "Female") %>%
+    factor(levels = c("Female", "Male"))
+  list(method = "Height cutoff",
+       FPR = 1-specificity(y_hat, test_set$sex),
+       TPR = sensitivity(y_hat, test_set$sex))
 })
 ```
 <!--
@@ -371,28 +371,28 @@ ylab("Sensitivity")
 ```{r roc-3, echo=FALSE, fig.width=6, fig.height=3}
 library(ggrepel)
 tmp_1 <- map_df(cutoffs, function(x){
-y_hat <- ifelse(test_set$height > x, "Male", "Female") %>%
-factor(levels = c("Female", "Male"))
-list(method = "Height cutoff",
-cutoff = x,
-FPR = 1-specificity(y_hat, test_set$sex),
-TPR = sensitivity(y_hat, test_set$sex))
+  y_hat <- ifelse(test_set$height > x, "Male", "Female") %>%
+    factor(levels = c("Female", "Male"))
+  list(method = "Height cutoff",
+       cutoff = x,
+       FPR = 1-specificity(y_hat, test_set$sex),
+       TPR = sensitivity(y_hat, test_set$sex))
 })
 tmp_2 <- map_df(probs, function(p){
-y_hat <-
-sample(c("Male", "Female"), n, replace = TRUE, prob=c(p, 1-p)) %>%
-factor(levels = c("Female", "Male"))
-list(method = "Guessing",
-cutoff = round(p,1),
-FPR = 1 - specificity(y_hat, test_set$sex),
-TPR = sensitivity(y_hat, test_set$sex))
+  y_hat <-
+    sample(c("Male", "Female"), n, replace = TRUE, prob=c(p, 1-p)) %>%
+    factor(levels = c("Female", "Male"))
+  list(method = "Guessing",
+       cutoff = round(p,1),
+       FPR = 1 - specificity(y_hat, test_set$sex),
+       TPR = sensitivity(y_hat, test_set$sex))
 })
 
 bind_rows(tmp_1, tmp_2) %>%
-ggplot(aes(FPR, TPR, label = cutoff, color = method)) +
-geom_line() +
-geom_point() +
-geom_text_repel(nudge_x = 0.01, nudge_y = -0.01, show.legend = FALSE)
+  ggplot(aes(FPR, TPR, label = cutoff, color = method)) +
+  geom_line() +
+  geom_point() +
+  geom_text_repel(nudge_x = 0.01, nudge_y = -0.01, show.legend = FALSE)
 ```
 
 Vemos que obtenemos una mayor sensibilidad con este enfoque para todos los valores de especificidad, lo que implica que es un método mejor. Tengan en cuenta que si simplemente adivinamos, las curvas ROC caen en la línea de identidad. También noten que cuando hacemos curvas ROC, a veces ayuda agregar el umbral asociado con cada punto a la gráfica.
@@ -404,46 +404,46 @@ Las curvas ROC tienen una debilidad y es que ninguna de las medidas graficadas d
 
 ```{r precision-recall-1, warning=FALSE, message=FALSE, echo=FALSE}
 guessing <- map_df(probs, function(p){
-y_hat <- sample(c("Male", "Female"), length(test_index),
-replace = TRUE, prob=c(p, 1-p)) %>%
-factor(levels = c("Female", "Male"))
-list(method = "Guess",
-recall = sensitivity(y_hat, test_set$sex),
-precision = precision(y_hat, test_set$sex))
+  y_hat <- sample(c("Male", "Female"), length(test_index),
+                  replace = TRUE, prob=c(p, 1-p)) %>%
+    factor(levels = c("Female", "Male"))
+  list(method = "Guess",
+       recall = sensitivity(y_hat, test_set$sex),
+       precision = precision(y_hat, test_set$sex))
 })
 
 height_cutoff <- map_df(cutoffs, function(x){
-y_hat <- ifelse(test_set$height > x, "Male", "Female") %>%
-factor(levels = c("Female", "Male"))
-list(method = "Height cutoff",
-recall = sensitivity(y_hat, test_set$sex),
-precision = precision(y_hat, test_set$sex))
+  y_hat <- ifelse(test_set$height > x, "Male", "Female") %>%
+    factor(levels = c("Female", "Male"))
+  list(method = "Height cutoff",
+       recall = sensitivity(y_hat, test_set$sex),
+       precision = precision(y_hat, test_set$sex))
 })
 tmp_1 <- bind_rows(guessing, height_cutoff) %>% mutate(Positive = "Y = 1 if Female")
 
 guessing <- map_df(probs, function(p){
-y_hat <- sample(c("Male", "Female"), length(test_index), replace = TRUE,
-prob=c(p, 1-p)) %>%
-factor(levels = c("Male", "Female"))
-list(method = "Guess",
-recall = sensitivity(y_hat, relevel(test_set$sex, "Male", "Female")),
-precision = precision(y_hat, relevel(test_set$sex, "Male", "Female")))
+  y_hat <- sample(c("Male", "Female"), length(test_index), replace = TRUE,
+                  prob=c(p, 1-p)) %>%
+    factor(levels = c("Male", "Female"))
+  list(method = "Guess",
+       recall = sensitivity(y_hat, relevel(test_set$sex, "Male", "Female")),
+       precision = precision(y_hat, relevel(test_set$sex, "Male", "Female")))
 })
 
 height_cutoff <- map_df(cutoffs, function(x){
-y_hat <- ifelse(test_set$height > x, "Male", "Female") %>%
-factor(levels = c("Male", "Female"))
-list(method = "Height cutoff",
-recall = sensitivity(y_hat, relevel(test_set$sex, "Male", "Female")),
-precision = precision(y_hat, relevel(test_set$sex, "Male", "Female")))
+  y_hat <- ifelse(test_set$height > x, "Male", "Female") %>%
+    factor(levels = c("Male", "Female"))
+  list(method = "Height cutoff",
+       recall = sensitivity(y_hat, relevel(test_set$sex, "Male", "Female")),
+       precision = precision(y_hat, relevel(test_set$sex, "Male", "Female")))
 })
 tmp_2 <- bind_rows(guessing, height_cutoff) %>% mutate(Positive = "Y = 1 if Male")
 
 bind_rows(tmp_1, tmp_2) %>%
-ggplot(aes(recall, precision, color = method)) +
-geom_line() +
-geom_point() +
-facet_wrap(~ Positive)
+  ggplot(aes(recall, precision, color = method)) +
+  geom_line() +
+  geom_point() +
+  facet_wrap(~ Positive)
 ```
 
 En este gráfico inmediatamente vemos que la precisión de adivinar no es alta. Esto se debe a que la prevalencia es baja. También vemos que si cambiamos los positivos para que representen "Male" en lugar de "Female", la curva ROC permanece igual, pero el gráfico _precision-recall_ cambia.
@@ -497,11 +497,11 @@ Los sets de datos `reported_height` y `height` se recopilaron de tres clases imp
 library(lubridate)
 data("reported_heights")
 dat <- mutate(reported_heights, date_time = ymd_hms(time_stamp)) %>%
-filter(date_time >= make_date(2016, 01, 25) &
-date_time < make_date(2016, 02, 1)) %>%
-mutate(type = ifelse(day(date_time) == 25 & hour(date_time) == 8 &
-between(minute(date_time), 15, 30),
-"inclass", "online")) %>% select(sex, type)
+  filter(date_time >= make_date(2016, 01, 25) &
+           date_time < make_date(2016, 02, 1)) %>%
+  mutate(type = ifelse(day(date_time) == 25 & hour(date_time) == 8 &
+                         between(minute(date_time), 15, 30),
+                       "inclass", "online")) %>% select(sex, type)
 x <- dat$type
 y <- factor(dat$sex, c("Female", "Male"))
 ```

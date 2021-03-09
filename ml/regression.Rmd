@@ -19,12 +19,12 @@ library(HistData)
 
 set.seed(1983)
 galton_heights <- GaltonFamilies %>%
-filter(gender == "male") %>%
-group_by(family) %>%
-sample_n(1) %>%
-ungroup() %>%
-select(father, childHeight) %>%
-rename(son = childHeight)
+  filter(gender == "male") %>%
+  group_by(family) %>%
+  sample_n(1) %>%
+  ungroup() %>%
+  select(father, childHeight) %>%
+  rename(son = childHeight)
 ```
 
 Supongamos que tienen la tarea de construir un algoritmo de _machine learning_ que prediga la altura del hijo $Y$ usando la altura del padre $X$. Generemos sets de evaluación y entrenamiento:
@@ -109,7 +109,7 @@ Hay muchas otras versiones de `predict` y muchos algoritmos de _machine learning
 n <- 100
 Sigma <- 9*matrix(c(1.0, 0.5, 0.5, 1.0), 2, 2)
 dat <- MASS::mvrnorm(n = 100, c(69, 69), Sigma) %>%
-data.frame() %>% setNames(c("x", "y"))
+  data.frame() %>% setNames(c("x", "y"))
 ```
 
 Use el paquete __caret__ para dividir en un set de evaluación y uno de entrenamiento del mismo tamaño. Entrene un modelo lineal e indique el RMSE. Repita este ejercicio 100 veces y haga un histograma de los RMSE e indique el promedio y la desviación estándar. [fix como evitamos doble ":" eng too] Sugerencia: adapte el código mostrado anteriormente así
@@ -145,7 +145,7 @@ d. El RMSE no es una variable aleatoria.
 n <- 100
 Sigma <- 9*matrix(c(1, 0.95, 0.95, 1), 2, 2)
 dat <- MASS::mvrnorm(n = 100, c(69, 69), Sigma) %>%
-data.frame() %>% setNames(c("x", "y"))
+  data.frame() %>% setNames(c("x", "y"))
 ```
 
 Repita el ejercicio y observe lo que le sucede al RMSE ahora.
@@ -165,7 +165,7 @@ d. Ambos son ejemplos de regresión, por lo que el RMSE tiene que ser el mismo.
 n <- 1000
 Sigma <- matrix(c(1, 3/4, 3/4, 3/4, 1, 0, 3/4, 0, 1), 3, 3)
 dat <- MASS::mvrnorm(n = 100, c(0, 0, 0), Sigma) %>%
-data.frame() %>% setNames(c("y", "x_1", "x_2"))
+  data.frame() %>% setNames(c("y", "x_1", "x_2"))
 ```
 
 Tenga en cuenta que `y` está correlacionado con ambos `x_1` y `x_2`, pero los dos predictores son independientes entre sí.
@@ -182,7 +182,7 @@ Use el paquete __caret__ para dividir en un set de evaluación y uno de entrenam
 n <- 1000
 Sigma <- matrix(c(1.0, 0.75, 0.75, 0.75, 1.0, 0.95, 0.75, 0.95, 1.0), 3, 3)
 dat <- MASS::mvrnorm(n = 100, c(0, 0, 0), Sigma) %>%
-data.frame() %>% setNames(c("y", "x_1", "x_2"))
+  data.frame() %>% setNames(c("y", "x_1", "x_2"))
 ```
 
 Use el paquete __caret__ para dividir en un set de evaluación y uno de entrenamiento del mismo tamaño. Compare el RMSE al usar solo `x_1`, sólo `x_2` y ambos `x_1` y `x_2`. Entrene un modelo lineal e indique el RMSE.
@@ -220,20 +220,20 @@ Como ejemplo, ofrecemos una predicción para un estudiante que mide 66 pulgadas 
 
 ```{r}
 train_set %>%
-filter(round(height)==66) %>%
-summarize(y_hat = mean(sex=="Female"))
+  filter(round(height)==66) %>%
+  summarize(y_hat = mean(sex=="Female"))
 ```
 
 Para construir un algoritmo de predicción, queremos estimar la proporción de la población femenina para cualquier altura dada $X=x$, que escribimos como la probabilidad condicional descrita anteriormente: $\mbox{Pr}( Y = 1 | X=x)$. Veamos cómo se ve esto para varios valores de $x$ (eliminaremos estratos de $x$ con pocos puntos de datos):
 
 ```{r height-and-sex-conditional-probabilities}
 heights %>%
-mutate(x = round(height)) %>%
-group_by(x) %>%
-filter(n() >= 10) %>%
-summarize(prop = mean(sex == "Female")) %>%
-ggplot(aes(x, prop)) +
-geom_point()
+  mutate(x = round(height)) %>%
+  group_by(x) %>%
+  filter(n() >= 10) %>%
+  summarize(prop = mean(sex == "Female")) %>%
+  ggplot(aes(x, prop)) +
+  geom_point()
 ```
 
 Dado que los resultados del gráfico anterior son casi lineal, y es el único enfoque que conocemos actualmente, intentaremos la regresión lineal. Suponemos que:
@@ -246,7 +246,7 @@ Si convertimos los factores a 0s y 1s, podemos estimar $\beta_0$ y $\beta_1$ usa
 
 ```{r}
 lm_fit <- mutate(train_set, y = as.numeric(sex == "Female")) %>%
-lm(y ~ height, data = .)
+  lm(y ~ height, data = .)
 ```
 
 
@@ -272,13 +272,13 @@ La función $\beta_0 + \beta_1 x$ puede tomar cualquier valor, incluyendo negati
 
 ```{r regression-prediction}
 heights %>%
-mutate(x = round(height)) %>%
-group_by(x) %>%
-filter(n() >= 10) %>%
-summarize(prop = mean(sex == "Female")) %>%
-ggplot(aes(x, prop)) +
-geom_point() +
-geom_abline(intercept = lm_fit$coef[1], slope = lm_fit$coef[2])
+  mutate(x = round(height)) %>%
+  group_by(x) %>%
+  filter(n() >= 10) %>%
+  summarize(prop = mean(sex == "Female")) %>%
+  ggplot(aes(x, prop)) +
+  geom_point() +
+  geom_abline(intercept = lm_fit$coef[1], slope = lm_fit$coef[2])
 ```
 
 El rango es:
@@ -315,8 +315,8 @@ Con este modelo, ya no podemos usar mínimos cuadrados. En su lugar, calculamos 
 
 ```{r}
 glm_fit <- train_set %>%
-mutate(y = as.numeric(sex == "Female")) %>%
-glm(y ~ height, data=., family = "binomial")
+  mutate(y = as.numeric(sex == "Female")) %>%
+  glm(y ~ height, data=., family = "binomial")
 ```
 
 Podemos obtener predicciones usando la función de predicción:
@@ -331,17 +331,17 @@ Este modelo se ajusta a los datos un poco mejor que la línea:
 
 ```{r conditional-prob-glm-fit, echo=FALSE }
 tmp <- heights %>%
-mutate(x = round(height)) %>%
-group_by(x) %>%
-filter(n() >= 10) %>%
-summarize(prop = mean(sex == "Female"))
+  mutate(x = round(height)) %>%
+  group_by(x) %>%
+  filter(n() >= 10) %>%
+  summarize(prop = mean(sex == "Female"))
 logistic_curve <- data.frame(x = seq(min(tmp$x), max(tmp$x))) %>%
-mutate(p_hat = plogis(glm_fit$coef[1] + glm_fit$coef[2]*x))
+  mutate(p_hat = plogis(glm_fit$coef[1] + glm_fit$coef[2]*x))
 tmp %>%
-ggplot(aes(x, prop)) +
-geom_point() +
-geom_line(data = logistic_curve,
-mapping = aes(x, p_hat), lty = 2)
+  ggplot(aes(x, prop)) +
+  geom_point() +
+  geom_line(data = logistic_curve,
+            mapping = aes(x, p_hat), lty = 2)
 ```
 
 Porque tenemos un estimado $\hat{p}(x)$, podemos obtener predicciones:
@@ -355,12 +355,12 @@ Las predicciones resultantes son similares. Esto se debe a que los dos estimados
 
 ```{r glm-prediction}
 data.frame(x = seq(min(tmp$x), max(tmp$x))) %>%
-mutate(logistic = plogis(glm_fit$coef[1] + glm_fit$coef[2]*x),
-regression = lm_fit$coef[1] + lm_fit$coef[2]*x) %>%
-gather(method, p_x, -x) %>%
-ggplot(aes(x, p_x, color = method)) +
-geom_line() +
-geom_hline(yintercept = 0.5, lty = 5)
+  mutate(logistic = plogis(glm_fit$coef[1] + glm_fit$coef[2]*x),
+         regression = lm_fit$coef[1] + lm_fit$coef[2]*x) %>%
+  gather(method, p_x, -x) %>%
+  ggplot(aes(x, p_x, color = method)) +
+  geom_line() +
+  geom_hline(yintercept = 0.5, lty = 5)
 ```
 
 Las regresiones lineales y logísticas proporcionan un estimado de la expectativa condicional:
@@ -397,24 +397,24 @@ Comparando con los resultados que obtuvimos en la Sección \@ref(two-or-seven), 
 ```{r, echo=FALSE}
 # We use this function to plot the estimated conditional probabilities
 plot_cond_prob <- function(p_hat=NULL){
-tmp <- mnist_27$true_p
-if(!is.null(p_hat)){
-tmp <- mutate(tmp, p=p_hat)
-}
-tmp %>% ggplot(aes(x_1, x_2, z=p, fill=p)) +
-geom_raster(show.legend = FALSE) +
-scale_fill_gradientn(colors=c("#F8766D","white","#00BFC4")) +
-stat_contour(breaks=c(0.5),color="black")
+  tmp <- mnist_27$true_p
+  if(!is.null(p_hat)){
+    tmp <- mutate(tmp, p=p_hat)
+  }
+  tmp %>% ggplot(aes(x_1, x_2, z=p, fill=p)) +
+    geom_raster(show.legend = FALSE) +
+    scale_fill_gradientn(colors=c("#F8766D","white","#00BFC4")) +
+    stat_contour(breaks=c(0.5),color="black")
 }
 ```
 
 ```{r logistic-p-hat}
 p_hat <- predict(fit_glm, newdata = mnist_27$true_p, type = "response")
 mnist_27$true_p %>% mutate(p_hat = p_hat) %>%
-ggplot(aes(x_1, x_2, z=p_hat, fill=p_hat)) +
-geom_raster() +
-scale_fill_gradientn(colors=c("#F8766D","white","#00BFC4")) +
-stat_contour(breaks=c(0.5), color="black")
+  ggplot(aes(x_1, x_2, z=p_hat, fill=p_hat)) +
+  geom_raster() +
+  scale_fill_gradientn(colors=c("#F8766D","white","#00BFC4")) +
+  stat_contour(breaks=c(0.5), color="black")
 ```
 
 Al igual que con regresión lineal, la regla de decisión es una línea, un hecho que puede corroborarse matemáticamente ya que:
@@ -433,17 +433,17 @@ Por eso $x_2$ es una función lineal de $x_1$. Esto implica que, al igual que la
 
 ```{r, eval = FALSE}
 make_data <- function(n = 1000, p = 0.5,
-mu_0 = 0, mu_1 = 2,
-sigma_0 = 1, sigma_1 = 1){
-y <- rbinom(n, 1, p)
-f_0 <- rnorm(n, mu_0, sigma_0)
-f_1 <- rnorm(n, mu_1, sigma_1)
-x <- ifelse(y == 1, f_1, f_0)
-test_index <- createDataPartition(y, times = 1, p = 0.5, list = FALSE)
-list(train = data.frame(x = x, y = as.factor(y)) %>%
-slice(-test_index),
-test = data.frame(x = x, y = as.factor(y)) %>%
-slice(test_index))
+                      mu_0 = 0, mu_1 = 2,
+                      sigma_0 = 1, sigma_1 = 1){
+  y <- rbinom(n, 1, p)
+  f_0 <- rnorm(n, mu_0, sigma_0)
+  f_1 <- rnorm(n, mu_1, sigma_1)
+  x <- ifelse(y == 1, f_1, f_0)
+  test_index <- createDataPartition(y, times = 1, p = 0.5, list = FALSE)
+  list(train = data.frame(x = x, y = as.factor(y)) %>%
+         slice(-test_index),
+       test = data.frame(x = x, y = as.factor(y)) %>%
+         slice(test_index))
 }
 dat <- make_data()
 ```

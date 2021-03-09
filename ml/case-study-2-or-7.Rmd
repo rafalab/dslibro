@@ -25,38 +25,38 @@ if(!exists("mnist")) mnist <- read_mnist()
 is <- mnist_27$index_train[c(which.min(mnist_27$train$x_1), which.max(mnist_27$train$x_1))]
 titles <- c("smallest","largest")
 tmp <- lapply(1:2, function(i){
-expand.grid(Row=1:28, Column=1:28) %>%
-mutate(label=titles[i],
-value = mnist$train$images[is[i],])
+  expand.grid(Row=1:28, Column=1:28) %>%
+    mutate(label=titles[i],
+           value = mnist$train$images[is[i],])
 })
 tmp <- Reduce(rbind, tmp)
 p1 <- tmp %>% ggplot(aes(Row, Column, fill=value)) +
-geom_raster(show.legend = FALSE) +
-scale_y_reverse() +
-scale_fill_gradient(low="white", high="black") +
-facet_grid(.~label) +
-geom_vline(xintercept = 14.5) +
-geom_hline(yintercept = 14.5) +
-ggtitle("Largest and smallest x_1")
+  geom_raster(show.legend = FALSE) +
+  scale_y_reverse() +
+  scale_fill_gradient(low="white", high="black") +
+  facet_grid(.~label) +
+  geom_vline(xintercept = 14.5) +
+  geom_hline(yintercept = 14.5) +
+  ggtitle("Largest and smallest x_1")
 
 
 
 is <- mnist_27$index_train[c(which.min(mnist_27$train$x_2), which.max(mnist_27$train$x_2))]
 titles <- c("smallest","largest")
 tmp <- lapply(1:2, function(i){
-expand.grid(Row=1:28, Column=1:28) %>%
-mutate(label=titles[i],
-value = mnist$train$images[is[i],])
+  expand.grid(Row=1:28, Column=1:28) %>%
+    mutate(label=titles[i],
+           value = mnist$train$images[is[i],])
 })
 tmp <- Reduce(rbind, tmp)
 p2 <- tmp %>% ggplot(aes(Row, Column, fill=value)) +
-geom_raster(show.legend = FALSE) +
-scale_y_reverse() +
-scale_fill_gradient(low="white", high="black") +
-facet_grid(.~label) +
-geom_vline(xintercept = 14.5) +
-geom_hline(yintercept = 14.5) +
-ggtitle("Largest and smallest x_2")
+  geom_raster(show.legend = FALSE) +
+  scale_y_reverse() +
+  scale_fill_gradient(low="white", high="black") +
+  facet_grid(.~label) +
+  geom_vline(xintercept = 14.5) +
+  geom_hline(yintercept = 14.5) +
+  ggtitle("Largest and smallest x_2")
 gridExtra::grid.arrange(p1, p2, ncol = 2)
 ```
 
@@ -73,8 +73,8 @@ Lo ajustamos así:
 
 ```{r}
 fit <- mnist_27$train %>%
-mutate(y = ifelse(y==7, 1, 0)) %>%
-lm(y ~ x_1 + x_2, data = .)
+  mutate(y = ifelse(y==7, 1, 0)) %>%
+  lm(y ~ x_1 + x_2, data = .)
 ```
 
 Ahora podemos construir una regla de decisión basada en el estimado de $\hat{p}(x_1, x_2)$:
@@ -92,9 +92,9 @@ Como construimos el ejemplo `mnist_27` y teníamos a nuestra disposición 60,000
 
 ```{r true-p-better-colors}
 mnist_27$true_p %>% ggplot(aes(x_1, x_2, z = p, fill = p)) +
-geom_raster() +
-scale_fill_gradientn(colors=c("#F8766D", "white", "#00BFC4")) +
-stat_contour(breaks=c(0.5), color="black")
+  geom_raster() +
+  scale_fill_gradientn(colors=c("#F8766D", "white", "#00BFC4")) +
+  stat_contour(breaks=c(0.5), color="black")
 ```
 
 Arriba ven un gráfico del verdadero $p(x,y)$. Para comenzar a comprender las limitaciones de la regresión logística aquí, primero tengan en cuenta que con la regresión logística $\hat{p}(x,y)$ tiene que ser un plano y, como resultado, el límite definido por la regla de decisión viene dado por:
@@ -111,15 +111,15 @@ Tengan en cuenta que para este límite, $x_2$ es una función lineal de $x_1$. E
 p_hat <- predict(fit, newdata = mnist_27$true_p)
 p_hat <- scales::squish(p_hat, c(0, 1))
 p1 <- mnist_27$true_p %>% mutate(p_hat = p_hat) %>%
-ggplot(aes(x_1, x_2, z=p_hat, fill=p_hat)) +
-geom_raster() +
-scale_fill_gradientn(colors=c("#F8766D","white","#00BFC4")) +
-stat_contour(breaks=c(0.5), color="black")
+  ggplot(aes(x_1, x_2, z=p_hat, fill=p_hat)) +
+  geom_raster() +
+  scale_fill_gradientn(colors=c("#F8766D","white","#00BFC4")) +
+  stat_contour(breaks=c(0.5), color="black")
 
 p2 <- mnist_27$true_p %>% mutate(p_hat = p_hat) %>%
-ggplot() +
-stat_contour(aes(x_1, x_2, z=p_hat), breaks=c(0.5), color="black") +
-geom_point(mapping = aes(x_1, x_2, color=y), data = mnist_27$test)
+  ggplot() +
+  stat_contour(aes(x_1, x_2, z=p_hat), breaks=c(0.5), color="black") +
+  geom_point(mapping = aes(x_1, x_2, color=y), data = mnist_27$test)
 gridExtra::grid.arrange(p1, p2, ncol = 2)
 ```
 

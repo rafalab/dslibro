@@ -49,8 +49,8 @@ confusionMatrix(y_hat_knn, mnist_27$test$y)$overall["Accuracy"]
 En la Sección \@ref(two-or-seven) utilizamos la regresión lineal para generar un estimado.
 ```{r}
 fit_lm <- mnist_27$train %>%
-mutate(y = ifelse(y == 7, 1, 0)) %>%
-lm(y ~ x_1 + x_2, data = .)
+  mutate(y = ifelse(y == 7, 1, 0)) %>%
+  lm(y ~ x_1 + x_2, data = .)
 p_hat_lm <- predict(fit_lm, mnist_27$test)
 y_hat_lm <- factor(ifelse(p_hat_lm > 0.5, 7, 2))
 confusionMatrix(y_hat_lm, mnist_27$test$y)$overall["Accuracy"]
@@ -62,14 +62,14 @@ Y vemos que kNN, con el parámetro predeterminado, ya supera la regresión. Para
 ```{r, echo=FALSE}
 # We use this function to plot the estimated conditional probabilities
 plot_cond_prob <- function(p_hat=NULL){
-tmp <- mnist_27$true_p
-if(!is.null(p_hat)){
-tmp <- mutate(tmp, p=p_hat)
-}
-tmp %>% ggplot(aes(x_1, x_2, z=p, fill=p)) +
-geom_raster(show.legend = FALSE) +
-scale_fill_gradientn(colors=c("#F8766D","white","#00BFC4")) +
-stat_contour(breaks=c(0.5),color="black")
+  tmp <- mnist_27$true_p
+  if(!is.null(p_hat)){
+    tmp <- mutate(tmp, p=p_hat)
+  }
+  tmp %>% ggplot(aes(x_1, x_2, z=p, fill=p)) +
+    geom_raster(show.legend = FALSE) +
+    scale_fill_gradientn(colors=c("#F8766D","white","#00BFC4")) +
+    stat_contour(breaks=c(0.5),color="black")
 }
 ```
 
@@ -78,7 +78,7 @@ stat_contour(breaks=c(0.5),color="black")
 p1 <- plot_cond_prob() + ggtitle("True conditional probability")
 
 p2 <- plot_cond_prob(predict(knn_fit, mnist_27$true_p)[,2]) +
-ggtitle("kNN-5 estimate")
+  ggtitle("kNN-5 estimate")
 library(gridExtra)
 
 grid.arrange(p2, p1, nrow=1)
@@ -117,22 +117,22 @@ confusionMatrix(y_hat_knn_1, mnist_27$test$y)$overall["Accuracy"]
 Podemos ver el problema de sobreajuste en estos gráficos.
 ```{r knn-1-overfit, echo=FALSE, out.width="100%"}
 p1 <- mnist_27$true_p %>%
-mutate(knn = predict(knn_fit_1, newdata = .)[,2]) %>%
-ggplot() +
-geom_point(data = mnist_27$train, aes(x_1, x_2, color= y),
-pch=21, show.legend = FALSE) +
-scale_fill_gradientn(colors=c("#F8766D","white","#00BFC4")) +
-stat_contour(aes(x_1, x_2, z = knn), breaks=c(0.5), color="black") +
-ggtitle("Train set")
+  mutate(knn = predict(knn_fit_1, newdata = .)[,2]) %>%
+  ggplot() +
+  geom_point(data = mnist_27$train, aes(x_1, x_2, color= y),
+             pch=21, show.legend = FALSE) +
+  scale_fill_gradientn(colors=c("#F8766D","white","#00BFC4")) +
+  stat_contour(aes(x_1, x_2, z = knn), breaks=c(0.5), color="black") +
+  ggtitle("Train set")
 
 p2 <- mnist_27$true_p %>%
-mutate(knn = predict(knn_fit_1, newdata = .)[,2]) %>%
-ggplot() +
-geom_point(data = mnist_27$test, aes(x_1, x_2, color= y),
-pch=21, show.legend = FALSE) +
-scale_fill_gradientn(colors=c("#F8766D","white","#00BFC4")) +
-stat_contour(aes(x_1, x_2, z = knn), breaks=c(0.5), color="black") +
-ggtitle("Test set")
+  mutate(knn = predict(knn_fit_1, newdata = .)[,2]) %>%
+  ggplot() +
+  geom_point(data = mnist_27$test, aes(x_1, x_2, color= y),
+             pch=21, show.legend = FALSE) +
+  scale_fill_gradientn(colors=c("#F8766D","white","#00BFC4")) +
+  stat_contour(aes(x_1, x_2, z = knn), breaks=c(0.5), color="black") +
+  ggtitle("Test set")
 
 grid.arrange(p1, p2, nrow=1)
 ```
@@ -156,10 +156,10 @@ Esto resulta ser similar a la regresión:
 p_hat <- predict(fit_lm, newdata = mnist_27$true_p)
 p_hat <- scales::squish(p_hat, c(0, 1))
 p1 <- plot_cond_prob(p_hat) +
-ggtitle("Regression")
+  ggtitle("Regression")
 
 p2 <- plot_cond_prob(predict(knn_fit_401, mnist_27$true_p)[,2]) +
-ggtitle("kNN-401")
+  ggtitle("kNN-401")
 
 grid.arrange(p1, p2, nrow=1)
 ```
@@ -180,17 +180,17 @@ Hacemos esto usando la función `map_df` para repetir lo anterior para cada uno.
 ```{r, warning=FALSE, message=FALSE}
 library(purrr)
 accuracy <- map_df(ks, function(k){
-fit <- knn3(y ~ ., data = mnist_27$train, k = k)
-
-y_hat <- predict(fit, mnist_27$train, type = "class")
-cm_train <- confusionMatrix(y_hat, mnist_27$train$y)
-train_error <- cm_train$overall["Accuracy"]
-
-y_hat <- predict(fit, mnist_27$test, type = "class")
-cm_test <- confusionMatrix(y_hat, mnist_27$test$y)
-test_error <- cm_test$overall["Accuracy"]
-
-tibble(train = train_error, test = test_error)
+  fit <- knn3(y ~ ., data = mnist_27$train, k = k)
+  
+  y_hat <- predict(fit, mnist_27$train, type = "class")
+  cm_train <- confusionMatrix(y_hat, mnist_27$train$y)
+  train_error <- cm_train$overall["Accuracy"]
+  
+  y_hat <- predict(fit, mnist_27$test, type = "class")
+  cm_test <- confusionMatrix(y_hat, mnist_27$test$y)
+  test_error <- cm_test$overall["Accuracy"]
+  
+  tibble(train = train_error, test = test_error)
 })
 ```
 
@@ -198,11 +198,11 @@ Tengan en cuenta que estimamos la exactitud utilizando tanto el set de entrenami
 
 ```{r accuracy-vs-k-knn, echo=FALSE}
 accuracy %>% mutate(k = ks) %>%
-gather(set, accuracy, -k) %>%
-mutate(set = factor(set, levels = c("train", "test"))) %>%
-ggplot(aes(k, accuracy, color = set)) +
-geom_line() +
-geom_point()
+  gather(set, accuracy, -k) %>%
+  mutate(set = factor(set, levels = c("train", "test"))) %>%
+  ggplot(aes(k, accuracy, color = set)) +
+  geom_line() +
+  geom_point()
 ```
 
 Primero, noten que el estimado obtenido en el set de entrenamiento es generalmente menor que el estimado obtenido con el set de evaluación, con una diferencia mayor para valores más pequeños de $k$. Esto se debe al sobreentrenamiento. También observen que el gráfico de exactitud versus $k$ es bastante irregular. No esperamos esto porque pequeños cambios en $k$ no deberían afectar demasiado cuán bien predice el algoritmo. La irregularidad se explica por el hecho de que la exactitud se calcula en una muestra y, por lo tanto, es una variable aleatoria. Esto demuestra por qué preferimos minimizar la pérdida esperada en lugar de la pérdida que observamos con un solo set de datos.
@@ -249,10 +249,10 @@ Como ya se mencionó, esta es una cantidad teórica porque solo tenemos disponib
 
 ```{r, include=FALSE}
 if(knitr::is_html_output()){
-knitr::opts_chunk$set(out.width = "500px",
-out.extra='style="display: block; margin-left: auto; margin-right: auto; background-color: #000; padding:3px;"')
+  knitr::opts_chunk$set(out.width = "500px",
+                        out.extra='style="display: block; margin-left: auto; margin-right: auto; background-color: #000; padding:3px;"')
 } else{
-knitr::opts_chunk$set(out.width = "35%")
+  knitr::opts_chunk$set(out.width = "35%")
 }
 ```
 
@@ -440,12 +440,12 @@ Debido a que estamos simulando los datos, podemos usar una simulación de Monte 
 library(gridExtra)
 B <- 10^4
 M <- replicate(B, {
-X <- sample(income, N)
-median(X)
+  X <- sample(income, N)
+  median(X)
 })
 p1 <- qplot(M, bins = 30, color = I("black"))
 p2 <- qplot(sample = scale(M), xlab = "theoretical", ylab = "sample") +
-geom_abline()
+  geom_abline()
 grid.arrange(p1, p2, ncol = 2)
 ```
 
@@ -469,8 +469,8 @@ La teoría nos dice que, en muchas situaciones, la distribución de las estadís
 ```{r}
 B <- 10^4
 M_star <- replicate(B, {
-X_star <- sample(X, N, replace = TRUE)
-median(X_star)
+  X_star <- sample(X, N, replace = TRUE)
+  median(X_star)
 })
 ```
 

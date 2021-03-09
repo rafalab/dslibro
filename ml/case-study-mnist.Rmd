@@ -2,7 +2,7 @@
 
 Ahora que hemos aprendido varios métodos y los hemos explorado con ejemplos ilustrativos, los probaremos con un ejemplo real: los dígitos MNIST.
 
-Podemos cargar estos datos usando el siguiente paquete __dslabs__:
+Podemos cargar estos datos usando el siguiente paquete de __dslabs__:
 
 ```{r, message=FALSE, warning=FALSE}
 library(tidyverse)
@@ -10,7 +10,7 @@ library(dslabs)
 mnist <- read_mnist()
 ```
 
-El conjunto de datos incluye dos componentes, un conjunto de entrenamiento y un conjunto de prueba:
+El set de datos incluye dos componentes, un set de entrenamiento y un set de evaluación:
 
 ```{r}
 names(mnist)
@@ -22,14 +22,14 @@ Cada uno de estos componentes incluye una matriz con características en las col
 dim(mnist$train$images)
 ```
 
-y vector con las clases como enteros:
+y un vector con las clases como enteros:
 
 ```{r}
 class(mnist$train$labels)
 table(mnist$train$labels)
 ```
 
-Como queremos que este ejemplo se ejecute en una computadora portátil pequeña y en menos de una hora, consideraremos un subconjunto del conjunto de datos. Tomaremos muestras de 10,000 filas aleatorias del conjunto de entrenamiento y 1,000 filas aleatorias del conjunto de prueba:
+Como queremos que este ejemplo se ejecute en una computadora portátil pequeña y en menos de una hora, consideraremos un subconjunto del set de datos. Tomaremos muestras de 10,000 filas aleatorias del set de entrenamiento y 1,000 filas aleatorias del set de evaluación:
 
 ```{r}
 set.seed(1990)
@@ -44,11 +44,11 @@ y_test <- factor(mnist$test$labels[index])
 
 ## Preprocesamiento
 
-En el aprendizaje automático, a menudo transformamos predictores antes de ejecutar el algoritmo de la máquina. También eliminamos predictores que claramente no son útiles. Llamamos a estos pasos _procesamiento_.
+En _machine learning_, a menudo transformamos predictores antes de ejecutar el algoritmo de la máquina. También eliminamos predictores que claramente no son útiles. Llamamos a estos pasos _preprocesamiento_ (_preprocessing_ en inglés).
 
-Los ejemplos de preprocesamiento incluyen estandarizar los predictores, tomar la transformación logarítmica de algunos predictores, eliminar los predictores que están altamente correlacionados con otros y eliminar los predictores con muy pocos valores no únicos o una variación cercana a cero. Mostramos un ejemplo a continuación.
+Los ejemplos de preprocesamiento incluyen estandarizar los predictores, transformar logarítmicamente algunos predictores, eliminar los predictores que están altamente correlacionados con otros y eliminar los predictores con muy pocos valores no únicos o una variación cercana a cero. Mostramos un ejemplo a continuación.
 
-Podemos ejecutar el `nearZero` funciona desde el paquete __caret__ para ver que varias características no varían mucho de una observación a otra. Podemos ver que hay una gran cantidad de características con variabilidad 0:
+Podemos ejecutar la función `nearZero` desde el paquete __caret__ para ver que varias características no varían mucho de una observación a otra. Podemos ver que hay una gran cantidad de características con variabilidad 0:
 
 ```{r pixel-sds, message=FALSE, warning=FALSE}
 library(matrixStats)
@@ -58,7 +58,7 @@ qplot(sds, bins = 256)
 
 Esto se espera porque hay partes de la imagen que rara vez contienen escritura (píxeles oscuros).
 
-Los paquetes __caret__ incluyen una función que recomienda que se eliminen las características debido a una variación cercana a cero:
+El paquete __caret__ incluye una función que recomienda que se eliminen las características debido [fix check ok? also i think we shoudl delete english translation] a que la variación es casi cero:
 
 ```{r, message=FALSE, warning=FALSE}
 library(caret)
@@ -83,7 +83,7 @@ col_index <- setdiff(1:ncol(x), nzv)
 length(col_index)
 ```
 
-Ahora estamos listos para adaptarnos a algunos modelos. Antes de comenzar, debemos agregar nombres de columna a las matrices de entidades, ya que estos son requeridos por __caret__:
+Ahora estamos listos para adaptarnos a algunos modelos. Antes de comenzar, debemos agregar nombres de columna a las matrices de predictores, ya que estos son requeridos por __caret__:
 
 ```{r}
 colnames(x) <- 1:ncol(mnist$train$images)
@@ -92,20 +92,20 @@ colnames(x_test) <- colnames(x)
 
 ## k-vecino más cercano y bosque aleatorio
 
-Comencemos con kNN. El primer paso es optimizar para $k$. Tenga en cuenta que cuando ejecutamos el algoritmo, tendremos que calcular una distancia entre cada observación en el conjunto de prueba y cada observación en el conjunto de entrenamiento. Hay muchos cálculos. Por lo tanto, utilizaremos la validación cruzada k-fold para mejorar la velocidad.
+Comencemos con kNN. El primer paso es optimizar para $k$. Tengan en cuenta que cuando ejecutamos el algoritmo, tendremos que calcular una distancia entre cada observación en el set de evaluación y cada observación en el set de entrenamiento. Hay muchos cálculos. Por lo tanto, utilizaremos la validación cruzada _k-fold_ para mejorar la velocidad.
 
 Si ejecutamos el siguiente código, el tiempo de computación en una computadora portátil estándar será de varios minutos.
 
 ```{r mnist-knn-fit, eval=FALSE}
 control <- trainControl(method = "cv", number = 10, p = .9)
 train_knn <- train(x[ ,col_index], y,
-method = "knn",
-tuneGrid = data.frame(k = c(3,5,7)),
-trControl = control)
+                   method = "knn",
+                   tuneGrid = data.frame(k = c(3,5,7)),
+                   trControl = control)
 train_knn
 ```
 
-En general, es una buena idea probar una ejecución de prueba con un subconjunto de datos para tener una idea del tiempo antes de comenzar a ejecutar el código que puede tardar horas en completarse. Podemos hacer esto de la siguiente manera:
+En general, es una buena idea hacer una ejecución de prueba con un subconjunto de datos para tener una idea del tiempo antes de comenzar a ejecutar el código que puede tardar horas en completarse. Podemos hacer esto de la siguiente manera:
 
 ```{r, eval = FALSE}
 n <- 1000
@@ -113,28 +113,28 @@ b <- 2
 index <- sample(nrow(x), n)
 control <- trainControl(method = "cv", number = b, p = .9)
 train_knn <- train(x[index, col_index], y[index],
-method = "knn",
-tuneGrid = data.frame(k = c(3,5,7)),
-trControl = control)
+                   method = "knn",
+                   tuneGrid = data.frame(k = c(3,5,7)),
+                   trControl = control)
 ```
 
 Entonces podemos aumentar `n` y `b` e intentar establecer un patrón de cómo afectan el tiempo de computación
-para tener una idea de cuánto tiempo llevará el proceso de ajuste para valores mayores de `n` y `b`. Desea saber si una función llevará horas, o incluso días, antes de ejecutarla.
+para tener una idea de cuánto tiempo tomará el proceso de ajuste para valores mayores de `n` y `b`. Quieren saber si una función tomará horas, o incluso días, antes de ejecutarla.
 
-Una vez que optimizamos nuestro algoritmo, podemos ajustarlo a todo el conjunto de datos:
+Una vez que optimicemos nuestro algoritmo, podemos aplicarlo a todo el set de datos:
 
 ```{r}
 fit_knn <- knn3(x[, col_index], y, k = 3)
 ```
 
-¡La precisión es casi 0.95!
+¡La exactitud es casi 0.95!
 ```{r}
 y_hat_knn <- predict(fit_knn, x_test[, col_index], type="class")
 cm <- confusionMatrix(y_hat_knn, factor(y_test))
 cm$overall["Accuracy"]
 ```
 
-Ahora logramos una precisión de aproximadamente 0,95. Por la especificidad y sensibilidad, también vemos que los 8 son los más difíciles de detectar y el dígito predicho incorrectamente más comúnmente es el 7.
+Ahora logramos una exactitud de aproximadamente 0.95. Por la especificidad y sensibilidad, también vemos que los 8 son los más difíciles de detectar y el dígito predicho incorrectamente con mas frecuencia es el 7.
 
 ```{r}
 cm$byClass[,1:2]
@@ -142,11 +142,11 @@ cm$byClass[,1:2]
 
 Ahora veamos si podemos hacerlo aún mejor con el algoritmo de bosque aleatorio.
 
-Con bosque aleatorio, el tiempo de cálculo es un desafío. Para cada bosque, necesitamos construir cientos de árboles. También tenemos varios parámetros que podemos ajustar.
+Con bosque aleatorio, el tiempo de cálculo es un reto. Para cada bosque, necesitamos construir cientos de árboles. También tenemos varios parámetros que podemos ajustar.
 
-Debido a que con el bosque aleatorio el ajuste es la parte más lenta del procedimiento en lugar de la predicción (como con kNN), usaremos solo una validación cruzada de cinco veces. También reduciremos la cantidad de árboles que están en forma ya que aún no estamos construyendo nuestro modelo final.
+Debido a que con el bosque aleatorio el ajuste es la parte más lenta del procedimiento en lugar de la predicción (como con kNN), usaremos solo una validación cruzada de cinco pliegues (_folds_ en inglés). También reduciremos la cantidad de árboles que se ajustan ya que aún no estamos construyendo nuestro modelo final.
 
-Finalmente, para calcular en un conjunto de datos más pequeño, tomaremos una muestra aleatoria de las observaciones al construir cada árbol. Podemos cambiar este número con el `nSamp` argumento.
+Finalmente, para calcular en un set de datos más pequeño, tomaremos una muestra aleatoria de las observaciones al construir cada árbol. Podemos cambiar este número con el argumento `nSamp`.
 
 
 ```{r mnist-rf, message=FALSE, warning=FALSE, cache=TRUE}
@@ -155,31 +155,31 @@ control <- trainControl(method="cv", number = 5)
 grid <- data.frame(mtry = c(1, 5, 10, 25, 50, 100))
 
 train_rf <- train(x[, col_index], y,
-method = "rf",
-ntree = 150,
-trControl = control,
-tuneGrid = grid,
-nSamp = 5000)
+                  method = "rf",
+                  ntree = 150,
+                  trControl = control,
+                  tuneGrid = grid,
+                  nSamp = 5000)
 
 ggplot(train_rf)
 train_rf$bestTune
 ```
 
-Ahora que hemos optimizado nuestro algoritmo, estamos listos para adaptarnos a nuestro modelo final:
+Ahora que hemos optimizado nuestro algoritmo, estamos listos para ajustar nuestro modelo final:
 
 ```{r, cache=TRUE}
 fit_rf <- randomForest(x[, col_index], y,
-minNode = train_rf$bestTune$mtry)
+                       minNode = train_rf$bestTune$mtry)
 ```
 
-Para verificar que ejecutamos suficientes árboles, podemos usar la función de trazado:
+Para verificar que ejecutamos suficientes árboles, podemos usar la función `plot`:
 
 ```{r, eval=FALSE}
 plot(fit_rf)
 ```
 
 
-Vemos que logramos una alta precisión:
+Vemos que logramos una alta exactitud:
 
 ```{r}
 y_hat_rf <- predict(fit_rf, x_test[ ,col_index])
@@ -208,7 +208,7 @@ La siguiente función calcula la importancia de cada característica:
 imp <- importance(fit_rf)
 ```
 
-Podemos ver qué características se utilizan más al trazar una imagen:
+Podemos ver qué características se utilizan más al graficar una imagen:
 
 
 ```{r eval=FALSE}
@@ -226,10 +226,9 @@ image(matrix(mat, 28, 28))
 
 ## Evaluaciones visuales
 
-Una parte importante del análisis de datos es visualizar los resultados para determinar por qué estamos fallando. Cómo hacemos esto depende de la aplicación. A continuación mostramos las imágenes de dígitos para los cuales hicimos una predicción incorrecta.
-Podemos comparar lo que obtenemos con kNN con bosque aleatorio.
+Una parte importante del análisis de datos es visualizar los resultados para determinar por qué estamos fallando. Cómo hacemos esto depende de la aplicación. A continuación mostramos las imágenes de dígitos para los cuales hicimos una predicción incorrecta. Podemos comparar lo que obtenemos con kNN con bosque aleatorio.
 
-<!--Here are some errors for kNN:
+Aquí vemos unos errors para el bosque aleatorio:
 
 ```{r knn-images, echo=FALSE, out.width="100%", fig.width=6, fig.height=1.65}
 p_max <- predict(fit_knn, x_test[,col_index])
@@ -239,15 +238,12 @@ ind <- ind[order(p_max[ind], decreasing = TRUE)]
 
 rafalib::mypar(1,4)
 for(i in ind[1:4]){
-image(matrix(x_test[i,], 28, 28)[, 28:1],
-main = paste0("Pr(",y_hat_knn[i],")=",round(p_max[i], 2)," but is a ",y_test[i]),
-xaxt="n", yaxt="n")
+  image(matrix(x_test[i,], 28, 28)[, 28:1],
+        main = paste0("Pr(",y_hat_knn[i],")=",round(p_max[i], 2)," but is a ",y_test[i]),
+        xaxt="n", yaxt="n")
 }
 ```
 
-Y ->
-
-Aquí hay algunos errores para el bosque aleatorio:
 
 ```{r rf-images,, echo=FALSE, out.width="100%", fig.width=6, fig.height=1.65}
 p_max <- predict(fit_rf, x_test[,col_index], type = "prob")
@@ -259,21 +255,21 @@ ind <- ind[order(p_max[ind], decreasing = TRUE)]
 
 rafalib::mypar(1,4)
 for(i in ind[1:4]){
-image(matrix(x_test[i,], 28, 28)[, 28:1],
-main = paste0("Pr(",y_hat_rf[i],")=",round(p_max[i], 2), " but is a ",y_test[i]),
-xaxt="n", yaxt="n")
+  image(matrix(x_test[i,], 28, 28)[, 28:1],
+        main = paste0("Pr(",y_hat_rf[i],")=",round(p_max[i], 2), " but is a ",y_test[i]),
+        xaxt="n", yaxt="n")
 }
 ```
 
-Al examinar errores como este, a menudo encontramos debilidades específicas en los algoritmos u opciones de parámetros y podemos intentar corregirlos.
+Al examinar errores como este, a menudo encontramos debilidades específicas en los algoritmos o en las opciones de parámetros y podemos intentar corregirlas.
 
 ## Conjuntos
 
-La idea de un conjunto es similar a la idea de combinar datos de diferentes encuestadores para obtener una mejor estimación del verdadero apoyo para cada candidato.
+La idea de un conjunto (_ensemble_ en inglés) es similar a la idea de combinar datos de diferentes encuestadores para obtener un mejor estimado del verdadero apoyo para cada candidato.
 
-En el aprendizaje automático, generalmente se pueden mejorar los resultados finales combinando los resultados de diferentes algoritmos.
+En _machine learning_, generalmente se pueden mejorar los resultados finales combinando los resultados de diferentes algoritmos.
 
-Aquí hay un ejemplo simple donde calculamos nuevas probabilidades de clase tomando el promedio de bosque aleatorio y kNN. Podemos ver que la precisión mejora a 0.96:
+Aquí hay un ejemplo sencillo donde calculamos nuevas probabilidades de clase tomando el promedio de bosque aleatorio y kNN. Podemos ver que la exactitud mejora a 0.96:
 
 ```{r}
 p_rf <- predict(fit_rf, x_test[,col_index], type = "prob")
@@ -284,43 +280,41 @@ y_pred <- factor(apply(p, 1, which.max)-1)
 confusionMatrix(y_pred, y_test)$overall["Accuracy"]
 ```
 
-En los ejercicios vamos a construir varios modelos de aprendizaje automático para
-`mnist_27` conjunto de datos y luego construir un conjunto.
+En los ejercicios vamos a construir varios modelos de _machine learning_ para el set de datos `mnist_27` y luego construir un conjunto.
 
 ## Ejercicios
 
-1\. Utilizar el `mnist_27` conjunto de entrenamiento para construir un modelo con varios de los modelos disponibles del paquete __caret__. Por ejemplo, puedes probar estos:
+1\. Utilice el set de entrenamiento `mnist_27` para construir un modelo con varios de los modelos disponibles del paquete __caret__. Por ejemplo, puede intentar con estos:
 
 ```{r, eval = FALSE}
 models <- c("glm", "lda", "naive_bayes", "svmLinear", "gamboost",
-"gamLoess", "qda", "knn", "kknn", "loclda", "gam", "rf",
-"ranger","wsrf", "Rborist", "avNNet", "mlp", "monmlp", "gbm",
-"adaboost", "svmRadial", "svmRadialCost", "svmRadialSigma")
+            "gamLoess", "qda", "knn", "kknn", "loclda", "gam", "rf",
+            "ranger","wsrf", "Rborist", "avNNet", "mlp", "monmlp", "gbm",
+            "adaboost", "svmRadial", "svmRadialCost", "svmRadialSigma")
 ```
 
-No hemos explicado muchos de estos, pero aplíquelos de todos modos usando `train` con todos los parámetros por defecto. Mantenga los resultados en una lista. Es posible que deba instalar algunos paquetes. Tenga en cuenta que probablemente recibirá algunas advertencias.
+No hemos explicado muchos de estos, pero aplíquelos de todos modos usando `train` con todos los parámetros predeterminados. Mantenga los resultados en una lista. Es posible que deba instalar algunos paquetes. Tenga en cuenta que probablemente recibirá algunas advertencias.
 
 
-2\. Ahora que tiene todos los modelos entrenados en una lista, use `sapply` o `map` para crear una matriz de predicciones para el conjunto de prueba. Deberías terminar con una matriz con `length (mnist_27 $test$ y) NA longitud (modelos) `columnas.
+2\. Ahora que tiene todos los modelos entrenados en una lista, use `sapply` o `map` para crear una matriz de predicciones para el set de evaluación. Debería terminar con una matriz con  `length(mnist_27$test$y)` filas y `length(models)` columnas.
 
 
-3\. Ahora calcule la precisión para cada modelo en el conjunto de prueba.
+3\. Ahora calcule la exactitud para cada modelo en el set de evaluación.
+
+4\. Ahora construya una predicción de conjunto para el voto mayoritario y calcule su exactitud.
+
+5\. Anteriormente calculamos la exactitud de cada método en el set de entrenamiento y notamos que variaban. ¿Qué métodos individuales funcionan mejor que el conjunto?
+
+6\. Es tentador eliminar los métodos que no funcionan bien y volver a hacer el conjunto. El problema con este acercamiento es que estamos utilizando los datos de evaluación para tomar una decisión. Sin embargo, podríamos usar los estimados de exactitud obtenidos de la validación cruzada con los datos de entrenamiento. Obtenga estos estimados y guárdelos en un objeto.
 
 
-4\. Ahora construya una predicción de conjunto por mayoría de votos y calcule su precisión.
-
-5\. Anteriormente calculamos la precisión de cada método en el conjunto de entrenamiento y notamos que variaban. ¿Qué métodos individuales funcionan mejor que el conjunto?
-
-6\. Es tentador eliminar los métodos que no funcionan bien y volver a hacer el conjunto. El problema con este enfoque es que estamos utilizando los datos de prueba para tomar una decisión. Sin embargo, podríamos usar las estimaciones de precisión obtenidas de la validación cruzada con los datos de entrenamiento. Obtenga estas estimaciones y guárdelas en un objeto.
+7\. Ahora solo consideremos los métodos con una exactitud estimada de 0.8 al construir el conjunto. ¿Cuál es la exactitud ahora?
 
 
-7\. Ahora solo consideremos los métodos con una precisión estimada de 0.8 al construir el conjunto. ¿Cuál es la precisión ahora?
+8\. __Avanzado__: si dos métodos dan resultados que son iguales, unirlos no cambiará los resultados en absoluto. Para cada par de métricas, compare el porcentaje de tiempo que llaman lo mismo. Luego use la función `heatmap` para visualizar los resultados. Sugerencia: use el argumento  `method = "binary"` en la función `dist`.
 
 
-8\. __Avanzado__: si dos métodos dan resultados que son iguales, unirlos no cambiará los resultados en absoluto. Para cada par de métricas, compare el porcentaje de tiempo que llaman lo mismo. Luego usa el `heatmap` función para visualizar los resultados. Sugerencia: use el `method = "binary"` argumento en el `dist` función.
-
-
-9\. __Avanzado__: tenga en cuenta que cada método también puede producir una probabilidad condicional estimada. En lugar del voto mayoritario, podemos tomar el promedio de estas probabilidades condicionales estimadas. Para la mayoría de los métodos, podemos usar el `type = "prob"` en la función del tren. Sin embargo, algunos de los métodos requieren que use el argumento `trControl=trainControl(classProbs=TRUE)` al llamar al tren. Además, estos métodos no funcionan si las clases tienen números como nombres. Sugerencia: cambie los niveles de esta manera:
+9\. __Avanzado__: tenga en cuenta que cada método también puede producir una probabilidad condicional estimada. En lugar del voto mayoritario, podemos tomar el promedio de estas probabilidades condicionales estimadas. Para la mayoría de los métodos, podemos usar el `type = "prob"` en la función `train`. Sin embargo, algunos de los métodos requieren que use el argumento `trControl=trainControl(classProbs=TRUE)` al llamar al tren. Además, estos métodos no funcionan si las clases tienen números como nombres. Sugerencia: cambie los niveles de esta manera:
 
 
 ```{r, eval = FALSE}
@@ -329,4 +323,4 @@ dat$test$y <- recode_factor(dat$test$y, "2"="two", "7"="seven")
 ```
 
 
-10\. En este capítulo, ilustramos un par de algoritmos de aprendizaje automático en un subconjunto del conjunto de datos MNIST. Intente ajustar un modelo a todo el conjunto de datos.
+10\. En este capítulo, ilustramos un par de algoritmos de _machine learning_ en un subconjunto del set de datos MNIST. Intente ajustar un modelo a todo el set de datos.
