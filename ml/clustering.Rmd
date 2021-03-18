@@ -5,9 +5,9 @@ html_document: default
 ---
 # Agrupación {#clustering}
 
-Los algoritmos que hemos descrito hasta ahora son ejemplos de un enfoque general denominado _aprendizaje automático supervisado_. El nombre proviene del hecho de que usamos los resultados en un conjunto de entrenamiento para supervisar la creación de nuestro algoritmo de predicción. Hay otro subconjunto de aprendizaje automático denominado _insupervised_. En este subconjunto no necesariamente conocemos los resultados y, en cambio, estamos interesados en descubrir grupos. Estos algoritmos también se denominan algoritmos _clustering_ya que los predictores se utilizan para definir_clusters_.
+Los algoritmos que hemos descrito hasta ahora son ejemplos de un enfoque general denominado _machine learning supervisado_. El nombre proviene del hecho de que usamos los resultados en un set de entrenamiento para supervisar la creación de nuestro algoritmo de predicción. Hay otro subconjunto de _machine learning_ denominado _no supervisado_. En este subconjunto no necesariamente conocemos los resultados y, en cambio, estamos interesados en descubrir grupos. Estos algoritmos también se denominan algoritmos de _agrupamiento_ (_clustering_ en inglés) ya que los predictores se utilizan para definir _grupos_ (_clusters_ en inglés).
 
-En los dos ejemplos que hemos mostrado aquí, la agrupación no sería muy útil. En el primer ejemplo, si simplemente se nos dan las alturas, no podremos descubrir dos grupos, hombres y mujeres, porque la intersección es grande. En el segundo ejemplo, podemos ver al trazar los predictores que descubrir los dos dígitos, dos y siete, será un desafío:
+En los dos ejemplos que hemos mostrado aquí, la agrupación no sería muy útil. En el primer ejemplo, si simplemente se nos dan las alturas, no podremos descubrir dos grupos, hombres y mujeres, porque la intersección es grande. En el segundo ejemplo, al graficar los predictores, podemos ver que descubrir los dos dígitos, dos y siete, será retante:
 
 ```{r mnist-27-unsupervised, message=FALSE, warning=FALSE}
 library(tidyverse)
@@ -18,9 +18,9 @@ mnist_27$train %>% qplot(x_1, x_2, data = .)
 
 Sin embargo, hay aplicaciones en las que el aprendizaje no supervisado puede ser una técnica poderosa, en particular como una herramienta exploratoria.
 
-Un primer paso en cualquier algoritmo de agrupamiento es definir una distancia entre observaciones o grupos de observaciones. Luego, debemos decidir cómo unir las observaciones en grupos. Hay muchos algoritmos para hacer esto. Aquí presentamos dos como ejemplos: jerárquico y k-means.
+Un primer paso en cualquier algoritmo de agrupamiento es definir una distancia entre observaciones o grupos de observaciones. Luego, debemos decidir cómo unir las observaciones en grupos. Hay muchos algoritmos para hacer esto. Aquí presentamos dos como ejemplos: jerárquico y _k-means_.
 
-Construiremos un ejemplo simple basado en clasificaciones de películas. Aquí construimos rápidamente una matriz `x` que tiene calificaciones para las 50 películas con más calificaciones.
+Construiremos un ejemplo sencillo basado en clasificaciones de películas. Aquí construimos rápidamente una matriz `x` que tiene calificaciones para las 50 películas con más calificaciones.
 
 ```{r}
 data("movielens")
@@ -45,7 +45,7 @@ x <- sweep(x, 1, rowMeans(x, na.rm = TRUE))
 rownames(x) <- row_names
 ```
 
-Queremos utilizar estos datos para averiguar si hay grupos de películas basadas en las calificaciones de `r ncol(x)` calificadores de películas. Un primer paso es encontrar la distancia entre cada par de películas usando `dist` función:
+Queremos utilizar estos datos para averiguar si hay grupos de películas basadas en las calificaciones de `r ncol(x)` calificadores de películas. Un primer paso es encontrar la distancia entre cada par de películas usando la función `dist`:
 
 ```{r}
 d <- dist(x)
@@ -53,7 +53,7 @@ d <- dist(x)
 
 ## Agrupación jerárquica
 
-Con la distancia calculada entre cada par de películas, necesitamos un algoritmo para definir grupos a partir de estas. La agrupación jerárquica comienza definiendo cada observación como un grupo separado, luego los dos grupos más cercanos se unen en un grupo de forma iterativa hasta que solo haya un grupo que incluya todas las observaciones. los `hclust` la función implementa este algoritmo y toma una distancia como entrada.
+Con la distancia calculada entre cada par de películas, necesitamos un algoritmo para definir grupos a partir de estas. La agrupación jerárquica comienza definiendo cada observación como un grupo separado. Entonces, los dos grupos más cercanos se unen en un grupo de forma iterativa hasta que solo haya un grupo que incluya todas las observaciones. La función `hclust` implementa este algoritmo y toma una distancia como entrada.
 
 ```{r}
 h <- hclust(d)
@@ -70,28 +70,27 @@ rafalib::mypar()
 plot(h, cex = 0.65, main = "", xlab = "")
 ```
 
-Para interpretar este gráfico hacemos lo siguiente. Para encontrar la distancia entre dos películas, busque la primera ubicación de arriba a abajo que las películas se dividen en dos grupos diferentes. La altura de esta ubicación es la distancia entre los grupos. Entonces, la distancia entre las películas de _Star Wars_ es de 8 o menos, mientras que la distancia entre _Raiders of the Lost of Ark_y_Silence of the Lambs_ es de aproximadamente 17.
+Para interpretar este gráfico hacemos lo siguiente. Para encontrar la distancia entre dos películas, busque la primera posición, de arriba a abajo, donde las películas se dividen en dos grupos diferentes. La altura de esta ubicación es la distancia entre los grupos. Entonces, la distancia entre las películas de _Star Wars_ es de 8 o menos, mientras que la distancia entre _Raiders of the Lost of Ark_ y _Silence of the Lambs_ es de aproximadamente 17.
 
-Para generar grupos reales, podemos hacer una de dos cosas: 1) decidir la distancia mínima necesaria para que las observaciones estén en el mismo grupo o 2) decidir la cantidad de grupos que desea y luego encontrar la distancia mínima que lo logra. La función `cutree` se puede aplicar a la salida de `hclust` para realizar cualquiera de estas dos operaciones y generar grupos.
+Para generar grupos reales, podemos hacer una de dos cosas: 1) decidir la distancia mínima necesaria para que las observaciones estén en el mismo grupo o 2) decidir la cantidad de grupos que desea y luego encontrar la distancia mínima que lo logra. La función `cutree` se puede aplicar al resultado de `hclust` para realizar cualquiera de estas dos operaciones y generar grupos.
 
 ```{r}
 groups <- cutree(h, k = 10)
 ```
 
-Tenga en cuenta que la agrupación proporciona algunas ideas sobre los tipos de películas. El grupo 4 parece ser
-éxitos de taquilla:
+Tengan en cuenta que la agrupación provee algunas ideas sobre los tipos de películas. El grupo 4 parece ser éxitos de taquilla:
 
 ```{r}
 names(groups)[groups==4]
 ```
 
-Y el grupo 9 parece ser películas nerd:
+Y el grupo 9 parece ser películas _nerd_:
 
 ```{r}
 names(groups)[groups==9]
 ```
 
-Podemos cambiar el tamaño del grupo haciendo `k` más grande o `h` menor. También podemos explorar los datos para ver si hay grupos de evaluadores de películas.
+Podemos cambiar el tamaño del grupo haciendo `k` más grande o `h` más pequeño. También podemos explorar los datos para ver si hay grupos de evaluadores de películas.
 
 ```{r}
 h_2 <- dist(t(x)) %>% hclust()
@@ -105,10 +104,9 @@ plot(h_2, cex = 0.35)
 
 ## k-means
 
-Para usar el algoritmo de agrupamiento k-means tenemos que predefinir $k$, el número de clústeres que queremos definir. El algoritmo k-means es iterativo.
-El primer paso es definir $k$ centros. Luego, cada observación se asigna al grupo con el centro más cercano a esa observación. En un segundo paso, los centros se redefinen utilizando la observación en cada grupo: los medios de columna se utilizan para definir un _centroide_. Repetimos estos dos pasos hasta que los centros converjan.
+Para usar el algoritmo de agrupamiento _k-means_ tenemos que predefinir $k$, el número de grupos que queremos definir. El algoritmo k-means es iterativo. El primer paso es definir $k$ centros. Luego, cada observación se asigna al grupo con el centro más cercano a esa observación. En un segundo paso, los centros se redefinen utilizando la observación en cada grupo: los medios de columna se utilizan para definir un _centroide_. Repetimos estos dos pasos hasta que los centros converjan.
 
-Los `kmeans` la función incluida en R-base no maneja NAs. Con fines ilustrativos, completaremos las NA con 0. En general, la elección de cómo completar los datos faltantes, o si uno debería hacerlo, debe hacerse con cuidado.
+La función `kmeans` incluida en R-base no maneja NAs. Con fines ilustrativos, completaremos las NAs con 0s. En general, la decisión de cómo completar los datos que faltan, o si uno debería hacerlo, debe hacerse con cuidado.
 
 ```{r}
 x_0 <- x
@@ -116,13 +114,13 @@ x_0[is.na(x_0)] <- 0
 k <- kmeans(x_0, centers = 10)
 ```
 
-Las asignaciones de clúster están en el `cluster` componente:
+Las asignaciones de grupos están en el componente `cluster`:
 
 ```{r}
 groups <- k$cluster
 ```
 
-Tenga en cuenta que debido a que el primer centro se elige al azar, los grupos finales son aleatorios. Imponemos cierta estabilidad al repetir la función completa varias veces y promediar los resultados. El número de valores iniciales aleatorios a utilizar se puede asignar a través de `nstart` argumento.
+Tengan en cuenta que debido a que el primer centro se elige al azar, los grupos finales son aleatorios. Imponemos cierta estabilidad al repetir la función completa varias veces y promediar los resultados. El número de valores iniciales aleatorios a utilizar se puede asignar a través del argumento `nstart`.
 
 ```{r}
 k <- kmeans(x_0, centers = 10, nstart = 25)
@@ -130,7 +128,7 @@ k <- kmeans(x_0, centers = 10, nstart = 25)
 
 ## Mapas de calor
 
-Una poderosa herramienta de visualización para descubrir grupos o patrones en sus datos es el mapa de calor. La idea es simple: trazar una imagen de su matriz de datos con colores utilizados como señal visual y tanto las columnas como las filas ordenadas según los resultados de un algoritmo de agrupamiento. Vamos a demostrar esto con el `tissue_gene_expression` conjunto de datos Escalaremos las filas de la matriz de expresión génica.
+Una poderosa herramienta de visualización para descubrir grupos o patrones en sus datos es el _mapa de calor_ (_heatmap_ en inglés). La idea es simple: graficar una imagen de su matriz de datos con colores utilizados como señal visual y con tanto las columnas como las filas ordenadas según los resultados de un algoritmo de agrupamiento. Vamos a demostrar esto con el set de datos `tissue_gene_expression`. Escalaremos las filas de la matriz de expresión génica.
 
 El primer paso es calcular:
 ```{r}
@@ -147,18 +145,19 @@ Ahora podemos usar los resultados de esta agrupación para ordenar las filas y c
 image(x[h_1$order, h_2$order])
 ```
 
-Pero hay `heatmap` función que lo hace por nosotros:
+Pero la función `heatmap` lo hace por nosotros:
 
 ```{r heatmap-2, out.width="100%", fig.height=7, eval=FALSE}
 heatmap(x, col = RColorBrewer::brewer.pal(11, "Spectral"))
 ```
 
-No mostramos los resultados de la función de mapa de calor porque hay demasiadas características para que la gráfica sea útil. Por lo tanto, filtraremos algunas columnas y rehaceremos los gráficos.
+No mostramos los resultados de la función `heatmap` porque hay demasiadas características para que el gráfico sea útil. Por lo tanto, filtraremos algunas columnas y rehaceremos los gráficos.
 
-## Características de filtrado
+## Filtrando predicadores
 
-Si la información sobre los clústeres se incluye en unas pocas funciones, incluidas todas las funciones, puede agregar suficiente ruido como para detectar clústeres
-se vuelve desafiante. Un enfoque simple para tratar de eliminar características sin información es incluir solo aquellas con alta varianza. En el ejemplo de la película, un usuario con baja variación en sus calificaciones no es realmente informativo: todas las películas les parecen iguales. Aquí hay un ejemplo de cómo podemos incluir solo las características con alta varianza.
+[GENERAL FIX: check incorrect translation of feature to function. Should be predictor]
+
+Si la información sobre los grupos se incluye en unos pocas predictores, incluir todos las predictores puede agregar suficiente ruido como para que detectar grupos sea retante. Un enfoque sencillo para tratar de eliminar características sin información es incluir solo aquellas con alta varianza. En el ejemplo de la película, un usuario con baja variación en sus calificaciones no es realmente informativo: todas las películas le parecen iguales. Aquí hay un ejemplo de cómo podemos incluir solo las características con alta varianza.
 
 ```{r heatmap-3, out.width="100%", fig.height=5, fig.width=6, message=FALSE, warning=FALSE}
 library(matrixStats)
@@ -170,14 +169,14 @@ heatmap(x[,o], col = RColorBrewer::brewer.pal(11, "Spectral"))
 
 ## Ejercicios
 
-1\. Carga el `tissue_gene_expression` conjunto de datos Elimine las medias de fila y calcule la distancia entre cada observación. Almacenar el resultado en `d`.
+1\. Cargue el set de datos `tissue_gene_expression`.  Reste las medias de cada fila y calcule la distancia entre cada observación. Almacene el resultado en `d`.
 
 
-2\. Haga un diagrama de agrupamiento jerárquico y agregue los tipos de tejido como etiquetas.
+2\. Haga un gráfico de agrupamiento jerárquico y agregue los tipos de tejido como etiquetas.
 
 
-3\. Ejecute una agrupación k-means en los datos con $K=7$. Haga una tabla que compare los grupos identificados con los tipos de tejidos reales. Ejecute el algoritmo varias veces para ver cómo cambia la respuesta.
+3\. Ejecute una agrupación _k-means_ en los datos con $K=7$. Haga una tabla que compare los grupos identificados con los tipos de tejidos reales. Ejecute el algoritmo varias veces para ver cómo cambia la respuesta.
 
 
-4\. Seleccione los 50 genes más variables. Asegúrese de que las observaciones aparezcan en las columnas, que los predictores estén centrados, y agregue una barra de colores para mostrar los diferentes tipos de tejidos. Sugerencia: use el `ColSideColors` argumento para asignar colores. Además, use `col = RColorBrewer::brewer.pal(11, "RdBu")` para un mejor uso de los colores.
+4\. Seleccione los 50 genes más variables. Asegúrese de que las observaciones aparezcan en las columnas, que los predictores estén centrados y agregue una barra de colores para mostrar los diferentes tipos de tejidos. Sugerencia: use el argumento `ColSideColors` para asignar colores. Además, use `col = RColorBrewer::brewer.pal(11, "RdBu")` para un mejor uso de los colores.
 
