@@ -66,21 +66,21 @@ kableExtra::kable_styling(font_size = 8)
 }
 ```
 
-Cuando el resultado es continuo, nos referimos a la tarea de _machine learning_ como _predicción_, y el resultado principal del modelo es una función $f$ que produce automáticamente una predicción, denotada con $\hat{y}$, para cualquier conjunto de predictores: $\hat{y} = f(x_1, x_2, \dots, x_p)$. Usamos el término _resultado real_ (_actual outcome_ en inglés) para denotar lo que acabamos observando. Entonces queremos que la predicción $\hat{y}$ coincida con resultado real $y$ lo mejor posible. Debido a que nuestro resultado es continuo, nuestras predicciones $\hat{y}$ no serán exactamente correctas o incorrectas, sino que determinaremos un _error_ definido como la diferencia entre la predicción y el resultado real $y - \hat{y}$.
+Cuando el resultado es continuo, nos referimos a la tarea de _machine learning_ como _predicción_. El resultado principal del modelo es una función $f$ que produce automáticamente una predicción, denotada con $\hat{y}$, para cualquier conjunto de predictores: $\hat{y} = f(x_1, x_2, \dots, x_p)$. Usamos el término _resultado real_ (_actual outcome_ en inglés) para denotar lo que acabamos observando. Entonces queremos que la predicción $\hat{y}$ coincida con resultado real $y$ lo mejor posible. Debido a que nuestro resultado es continuo, nuestras predicciones $\hat{y}$ no serán exactamente correctas o incorrectas, sino que determinaremos un _error_ definido como la diferencia entre la predicción y el resultado real $y - \hat{y}$.
 
-Cuando el resultado es categórico, nos referimos a la tarea de _machine learning_ como _clasificación_, y el resultado principal del modelo será una _regla de decisión_ (_decision rule_ en inglés) que determina cuál de las $K$ clases debemos predecir. En este escenario, la mayoría de los modelos proveen funciones de los predictores para cada clase. $k$, $f_k(x_1, x_2, \dots, x_p)$, que se utilizan para tomar esta decisión. Cuando los datos son binarios, una regla de decisión típica se vería así: si $f_1(x_1, x_2, \dots, x_p) > C$, pronostique la categoría 1, si no, pronostique la otra, con $C$ un umbral predeterminado. Debido a que los resultados son categóricos, nuestras predicciones serán correctas o incorrectas.
+Cuando el resultado es categórico, nos referimos a la tarea de _machine learning_ como _clasificación_. El resultado principal de este modelo será una _regla de decisión_ (_decision rule_ en inglés) que determina cuál de las $K$ clases debemos predecir. En esta situación, la mayoría de los modelos proveen funciones de los predictores para cada clase. $k$, $f_k(x_1, x_2, \dots, x_p)$, que se utilizan para tomar esta decisión. Cuando los datos son binarios, una regla de decisión típica sería algo como: si $f_1(x_1, x_2, \dots, x_p) > C$, pronostique la categoría 1, si no, pronostique la otra, con $C$ un umbral predeterminado. Debido a que los resultados son categóricos, nuestras predicciones serán correctas o incorrectas.
 
-Tengan en cuenta que estos términos varían entre cursos, libros de texto y otras publicaciones. A menudo, el término _predicción_ se usa tanto para resultados categóricos como continuos, y el término _regresión_ puede usarse para el caso continuo. Aquí evitamos usar _regresión_ para evitar confusión con nuestro uso previo del término _regresión lineal_. En la mayoría de los casos, estará claro si nuestros resultados son categóricos o continuos, por lo que evitaremos usar estos términos cuando sea posible.
+Tengan en cuenta que estos términos varían entre cursos, libros de texto y otras publicaciones. A menudo, el término _predicción_ se usa tanto para resultados categóricos como continuos, y el término _regresión_ puede usarse para el caso continuo. Aquí evitamos usar el término _regresión_ para evitar confusión con nuestro uso previo del término _regresión lineal_. En la mayoría de los casos, estará claro si nuestros resultados son categóricos o continuos, por lo que evitaremos usar estos términos cuando sea posible.
 
 ## Un ejemplo
 
-Consideremos el ejemplo del lector de código postal. El primer paso para manejar el correo en la oficina de correos es ordenar las letras por código postal:
+Consideremos el ejemplo del lector de código postal. El primer paso para manejar el correo en la oficina de correos es organizar las cartas por código postal:
 
 ```{r, echo=FALSE, out.width="40%"}
 knitr::include_graphics(file.path(img_path,"how-to-write-a-address-on-an-envelope-how-to-write-the-address-on-an-envelope-write-address-on-envelope-india-finishedenvelope-x69070.png"))
 ```
 
-Originalmente, los humanos tenían que clasificarlos a mano. Para hacer esto, tuvieron que leer los códigos postales de cada sobre. Hoy, gracias a los algoritmos de _machine learning_, una computadora puede leer códigos postales y luego un robot clasifica las letras. En esta parte del libro, aprenderemos cómo construir algoritmos que puedan leer un dígito.
+Originalmente, los humanos tenían que clasificarlos a mano. Para hacer esto, tuvieron que leer los códigos postales de cada sobre. Hoy, gracias a los algoritmos de _machine learning_, una computadora puede leer códigos postales y luego un robot clasifica las cartas. En esta parte del libro, aprenderemos cómo construir algoritmos que puedan leer un dígito.
 
 El primer paso para construir un algoritmo es entender
 ¿cuáles son los resultados y las características? A continuación hay tres imágenes de dígitos escritos. Estos ya han sido leídos por un humano y se les ha asignado un resultado $Y$. Por lo tanto, se consideran conocidos y sirven como set de entrenamiento.
@@ -112,7 +112,7 @@ facet_grid(.~label)
 
 Para cada imagen digitalizada $i$, tenemos un resultado categórico $Y_i$ que puede ser uno de los 10 valores ($0,1,2,3,4,5,6,7,8,9$) y características $X_{i,1}, \dots, X_{i,784}$. Usamos fuente negra $\mathbf{X}_i = (X_{i,1}, \dots, X_{i,784})$ para distinguir el vector de predictores de los predictores individuales. Cuando nos referimos a un conjunto arbitrario de características en lugar de una imagen específica en nuestro set de datos, descartamos el índice $i$ y usamos $Y$ y $\mathbf{X} = (X_{1}, \dots, X_{784})$. Utilizamos variables en mayúsculas porque, en general, pensamos en los predictores como variables aleatorias. Usamos minúsculas, por ejemplo $\mathbf{X} = \mathbf{x}$, para denotar valores observados. Cuando codificamos usamos minúsculas.
 
-La tarea de _machine learning_ es construir un algoritmo que devuelva una predicción para cualquiera de los posibles valores de las características. Aquí, aprenderemos varios enfoques para construir estos algoritmos. Aunque en este punto puede parecer imposible lograr esto, comenzaremos con ejemplos sencillos y desarrollaremos nuestro conocimiento hasta que podamos atacar los más complejos. De hecho, comenzamos con un ejemplo artificialmente simple con un solo predictor y luego pasamos a un ejemplo un poco más realista con dos predictores. Una vez que comprendamos estos, atacaremos los retos de _machine learning_ del mundo real que involucran muchos predictores.
+La tarea de _machine learning_ es construir un algoritmo que devuelva una predicción para cualquiera de los posibles valores de las características. Aquí, aprenderemos varios enfoques para construir estos algoritmos. Aunque en este momento puede parecer imposible lograr esto, comenzaremos con ejemplos sencillos y desarrollaremos nuestro conocimiento hasta que podamos atacar algunos más complejos. De hecho, comenzamos con un ejemplo artificialmente sencillo con un solo predictor y luego pasamos a un ejemplo un poco más realista con dos predictores. Una vez que comprendamos estos, atacaremos los retos de _machine learning_ del mundo real que involucran muchos predictores.
 
 ## Ejercicios
 
@@ -143,7 +143,7 @@ y[5] > y[6]
 
 Eliga la mejor respuesta:
 
-a. Sí porque $9 + 2 = 11$ y $9 > 2$.
+a. Sí, porque $9 + 2 = 11$ y $9 > 2$.
 b. No, porque `y` no es un vector numérico.
 c. No, porque 11 no es un dígito. Son dos dígitos.
 d. No, porque estas son etiquetas que representan una categoría, no un número. Un `9` representa una clase, no el número 9.

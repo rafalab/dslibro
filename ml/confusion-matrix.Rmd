@@ -27,7 +27,7 @@ En este caso, solo tenemos un predictor, altura, mientras que `y` es claramente 
 
 ### Sets de entrenamiento y de evaluación
 
-En última instancia, un algoritmo de _machine learning_ se evalúa basado en cómo funciona en el mundo real con sets de datos completamente nuevos. Sin embargo, cuando desarrollamos un algoritmo, generalmente tenemos un set de datos para el cual conocemos los resultados, como lo hacemos con las alturas: sabemos el sexo de cada estudiante en nuestro set de datos. Por lo tanto, para imitar el proceso de evaluación final, generalmente dividimos los datos en dos partes y actuamos como si no supiéramos el resultado de una de estas. Dejamos de fingir que no conocemos el resultado para evaluar el algoritmo, pero solo _después_ de haber terminado de construirlo. Nos referimos al grupo para el que conocemos el resultado  y que usamos para desarrollar el algoritmo como el _set de entrenamiento_ (_training set_ en inglés). Nos referimos al grupo para el que pretendemos que no conocer el resultado como el _set de evaluación_ (_test set_ en inglés).
+En última instancia, un algoritmo de _machine learning_ se evalúa basado en cómo funciona en el mundo real con sets de datos completamente nuevos. Sin embargo, cuando desarrollamos un algoritmo, generalmente tenemos un set de datos para el cual conocemos los resultados, como lo hacemos con las alturas: sabemos el sexo de cada estudiante en nuestro set de datos. Por lo tanto, para imitar el proceso de evaluación final, generalmente dividimos los datos en dos partes y actuamos como si no supiéramos el resultado de una de estas. Dejamos de fingir que no conocemos el resultado para evaluar el algoritmo, pero solo _después_ de haber terminado de construirlo. Nos referimos al grupo para el que conocemos el resultado  y que usamos para desarrollar el algoritmo como el _set de entrenamiento_ (_training set_ en inglés). Nos referimos al grupo para el que aparentamos no conocer el resultado como el _set de evaluación_ (_test set_ en inglés).
 
 Una forma estándar de generar los sets de entrenamiento y de evaluación es dividiendo aleatoriamente los datos. El paquete __caret__ incluye la función `createDataPartition` que nos ayuda a generar índices para dividir aleatoriamente los datos en sets de entrenamiento y de evaluación:
 
@@ -92,7 +92,7 @@ La exactidud aumenta de 0.50 a aproximadamente 0.80:
 mean(y == y_hat)
 ```
 
-¿Pero podemos mejorarla aún más? En el ejemplo anterior, utilizamos un umbral de 62, pero podemos examinar la exactidud obtenida para otros umbrales y luego elegir el valor que provee los mejores resultados. Sin embargo, recuerden que **es importante que optimicemos el umbral utilizando solo el set de entrenamiento**: el set de evaluación es solo para evaluación. Aunque para este ejemplo sencillo no es un problema, más adelante aprenderemos que evaluar un algoritmo en el set de entrenamiento puede conducir a un _sobreajuste_ (_overfitting_ en inglés), que a menudo resulta en evaluaciones peligrosamente sobre optimistas.
+¿Pero podemos mejorarla aún más? En el ejemplo anterior, utilizamos un umbral de 62, pero podemos examinar la exactidud obtenida para otros umbrales y luego elegir el valor que provee los mejores resultados. Sin embargo, recuerden que **es importante que optimicemos el umbral utilizando solo el set de entrenamiento**: el set de evaluación es solo para evaluación. Aunque para este ejemplo sencillo no es un problema, más adelante aprenderemos que evaluar un algoritmo en el set de entrenamiento puede resultar en un _sobreajuste_ (_overfitting_ en inglés), que a menudo resulta en evaluaciones peligrosamente sobre optimistas.
 
 Aquí examinamos la exactidud de 10 umbrales diferentes y elegimos el que produce el mejor resultado:
 
@@ -165,13 +165,13 @@ prev <- mean(y == "Male")
 prev
 ```
 
-Entonces, al calcular la exactitud general, el alto porcentaje de errores cometidos para las mujeres se ve superado por las ganancias en las predicciones acertadas para los hombres. **Esto puede ser un gran problema en _machine learning_.** Si sus datos de entrenamiento están sesgados de alguna manera, es probable que también desarrolle algoritmos sesgados. El hecho de que hayamos utilizado un set de evaluación no importa porque también se deriva del  original set de datos sesgado. Esta es una de las razones por las que observamos métricas distintas de la exactitud general al evaluar un algoritmo de _machine learning_.
+Entonces, al calcular la exactitud general, el alto porcentaje de errores cometidos para las mujeres se ve superado por las ganancias en las predicciones acertadas para los hombres. **Esto puede ser un gran problema en _machine learning_.** Si sus datos de entrenamiento están sesgados de alguna manera, es probable que también desarrolle algoritmos sesgados. El hecho de que hayamos utilizado un set de evaluación no importa porque también se deriva del set de datos sesgado original. Esta es una de las razones por las que observamos métricas distintas de la exactitud general al evaluar un algoritmo de _machine learning_.
 
 Hay varias métricas que podemos usar para evaluar un algoritmo de manera que la prevalencia no afecte nuestra evaluación y todas estas pueden derivarse de la matriz de confusión. Una forma general de mejorar el uso de la exactitud general es estudiar _sensibilidad_ y _especificidad_ por separado.
 
 ### Sensibilidad y especificidad
 
-Para definir la sensibilidad y especificidad, necesitamos un resultado binario. Cuando los resultados son categóricos, podemos definir estos términos para una categoría específica. En el ejemplo de dígitos, podemos pedir la especificidad en el caso de predecir correctamente 2 en lugar de algún otro dígito. Una vez que especifiquemos una categoría de interés, podemos hablar sobre resultados positivos, $Y=1$ y resultados negativos, $Y=0$.
+Para definir la sensibilidad y especificidad, necesitamos un resultado binario. Cuando los resultados son categóricos, podemos definir estos términos para una categoría específica. En el ejemplo de dígitos, podemos pedir la especificidad en el caso de predecir correctamente 2 en lugar de algún otro dígito. Una vez que especifiquemos una categoría de interés, podemos hablar sobre resultados positivos, $Y=1$, y resultados negativos, $Y=0$.
 
 En general, la _sensibilidad_ se define como la capacidad de un algoritmo para predecir un resultado positivo cuando el resultado real es positivo: $\hat{Y}=1$ cuando $Y=1$. Un algoritmo que predice que todo es positivo ( $\hat{Y}=1$ pase lo que pase) tiene una sensibilidad perfecta, pero esta métrica por sí sola no es suficiente para evaluar un algoritmo. Por esta razón, también examinamos la _especificidad_, que generalmente se define como la capacidad de un algoritmo para no predecir un resultado positivo $\hat{Y}=0$ cuando el resultado real no es positivo $Y=0$. Podemos resumir de la siguiente manera:
 
@@ -199,9 +199,9 @@ if(knitr::is_html_output()){
 }
 ```
 
-La sensibilidad se cuantifica típicamente por $TP/(TP+FN)$, la proporción de positivos verdaderos (la primera columna = $TP+FN$) que se predicen ser positivos ($TP$). Esta cantidad se conoce como la _tasa de positivos verdaderos_ (_true positive rate_ o TPR por sus siglas en inglés) o _recall_.
+Típicamente, la sensibilidad se cuantifica con $TP/(TP+FN)$, la proporción de positivos verdaderos (la primera columna = $TP+FN$) que se predicen ser positivos ($TP$). Esta cantidad se conoce como la _tasa de positivos verdaderos_ (_true positive rate_ o TPR por sus siglas en inglés) o _recall_.
 
-La especificidad se define como $TN/(TN+FP)$ o la proporción de negativos (la segunda columna = $FP+TN$) que se llaman negativos ($TN$). Esta cantidad también se denomina la _tasa de falsos positivos_ (_true negative rate_ o TNR por sus siglas en inglés). Hay otra forma de cuantificar la especificidad que es $TP/(TP+FP)$ o la proporción de resultados que se llaman positivos (la primera fila o $TP+FP$) que realmente son positivos ($TP$). Esta cantidad se conoce como _valor predictivo positivo_ (_positive predictive value_ o PPV por sus siglas en inglés) y también como _precisión_. Tengan en cuenta que, a diferencia de TPR y TNR, la precisión depende de la prevalencia, ya que una mayor prevalencia implica que pueden obtener una mayor precisión incluso cuando están adivinando.
+La especificidad se define como $TN/(TN+FP)$ o la proporción de negativos (la segunda columna = $FP+TN$) que se predicen ser negativos ($TN$). Esta cantidad también se denomina la _tasa de falsos positivos_ (_true negative rate_ o TNR por sus siglas en inglés). Hay otra forma de cuantificar la especificidad que es $TP/(TP+FP)$ o la proporción de resultados que se predicen ser positivos (la primera fila o $TP+FP$) que realmente son positivos ($TP$). Esta cantidad se conoce como _valor predictivo positivo_ (_positive predictive value_ o PPV por sus siglas en inglés) y también como _precisión_. Tengan en cuenta que, a diferencia de TPR y TNR, la precisión depende de la prevalencia. Por ejemplo, una mayor prevalencia implica que se puede obtener una precisión alta aun cuando están adivinando.
 
 Los diferentes nombres pueden ser confusos, por lo que incluimos una tabla para ayudarnos a recordar los términos. La tabla incluye una columna que muestra la definición si pensamos en las proporciones como probabilidades.
 
@@ -246,7 +246,7 @@ $$
 
 al definir $F_1$.
 
-Recuerden que, según el contexto, algunos tipos de errores son más costosos que otros. Por ejemplo, en el caso de la seguridad de los aviones, es mucho más importante maximizar la sensibilidad sobre la especificidad: no predecir el mal funcionamiento de un avión antes de que se estrelle es un error mucho más costoso que aterrizar un avión cuando, de hecho, el avión está en perfectas condiciones. En un caso criminal de asesinato, lo contrario es cierto ya que un falso positivo puede llevar a ejecutar a una persona inocente. La medida $F_1$ se puede adaptar para pesar la especificidad y la sensibilidad de manera diferente. Para hacer esto, definimos $\beta$ para representar cuánto más importante es la sensibilidad en comparación con la especificidad y consideramos una media armónica ponderada:
+Recuerden que, según el contexto, algunos tipos de errores son más costosos que otros. Por ejemplo, en el caso de la seguridad de los aviones, es mucho más importante maximizar la sensibilidad sobre la especificidad: no predecir el mal funcionamiento de un avión antes de que se estrelle es un error mucho más costoso que impedir que vuela un avión cuando el avión está en perfectas condiciones. En un caso criminal de asesinato, lo contrario es cierto ya que un falso positivo puede resultar en la ejecución de una persona inocente. La medida $F_1$ se puede adaptar para pesar la especificidad y la sensibilidad de manera diferente. Para hacer esto, definimos $\beta$ para representar cuánto más importante es la sensibilidad en comparación con la especificidad y consideramos una media armónica ponderada:
 
 $$
 \frac{1}{\frac{\beta^2}{1+\beta^2}\frac{1}{\mbox{recall}} +
@@ -395,7 +395,7 @@ bind_rows(tmp_1, tmp_2) %>%
   geom_text_repel(nudge_x = 0.01, nudge_y = -0.01, show.legend = FALSE)
 ```
 
-Vemos que obtenemos una mayor sensibilidad con este enfoque para todos los valores de especificidad, lo que implica que es un método mejor. Tengan en cuenta que si simplemente adivinamos, las curvas ROC caen en la línea de identidad. También noten que cuando hacemos curvas ROC, a veces ayuda agregar el umbral asociado con cada punto a la gráfica.
+Vemos que obtenemos una mayor sensibilidad con este enfoque para todos los valores de especificidad, lo que implica que es un método mejor. Tengan en cuenta que si simplemente adivinamos, las curvas ROC caen en la línea de identidad. También noten que cuando hacemos curvas ROC, a veces ayuda agregar el umbral asociado con cada punto al gráfico.
 
 Los paquetes __pROC__ y __plotROC__ son útiles para generar estos gráficos.
 
@@ -467,7 +467,7 @@ $$
 
 En la práctica, a menudo indicamos la raiz cudadrada de la desviación cuadrática media (_root mean squared error_ o RMSE por sus siglas en inglés), que es $\sqrt{\mbox{MSE}}$, porque está en las mismas unidades que los resultados. Pero hacer las matemáticas muchas veces es más fácil con el MSE y, por lo tanto, se usa más en los libros de texto, ya que estos generalmente describen las propiedades teóricas de los algoritmos.
 
-Si los resultados son binarios, tanto RMSE como MSE son equivalentes a la exactitud menos uno, ya que $(\hat{y} - y)^2$ es 0 si la predicción fue correcta y 1 en caso contrario. En general, nuestro objetivo es construir un algoritmo que minimice la pérdida para que esté lo más cerca posible de 0.
+Si los resultados son binarios, tanto RMSE como MSE son equivalentes a la exactitud menos uno, ya que $(\hat{y} - y)^2$ es 0 si la predicción fue correcta y 1 en caso contrario. En general, nuestro objetivo es construir un algoritmo que minimice la pérdida para que esté lo más cerca posible a 0.
 
 Debido a que nuestros datos son generalmente una muestra aleatoria, podemos pensar en el MSE como una variable aleatoria y el MSE observado puede considerarse como una estimación del MSE esperado, que en notación matemática escribimos así:
 
@@ -475,14 +475,14 @@ $$
 \mbox{E}\left\{ \frac{1}{N}\sum_{i=1}^N (\hat{Y}_i - Y_i)^2 \right\}
 $$
 
-Este es un concepto teórico porque en la práctica solo tenemos un set de datos con el cual trabajar. Una forma de pensar en esta expectativa teórica es que es el MSE promedio para una gran número de muestras aleatorias (llámelo $B$): aplicamos nuestro algoritmo a cada muestra aleatoria, calculamos el MSE observado y tomamos el promedio:
+Este es un concepto teórico porque en la práctica solo tenemos un set de datos con el cual trabajar. Una forma de pensar en lo que es esta expectativa teórica es la siguiente: tomamos un gran número (llámelo $B$) de muestras aleatorias, aplicamos nuestro algoritmo a cada muestra aleatoria, calculamos el MSE observado y tomamos el promedio. Podemos escribir la siguiente fórmula para esta cantidad:
 
 
 $$
 \frac{1}{B} \sum_{b=1}^B \frac{1}{N}\sum_{i=1}^N \left(\hat{y}_i^b - y_i^b\right)^2
 $$
 
-con $y_{i}^b$ denotando la observación $i$ en la muestra aleatoria $b$ e $\hat{y}_i^b$ denotando la predicción resultante obtenida de aplicar exactamente el mismo algoritmo a la muestra aleatoria $b$. Nuevamente, en la práctica solo observamos una muestra aleatoria, por lo que el MSE esperado es solo teórico. Sin embargo, en el Capítulo \@ref(cross-validation) describimos un enfoque para estimar el MSE que trata de imitar esta cantidad teórica.
+con $y_{i}^b$ denotando la observación $i$ en la muestra aleatoria $b$ e $\hat{y}_i^b$ denotando la predicción resultante obtenida de aplicar exactamente el mismo algoritmo a la muestra aleatoria $b$. De nuevo, en la práctica solo observamos una muestra aleatoria, por lo que el MSE esperado es solo teórico. Sin embargo, en el Capítulo \@ref(cross-validation) describimos un enfoque para estimar el MSE que trata de imitar esta cantidad teórica.
 
 Tengan en cuenta que hay funciones de pérdida distintas de la función de pérdida cuadrática. Por ejemplo, el _Error Medio Absoluto_ (_Mean Absolute Error_ en inglés) utiliza valores absolutos, $|\hat{Y}_i - Y_i|$ en lugar de cuadrar los errores
 $(\hat{Y}_i - Y_i)^2$. Sin embargo, en este libro nos enfocamos en minimizar la función de pérdida cuadrática ya que es la más utilizada.
@@ -491,7 +491,7 @@ $(\hat{Y}_i - Y_i)^2$. Sin embargo, en este libro nos enfocamos en minimizar la 
 ## Ejercicios
 
 
-Los sets de datos `reported_height` y `height` se recopilaron de tres clases impartidas en los Departamentos de Ciencias Computacionales y Bioestadística, así como de forma remota a través de la Escuela de Extensión. La clase de bioestadística se impartió en 2016 junto con una versión en línea ofrecida por la Escuela de Extensión. El 25 de enero de 2016 a las 8:15 a.m., durante una de las clases, los instructores le pidieron a los estudiantes que completaran el cuestionario de sexo y altura que poblaba el set de datos `reported_height`. Los estudiantes en línea completaron la encuesta durante los próximos días, después de que la conferencia se publicara en línea. Podemos usar esta información para definir una variable, llamarla `type`, para denotar el tipo de estudiante, `inclass` (presenciales) o `online` (en línea):
+Los sets de datos `reported_height` y `height` se recopilaron de tres clases impartidas en los Departamentos de Ciencias Computacionales y Bioestadística, así como de forma remota a través de la Escuela de Extensión. La clase de bioestadística se impartió en 2016 junto con una versión en línea ofrecida por la Escuela de Extensión. El 25 de enero de 2016 a las 8:15 a.m., durante una de las clases, los instructores le pidieron a los estudiantes que completaran el cuestionario de sexo y altura que poblaba el set de datos `reported_height`. Los estudiantes en línea completaron la encuesta durante los próximos días, después de que la conferencia se publicara en línea. Podemos usar esta información para definir una variable, llamarla `type`, para denotar el tipo de estudiante: `inclass` (presenciales) o `online` (en línea).
 
 ```{r, eval=FALSE}
 library(lubridate)
@@ -510,7 +510,7 @@ y <- factor(dat$sex, c("Female", "Male"))
 1\. Muestre estadísticas de resumen que indican que el `type` es predictivo del sexo.
 
 
-2\. En lugar de usar la altura para predecir el sexo, use el variable `type`.
+2\. En lugar de usar la altura para predecir el sexo, use la variable `type`.
 
 
 3\. Muestre la matriz de confusión.
