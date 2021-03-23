@@ -1,11 +1,11 @@
 # Validación cruzada {#cross-validation}
 
 
-En este capítulo presentamos la validación cruzada (_cross validation_ en inglés), una de las ideas más importantes de _machine learning_. Aquí nos centramos en los aspectos conceptuales y matemáticos. Describiremos cómo implementar la validación cruzada en la práctica con el paquete __caret__ en la Sección \@ref(caret-cv) del proximo capitulo. Para motivar el concepto, utilizaremos los dos datos de dígitos predictores presentados en la Sección \@ref(two-or-seven) e introduciremos, por primera vez, un algoritmo real de _machine learning_: _k vecinos más cercanos_ (_k-nearest neighbors_ o kNN por sus siglas en inglés).
+En este capítulo, presentamos la validación cruzada (_cross validation_ en inglés), una de las ideas más importantes de _machine learning_. Aquí nos centramos en los aspectos conceptuales y matemáticos. Describiremos cómo implementar la validación cruzada en la práctica con el paquete __caret__ en la Sección \@ref(caret-cv) del proximo capitulo. Para motivar el concepto, utilizaremos los dos datos de dígitos predictores presentados en la Sección \@ref(two-or-seven) e introduciremos, por primera vez, un algoritmo real de _machine learning_: _k vecinos más cercanos_ (_k-nearest neighbors_ o kNN por sus siglas en inglés).
 
 ## Motivación con k vecinos más cercanos {#knn-cv-intro}
 
-Comencemos cargando los datos y mostrando un gráfico de los predictores con resultados representados con color.
+Empecemos cargando los datos y mostrando un gráfico de los predictores con resultados representados con color.
 
 ```{r mnist-27-data, warning=FALSE, message=FALSE}
 library(tidyverse)
@@ -20,7 +20,7 @@ $$
 p(x_1, x_2) = \mbox{Pr}(Y=1 \mid X_1=x_1 , X_2 = x_2)
 $$
 
-como se define en la Sección \@ref(smoothing-ml-connection). Con kNN estimamos $p(x_1, x_2)$ de manera similar a la suavización de compartimientos. Sin embargo, como veremos, kNN es más fácil de adaptar a múltiples dimensiones. Primero definimos la distancia entre todas las observaciones en función de las características. Entonces, para cualquier punto $(x_1,x_2)$ para el cual queremos un estimado de $p(x_1, x_2)$ buscamos los $k$ puntos más cercanos a $(x_1,x_2)$ y luego tomamos un promedio de los 0 y 1 asociados con estos puntos. Nos referimos al conjunto de puntos utilizados para calcular el promedio como el _vecindario_ (_neighborhood_ en inglés). Debido a la conexión que describimos anteriormente entre las expectativas condicionales y las probabilidades condicionales, esto nos da un estimado  $\hat{p}(x_1,x_2)$, al igual que el suavizador de compartimiento nos dio un estimado de una tendencia. Como con los suavizadores de compartimientos, podemos controlar la flexibilidad de nuestro estimado, en este caso a través del parámetro $k$: $k$s más grandes resultan en estimados más suaves, mientras que $k$s más pequeñas resultan en estimados más flexibles y más ondulados.
+como se define en la Sección \@ref(smoothing-ml-connection). Con kNN estimamos $p(x_1, x_2)$ de manera similar a la suavización de compartimientos. Sin embargo, como veremos, kNN es más fácil de adaptar a múltiples dimensiones. Primero, definimos la distancia entre todas las observaciones según las características. Entonces, para cualquier punto $(x_1,x_2)$ para el cual queremos un estimado de $p(x_1, x_2)$, buscamos los $k$ puntos más cercanos a $(x_1,x_2)$ y calculamos el promedio de los 0 y 1 asociados con estos puntos. Nos referimos al conjunto de puntos utilizados para calcular el promedio como el _vecindario_ (_neighborhood_ en inglés). Debido a la conexión que describimos anteriormente entre las expectativas condicionales y las probabilidades condicionales, esto nos da un estimado  $\hat{p}(x_1,x_2)$, al igual que el suavizador de compartimiento nos dio un estimado de una tendencia. Como con los suavizadores de compartimientos, podemos controlar la flexibilidad de nuestro estimado, en este caso a través del parámetro $k$: $k$s más grandes resultan en estimados más suaves, mientras que $k$s más pequeñas resultan en estimados más flexibles y más ondulados.
 
 
 Para implementar el algoritmo, podemos usar la función `knn3` del paquete __caret__. Mirando el archivo de ayuda para este paquete, vemos que podemos llamarlo de una de dos maneras. Utilizaremos el primero en el que especificamos una _formula_ y un _data frame_. El _data frame_ contiene todos los datos que se utilizarán. La fórmula tiene  la forma `outcome ~ predictor_1 + predictor_2 + predictor_3` y así sucesivamente. Por lo tanto, escribiríamos `y ~ x_1 + x_2`. Si vamos a usar todos los predictores, podemos usar el `.` así `y ~ .`. La última llamada se ve así:
@@ -39,7 +39,7 @@ knn_fit <- knn3(y ~ ., data = mnist_27$train, k = 5)
 
 En este caso, dado que nuestro set de datos es equilibrado y nos preocupamos tanto por la sensibilidad como por la especificidad, utilizaremos la exactitud para cuantificar el rendimiento.
 
-La función `predict` para `knn` produce una probabilidad para cada clase. Guardamos la probabilidad de ser un 7 como el estimado $\hat{p}(x_1, x_2)$:
+La función `predict` para `knn` produce una probabilidad para cada clase. Mantenemos la probabilidad de ser un 7 como el estimado $\hat{p}(x_1, x_2)$:
 
 ```{r}
 y_hat_knn <- predict(knn_fit, mnist_27$test, type = "class")
@@ -97,7 +97,7 @@ confusionMatrix(y_hat_knn, mnist_27$test$y)$overall["Accuracy"]
 
 ### Sobreentrenamiento
 
-El _sobreentrenamiento_ es peor cuando fijamos $k=1$. Con $k=1$, el estimado para cada $(x_1, x_2)$ en el set de entrenamiento se obtiene solo con la $y$ correspondiente a ese punto. En este caso, si el $(x_1, x_2)$ son únicos, obtendremos una exactitud perfecta en el set de entrenamiento porque cada punto se usa para predecirse a sí mismo. Recuerden que si los predictores no son únicos y tienen resultados diferentes para al menos un set de predictores, entonces es imposible predecir perfectamente.
+El _sobreentrenamiento_ es peor cuando fijamos $k=1$. Con $k=1$, el estimado para cada $(x_1, x_2)$ en el set de entrenamiento se obtiene solo con la $y$ correspondiente a ese punto. En este caso, si $(x_1, x_2)$ son únicos, obtendremos una exactitud perfecta en el set de entrenamiento porque cada punto se usa para predecirse a sí mismo. Recuerden que si los predictores no son únicos y tienen resultados diferentes para al menos un set de predictores, entonces es imposible predecir perfectamente.
 
 Aquí ajustamos un modelo kNN con $k=1$:
 
@@ -107,7 +107,7 @@ y_hat_knn_1 <- predict(knn_fit_1, mnist_27$train, type = "class")
 confusionMatrix(y_hat_knn_1, mnist_27$train$y)$overall[["Accuracy"]]
 ```
 
-Sin embargo, la precisión del set de evaluación es en realidad peor que la regresión logística:
+Sin embargo, la precisión del set de evaluación es realmente peor que la regresión logística:
 
 ```{r}
 y_hat_knn_1 <- predict(knn_fit_1, mnist_27$test, type = "class")
@@ -139,7 +139,7 @@ grid.arrange(p1, p2, nrow=1)
 
 Las curvas negras denotan los límites de la regla de decisión.
 
-El estimado $\hat{p}(x_1, x_2)$ sigue los datos de entrenamiento muy de cerca (izquierda). Pueden ver que en el set de entrenamiento, los límites se han trazado para rodear perfectamente un punto rojo único en un mar azul. Porque la mayoría de los puntos $(x_1, x_2)$ son únicos, la predicción es 1 o 0 y la predicción para ese punto es la etiqueta asociada. Sin embargo, tan pronto presentamos el set de entrenamiento (derecha), vemos que muchas de estas pequeñas islas ahora tienen el color opuesto y terminamos haciendo varias predicciones incorrectas.
+El estimado $\hat{p}(x_1, x_2)$ sigue los datos de entrenamiento muy de cerca (izquierda). Pueden ver que en el set de entrenamiento, los límites se han trazado para rodear perfectamente un punto rojo único en un mar azul. Como la mayoría de los puntos $(x_1, x_2)$ son únicos, la predicción es 1 o 0 y la predicción para ese punto es la etiqueta asociada. Sin embargo, tan pronto presentamos el set de entrenamiento (derecha), vemos que muchas de estas pequeñas islas ahora tienen el color opuesto y terminamos haciendo varias predicciones incorrectas.
 
 ### Sobre suavización
 
@@ -169,7 +169,7 @@ Este tamaño de $k$ es tan grande que no permite suficiente flexibilidad. A esto
 
 ### Escogiendo la $k$ en kNN
 
-Entonces, ¿cómo elegimos $k$? En principio queremos elegir la $k$ que maximiza la exactitud o minimiza el MSE esperado como se define en la Sección \@ref(loss-function). El objetivo de la validación cruzada es estimar estas cantidades para cualquier algoritmo y escoger un conjunto de parámetros de ajuste como $k$. Para entender por qué necesitamos un método especial para hacer esto, repitamos lo que hicimos anteriormente pero para diferentes valores de $k$:
+Entonces, ¿cómo elegimos $k$? En principio, queremos elegir la $k$ que maximiza la exactitud o minimiza el MSE esperado como se define en la Sección \@ref(loss-function). El objetivo de la validación cruzada es estimar estas cantidades para cualquier algoritmo y escoger un set de parámetros de ajuste como $k$. Para entender por qué necesitamos un método especial para hacer esto, repitamos lo que hicimos anteriormente pero para diferentes valores de $k$:
 
 ```{r}
 ks <- seq(3, 251, 2)
@@ -205,7 +205,7 @@ accuracy %>% mutate(k = ks) %>%
   geom_point()
 ```
 
-Primero, noten que el estimado obtenido en el set de entrenamiento es generalmente menor que el estimado obtenido con el set de evaluación, con una diferencia mayor para valores más pequeños de $k$. Esto se debe al sobreentrenamiento. También observen que el gráfico de exactitud versus $k$ es bastante irregular. No esperamos esto porque pequeños cambios en $k$ no deberían afectar demasiado cuán bien predice el algoritmo. La irregularidad se explica por el hecho de que la exactitud se calcula en una muestra y, por lo tanto, es una variable aleatoria. Esto demuestra por qué preferimos minimizar la pérdida esperada en lugar de la pérdida que observamos con un solo set de datos.
+Primero, noten que el estimado obtenido en el set de entrenamiento es generalmente menor que el estimado obtenido con el set de evaluación, con una diferencia mayor para valores más pequeños de $k$. Esto se debe al sobreentrenamiento. También, observen que el gráfico de exactitud versus $k$ es bastante irregular. No esperamos esto porque pequeños cambios en $k$ no deberían afectar demasiado cuán bien predice el algoritmo. La irregularidad se explica por el hecho de que la exactitud se calcula en una muestra y, por lo tanto, es una variable aleatoria. Esto demuestra por qué preferimos minimizar la pérdida esperada en lugar de la pérdida que observamos con un solo set de datos.
 
 Si tuviéramos que usar estos estimados para elegir la $k$ que maximiza la precisión, usaríamos los estimados basados en los datos de evaluación:
 
@@ -242,7 +242,7 @@ $$
 \frac{1}{B} \sum_{b=1}^B \frac{1}{N}\sum_{i=1}^N \left(\hat{y}_i^b - y_i^b\right)^2
 $$
 con $B$ un gran número que puede considerarse prácticamente infinito.
-Como ya se mencionó, esta es una cantidad teórica porque solo tenemos disponible un conjunto de resultados: $y_1, \dots, y_n$. La validación cruzada se basa en la idea de imitar la configuración teórica anterior de la mejor manera posible con los datos que tenemos. Para hacer esto, tenemos que generar una serie de diferentes muestras aleatorias. Hay varios enfoques que podemos usar, pero la idea general para todos ellos es generar aleatoriamente sets de datos más pequeños que no se usan para el entrenamiento, y en su lugar se usan para estimar el error verdadero.
+Como ya se mencionó, esta es una cantidad teórica porque solo tenemos disponible un set de resultados: $y_1, \dots, y_n$. La validación cruzada se basa en la idea de imitar la configuración teórica anterior de la mejor manera posible con los datos que tenemos. Para hacer esto, tenemos que generar una serie de diferentes muestras aleatorias. Hay varios enfoques que podemos usar, pero la idea general para todos ellos es generar aleatoriamente sets de datos más pequeños que no se usan para el entrenamiento, y en su lugar se usan para estimar el error verdadero.
 
 ## Validación cruzada K-fold
 
@@ -268,19 +268,19 @@ Pero no podemos ver estos sets de datos independientes.
 knitr::include_graphics("ml/img/cv-2.png")
 ```
 
-Entonces, para imitar esta situación, creamos una parte de nuestro set de datos y nos imaginamos que es un set de datos independiente: dividimos el set de datos en un _set de entrenamiento_ (azul) y un _set de evaluación_ (rojo). Entrenaremos nuestro algoritmo exclusivamente en el set de entrenamiento y usaremos el set de evaluación solo para fines de evaluación.
+Entonces, para imitar esta situación, separamos una parte de nuestro set de datos y nos imaginamos que es un set de datos independiente: dividimos el set de datos en un _set de entrenamiento_ (azul) y un _set de evaluación_ (rojo). Entrenaremos nuestro algoritmo exclusivamente en el set de entrenamiento y usaremos el set de evaluación solo para fines de evaluación.
 
-Por lo general, intentamos seleccionar una pequeña parte del set de datos para tener la mayor cantidad de datos posible para entrenar. Sin embargo, también queremos que el set de evaluación sea grande para que podamos obtener un estimado estable de la pérdida sin ajustar un número poco práctico de modelos. Las opciones típicas son usar del 10% al 20% de los datos para las pruebas.
+Por lo general, intentamos seleccionar una pequeña parte del set de datos para tener la mayor cantidad de datos posible para entrenar. Sin embargo, también queremos que el set de evaluación sea grande para que podamos obtener un estimado estable de la pérdida sin ajustar un número poco práctico de modelos. Las opciones típicas son usar del 10% al 20% de los datos para la evaluación.
 
 ```{r, echo=FALSE}
 knitr::include_graphics("ml/img/cv-3.png")
 ```
 
-Reiteremos que es indispensable que no usemos el set de evaluación para nada: no para filtrar filas, no para seleccionar características, ¡nada!
+Queremos reiterar que es indispensable que no usemos el set de evaluación para nada: no para filtrar filas, no para seleccionar características, ¡para nada!
 
-Ahora, esto presenta un nuevo problema porque para la mayoría de los algoritmos de _machine learning_ necesitamos seleccionar parámetros, por ejemplo, el número de vecinos $k$ en k vecinos más cercanos. Aquí, nos referiremos al conjunto de parámetros como $\lambda$. Necesitamos optimizar los parámetros del algoritmo sin usar nuestro set de evaluación y sabemos que si optimizamos y evaluamos en el mismo set de datos, sobreentrenaremos. Aquí es donde la validación cruzada es más útil.
+Ahora, esto presenta un nuevo problema porque para la mayoría de los algoritmos de _machine learning_, necesitamos seleccionar parámetros, por ejemplo, el número de vecinos $k$ en k vecinos más cercanos. Aquí, nos referiremos al set de parámetros como $\lambda$. Necesitamos optimizar los parámetros del algoritmo sin usar nuestro set de evaluación y sabemos que si optimizamos y evaluamos en el mismo set de datos, sobreentrenaremos. Aquí es donde la validación cruzada es más útil.
 
-Para cada conjunto de parámetros de algoritmo que se considera, queremos un estimado del MSE y luego elegiremos los parámetros con el MSE más pequeño. La validación cruzada nos da este estimado.
+Para cada set de parámetros de algoritmo que se considera, queremos un estimado del MSE y luego elegiremos los parámetros con el MSE más pequeño. La validación cruzada nos da este estimado.
 
 Primero, antes de comenzar el procedimiento de validación cruzada, es importante corregir todos los parámetros del algoritmo. Aunque entrenaremos el algoritmo en el conjunto de sets de entrenamiento, los parámetros $\lambda$ serán los mismos en todos los sets de entrenamiento. Usaremos $\hat{y}_i(\lambda)$ para denotar los predictores obtenidos cuando usamos parámetros $\lambda$.
 
@@ -290,9 +290,9 @@ $$
 \mbox{MSE}(\lambda) = \frac{1}{B} \sum_{b=1}^B \frac{1}{N}\sum_{i=1}^N \left(\hat{y}_i^b(\lambda) - y_i^b\right)^2
 $$
 
-queremos considerar sets de datos que puedan considerarse una muestra aleatoria independiente y queremos hacerlo varias veces. Con la validación cruzada _K-fold_, lo hacemos $K$ veces. En los dibujos animados, estamos mostrando un ejemplo que usa $K=5$.
+queremos considerar sets de datos que puedan considerarse una muestra aleatoria independiente y queremos hacerlo varias veces. Con la validación cruzada _K-fold_, lo hacemos $K$ veces. En los dibujos animados, mostramos un ejemplo que usa $K=5$.
 
-Eventualmente terminaremos con $K$ muestras, pero comencemos describiendo cómo construir la primera: simplemente elegimos $M=N/K$ observaciones al azar (redondeamos si $M$ no es un número redondo) y piensen en esto como una muestra aleatoria $y_1^b, \dots, y_M^b$, con $b=1$. Llamamos a esto el set de validación:
+Eventualmente, terminaremos con $K$ muestras, pero comencemos describiendo cómo construir la primera: simplemente elegimos $M=N/K$ observaciones al azar (redondeamos si $M$ no es un número redondo) y piensen en esto como una muestra aleatoria $y_1^b, \dots, y_M^b$, con $b=1$. Llamamos a esto el set de validación:
 
 
 ```{r, echo=FALSE}
@@ -334,7 +334,7 @@ Podemos hacer una validación cruzada nuevamente:
 knitr::include_graphics("ml/img/cv-7.png")
 ```
 
-y obtener un estimado final de nuestra pérdida esperada. Sin embargo, tengan en cuenta que esto significa que todo nuestro tiempo de cálculo se multiplica por $K$. Pronto aprenderán que realizar esta tarea lleva tiempo porque estamos realizando muchos cálculos complejos. Como resultado, siempre estamos buscando formas de reducir este tiempo. Para la evaluación final, a menudo solo usamos un set de evaluación.
+y obtener un estimado final de nuestra pérdida esperada. Sin embargo, tengan en cuenta que esto significa que todo nuestro tiempo de cálculo se multiplica por $K$. Pronto aprenderán que realizar esta tarea lleva tiempo porque estamos realizando muchos cálculos complejos. Por eso, siempre estamos buscando formas de reducir este tiempo. Para la evaluación final, a menudo solo usamos un set de evaluación.
 
 Una vez que estemos satisfechos con este modelo y queramos ponerlo a disposición de otros, podríamos reajustar el modelo en todo el set de datos, sin cambiar los parámetros optimizados.
 
@@ -344,11 +344,11 @@ knitr::include_graphics("ml/img/cv-8.png")
 ```
 
 
-Ahora, ¿cómo elegimos la validación cruzada $K$? Grandes valores de $K$ son preferibles porque los datos de entrenamiento imitan mejor el set de datos original. Sin embargo, lo cálculos para valores más grandes de $K$ serán mucho más lentos: por ejemplo, la validación cruzada con 100 pliegues (fold en inglés) será 10 veces más lenta que la validación cruzada con 10 pliegues. Por esta razón, los valores de $K=5$ y $K=10$ son opciones populares.
+Ahora, ¿cómo elegimos la validación cruzada $K$? Grandes valores de $K$ son preferibles porque los datos de entrenamiento imitan mejor el set de datos original. Sin embargo, lo cálculos para valores más grandes de $K$ serán mucho más lentos: por ejemplo, la validación cruzada con 100 pliegues (_folds_ en inglés) será 10 veces más lenta que la validación cruzada con 10 pliegues. Por esta razón, los valores de $K=5$ y $K=10$ son opciones populares.
 
 Una forma de mejorar la varianza de nuestro estimado final es tomar más muestras. Para hacer esto, ya no necesitaríamos que el set de entrenamiento se divida en sets no superpuestos. En cambio, simplemente elegiríamos $K$ sets de algún tamaño al azar.
 
-Una versión popular de esta técnica, en cada pliegue (_fold_ en inglés), selecciona observaciones al azar con reemplazo (lo que significa que la misma observación puede aparecer dos veces). Este enfoque tiene algunas ventajas (no se discute aquí) y generalmente se conoce como _bootstrap_. De hecho, este es el enfoque predeterminado en el paquete __caret__. Describimos cómo implementar la validación cruzada con el paquete __caret__ en el próximo capítulo. En la siguiente sección, incluimos una explicación de cómo funciona el _bootstrap_ en general.
+Una versión popular de esta técnica selecciona observaciones al azar con reemplazo (lo que significa que la misma observación puede aparecer dos veces) en cada pliegue. Este enfoque tiene algunas ventajas (no se discuten aquí) y generalmente se conoce como el _bootstrap_. De hecho, este es el enfoque predeterminado en el paquete __caret__. Describimos cómo implementar la validación cruzada con el paquete __caret__ en el próximo capítulo. En la siguiente sección, incluimos una explicación de cómo funciona el _bootstrap_ en general.
 
 
 ## Ejercicios
@@ -366,7 +366,7 @@ y <- rbinom(n, 1, 0.5) %>% factor()
 x_subset <- x[ ,sample(p, 100)]
 ```
 
-1\. Como `x` y `y` son completamente independientes, no debería poder predecir `y` utilizando `x` con exactitud mayor que 0.5. Confirme esto ejecutando la validación cruzada utilizando regresión logística para ajustar el modelo. Debido a que tenemos tantos predictores, seleccionamos una muestra aleatoria `x_subset`. Use el subconjunto cuando entrene al modelo. Sugerencia: use la función `train` de __caret__ . El componente `results`  del resultado de `train` le muestra la exactitud. Ignore las advertencias.
+1\. Como `x` y `y` son completamente independientes, no debería poder predecir `y` utilizando `x` con exactitud mayor que 0.5. Confirme esto ejecutando la validación cruzada utilizando regresión logística para ajustar el modelo. Debido a que tenemos tantos predictores, seleccionamos una muestra aleatoria `x_subset`. Use el subconjunto cuando entrene al modelo. Sugerencia: use la función `train` de __caret__. El componente `results` del _output_ de `train` le muestra la exactitud. Ignore las advertencias.
 
 
 2\. Ahora, en lugar de una selección aleatoria de predictores, vamos a buscar aquellos que sean más predictivos del resultado. Podemos hacer esto comparando los valores para el grupo $y=1$ con esos en el grupo $y=0$, para cada predictor, utilizando una prueba t. Puede realizar este paso así:
@@ -378,10 +378,10 @@ library(genefilter)
 tt <- colttests(x, y)
 ```
 
-Cree un vector de los valores p y llámelo `pvals`.
+Cree un vector de los valores-p y llámelo `pvals`.
+ 
 
-
-3\. Cree un índice `ind` con los números de columna de los predictores que eran "estadísticamente significativos" asociados con `y`. Utilice un valor de corte p de 0.01 para definir "estadísticamente significativo".  ¿Cuántos predictores sobreviven  este umbral?
+3\.[fix] Cree un índice `ind` con los números de columna de los predictores que eran "estadísticamente significativos" asociados con `y`. Defina "estadísticamente significativo" como un valor-p menor que 0.01.  ¿Cuántos predictores sobreviven este umbral?
 
 
 4\. Vuelva a ejecutar la validación cruzada pero después de redefinir `x_subset` como el subconjunto de `x` definido por las columnas que muestran una asociación "estadísticamente significativa" con `y`. ¿Cuál es la exactitud ahora?
@@ -391,7 +391,7 @@ Cree un vector de los valores p y llámelo `pvals`.
 
 6\. En los ejercicios 3 y 4, vemos que a pesar del hecho de que `x` y `y` son completamente independientes, pudimos predecir `y` con una exactitud superior al 70%. Debemos estar haciendo algo mal entonces. ¿Qué es?
 
-a. La función `train` estima la exactitud en los mismos datos que usa para entrenar el algoritmo.
+a. La función `train` estima la exactitud usando los mismos datos que usa para entrenar el algoritmo.
 b. Estamos sobreajustando el modelo al incluir 100 predictores.
 c. Utilizamos todo el set de datos para seleccionar las columnas utilizadas en el modelo. Este paso debe incluirse como parte del algoritmo. La validación cruzada se realizó **después de** esta selección.
 d. La alta exactitud se debe solo a la variabilidad aleatoria.
@@ -461,7 +461,7 @@ es bastante diferente del intervalo de confianza que generaríamos si conocemos 
 quantile(M, c(0.025, 0.975))
 ```
 
-El _bootstrap_ nos permite aproximar una simulación de Monte Carlo sin acceso a toda la distribución. La idea general es relativamente sencilla. Actuamos como si la muestra observada fuera la población. Luego muestreamos (con reemplazo) sets de datos, del mismo tamaño de muestra del set de datos original. Luego calculamos la estadística de resumen, en este caso la mediana, en estas _muestras de bootstrap_.
+El _bootstrap_ nos permite aproximar una simulación de Monte Carlo sin tener acceso a toda la distribución. La idea general es relativamente sencilla. Actuamos como si la muestra observada fuera la población. Luego muestreamos, con reemplazo, sets de datos del mismo tamaño de muestra del set de datos original. Entonces calculamos la estadística de resumen, en este caso la mediana, en estas _muestras de bootstrap_.
 
 La teoría nos dice que, en muchas situaciones, la distribución de las estadísticas obtenidas con muestras de _bootstrap_ se aproxima a la distribución de nuestra estadística real. Así es como construimos muestras de _bootstrap_ y una distribución aproximada:
 
@@ -474,7 +474,7 @@ M_star <- replicate(B, {
 })
 ```
 
-Tengan en cuenta que un intervalo de confianza construido con _bootstrap_ está mucho más cerca de uno construido con la distribución teórica:
+Tengan en cuenta que un intervalo de confianza construido con _bootstrap_ está mucho más cerca a uno construido con la distribución teórica:
 
 ```{r}
 quantile(M_star, c(0.025, 0.975))
@@ -482,21 +482,21 @@ quantile(M_star, c(0.025, 0.975))
 
 Para obtener más información sobre _bootstrap_, incluyendo las correcciones que se pueden aplicar para mejorar estos intervalos de confianza, consulte el libro _An introduction to the bootstrap_ de Efron y Tibshirani.
 
-*Tengan en cuenta que en la validación cruzada podemos usar ideas similares a esas utilizadas con _bootstrap_ : en lugar de dividir los datos en particiones iguales, simplemente usamos muestras _bootstrap_ repetidas veces.
+[fix check "equal partitions" is that different from equal parts?] _Tengan en cuenta que en la validación cruzada podemos usar ideas similares a esas utilizadas con bootstrap: en lugar de dividir los datos en partes iguales, simplemente usamos muestras bootstrap repetidas veces._
 
 ## Ejercicios
 
-1\. La función `createResample` se puede utilizar para crear ejemplos de _bootstrap_. Por ejemplo, podemos crear 10 muestras de _bootstrap_ para el set de datos `mnist_27` así:
+1\. La función `createResample` se puede utilizar para crear muestras de _bootstrap_. Por ejemplo, podemos crear 10 muestras de _bootstrap_ para el set de datos `mnist_27` así:
 
 ```{r, eval=FALSE}
 set.seed(1995)
 indexes <- createResample(mnist_27$train$y, 10)
 ```
 
-¿Cuántas veces `3`, `4` y `7` aparecen en el primer índice en las 10 muestras en `indexes`?
+[fix check] ¿Cuántas veces aparecen `3`, `4` y `7` en el primer índice re-muestrado?
 
 
-2\. Vemos que algunos números aparecen más de una vez y otros no aparecen ninguna vez. Esto tiene que ser así para que cada set de datos sea independiente. Repita el ejercicio para todos los índices muestreados.
+2\. Vemos que algunos números aparecen más de una vez y otros no aparecen ninguna vez. Esto tiene que ser así para que cada set de datos sea independiente. Repita el ejercicio para todos los índices re-muestreados.
 
 
 3\. Genere un set de datos aleatorio como este:
@@ -505,7 +505,7 @@ indexes <- createResample(mnist_27$train$y, 10)
 y <- rnorm(100, 0, 1)
 ```
 
-Estime el cuantil 75, que sabemos es:
+[fix] Estime el cuantil 75, que sabemos es:
 
 
 ```{r, eval = FALSE}
@@ -517,7 +517,7 @@ con el cuantil de muestra:
 quantile(y, 0.75)
 ```
 
-Ejecute una simulación de Monte Carlo para conocer el valor esperado y el error estándar de esta variable aleatoria.
+Ejecute una simulación de Monte Carlo para saber el valor esperado y el error estándar de esta variable aleatoria.
 
 
 4\. En la práctica, no podemos ejecutar una simulación de Monte Carlo porque no sabemos si `rnorm` se está utilizando para simular los datos. Use el _bootstrap_ para estimar el error estándar usando solo la muestra inicial `y`. Use 10 muestras de _bootstrap_.
