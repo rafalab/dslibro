@@ -16,7 +16,7 @@ Podemos explorar los datos graficando los dos predictores y usando colores para 
 mnist_27$train %>% ggplot(aes(x_1, x_2, color = y)) + geom_point()
 ```
 
-Inmediatamente podemos ver algunos patrones. Por ejemplo, si $X_1$ (el panel superior izquierdo) es muy grande, entonces el dígito es probablemente un 7. Además, para valores más pequeños de $X_1$, los 2s parecen estar en los valores de rango medio de $X_2$.
+Inmediatamente vemos algunos patrones. Por ejemplo, si $X_1$ (el panel superior izquierdo) es muy grande, entonces el dígito es probablemente un 7. Además, para valores más pequeños de $X_1$, los 2s parecen estar en los valores de rango medio de $X_2$.
 
 Para ilustrar como interpretar $X_1$ y $X_2$, incluimos cuatro imágenes como ejemplo. A la izquierda están las imágenes originales de los dos dígitos con los valores más grandes y más pequeños para $X_1$ y a la derecha tenemos las imágenes correspondientes a los valores más grandes y más pequeños de $X_2$:
 
@@ -88,7 +88,7 @@ confusionMatrix(y_hat, mnist_27$test$y)$overall[["Accuracy"]]
 
 Obtenemos una exactidud muy superior al 50%. No está mal para nuestro primer intento. ¿Pero podemos mejorar?
 
-Como construimos el ejemplo `mnist_27` y teníamos a nuestra disposición 60,000 dígitos solo en el set de datos MNIST, lo usamos para construir la distribución condicional _verdadera_ $p(x_1, x_2)$. Recuerden que esto es algo a lo que no tenemos acceso en la práctica, pero lo incluimos en este ejemplo porque permite comparar $\hat{p}(x_1, x_2)$ con la verdadera $p(x_1, x_2)$. Esta comparación nos enseña las limitaciones de diferentes algoritmos. Hagamos eso aquí. Hemos almacenado el verdadero $p(x_1,x_2)$ en el objeto `mnist_27` y podemos graficar la imagen usando la función `geom_raster()` de __ggplot2__ . Elegimos mejores colores y usamos la  función `stat_contour` para dibujar una curva que separe pares $(x_1,x_2)$ para cual $p(x_1,x_2) > 0.5$ y pares para los cuales $p(x_1,x_2) < 0.5$:
+Como construimos el ejemplo `mnist_27` y tuvimos a nuestra disposición 60,000 dígitos solo en el set de datos MNIST, lo usamos para construir la distribución condicional _verdadera_ $p(x_1, x_2)$. Recuerden que esto es algo a lo que no tenemos acceso en la práctica, pero lo incluimos en este ejemplo porque permite comparar $\hat{p}(x_1, x_2)$ con la verdadera $p(x_1, x_2)$. Esta comparación nos enseña las limitaciones de diferentes algoritmos. Hagamos eso aquí. Hemos almacenado el verdadero $p(x_1,x_2)$ en el objeto `mnist_27` y podemos graficar la imagen usando la función `geom_raster()` de __ggplot2__ . Elegimos mejores colores y usamos la  función `stat_contour` para dibujar una curva que separa pares $(x_1,x_2)$ para cual $p(x_1,x_2) > 0.5$ y pares para cual $p(x_1,x_2) < 0.5$:
 
 ```{r true-p-better-colors}
 mnist_27$true_p %>% ggplot(aes(x_1, x_2, z = p, fill = p)) +
@@ -97,7 +97,7 @@ mnist_27$true_p %>% ggplot(aes(x_1, x_2, z = p, fill = p)) +
   stat_contour(breaks=c(0.5), color="black")
 ```
 
-Arriba ven un gráfico del verdadero $p(x,y)$. Para comenzar a comprender las limitaciones de la regresión logística aquí, primero tengan en cuenta que con la regresión logística $\hat{p}(x,y)$ tiene que ser un plano y, como resultado, el límite definido por la regla de decisión viene dado por:
+Arriba vemos un gráfico del verdadero $p(x,y)$. Para comenzar a comprender las limitaciones de la regresión logística aquí, primero tengan en cuenta que con la regresión logística $\hat{p}(x,y)$ tiene que ser un plano y, como resultado, el límite definido por la regla de decisión lo da:
 $\hat{p}(x,y) = 0.5$, lo que implica que el límite no puede ser otra cosa que una línea recta:
 
 $$
@@ -105,7 +105,7 @@ $$
 \hat{\beta}_0 + \hat{\beta}_1 x_1 + \hat{\beta}_2 x_2 = 0.5 \implies
 x_2 = (0.5-\hat{\beta}_0)/\hat{\beta}_2 -\hat{\beta}_1/\hat{\beta}_2 x_1
 $$
-Tengan en cuenta que para este límite, $x_2$ es una función lineal de $x_1$. Esto implica que nuestro enfoque de regresión logística no tiene posibilidades de capturar la naturaleza no lineal de la verdadera $p(x_1,x_2)$. A continuación se muestra una representación visual de $\hat{p}(x_1, x_2)$. Utilizamos la función `squish` del paquete __scales__ para restringir los estimados entre 0 y 1. Podemos ver dónde se cometieron los errores al mostrar también los datos y el límite. Principalmente provienen de valores bajos $x_1$ que tienen un valor alto o bajo de $x_2$. La regresión no puede detectar esto.
+Noten que para este límite, $x_2$ es una función lineal de $x_1$. Esto implica que nuestro enfoque de regresión logística no tiene posibilidades de capturar la naturaleza no lineal de la verdadera $p(x_1,x_2)$. A continuación se muestra una representación visual de $\hat{p}(x_1, x_2)$. Utilizamos la función `squish` del paquete __scales__ para restringir los estimados entre 0 y 1. Podemos ver dónde se cometieron los errores al mostrar también los datos y el límite. Principalmente provienen de valores bajos $x_1$ que tienen un valor alto o bajo de $x_2$. La regresión no puede detectar esto.
 
 ```{r regression-p-hat, echo=FALSE, out.width="100%", fig.height=3, fig.width=7}
 p_hat <- predict(fit, newdata = mnist_27$true_p)
