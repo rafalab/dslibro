@@ -1,6 +1,6 @@
 # Machine learning en la práctica
 
-Ahora que hemos aprendido varios métodos y los hemos explorado con ejemplos ilustrativos, los probaremos con un ejemplo real: los dígitos MNIST.
+Ahora que hemos aprendido varios métodos y los hemos explorado con ejemplos ilustrativos, los aplicaremos a un ejemplo real: los dígitos MNIST.
 
 Podemos cargar estos datos usando el siguiente paquete de __dslabs__:
 
@@ -48,7 +48,7 @@ En _machine learning_, a menudo transformamos predictores antes de ejecutar el a
 
 Los ejemplos de preprocesamiento incluyen estandarizar los predictores, transformar logarítmicamente algunos predictores, eliminar los predictores que están altamente correlacionados con otros y eliminar los predictores con muy pocos valores no únicos o una variación cercana a cero. Mostramos un ejemplo a continuación.
 
-Podemos ejecutar la función `nearZero` desde el paquete __caret__ para ver que varias características no varían mucho de una observación a otra. Podemos ver que hay una gran cantidad de características con variabilidad 0:
+Podemos ejecutar la función `nearZero` del paquete __caret__ para ver que muchas características no varían mucho de una observación a otra. Podemos ver que hay una gran cantidad de características con variabilidad 0:
 
 ```{r pixel-sds, message=FALSE, warning=FALSE}
 library(matrixStats)
@@ -76,7 +76,7 @@ rafalib::mypar()
 image(matrix(1:784 %in% nzv, 28, 28))
 ```
 
-Entonces terminamos manteniendo este número de columnas:
+Entonces nos quedeamos con este número de columnas:
 
 ```{r}
 col_index <- setdiff(1:ncol(x), nzv)
@@ -105,7 +105,7 @@ train_knn <- train(x[ ,col_index], y,
 train_knn
 ```
 
-En general, es una buena idea hacer una ejecución de prueba con un subconjunto de datos para tener una idea del tiempo antes de comenzar a ejecutar el código que puede tardar horas en completarse. Podemos hacer esto de la siguiente manera:
+En general, es una buena idea hacer una ejecución de prueba con un subconjunto de datos para tener una idea del tiempo antes de comenzar a ejecutar un código que puede tardar horas en completarse. Podemos hacer esto de la siguiente manera:
 
 ```{r, eval = FALSE}
 n <- 1000
@@ -118,8 +118,7 @@ train_knn <- train(x[index, col_index], y[index],
                    trControl = control)
 ```
 
-Entonces podemos aumentar `n` y `b` e intentar establecer un patrón de cómo afectan el tiempo de computación
-para tener una idea de cuánto tiempo tomará el proceso de ajuste para valores mayores de `n` y `b`. Quieren saber si una función tomará horas, o incluso días, antes de ejecutarla.
+Entonces podemos aumentar `n` y `b` e intentar establecer un patrón de cómo afectan el tiempo de computación para tener una idea de cuánto tiempo tomará el proceso de ajuste para valores mayores de `n` y `b`. Quieren saber si una función tomará horas, o incluso días, antes de ejecutarla.
 
 Una vez que optimicemos nuestro algoritmo, podemos aplicarlo a todo el set de datos:
 
@@ -134,7 +133,7 @@ cm <- confusionMatrix(y_hat_knn, factor(y_test))
 cm$overall["Accuracy"]
 ```
 
-Ahora logramos una exactitud de aproximadamente 0.95. Por la especificidad y sensibilidad, también vemos que los 8 son los más difíciles de detectar y el dígito predicho incorrectamente con mas frecuencia es el 7.
+Ahora logramos una exactitud de aproximadamente 0.95. De la especificidad y sensibilidad, también vemos que los 8 son los más difíciles de detectar y que el dígito pronosticado incorrectamente con mas frecuencia es el 7.
 
 ```{r}
 cm$byClass[,1:2]
@@ -261,7 +260,7 @@ for(i in ind[1:4]){
 }
 ```
 
-Al examinar errores como este, a menudo encontramos debilidades específicas en los algoritmos o en las opciones de parámetros y podemos intentar corregirlas.
+Al examinar errores como este, a menudo encontramos debilidades específicas en los algoritmos o en las opciones de parámetros que podemos intentar corregir.
 
 ## Conjuntos
 
@@ -280,11 +279,11 @@ y_pred <- factor(apply(p, 1, which.max)-1)
 confusionMatrix(y_pred, y_test)$overall["Accuracy"]
 ```
 
-En los ejercicios vamos a construir varios modelos de _machine learning_ para el set de datos `mnist_27` y luego construir un conjunto.
+En los ejercicios, vamos a construir varios modelos de _machine learning_ para el set de datos `mnist_27` y luego construir un conjunto.
 
 ## Ejercicios
 
-1\. Utilice el set de entrenamiento `mnist_27` para construir un modelo con varios de los modelos disponibles del paquete __caret__. Por ejemplo, puede intentar con estos:
+1\. Utilice el set de entrenamiento `mnist_27` para construir un modelo con varios de los modelos disponibles del paquete __caret__. Por ejemplo,  puede intentar con estos:
 
 ```{r, eval = FALSE}
 models <- c("glm", "lda", "naive_bayes", "svmLinear", "gamboost",
@@ -311,10 +310,10 @@ Aunque no hemos explicado muchos de estos algoritmos, aplíquelos usando `train`
 7\. Ahora solo consideremos los métodos con una exactitud estimada de 0.8 al construir el conjunto. ¿Cuál es la exactitud ahora?
 
 
-8\. __Avanzado__: si dos métodos dan resultados que son iguales, unirlos no cambiará los resultados en absoluto. Para cada par de métricas, compare el porcentaje de tiempo que llaman lo mismo. Luego use la función `heatmap` para visualizar los resultados. Sugerencia: use el argumento  `method = "binary"` en la función `dist`.
+8\. __Avanzado__: si dos métodos dan resultados que son iguales, unirlos no cambiará los resultados en absoluto. Para cada par de métricas,  compare cuán frequentemente predicen lo mismo. Luego use la función `heatmap` para visualizar los resultados. Sugerencia: use el argumento  `method = "binary"` en la función `dist`.
 
 
-9\. __Avanzado__: tenga en cuenta que cada método también puede producir una probabilidad condicional estimada. En lugar del voto mayoritario, podemos tomar el promedio de estas probabilidades condicionales estimadas. Para la mayoría de los métodos, podemos usar el `type = "prob"` en la función `train`. Sin embargo, algunos de los métodos requieren que use el argumento `trControl=trainControl(classProbs=TRUE)` al llamar al tren. Además, estos métodos no funcionan si las clases tienen números como nombres. Sugerencia: cambie los niveles de esta manera:
+9\. __Avanzado__: tenga en cuenta que cada método también puede producir una probabilidad condicional estimada. En lugar del voto mayoritario, podemos tomar el promedio de estas probabilidades condicionales estimadas. Para la mayoría de los métodos, podemos usar el `type = "prob"` en la función `train`. Sin embargo, algunos de los métodos requieren que use el argumento `trControl=trainControl(classProbs=TRUE)` al llamar `train`. Además, estos métodos no funcionan si las clases tienen números como nombres.Sugerencia: cambie los niveles de esta manera
 
 
 ```{r, eval = FALSE}

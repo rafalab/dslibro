@@ -1,6 +1,6 @@
 # Grandes sets de datos
 
-Los problemas de _machine learning_ a menudo implican sets de datos que son tan grandes o más grandes que el conjunto de datos MNIST. Existe una variedad de técnicas computacionales y conceptos estadísticos que son útiles para el análisis de grandes sets de datos. En este capítulo, rascamos la superficie de estas técnicas y conceptos describiendo álgebra matricial, reducción de dimensiones, regularización y factorización matricial. Utilizamos sistemas de recomendación relacionados con las clasificaciones de películas como un ejemplo motivador.
+Los problemas de _machine learning_ a menudo implican sets de datos que son tan o más grandes que el conjunto de datos MNIST. Existe una variedad de técnicas computacionales y conceptos estadísticos que son útiles para el análisis de grandes sets de datos. En este capítulo, solo comenzamos a aprender sobre estas técnicas y conceptos describiendo álgebra matricial, reducción de dimensiones, regularización y factorización matricial. Utilizamos sistemas de recomendación relacionados con las clasificaciones de películas como un ejemplo motivador.
 
 ## Álgebra matricial {#matrix-algebra}
 
@@ -12,40 +12,40 @@ library(dslabs)
 if(!exists("mnist")) mnist <- read_mnist()
 ```
 
-En estos casos, a menudo es conveniente guardar los predictores en una matriz y el resultado en un vector en lugar de utilizar un _data frame_. Puede ver que los predictores se guardan como una matriz:
+En estos casos, a menudo es conveniente guardar los predictores en una matriz y el resultado en un vector en lugar de utilizar un _data frame_. Pueden ver que los predictores se guardan como una matriz:
 
 ```{r}
 class(mnist$train$images)
 ```
 
-Esta matriz representa 60,000 dígitos, por lo que para los ejemplos en este capítulo, tomaremos un subconjunto más manejable. Tomaremos los primeros 1,000 predictores `x` y etiquetas `y`:
+Esta matriz representa 60,000 dígitos, por lo que para los ejemplos en este capítulo, usaremos un subconjunto más manejable. Tomaremos los primeros 1,000 predictores `x` y etiquetas `y`:
 
 ```{r}
 x <- mnist$train$images[1:1000,]
 y <- mnist$train$labels[1:1000]
 ```
 
-La razón principal para usar matrices es que ciertas operaciones matemáticas necesarias para desarrollar código eficiente se pueden realizar usando técnicas de una rama de las matemáticas llamada álgebra lineal. De hecho, el álgebra lineal y la notación matricial son elementos clave del lenguaje utilizado en trabajos académicos que describen técnicas de _machine learning_. No cubriremos el álgebra lineal en detalle aquí, pero demostraremos cómo usar matrices en R para que pueda aplicar las técnicas de álgebra lineal ya implementadas en la base R u otros paquetes.
+La razón principal para usar matrices es que ciertas operaciones matemáticas necesarias para desarrollar código eficiente se pueden realizar usando técnicas de una rama de las matemáticas llamada álgebra lineal. De hecho, el álgebra lineal y la notación matricial son elementos clave del lenguaje utilizado en trabajos académicos que describen técnicas de _machine learning_. No cubriremos el álgebra lineal en detalle aquí, pero demostraremos cómo usar matrices en R para que puedan aplicar las técnicas de álgebra lineal ya implementadas en la base R u otros paquetes.
 
 Para motivar el uso de matrices, plantearemos cinco preguntas/desafíos:
 
 1\. ¿Algunos dígitos requieren más tinta que otros? Estudien la distribución de la oscuridad total de píxeles y cómo varía según los dígitos.
 
-2\. ¿Algunos píxeles no son informativos? Estudien la variación de cada píxel y elimine los predictores (columnas) asociados con los píxeles que no cambian mucho y, por lo tanto, no pueden proveen mucha información para la clasificación.
+2\. ¿Algunos píxeles no son informativos? Estudien la variación de cada píxel y eliminen los predictores (columnas) asociados con los píxeles que no cambian mucho y, por lo tanto, no proveen mucha información para la clasificación.
 
-3\. ¿Podemos eliminar las manchas? Primero, observen la distribución de todos los valores de píxeles. Usen esto para elegir un límite para definir el espacio no escrito. Luego, establezcan cualquier cosa por debajo de ese límite en 0.
+3\. ¿Podemos eliminar las manchas? Primero, observen la distribución de todos los valores de píxeles. Usen esto para elegir un umbral para definir el espacio no escrito. Luego, establezcan cualquier cosa por debajo de ese umbral en 0.
 
-4\. Binaricen los datos. Primero, observen la distribución de todos los valores de píxeles. Usen esto para elegir un límite para distinguir entre escribir y no escribir. Luego, conviertan todas las entradas en 1 o 0, respectivamente.
+4\. Binaricen los datos. Primero, observen la distribución de todos los valores de píxeles. Usen esto para elegir un umbral para distinguir entre escritura y no escritura. Luego, conviertan todas las entradas en 1 o 0, respectivamente.
 
 5\. Escalen cada uno de los predictores en cada entrada para tener el mismo promedio y desviación estándar.
 
-Para completar esto, tendremos que realizar operaciones matemáticas que involucren varias variables. El __tidyverse__ no está desarrollado para realizar este tipo de operaciones matemáticas. Para esta tarea, es conveniente usar matrices.
+Para completar esto, tendremos que realizar operaciones matemáticas que involucran varias variables. El __tidyverse__ no está desarrollado para realizar este tipo de operaciones matemáticas. Para esta tarea, es conveniente usar matrices.
 
 Antes de hacer esto, introduciremos la notación matricial y el código R básico para definir y operar en matrices.
 
 ### Notación
 
-En álgebra matricial, tenemos tres tipos principales de objetos: escalares, vectores y matrices. Un escalar es solo un número, por ejemplo $a = 1$. Para denotar escalares en notación matricial, generalmente usamos una letra minúscula y negra.
+En álgebra matricial, tenemos tres tipos principales de objetos: escalares, vectores y matrices. Un escalar es solo un número, por ejemplo $a = 1$. Para denotar escalares en notación matricial, generalmente usamos una letra minúscula no en negrilla.
 
 Los vectores son como los vectores numéricos que definimos en R: incluyen varias entradas escalares. Por ejemplo, la columna que contiene el primer píxel:
 
@@ -91,7 +91,7 @@ x_2 <- 6:10
 cbind(x_1, x_2)
 ```
 
-Matemáticamente, los representamos con letras mayúsculas en negra:
+Matemáticamente, los representamos con letras mayúsculas en negrilla:
 
 $$
 \mathbf{X} = [ \mathbf{X}_1 \mathbf{X}_2 ] = \begin{pmatrix}
@@ -119,7 +119,7 @@ Sin embargo, explícitamente convertimos un vector en una matriz usando la funci
 dim(as.matrix(x_1))
 ```
 
-Podemos usar esta notación para denotar un número arbitrario de predictores con lo siguiente $N\times p$ matriz, por ejemplo, con $p=784$:
+Podemos usar esta notación para denotar un número arbitrario de predictores con la siguiente matriz $N\times p$, por ejemplo, con $p=784$:
 
 $$
 \mathbf{X} = \begin{pmatrix}
@@ -152,7 +152,7 @@ mat <- matrix(my_vector, 5, 3)
 mat
 ```
 
-Podemos llenar por fila usando el argumento `byrow`. Entonces, por ejemplo, para _transponer_ la matriz `mat`, nosotros podemos usar:
+Podemos llenar por fila usando el argumento `byrow`. Entonces, por ejemplo, para _transponer_ la matriz `mat`, podemos usar:
 
 ```{r}
 mat_t <- matrix(my_vector, 3, 5, byrow = TRUE)
@@ -166,14 +166,13 @@ identical(t(mat), mat_t)
 ```
 
 
-__Advertencia__:  La función `matrix` recicla valores en el vector **sin advertencia** si el producto de columnas y filas no coincide con la longitud del vector:
+__Advertencia__:  La función `matrix` recicla valores en el vector **sin advertencia** si el producto de las columnas y las filas no coincide con la longitud del vector:
 
 ```{r}
 matrix(my_vector, 4, 5)
 ```
 
-Para poner las intensidades de píxeles de nuestra, digamos, tercera entrada, 
-`r mnist$train$labels[3]` en la cuadrícula, podemos usar:
+Para poner las intensidades de píxeles de nuestra, digamos, tercera entrada, `r mnist$train$labels[3]` en la cuadrícula, podemos usar:
 
 ```{r}
 grid <- matrix(x[3,], 28, 28)
@@ -218,13 +217,13 @@ tibble(labels = as.factor(y), row_averages = avg) %>%
 
 De esta gráfica vemos que, como es lógico, 1s usan menos tinta que los otros dígitos.
 
-Podemos calcular las sumas y promedios de la columna usando la función `colSums` y `colMeans`, respectivamente.
+Podemos calcular las sumas y los promedios de la columna usando la función `colSums` y `colMeans`, respectivamente.
 
 El paquete __matrixStats__ agrega funciones que realizan operaciones en cada fila o columna de manera muy eficiente, incluyendo las funciones `rowSds` y `colSds`.
 
 ### `apply`
 
-Las funciones que acabamos de describir están realizando una operación similar a la que `sapply` y la función `map` de __purrr__ hacen: aplicar la misma función a una parte de su objeto. En este caso, la función se aplica a cada fila o cada columna. La función `apply`le permite aplicar cualquier función, no solo `sum` o `mean`, a una matriz. El primer argumento es la matriz, el segundo es la dimensión, 1 para las filas, 2 para las columnas y el tercero es la función. Así por ejemplo, `rowMeans` se puede escribir como:
+Las funciones que acabamos de describir están realizando una operación similar a la que hacen `sapply` y la función `map` de __purrr__: aplicar la misma función a una parte de su objeto. En este caso, la función se aplica a cada fila o cada columna. La función `apply`le permite aplicar cualquier función, no solo `sum` o `mean`, a una matriz. El primer argumento es la matriz, el segundo es la dimensión, 1 para las filas, 2 para las columnas y el tercero es la función. Así, por ejemplo, `rowMeans` se puede escribir como:
 
 ```{r}
 avgs <- apply(x, 1, mean)
@@ -236,9 +235,9 @@ Pero noten que al igual que con `sapply` y `map`, podemos realizar cualquier fun
 sds <- apply(x, 2, sd)
 ```
 
-La desventaja de esta flexibilidad es que estas operaciones no son tan rápidas como las funciones dedicadas como `rowMeans`.
+La desventaja de esta flexibilidad es que estas operaciones no son tan rápidas como las funciones dedicadas, como `rowMeans`.
 
-### Filtrar columnas basadas en resúmenes
+### Filtrar columnas basado en resúmenes
 
 Ahora pasamos a la tarea 2: estudiar la variación de cada píxel y eliminar las columnas asociadas con píxeles que no cambian mucho y, por lo tanto, no informan la clasificación. Aunque es un enfoque simplista, cuantificaremos la variación de cada píxel con su desviación estándar en todas las entradas. Como cada columna representa un píxel, utilizamos la función  `colSds` del paquete __matrixStats__:
 
@@ -287,7 +286,7 @@ dim(new_x)
 
 Solo se mantienen las columnas para las que la desviación estándar es superior a 60, lo que elimina más de la mitad de los predictores.
 
-Aquí agregamos una advertencia importante relacionada con el subconjunto de matrices: si selecciona una columna o una fila, el resultado ya no es una matriz sino un vector.
+Aquí agregamos una advertencia importante relacionada con el subconjunto de matrices: si seleccionan una columna o una fila, el resultado ya no es una matriz sino un vector.
 
 ```{r}
 class(x[,1])
@@ -316,7 +315,7 @@ Para ver un histograma de todos nuestros datos predictores, podemos usar:
 qplot(as.vector(x), bins = 30, color = I("black"))
 ```
 
-Notamos una clara dicotomía que se explica como partes de la imagen con tinta y partes sin ella. Si creemos que los valores a continuación, digamos, 50 son manchas, podemos hacerlos rápidamente cero usando:
+Notamos una clara dicotomía que se explica como partes de la imagen con tinta y partes sin ella. Si creemos que los valores menor que, digamos, 50 son manchas, podemos hacerlos rápidamente cero usando:
 
 ```{r, eval=FALSE}
 new_x <- x
@@ -349,7 +348,7 @@ bin_x[bin_x < 255/2] <- 0
 bin_x[bin_x > 255/2] <- 1
 ```
 
-También podemos convertir a una matriz de lógicas y luego coaccionar a números como este:
+También podemos convertir a una matriz de valores lógicos y luego coaccionar a números como este:
 
 ```{r}
 bin_X <- (x > 255/2)*1
@@ -368,7 +367,7 @@ image(rows, columns, matrix(-bin_x[8,], 28, 28), main ="Binarized")
 
 ### Vectorización para matrices
 
-En R, si restamos un vector de una matriz, el primer elemento del vector se resta de la primera fila, el segundo elemento de la segunda fila, y así sucesivamente. Usando la notación matemática, la escribiríamos de la siguiente manera:
+En R, si restamos un vector de una matriz, el primer elemento del vector se resta de la primera fila, el segundo elemento de la segunda fila, y así sucesivamente. Usando notación matemática, lo escribiríamos de la siguiente manera:
 
 $$
 \begin{pmatrix}
@@ -395,7 +394,7 @@ $$
 
 
 
-Lo mismo es válido para otras operaciones aritméticas. Esto implica que podemos escalar cada fila de una matriz como esta:
+Lo mismo es válido para otras operaciones aritméticas. Esto implica que podemos escalar cada fila de una matriz así:
 
 ```{r, eval=FALSE}
 (x - rowMeans(x))/ rowSds(x)
@@ -413,7 +412,7 @@ También podemos usar la función `sweep` que funciona de manera similar a `appl
 X_mean_0 <- sweep(x, 2, colMeans(x))
 ```
 
-La función `sweep` en realidad tiene otro argumento que le permite definir la operación aritmética. Entonces, para dividir por la desviación estándar, hacemos lo siguiente:
+La función `sweep` tiene otro argumento que le permite definir la operación aritmética. Entonces, para dividir por la desviación estándar, hacemos lo siguiente:
 
 ```{r}
 x_mean_0 <- sweep(x, 2, colMeans(x))
@@ -471,6 +470,5 @@ qr(x)
 6\. Calcule el promedio de cada columna de `x`.
 
 
-7\. Para cada dígito en los datos de entrenamiento MNIST, calcule la proporción de píxeles que se encuentran en un área gris, definida como valores entre 50 y 205.
-Haga un diagrama de caja por clase de dígitos. Sugerencia: utilice operadores lógicos y `rowMeans`.
+7\. Para cada dígito en los datos de entrenamiento MNIST, calcule la proporción de píxeles que se encuentran en un área gris, definida como valores entre 50 y 205. Haga un diagrama de caja basado en clase de dígitos. Sugerencia: utilice operadores lógicos y `rowMeans`.
 
