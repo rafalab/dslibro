@@ -10,7 +10,7 @@ Aquí describimos técnicas poderosas útiles para el análisis exploratorio de 
 
 ### Preservando la distancia
 
-Consideramos un ejemplo con alturas gemelas. Algunas parejas son adultas, otras son niños. Aquí simulamos 100 puntos bidimensionales que representan el número de desviaciones estándar que cada individuo tiene respecto a la altura media. Cada punto es un par de gemelos. Utilizamos la función `mvrnorm` del paquete __MASS__ para simular  datos de distribución normales de dos variables.
+Consideremos un ejemplo con alturas de gemelos. Algunas parejas son adultas, otras son niños. Aquí simulamos 100 puntos bidimensionales que representan el número de desviaciones estándar que cada individuo tiene respecto a la altura media. Cada punto es un par de gemelos. Utilizamos la función `mvrnorm` del paquete __MASS__ para simular  datos de distribución normales de dos variables.
 
 ```{r, message=FALSE}
 set.seed(1988)
@@ -39,9 +39,9 @@ lines(x[c(2, 51),], col = "red", lwd = 2)
 points(x[c(1, 2, 51),], pch = 16)
 ```
 
-Nuestras características son $N$ puntos bidimensionales, las dos alturas y, con fines ilustrativos,  actuaremos como si visualizar dos dimensiones es demasiado difícil. Por lo tanto, queremos reducir las dimensiones de dos a una, pero aún así poder comprender características importantes de los datos, por ejemplo, que las observaciones se agrupan en dos grupos: adultos y niños.
+Nuestras características son $N$ puntos bidimensionales, las dos alturas y, con fines ilustrativos,  actuaremos como si visualizar dos dimensiones es demasiado difícil. Por lo tanto, queremos reducir las dimensiones de dos a una, pero todavía poder comprender características importantes de los datos, por ejemplo, que las observaciones se agrupan en dos grupos: adultos y niños.
 
-Consideremos un desafío específico: queremos un resumen unidimensional de nuestros predictores a partir del cual podamos aproximar la distancia entre dos observaciones. En la figura anterior, mostramos la distancia entre la observación 1 y 2 (azul) y la observación 1 y 51 (rojo). Tengan en cuenta que la línea azul es más corta, lo que implica que 1 y 2 están más cerca.
+Consideremos un desafío específico: queremos un resumen unidimensional de nuestros predictores a partir del cual podamos aproximar la distancia entre dos observaciones. En el gráfico anterior, mostramos la distancia entre la observación 1 y 2 (azul) y la observación 1 y 51 (rojo). Noten que la línea azul es más corta, que implica que 1 y 2 están más cerca.
 
 Podemos calcular estas distancias usando `dist`:
 ```{r}
@@ -50,9 +50,9 @@ as.matrix(d)[1, 2]
 as.matrix(d)[2, 51]
 ```
 
-Esta distancia se basa en dos dimensiones y necesitamos una aproximación de distancia basada en una sola.
+Esta distancia se basa en dos dimensiones y necesitamos una aproximación de distancia basada en solo una.
 
-Comencemos con un enfoque ingenuo de simplemente eliminar una de las dos dimensiones. Comparemos las distancias reales con la distancia calculada solo con la primera dimensión:
+Comencemos con un enfoque simplista de solo eliminar una de las dos dimensiones. Comparemos las distancias reales con la distancia calculada solo con la primera dimensión:
 
 ```{r}
 z <- x[,1]
@@ -65,7 +65,7 @@ plot(dist(x), dist(z))
 abline(0,1, col = "red")
 ```
 
-El gráfico se ve casi igual si usamos la segunda dimensión. Obtenemos una subestimación general. Esto es de esperarse porque estamos agregando más cantidades positivas en el cálculo de la distancia a medida que aumentamos el número de dimensiones. Si en cambio usamos un promedio, como este:
+El gráfico se ve casi igual si usamos la segunda dimensión. Obtenemos una subestimación general. Esto no sorprende porque estamos añadiendo más cantidades positivas al cálculo de la distancia a medida que aumentamos el número de dimensiones. Si, en cambio, usamos un promedio, como este:
 
 $$\sqrt{ \frac{1}{2} \sum_{j=1}^2 (X_{i,j}-X_{i,j})^2 },$$
 
@@ -86,7 +86,7 @@ sd(dist(x) - dist(z)*sqrt(2))
 
 Ahora, ¿podemos elegir un resumen unidimensional que haga que esta aproximación sea aún mejor?
 
-Si consideramos el diagrama de dispersión anterior y visualizamos una línea entre cualquier par de puntos, la longitud de esta línea es la distancia entre los dos puntos. Estas líneas tienden a ir a lo largo de la dirección de la diagonal. TengaN en cuenta que si en su lugar graficamos la diferencia versus el promedio:
+Si consideramos el diagrama de dispersión anterior y visualizamos una línea entre cualquier par de puntos, la longitud de esta línea es la distancia entre los dos puntos. Estas líneas tienden a ir a lo largo de la dirección de la diagonal. Noten que si en su lugar graficamos la diferencia versus el promedio:
 
 ```{r}
 z <- cbind((x[,2] + x[,1])/2, x[,2] - x[,1])
@@ -102,7 +102,7 @@ lines(z[c(2,51),], col = "red", lwd = 2)
 points(z[c(1,2,51),], pch = 16)
 ```
 
-Esto significa que podemos ignorar la segunda dimensión y no perder demasiada información. Si la línea es completamente plana, no perdemos ninguna información. Usando la primera dimensión de esta matriz transformada obtenemos una aproximación aún mejor:
+Esto significa que podemos ignorar la segunda dimensión y no perder demasiada información. Si la línea es completamente plana, no perdemos ninguna información. Usando la primera dimensión de esta matriz transformada, obtenemos una aproximación aún mejor:
 
 ```{r distance-approx-2, echo=FALSE, fig.width=3, fig.height=3, out.width="40%"}
 rafalib::mypar()
@@ -116,7 +116,7 @@ con la diferencia típica mejorada aproximadamente un 35%:
 sd(dist(x) - dist(z[,1])*sqrt(2))
 ```
 
-Más tarde aprendemos que `z[,1]` es el primer componente principal de la matriz `x`.
+Más tarde, aprendemos que `z[,1]` es el primer componente principal de la matriz `x`.
 
 ### Transformaciones lineales (avanzado)
 
@@ -132,7 +132,7 @@ $$Z_{i,2} = a_{1,2} X_{i,1} + a_{2,2} X_{i,2}$$
 
 con $a_{1,2} = 1$ y $a_{2,2} = -1$.
 
-También podemos usar la transformación lineal para obtener $X$ de $Z$:
+Además, podemos usar la transformación lineal para obtener $X$ de $Z$:
 
 $$X_{i,1} = b_{1,1} Z_{i,1} + b_{2,1} Z_{i,2}$$
 
@@ -167,7 +167,7 @@ A^{-1} = \,
 \end{pmatrix}.
 $$
 
-La reducción de dimensiones a menudo se puede describir como la aplicación de una transformación $A$ a una matriz $X$ con muchas columnas que mueven la información contenida en $X$ a las primeras columnas de $Z=AX$, manteniendo solo estas pocas columnas informativas, reduciendo así la dimensión de los vectores contenidos en las filas.
+La reducción de dimensiones a menudo se puede describir como la aplicación de una transformación $A$ a una matriz $X$ con muchas columnas que mueven la información contenida en $X$ a las primeras columnas de $Z=AX$, manteniendo solo estas pocas columnas informativas y reduciendo así la dimensión de los vectores contenidos en las filas.
 
 ### Transformaciones ortogonales (avanzado)
 
@@ -181,7 +181,7 @@ $$
 a_{1,1} a_{1,2} + a_{2,1} a_{2,2} = 0.
 $$
 
-Recuerde que si las columnas están centradas para tener un promedio de 0, entonces la suma de los cuadrados es equivalente a la varianza o desviación estándar al cuadrado.
+Recuerden que si las columnas están centradas para tener un promedio de 0, entonces la suma de los cuadrados es equivalente a la varianza o desviación estándar al cuadrado.
 
 En nuestro ejemplo, para lograr la ortogonalidad, multiplicamos el primer set de coeficientes (primera columna de $A$) por $\sqrt{2}$ y el segundo por $1/\sqrt{2}$, entonces obtenemos la misma distancia exacta si usamos ambas dimensiones:
 
@@ -211,7 +211,7 @@ sd(dist(x) - dist(z[,1]))
 
 En este caso, $Z$ se llama una rotación ortogonal de $X$: conserva las distancias entre filas.
 
-Tengan en cuenta que al usar la transformación anterior, podemos resumir la distancia entre dos pares de gemelos con una sola dimensión. Por ejemplo, una exploración de datos unidimensionales de la primera dimensión de $Z$ muestra claramente que hay dos grupos, adultos y niños:
+Tengan en cuenta que al usar la transformación anterior, podemos resumir la distancia entre cualquier par de gemelos con una sola dimensión. Por ejemplo, una exploración de datos unidimensionales de la primera dimensión de $Z$ muestra claramente que hay dos grupos, adultos y niños:
 
 ```{r twins-pc-1-hist, message=FALSE, warning=FALSE}
 library(tidyverse)
@@ -232,9 +232,9 @@ y la transformación produjo columnas no correlacionadas con información "indep
 cor(z[,1], z[,2])
 ```
 
-Una forma en que esta información puede ser útil en una aplicación de _machinte learning_ es que podemos reducir la complejidad de un modelo utilizando solo $Z_1$ en lugar de ambos $X_1$ y $X_2$.
+Una forma en que esta información puede ser útil en una aplicación de _machine learning_ es que podemos reducir la complejidad de un modelo utilizando solo $Z_1$ en lugar de ambos $X_1$ y $X_2$.
 
-En realidad, es común obtener datos con varios predictores altamente correlacionados. En estos casos, PCA, que describimos a continuación, puede ser bastante útil para reducir la complejidad del modelo que se está ajustando.
+Es común obtener datos con varios predictores altamente correlacionados. En estos casos, PCA, que describimos a continuación, puede ser bastante útil para reducir la complejidad del modelo que se está ajustando.
 
 ### Análisis de componentes principales
 
@@ -244,7 +244,7 @@ $$
 v_1 + v_2, \mbox{ with } v_1 = \frac{1}{N}\sum_{i=1}^N X_{i,1}^2 \mbox{ and } v_2 = \frac{1}{N}\sum_{i=1}^N X_{i,2}^2
 $$
 
-Podemos calcular $v_1$ y $v_2$ utilizando:
+Podemos calcular $v_1$ y $v_2$ al utilizar:
 ```{r}
 colMeans(x^2)
 ```
@@ -256,7 +256,7 @@ sum(colMeans(x^2))
 sum(colMeans(z^2))
 ```
 
-Sin embargo, mientras que la variabilidad en las dos columnas de `X` es casi la misma, en la versión transformada $Z$ el 99% de la variabilidad se incluye solo en la primera dimensión:
+Sin embargo, mientras que la variabilidad en las dos columnas de `X` es casi la misma, en la versión transformada $Z$, el 99% de la variabilidad se incluye solo en la primera dimensión:
 
 ```{r}
 v <- colMeans(z^2)
@@ -272,9 +272,9 @@ pca$rotation
 
 Tengan en cuenta que el primer PC es casi el mismo que ese proporcionado por el $(X_1 + X_2)/ \sqrt{2}$ que utilizamos anteriormente (excepto quizás por un cambio de signo que es arbitrario).
 
-[fix is PCA a function? NO, IT `prcomp` FIX ENGLISH as in `PCA`? fix eng too; check entire para] La función `prcomp` devuelve la rotación necesaria para transformar $X$ para que la variabilidad de las columnas disminuya de más variable a menos (se accede con `$rotation`) así como la neuva matriz resultante  (que se accede con `$ x`). Por defecto `prcomp` centra las columnas de $X$ antes de calcular las matrices.
+La función `prcomp` devuelve la rotación necesaria para transformar $X$ para que la variabilidad de las columnas disminuya de más variable a menos (se accede con `$rotation`) así como la nueva matriz resultante (que se accede con `$ x`). Por defecto, `prcomp` centra las columnas de $X$ antes de calcular las matrices.
 
-Entonces, usando la multiplicación matricial que se muestra arriba, tenemos que lo siguiente es lo mismo (demostrado por una diferencia entre elementos de esencialmente cero):
+Entonces, usando la multiplicación de matrices que se muestra arriba, notamos que las dos siguientes operaciones dan el mismo resultado (demostrado por una diferencia entre elementos de prácticamente cero):
 
 ```{r}
 a <- sweep(x, 2, colMeans(x))
@@ -334,20 +334,20 @@ illustrate_pca(x, flip = -1)
 
 Resulta que podemos encontrar esta transformación lineal no solo para dos dimensiones, sino también para matrices de cualquier dimensión $p$.
 
-[fix check eng too, OK IN SPANISH] Para una matriz multidimensional $X$ con $p$ columnas, se puede  encontrar una transformación $Z$ que conserva la distancia entre filas, pero con la varianza de las columnas en orden decreciente. La segunda columna es el segundo componente principal, la tercera columna es el tercer componente principal, y así sucesivamente. Como en nuestro ejemplo, si después de un cierto número de columnas, digamos $k$, las variaciones de las columnas de $Z_j$ con $j>k$ son muy pequeñas, significa que estas dimensiones tienen poco que contribuir a la distancia y podemos aproximar la distancia entre dos puntos con solo $k$ dimensiones. Si $k$ es mucho más pequeño que $p$, entonces podemos lograr un resumen muy eficiente de nuestros datos.
+Para una matriz multidimensional $X$ con $p$ columnas, se puede encontrar una transformación $Z$ que conserva la distancia entre filas, pero con la varianza de las columnas en orden decreciente. La segunda columna es el segundo componente principal, la tercera columna es el tercer componente principal, y así sucesivamente. Como en nuestro ejemplo, si después de un cierto número de columnas, digamos $k$, las variaciones de las columnas de $Z_j$ con $j>k$ son muy pequeñas, significa que estas dimensiones tienen poco que contribuir a la distancia y podemos aproximar la distancia entre dos puntos con solo $k$ dimensiones. Si $k$ es mucho más pequeño que $p$, entonces podemos lograr un resumen muy eficiente de nuestros datos.
 
 
-### Ejemplo Iris
+### Ejemplo lirio
 
-Los datos del iris son un ejemplo ampliamente utilizado en los cursos de análisis de datos. Incluye cuatro medidas botánicas relacionadas con tres especies de flores:
+Los datos del lirio (_iris_ en inglés) son un ejemplo ampliamente utilizado en los cursos de análisis de datos. Incluye cuatro medidas botánicas relacionadas con tres especies de flores:
 
 ```{r}
 names(iris)
 ```
 
-Si imprime `iris$Species` verá que los datos están ordenados por especie.
+Si imprimen `iris$Species`, verán que los datos están ordenados por especie.
 
-Calculemos la distancia entre cada observación. Puede ver claramente las tres especies con una especie muy diferente de las otras dos:
+Calculemos la distancia entre cada observación. Pueden ver claramente las tres especies con una especie muy diferente de las otras dos:
 
 ```{r, eval=FALSE}
 x <- iris[,1:4] %>% as.matrix()
@@ -384,9 +384,9 @@ rafalib::mypar()
 illustrate_pca(x)
 ```
 
-Y vea que el primer patrón es la longitud del sépalo, la longitud del pétalo y el ancho del pétalo (rojo) en una dirección y el ancho del sépalo (azul) en la otra. El segundo patrón es la longitud del sépalo y el ancho del pétalo en una dirección (azul) y la longitud y el ancho del pétalo en la otra (rojo). Puede ver en los pesos que la primera PC1 controla la mayor parte de la variabilidad y separa claramente el primer tercio de las muestras (setosa) de los dos tercios (versicolor y virginica). Si observa la segunda columna de las pesas, observa que separa algo versicolor (rojo) de virginica (azul).
+Y ver que el primer patrón es la longitud del sépalo, la longitud del pétalo y el ancho del pétalo (rojo) en una dirección y el ancho del sépalo (azul) en la otra. El segundo patrón es la longitud del sépalo y el ancho del pétalo en una dirección (azul) y la longitud y el ancho del pétalo en la otra (rojo). [fix check ok til end] Pueden ver de "weights" que la primera PC1 controla la mayor parte de la variabilidad y separa claramente el primer tercio de las muestras (setosa) de los dos tercios (versicolor y virginica). Si miran a la segunda columna de "weights" observan que separa un poco versicolor (rojo) de virginica (azul).
 
-Podemos ver esto mejor al trazar las dos primeras PC con el color que representa la especie:
+Podemos ver esto mejor al graficar las dos primeras PC con color representando especie:
 
 
 ```{r iris-pca}
@@ -407,7 +407,7 @@ Este ejemplo es más realista que el primer ejemplo artificial que utilizamos, y
 
 ### Ejemplo de MNIST
 
-El ejemplo de dígitos escritos tiene 784 características. ¿Hay espacio para la reducción de datos? ¿Podemos crear algoritmos sencillos de _machinte learning_ con menos funciones?
+El ejemplo de dígitos escritos tiene 784 características. ¿Hay espacio para la reducción de datos? ¿Podemos crear algoritmos sencillos de _machine learning_ con menos características?
 
 Carguemos los datos:
 ```{r}
@@ -430,13 +430,13 @@ pc <- 1:ncol(mnist$test$images)
 qplot(pc, pca$sdev)
 ```
 
-Podemos ver que las primeras PC ya explican un gran porcentaje de la variabilidad:
+[fix PC o PCs?] Podemos ver que las primeras PCs ya explican un gran porcentaje de la variabilidad:
 
 ```{r}
 summary(pca)$importance[,1:5]
 ```
 
-Y con solo mirar las dos primeras PC vemos información sobre la clase. Aquí hay una muestra aleatoria de 2,000 dígitos:
+Y con solo mirar las dos primeras PCs vemos información sobre la clase. Aquí hay una muestra aleatoria de 2,000 dígitos:
 
 ```{r mnist-pca-1-2-scatter}
 data.frame(PC1 = pca$x[,1], PC2 = pca$x[,2],
@@ -465,7 +465,7 @@ tmp %>% filter(id<5) %>%
   facet_wrap(~label, nrow = 1)
 ```
 
-Las PC de menor varianza aparecen relacionadas con la variabilidad sin importancia en las esquinas:
+Las PCs de menor varianza parecen relacionadas [fix choose] a la variabilidad sin importancia/irrelevante/insignificante en las esquinas:
 
 ```{r mnist-pca-last,, echo = FALSE, out.width="100%", fig.width=6, fig.height=1.75}
 tmp %>% filter(id>5) %>%
@@ -476,7 +476,7 @@ tmp %>% filter(id>5) %>%
   facet_wrap(~label, nrow = 1)
 ```
 
-Ahora apliquemos la transformación que aprendimos con los datos de entrenamiento a los datos de prueba, reduzca la dimensión y ejecute knn en solo un pequeño número de dimensiones.
+Ahora apliquemos la transformación que aprendimos con los datos de entrenamiento a los datos de evaluación, reduzcamos la dimensión y [fix no es kNN? fix eng] ejecutemos knn en solo un pequeño número de dimensiones.
 
 Intentamos 36 dimensiones ya que esto explica aproximadamente el 80% de los datos. Primero ajuste el modelo:
 
@@ -488,23 +488,23 @@ y <- factor(mnist$train$labels)
 fit <- knn3(x_train, y)
 ```
 
-Ahora transforma el set de evaluación:
+Ahora, transformen el set de evaluación:
 ```{r}
 x_test <- sweep(mnist$test$images, 2, col_means) %*% pca$rotation
 x_test <- x_test[,1:k]
 ```
 
-Y estamos listos para predecir y ver cómo lo hacemos:
+Y estamos listos para predecir y evaluar los resultados:
 ```{r}
 y_hat <- predict(fit, x_test, type = "class")
 confusionMatrix(y_hat, factor(mnist$test$labels))$overall["Accuracy"]
 ```
 
-Con solo 36 dimensiones, obtenemos una precisión muy superior a 0,95.
+Con solo 36 dimensiones, obtenemos una precisión muy superior a 0.95.
 
 ## Ejercicios
 
-1\. Queremos explorar el `tissue_gene_expression` predictores al trazarlos.
+1\. Queremos explorar los predictores `tissue_gene_expression` graficándolos.
 
 
 ```{r, eval=FALSE}
@@ -512,19 +512,18 @@ data("tissue_gene_expression")
 dim(tissue_gene_expression$x)
 ```
 
-Queremos tener una idea de qué observaciones son cercanas entre sí, pero
-los predictores son de 500 dimensiones, por lo que es difícil trazar. Trace los dos primeros componentes principales con un color que represente el tipo de tejido.
+Queremos tener una idea de qué observaciones están cercas entre sí, pero como los predictores son de 500 dimensiones, es difícil graficar. Grafique los dos primeros componentes principales con color representando el tipo de tejido.
 
 
-2\. Los predictores para cada observación se miden en el mismo dispositivo y procedimiento experimental. Esto introduce sesgos que pueden afectar a todos los predictores de una observación. Para cada observación, calcule el promedio en todos los predictores y luego grafique esto contra la primera PC con el color que representa el tejido. Informe la correlación.
+2\. [fix check had to tweak] Los predictores para cada observación se miden en el mismo dispositivo y procedimiento experimental. Esto introduce sesgos que pueden afectar a todos los predictores de una observación. Para cada observación, calcule el promedio en todos los predictores y luego grafique esto contra la primera PC con color representando tejido. Indique la correlación.
 
 
 
 3\. Vemos una asociación con la primera PC y los promedios de observación. Vuelva a hacer la PCA pero solo después de quitar el centro.
 
 
-4\. Para las primeras 10 PC, haga un diagrama de caja que muestre los valores para cada tejido.
+4\. Para las primeras 10 PCs, haga un diagrama de caja que muestre los valores para cada tejido.
 
 
-5\. Grafique el porcentaje de varianza explicado por el número de PC. Sugerencia: use la función `summary`.
+5\. [fix check] Grafique el porcentaje de varianza explicado por número de PC. Sugerencia: use la función `summary`.
 
