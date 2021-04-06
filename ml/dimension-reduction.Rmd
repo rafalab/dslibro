@@ -236,7 +236,7 @@ Una forma en que esta información puede ser útil en una aplicación de _machin
 
 Es común obtener datos con varios predictores altamente correlacionados. En estos casos, PCA, que describimos a continuación, puede ser bastante útil para reducir la complejidad del modelo que se está ajustando.
 
-### Análisis de componentes principales
+### Análisis de componentes principales {#pca}
 
 En el cálculo anterior, la variabilidad total en nuestros datos puede definirse como la suma de la suma de los cuadrados de las columnas. Suponemos que las columnas están centradas, por lo que esta suma es equivalente a la suma de las varianzas de cada columna:
 
@@ -263,7 +263,7 @@ v <- colMeans(z^2)
 v/sum(v)
 ```
 
-El _primer componente principal_ (_first principal component_ o PC por sus siglas en inglés) de una matriz $X$ es la transformación ortogonal lineal de $X$ que maximiza esta variabilidad. La función `prcomp` provee esta información:
+El primer _componente principal_ (_principal component_ o PC por sus siglas en inglés) de una matriz $X$ es la transformación ortogonal lineal de $X$ que maximiza esta variabilidad. La función `prcomp` provee esta información:
 
 ```{r}
 pca <- prcomp(x)
@@ -290,7 +290,7 @@ b <- pca$x
 max(abs(a - b))
 ```
 
-Podemos visualizarlos para ver cómo el primer componente resume los datos. En el gráfico a continuación, el rojo representa valores altos y el azul representa valores negativos azules (más adelante aprendemos por qué llamamos a estos "weights" y "patterns"):
+Podemos visualizarlos para ver cómo el primer componente resume los datos. En el gráfico a continuación, el rojo representa valores altos y el azul representa valores negativos azules. Más adelante, en la Sección \@ref(factor-analysis), aprendemos por qué llamamos a estos pesos y patrones (_patterns_ en inglés):
 
 
 ```{r illustrate-pca-twin-heights, echo=FALSE, height = 5, out.width="70%"}
@@ -384,9 +384,9 @@ rafalib::mypar()
 illustrate_pca(x)
 ```
 
-Y ver que el primer patrón es la longitud del sépalo, la longitud del pétalo y el ancho del pétalo (rojo) en una dirección y el ancho del sépalo (azul) en la otra. El segundo patrón es la longitud del sépalo y el ancho del pétalo en una dirección (azul) y la longitud y el ancho del pétalo en la otra (rojo). [fix check ok til end] Pueden ver de "weights" que la primera PC1 controla la mayor parte de la variabilidad y separa claramente el primer tercio de las muestras (setosa) de los dos tercios (versicolor y virginica). Si miran a la segunda columna de "weights" observan que separa un poco versicolor (rojo) de virginica (azul).
+Y ver que el primer patrón es la longitud del sépalo, la longitud del pétalo y el ancho del pétalo (rojo) en una dirección y el ancho del sépalo (azul) en la otra. El segundo patrón es la longitud del sépalo y el ancho del pétalo en una dirección (azul) y la longitud y el ancho del pétalo en la otra (rojo).  Pueden ver de los pesos (_weights_ en inglés) que la primera PC1 controla la mayor parte de la variabilidad y separa claramente el primer tercio de las muestras (setosa) de los dos tercios (versicolor y virginica). Si miran la segunda columna de los pesos, observarán que separa un poco versicolor (rojo) de virginica (azul).
 
-Podemos ver esto mejor al graficar las dos primeras PC con color representando especie:
+Podemos ver esto mejor al graficar los dos primeros PCs con color representando especie:
 
 
 ```{r iris-pca}
@@ -418,7 +418,7 @@ if(!exists("mnist")) mnist <- read_mnist()
 Debido a que los píxeles son tan pequeños, esperamos que los píxeles cercanos entre sí en la cuadrícula estén correlacionados, lo que significa que la reducción de dimensión debería ser posible.
 
 
-Probemos PCA y exploremos la variación de las PC. Esto tomará unos segundos ya que es una matriz bastante grande.
+Probemos PCA y exploremos la variación de los PC. Esto tomará unos segundos ya que es una matriz bastante grande.
 
 ```{r, cache=TRUE}
 col_means <- colMeans(mnist$test$images)
@@ -430,7 +430,7 @@ pc <- 1:ncol(mnist$test$images)
 qplot(pc, pca$sdev)
 ```
 
-[fix PC o PCs?] Podemos ver que las primeras PCs ya explican un gran porcentaje de la variabilidad:
+Podemos ver que los primeros PCs ya explican un gran porcentaje de la variabilidad:
 
 ```{r}
 summary(pca)$importance[,1:5]
@@ -465,7 +465,7 @@ tmp %>% filter(id<5) %>%
   facet_wrap(~label, nrow = 1)
 ```
 
-Las PCs de menor varianza parecen relacionadas [fix choose] a la variabilidad sin importancia/irrelevante/insignificante en las esquinas:
+Los PCs de menor varianza parecen estar relacionadas a la variabilidad irrelevante en las esquinas:
 
 ```{r mnist-pca-last,, echo = FALSE, out.width="100%", fig.width=6, fig.height=1.75}
 tmp %>% filter(id>5) %>%
@@ -476,7 +476,7 @@ tmp %>% filter(id>5) %>%
   facet_wrap(~label, nrow = 1)
 ```
 
-Ahora apliquemos la transformación que aprendimos con los datos de entrenamiento a los datos de evaluación, reduzcamos la dimensión y [fix no es kNN? fix eng] ejecutemos knn en solo un pequeño número de dimensiones.
+Ahora apliquemos la transformación que aprendimos con los datos de entrenamiento a los datos de evaluación, reduzcamos la dimensión y ejecutemos `knn3` en solo un pequeño número de dimensiones.
 
 Intentamos 36 dimensiones ya que esto explica aproximadamente el 80% de los datos. Primero ajuste el modelo:
 
@@ -515,15 +515,23 @@ dim(tissue_gene_expression$x)
 Queremos tener una idea de qué observaciones están cercas entre sí, pero como los predictores son de 500 dimensiones, es difícil graficar. Grafique los dos primeros componentes principales con color representando el tipo de tejido.
 
 
-2\. [fix check had to tweak] Los predictores para cada observación se miden en el mismo dispositivo y procedimiento experimental. Esto introduce sesgos que pueden afectar a todos los predictores de una observación. Para cada observación, calcule el promedio en todos los predictores y luego grafique esto contra la primera PC con color representando tejido. Indique la correlación.
+2\. Los predictores de cada observación se miden en el mismo dispositivo
+de medición (un microarreglo de expresión génica) después de un
+procedimiento experimental. Se utiliza un dispositivo y procedimiento
+diferente para cada observación. Esto puede introducir sesgos que
+afecten a todos los predictores de cada observación de la misma
+manera. Para explorar el efecto de este posible sesgo, para cada
+observación, calcule el promedio de todos los predictores y luego
+grafique esto contra el primer PC con el color que representa el
+tejido. Indique la correlación.
 
 
 
-3\. Vemos una asociación con la primera PC y los promedios de observación. Vuelva a hacer la PCA pero solo después de quitar el centro.
+3\. Vemos una asociación con el primer PC y los promedios de observación. Vuelva a hacer el PCA pero solo después de quitar el centro.
 
 
-4\. Para las primeras 10 PCs, haga un diagrama de caja que muestre los valores para cada tejido.
+4\. Para los primeros 10 PCs, haga un diagrama de caja que muestre los valores para cada tejido.
 
 
-5\. [fix check] Grafique el porcentaje de varianza explicado por número de PC. Sugerencia: use la función `summary`.
+5\. Grafique el porcentaje de varianza explicado versus el número de PC. Sugerencia: use la función `summary`.
 
