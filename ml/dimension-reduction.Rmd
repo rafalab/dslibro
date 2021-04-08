@@ -4,9 +4,9 @@
 rafalib::mypar()
 ```
 
-Un reto típico de _machine learning_ incluirá una gran cantidad de predictores, lo que hace que la visualización sea algo retante. Hemos mostrado métodos para visualizar datos univariados y emparejados, pero los gráficos que revelan relaciones entre muchas variables son más complicados en dimensiones más altas. Por ejemplo, para comparar cada una de las 784 características en nuestro ejemplo de predicción de dígitos, tendríamos que crear, por ejemplo, 306,936 diagramas de dispersión. La creación de un único diagrama de dispersión de los datos es imposible debido a la alta dimensionalidad.
+Un reto típico de _machine learning_ incluirá una gran cantidad de predictores, lo que hace que la visualización sea algo retante. Hemos mostrado métodos para visualizar datos univariados y emparejados, pero los gráficos que revelan relaciones entre muchas variables son más complicados en dimensiones más altas. Por ejemplo, para comparar cada uno de las 784 atributos en nuestro ejemplo de predicción de dígitos, tendríamos que crear, por ejemplo, 306,936 diagramas de dispersión. La creación de un único diagrama de dispersión de los datos es imposible debido a la alta dimensionalidad.
 
-Aquí describimos técnicas poderosas útiles para el análisis exploratorio de datos, entre otras cosas, generalmente conocidas como _reducción de dimensiones_. La idea general es reducir la dimensión del set de datos mientras se conservan características importantes, como la distancia entre características u observaciones. Con menos dimensiones, la visualización se vuelve más factible. La técnica detrás de todo, la descomposición de valores singulares, también es útil en otros contextos. El análisis de componentes principales (_principal component analysis_ o PCA por sus siglas en inglés) es el enfoque que mostraremos. Antes de aplicar PCA a sets de datos de alta dimensión, motivaremos las ideas detrás con un ejemplo sencillo.
+Aquí describimos técnicas poderosas útiles para el análisis exploratorio de datos, entre otras cosas, generalmente conocidas como _reducción de dimensiones_. La idea general es reducir la dimensión del set de datos mientras se conservan características importantes, como la distancia entre atributos u observaciones. Con menos dimensiones, la visualización se vuelve más factible. La técnica detrás de todo, la descomposición de valores singulares, también es útil en otros contextos. El análisis de componentes principales (_principal component analysis_ o PCA por sus siglas en inglés) es el enfoque que mostraremos. Antes de aplicar PCA a sets de datos de alta dimensión, motivaremos las ideas detrás con un ejemplo sencillo.
 
 ### Preservando la distancia
 
@@ -39,7 +39,7 @@ lines(x[c(2, 51),], col = "red", lwd = 2)
 points(x[c(1, 2, 51),], pch = 16)
 ```
 
-Nuestras características son $N$ puntos bidimensionales, las dos alturas y, con fines ilustrativos,  actuaremos como si visualizar dos dimensiones es demasiado difícil. Por lo tanto, queremos reducir las dimensiones de dos a una, pero todavía poder comprender características importantes de los datos, por ejemplo, que las observaciones se agrupan en dos grupos: adultos y niños.
+Nuestros atributos son $N$ puntos bidimensionales, las dos alturas y, con fines ilustrativos, actuaremos como si visualizar dos dimensiones es demasiado difícil. Por lo tanto, queremos reducir las dimensiones de dos a una, pero todavía poder entender atributos importantes de los datos, por ejemplo, que las observaciones se agrupan en dos grupos: adultos y niños.
 
 Consideremos un desafío específico: queremos un resumen unidimensional de nuestros predictores a partir del cual podamos aproximar la distancia entre dos observaciones. En el gráfico anterior, mostramos la distancia entre la observación 1 y 2 (azul) y la observación 1 y 51 (rojo). Noten que la línea azul es más corta, que implica que 1 y 2 están más cerca.
 
@@ -78,7 +78,7 @@ abline(0, 1, col = "red")
 ```
 
 
-En realidad, esto funciona bastante bien y obtenemos una diferencia típica de:
+Esto realmente funciona bastante bien y obtenemos una diferencia típica de:
 
 ```{r}
 sd(dist(x) - dist(z)*sqrt(2))
@@ -142,7 +142,7 @@ $$X_{i,2} = b_{2,1} Z_{i,1} + b_{2,2} Z_{i,2}$$
 
 con $b_{2,1} = 1$ y $a_{1,2} = -0.5$.
 
-Si saben álgebra lineal, podemos escribir la operación que acabamos de realizar de esta manera:
+Si saben álgebra lineal, pueden escribir la operación que acabamos de realizar de esta manera:
 
 $$
 Z = X A
@@ -218,7 +218,7 @@ library(tidyverse)
 qplot(z[,1], bins = 20, color = I("black"))
 ```
 
-Redujimos con éxito el número de dimensiones de dos a uno con muy poca pérdida de información.
+Redujimos exitosamente el número de dimensiones de dos a uno con muy poca pérdida de información.
 
 La razón por la que pudimos hacer esto es porque las columnas de $X$ estaban muy correlacionados:
 
@@ -272,7 +272,7 @@ pca$rotation
 
 Tengan en cuenta que el primer PC es casi el mismo que ese proporcionado por el $(X_1 + X_2)/ \sqrt{2}$ que utilizamos anteriormente (excepto quizás por un cambio de signo que es arbitrario).
 
-La función `prcomp` devuelve la rotación necesaria para transformar $X$ para que la variabilidad de las columnas disminuya de más variable a menos (se accede con `$rotation`) así como la nueva matriz resultante (que se accede con `$ x`). Por defecto, `prcomp` centra las columnas de $X$ antes de calcular las matrices.
+La función `prcomp` devuelve la rotación necesaria para transformar $X$ para que la variabilidad de las columnas disminuya de más variable a menos (se accede con `$rotation`) así como la nueva matriz resultante (que se accede con `$x`). Por defecto, `prcomp` centra las columnas de $X$ antes de calcular las matrices.
 
 Entonces, usando la multiplicación de matrices que se muestra arriba, notamos que las dos siguientes operaciones dan el mismo resultado (demostrado por una diferencia entre elementos de prácticamente cero):
 
@@ -290,7 +290,7 @@ b <- pca$x
 max(abs(a - b))
 ```
 
-Podemos visualizarlos para ver cómo el primer componente resume los datos. En el gráfico a continuación, el rojo representa valores altos y el azul representa valores negativos azules. Más adelante, en la Sección \@ref(factor-analysis), aprendemos por qué llamamos a estos pesos y patrones (_patterns_ en inglés):
+Podemos visualizarlos para ver cómo el primer componente resume los datos. En el gráfico a continuación, el rojo representa valores altos y el azul representa valores negativos. Más adelante, en la Sección \@ref(factor-analysis), aprendemos por qué llamamos a estos pesos (_weights_ en inglés) y patrones (_patterns_ en inglés):
 
 
 ```{r illustrate-pca-twin-heights, echo=FALSE, height = 5, out.width="70%"}
@@ -369,7 +369,7 @@ Nuestros predictores aquí tienen cuatro dimensiones, pero tres están muy corre
 cor(x)
 ```
 
-Si aplicamos PCA, deberíamos poder aproximar esta distancia con solo dos dimensiones, comprimiendo las dimensiones altamente correlacionadas. Utilizando la función `summary` podemos ver la variabilidad explicada por cada PC:
+Si aplicamos PCA, deberíamos poder aproximar esta distancia con solo dos dimensiones, comprimiendo las dimensiones altamente correlacionadas. Utilizando la función `summary`, podemos ver la variabilidad explicada por cada PC:
 
 
 ```{r}
@@ -384,7 +384,7 @@ rafalib::mypar()
 illustrate_pca(x)
 ```
 
-Y ver que el primer patrón es la longitud del sépalo, la longitud del pétalo y el ancho del pétalo (rojo) en una dirección y el ancho del sépalo (azul) en la otra. El segundo patrón es la longitud del sépalo y el ancho del pétalo en una dirección (azul) y la longitud y el ancho del pétalo en la otra (rojo).  Pueden ver de los pesos (_weights_ en inglés) que la primera PC1 controla la mayor parte de la variabilidad y separa claramente el primer tercio de las muestras (setosa) de los dos tercios (versicolor y virginica). Si miran la segunda columna de los pesos, observarán que separa un poco versicolor (rojo) de virginica (azul).
+Y ver que el primer patrón es la longitud del sépalo, la longitud del pétalo y el ancho del pétalo (rojo) en una dirección y el ancho del sépalo (azul) en la otra. El segundo patrón es la longitud del sépalo y el ancho del pétalo en una dirección (azul) y la longitud y el ancho del pétalo en la otra (rojo). Pueden ver de los pesos que la primera PC1 controla la mayor parte de la variabilidad y separa claramente el primer tercio de las muestras (setosa) de los dos tercios (versicolor y virginica). Si miran la segunda columna de los pesos, observarán que separa un poco versicolor (rojo) de virginica (azul).
 
 Podemos ver esto mejor al graficar los dos primeros PCs con color representando especie:
 
@@ -407,7 +407,7 @@ Este ejemplo es más realista que el primer ejemplo artificial que utilizamos, y
 
 ### Ejemplo de MNIST
 
-El ejemplo de dígitos escritos tiene 784 características. ¿Hay espacio para la reducción de datos? ¿Podemos crear algoritmos sencillos de _machine learning_ con menos características?
+El ejemplo de dígitos escritos tiene 784 atributos. ¿Hay espacio para la reducción de datos? ¿Podemos crear algoritmos sencillos de _machine learning_ con menos atributos?
 
 Carguemos los datos:
 ```{r}
@@ -418,7 +418,7 @@ if(!exists("mnist")) mnist <- read_mnist()
 Debido a que los píxeles son tan pequeños, esperamos que los píxeles cercanos entre sí en la cuadrícula estén correlacionados, lo que significa que la reducción de dimensión debería ser posible.
 
 
-Probemos PCA y exploremos la variación de los PC. Esto tomará unos segundos ya que es una matriz bastante grande.
+Probemos PCA y exploremos la variación de los PCs. Esto tomará unos segundos ya que es una matriz bastante grande.
 
 ```{r, cache=TRUE}
 col_means <- colMeans(mnist$test$images)
@@ -478,7 +478,7 @@ tmp %>% filter(id>5) %>%
 
 Ahora apliquemos la transformación que aprendimos con los datos de entrenamiento a los datos de evaluación, reduzcamos la dimensión y ejecutemos `knn3` en solo un pequeño número de dimensiones.
 
-Intentamos 36 dimensiones ya que esto explica aproximadamente el 80% de los datos. Primero ajuste el modelo:
+Intentamos 36 dimensiones ya que esto explica aproximadamente el 80% de los datos. Primero, ajuste el modelo:
 
 ```{r}
 library(caret)
