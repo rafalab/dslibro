@@ -49,6 +49,7 @@
 | __E__ | | | | |
 | editing panel | panel de edición | the editing panel |  | panel de edición |
 | element-wise | elemento por elemento |  |  |  |
+| entropy | entropía |  |  |  |
 | Exploratory Data Analysis (EDA) | Análisis exploratorio de datos (_EDA_ por sus siglas en inglés) | exploratory data analysis (EDA) |Análisis exploratorio de datos | Análisis exploratorio de datos |
 | execute (verb)| ejecutar |to execute the code | ejecutar | ejecutar |
 | __F__ | | | | |
@@ -98,13 +99,14 @@ transformación logarítmica   |  |
 | (aesthetic) mappings | mapeos estéticos | |  |  |
 | match (verb)| aparear  | | coincidencia |  |
 | match (noun)| apareado |  | coincidencia |  |
-| mean absolute error | | |  |  |
+| mean square error | error cuadrático medio | |  |  |
 | missing data | datos faltantes| | datos perdidos |
 | missing value | valor faltante | | valor faltante |  |  
 | modelling|  modelando ||modelado  |  |
 | motivating| motivantes |motivating examples, motivating case studies |ilustrativo, estimulante, motivante| ilustrativo | 
 | maximum likelihood estimation | estimación de máxima verosimilitud | | | |
 | __N__ | | | | |
+| Naive Bayes | Naive Bayes  |  |  |  |
 | named list | lista con nombres |  | lista nombrada  |  |
 | nested | anidado o anidada | nested sorting, nested design | ordenar por categorías? orden anidado?, diseño anidado| diseño anidado |
 | notebook |  | un _notebook_ |  |
@@ -136,13 +138,14 @@ transformación logarítmica   |  |
 | recall | recall  | |  |
 | R software environment | ambiente de _software_ R | |ambiente de trabajo en R | entorno de R |
 | R environment | ambiente de R | | ambiente de R/ambiente de trabajo | entorno de R |
-| random forests | _random forest_| | random forest | [árbol aleatorio](https://iartificial.net/random-forest-bosque-aleatorio)|
+| random forests | _random forest_| | random forest | |
 | raw data | datos sin procesar  | | datos sin procesar, datos crudos |  |
 | read-in | leer, importar |   | leer (a veces "importar") | leer |
 | refresh | actualizar | | actualizar |  |
 | regular expression | expresión regular  |  |expresión regular  |  |
 | relational operators | operadores relacionales |`>` and `<` are relational operators | símbolos de relación| operadores relacionales | 
 | return key | tecla _return_ |  |  | tecla de retorno, <ENTER> |
+| ROC curve | curva ROC  | |  |
 | run| correr, ejecutar |to run the code | correr, ejecutar | ejecutar |
 | __S__ | | | | |
 | sample quantiles | cuantiles muestrales  |  |  |
