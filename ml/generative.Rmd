@@ -8,7 +8,7 @@ $$
 
 Hemos descrito varios enfoques para estimar $p(\mathbf{x})$. En todos estos, estimamos la probabilidad condicional directamente y no consideramos la distribución de los predictores. En _machine learning_, estos se denominan enfoques _discriminativos_.
 
-Sin embargo, el teorema de Bayes nos dice que conocer la distribución de los predictores $\mathbf{X}$ puede ser útil. Métodos que modelan la distribución conjunta de $Y$ y $\mathbf{X}$ se denominan _modelos generativos_ (modelamos cómo todos los datos, $\mathbf{X}$ y $Y$, se generan). Comenzamos describiendo el modelo generativo más general, _Naive Bayes_, y luego describimos dos casos específicos: el análisis discriminante cuadrático (_quadratic discriminant analysis_ o QDA en inglés) y el análisis discriminante lineal (_linear discriminant analysis_ o LDA en inglés).
+Sin embargo, el teorema de Bayes nos dice que conocer la distribución de los predictores $\mathbf{X}$ puede ser útil. Métodos que modelan la distribución conjunta de $Y$ y $\mathbf{X}$ se denominan _modelos generativos_ (modelamos cómo todos los datos, $\mathbf{X}$ e $Y$, se generan). Comenzamos describiendo el modelo generativo más general, _Naive Bayes_, y luego describimos dos casos específicos: el análisis discriminante cuadrático (_quadratic discriminant analysis_ o QDA en por sus siglas en inglés) y el análisis discriminante lineal (_linear discriminant analysis_ o LDA por sus siglas en inglés).
 
 ### Naive Bayes
 
@@ -20,9 +20,9 @@ p(\mathbf{x}) = \mbox{Pr}(Y=1|\mathbf{X}=\mathbf{x}) = \frac{f_{\mathbf{X}|Y=1}(
 $$
 
 
-con $f_{\mathbf{X}|Y=1}$ y $f_{\mathbf{X}|Y=0}$ representando las funciones de distribución del predictor $\mathbf{X}$ para las dos clases $Y=1$ y $Y=0$. La fórmula implica que si podemos estimar estas distribuciones condicionales de los predictores, podemos desarrollar una poderosa regla de decisión. Sin embargo, esto es un gran "si". A medida que avanzamos, encontraremos ejemplos en los que $\mathbf{X}$ tiene muchas dimensiones y no tenemos mucha información sobre la distribución. En estos casos, _Naive Bayes_ será prácticamente imposible de implementar. Sin embargo, hay casos en los que tenemos un pequeño número de predictores (no más de 2) y muchas categorías en las que los modelos generativos pueden ser bastante poderosos. Describimos dos ejemplos específicos y utilizamos nuestros estudios de caso descritos anteriormente para ilustrarlos.
+con $f_{\mathbf{X}|Y=1}$ y $f_{\mathbf{X}|Y=0}$ representando las funciones de distribución del predictor $\mathbf{X}$ para las dos clases $Y=1$ y $Y=0$. La fórmula implica que si podemos estimar estas distribuciones condicionales de los predictores, podemos desarrollar una poderosa regla de decisión. Sin embargo, esto es un gran "si". A medida que avancemos, encontraremos ejemplos en los que $\mathbf{X}$ tiene muchas dimensiones y no tenemos mucha información sobre la distribución. En estos casos, _Naive Bayes_ será prácticamente imposible de implementar. Sin embargo, hay casos en los que tenemos un pequeño número de predictores (no más de 2) y muchas categorías en las que los modelos generativos pueden ser bastante poderosos. Describimos dos ejemplos específicos y utilizamos nuestros estudios de caso descritos anteriormente para ilustrarlos.
 
-Comencemos con un caso muy sencillo y poco interesante, pero ilustrativo: el ejemplo relacionado con la predicción del sexo basada en la altura.
+Comencemos con un caso muy sencillo y poco interesante, pero ilustrativo: el ejemplo relacionado con la predicción del sexo basado en la altura.
 
 ```{r, warning=FALSE, message=FALSE}
 library(tidyverse)
@@ -112,7 +112,7 @@ specificity(data = factor(y_hat_bayes), reference = factor(test_set$sex))
 
 Esto se debe principalmente al hecho de que $\hat{\pi}$ es sustancialmente menor que 0.5, por lo que tendemos a predecir `Male` más a menudo. Tiene sentido que un algoritmo de _machine learning_ haga esto en nuestra muestra porque tenemos un mayor porcentaje de hombres. Pero si tuviéramos que extrapolar esto a una población general, nuestra exactitud general se vería afectada por la baja sensibilidad.
 
-El enfoque _Naive Bayes_ nos da una forma directa de corregir esto, ya que simplemente podemos forzar $\hat{\pi}$ a ser el valor que queramos. Entonces, para equilibrar la especificidad y la sensibilidad, en lugar de cambiar el umbral en la regla de decisión, simplemente podríamos cambiar $\hat{\pi}$ a 0.5 así:
+El enfoque _Naive Bayes_ nos da una forma directa de corregir esto, ya que simplemente podemos forzar $\hat{\pi}$ a ser el valor que queremos. Entonces, para equilibrar la especificidad y la sensibilidad, en lugar de cambiar el umbral en la regla de decisión, simplemente podríamos cambiar $\hat{\pi}$ a 0.5 así:
 
 ```{r}
 p_hat_bayes_unbiased <- f1 * 0.5/ (f1 * 0.5 + f0 * (1 - 0.5))
@@ -437,7 +437,7 @@ Utilice la función `train` para estimar la exactitud de LDA.
 2\. En este caso, LDA se ajusta a dos distribuciones normales de 10 dimensiones. Mire el modelo ajustado mirando el componente `finalModel` del resultado de `train`. Observe que hay un componente llamado `means` que incluye el estimado de los promedios de ambas distribuciones. Grafique este vector de promedios uno contra el otro y determine qué predictores (genes) parecen estar impulsando el algoritmo.
 
 
-3\. Repita los ejercicios 1 con QDA. ¿Tiene mejor exactitud que LDA?
+3\. Repita el ejercicio 1 con QDA. ¿Tiene mejor exactitud que LDA?
 
 
 4\. ¿Los mismos predictores (genes) impulsan el algoritmo? Haga un gráfico como en el ejercicio 2.
@@ -447,7 +447,7 @@ Utilice la función `train` para estimar la exactitud de LDA.
 
 
 
-6\. En los ejercicios anteriores vimos que ambos enfoques funcionaron bien. Grafique los valores predictores para los dos genes con las mayores diferencias entre los dos grupos en un diagrama de dispersión para ver cómo parecen seguir una distribución normal de dos variables como se supone para los enfoques LDA y QDA. Coloree los puntos por el resultado.
+6\. En los ejercicios anteriores, vimos que ambos enfoques funcionaron bien. Grafique los valores predictores para los dos genes con las mayores diferencias entre los dos grupos en un diagrama de dispersión para ver cómo parecen seguir una distribución normal de dos variables como se supone para los enfoques LDA y QDA. Coloree los puntos por el resultado.
 
 
 7\. Ahora vamos a aumentar un poco la complejidad del desafío: consideraremos todos los tipos de tejidos.
