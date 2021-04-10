@@ -4,7 +4,7 @@
 img_path <- "ml/img/"
 ```
 
-Antes de continuar aprendiendo sobre algoritmos de _machine learning_, presentamos el importante concepto de _suavización_ (_smoothing_ en inglés). La suavización es una técnica muy poderosa comúnmente usada en el análisis de datos. Otros nombres dados a esta técnica son _ajustamiento de curvas_ y _filtro de paso bajo_ (_curve fitting_ y _low pass filtering_ en inglés). La suavización está diseñada para detectar tendencias en presencia de datos ruidosos en casos en los que se desconoce la forma de la tendencia. El nombre _suavización_ proviene del hecho de que para lograr esta hazaña, suponemos que la tendencia es _suave_, como en una superficie lisa. En contraste, el ruido (_noise_ en inglés), o la desviación de la tendencia, es impredeciblemente ondulante:
+Antes de continuar aprendiendo sobre algoritmos de _machine learning_, presentamos el importante concepto de _suavización_ (_smoothing_ en inglés). La suavización es una técnica muy poderosa comúnmente usada en el análisis de datos. Otros nombres dados a esta técnica son _ajustamiento de curvas_ y _filtro de paso bajo_ (_curve fitting_ y _low pass filtering_ en inglés). La suavización está diseñada para detectar tendencias en presencia de datos ruidosos en casos en los que se desconoce la forma de la tendencia. El nombre _suavización_ proviene del hecho de que para lograr esta hazaña, suponemos que la tendencia es _suave_, como una superficie lisa. En contraste, el ruido (_noise_ en inglés), o la desviación de la tendencia, es impredeciblemente ondulante:
 
 ```{r signal-plus-noise-example, message=FALSE, warning=FALSE, fig.height=6, echo=FALSE}
 library(tidyverse)
@@ -22,7 +22,7 @@ Parte de lo que explicamos en esta sección son los supuestos que nos permiten e
 
 **Para entender por qué cubrimos este tema, recuerden que los conceptos detrás de las técnicas de suavización son extremadamente útiles en _machine learning_ porque las expectativas/probabilidades condicionales pueden considerarse como tendencias de formas desconocidas que necesitamos estimar en presencia de incertidumbre.**
 
-Para explicar estos conceptos, nos centraremos primero en un problema con un solo predictor. Específicamente, tratamos de estimar la tendencia temporal en el margen de la encuesta de votación popular de 2008 en Estados Unidos (la diferencia entre Obama y McCain).
+Para explicar estos conceptos, nos enfocaremos primero en un problema con un solo predictor. Específicamente, tratamos de estimar la tendencia temporal en el margen de la encuesta de votación popular de 2008 en Estados Unidos (la diferencia entre Obama y McCain).
 
 ```{r polls-2008-data, warning=FALSE, message=FALSE}
 library(tidyverse)
@@ -61,7 +61,7 @@ $$
 E[Y_i | X_i = x_i ] \approx \mu \mbox{ if } |x_i - x_0| \leq 3.5
 $$
 
-En la suavización, llamamos el tamaño del intervalo que satisface $|x_i - x_0| \leq 3.5$, el _tamaño de la ventana_, _parámetro de suavizado_ o _span_. Más adelante veremos que intentamos optimizar este parámetro.
+En la suavización, llamamos el tamaño del intervalo que satisface $|x_i - x_0| \leq 3.5$, el _tamaño de la ventana_, _parámetro de suavizado_ o _span_. Más adelante, veremos que intentamos optimizar este parámetro.
 
 Esta suposición implica que una buen estimado de $f(x)$ es el promedio de $Y_i$ valores en la ventana. Si definimos $A_0$ como el conjunto de índices $i$ tal que $|x_i - x_0| \leq 3.5$ y $N_0$ como el número de índices en $A_0$, entonces nuestro estimado es:
 
@@ -141,7 +141,7 @@ polls_2008 %>% mutate(smooth = fit$y) %>%
 
 ## Kernels
 
-El resultado final de la suavización de compartimiento es bastante ondulante. Una razón para esto es que cada vez que la ventana se mueve, cambian dos puntos. Podemos atenuar esto algo tomando promedios ponderados que le dan al punto central más peso que a los puntos lejanos, con los dos puntos en los bordes recibiendo muy poco peso.
+El resultado final de la suavización de compartimiento es bastante ondulante. Una de las razones es que cada vez que la ventana se mueve, cambian dos puntos. Podemos atenuar esto algo tomando promedios ponderados que le dan al punto central más peso que a los puntos lejanos, con los dos puntos en los bordes recibiendo muy poco peso.
 
 Pueden pensar en el enfoque de suavización de compartimiento como un promedio ponderado:
 
@@ -235,7 +235,7 @@ Hay varias funciones en R que implementan suavizadores de compartimientos. Un ej
 
 ## Regresión ponderada local (loess)
 
-Una limitación del enfoque de suavización de compartimientos que acabamos de describir es que necesitamos ventanas pequeñas para que se cumpla el supuesto de que la función es aproximadamente constante. Como resultado, terminamos con un pequeño número de puntos de datos para promediar y obtener estimaciones imprecisas $\hat{f}(x)$. Aquí describimos cómo _la regresión ponderada local_ (loess o _local weighted regression_ en inglés) nos permite considerar tamaños de ventana más grandes. Para hacer esto, usaremos un resultado matemático, conocido como el teorema de Taylor, que nos dice que para cualquier función suave $f(x)$, si la miramos suficientemente de cerca, parecerá como una línea. Para ver por qué esto tiene sentido, consideren los bordes curvos que hacen los jardineros con palas rectas:
+Una limitación del enfoque de suavización de compartimientos que acabamos de describir es que necesitamos ventanas pequeñas para que se cumpla el supuesto de que la función es aproximadamente constante. Como resultado, terminamos con un pequeño número de puntos de datos para promediar y obtener estimaciones imprecisas $\hat{f}(x)$. Aquí describimos cómo la _regresión ponderada local_ (loess o _local weighted regression_ en inglés) nos permite considerar tamaños de ventana más grandes. Para hacer esto, usaremos un resultado matemático, conocido como el teorema de Taylor, que dice que para cualquier función suave $f(x)$, si la examinamos muy de cerca, parecerá una línea. Para ver por qué esto tiene sentido, consideren los bordes curvos que hacen los jardineros con palas rectas:
 
 ```{r, echo=FALSE}
 knitr::include_graphics(file.path(img_path, "garden.png"))
@@ -450,7 +450,7 @@ polls_2008 %>% mutate(smooth_1 = fit_1$fitted, smooth_2 = fit_2$fitted) %>%
   geom_line(aes(day, smooth_2), color="orange", lty = 1)
 ```
 
-`degree = 2` nos da resultados más ondulantes. Realmente preferimos `degree = 1` ya que es menos propenso a este tipo de ruido.
+`degree = 2` nos da resultados más ondulantes. Por eso, preferimos `degree = 1` ya que es menos propenso a este tipo de ruido.
 
 
 ### Cuidado con los parámetros de suavización predeterminados
@@ -473,12 +473,12 @@ polls_2008 %>% ggplot(aes(day, margin)) +
 
 ## Conectando la suavización al _machine learning_ {#smoothing-ml-connection}
 
-Para ver cómo la suavización se relaciona con _machine learning_ usando un ejemplo concreto, consideren nuestro ejemplo introducido en la Sección \@ref(two-or-seven). Si definimos el resultado $Y = 1$ para dígitos que son siete y $Y=0$ para dígitos que son 2, entonces estamos interesados en estimar la probabilidad condicional:
+Para ver cómo la suavización se relaciona con el _machine learning_ usando un ejemplo concreto, consideren nuestro ejemplo introducido en la Sección \@ref(two-or-seven). Si definimos el resultado $Y = 1$ para dígitos que son siete y $Y=0$ para dígitos que son 2, entonces estamos interesados en estimar la probabilidad condicional:
 
 $$
 p(x_1, x_2) = \mbox{Pr}(Y=1 \mid X_1=x_1 , X_2 = x_2).
 $$
-con $X_1$ y $X_2$ los dos predictores definidos en la Sección \@ref(two-or-seven). En este ejemplo, los 0 y 1 que observamos son "ruidosos" porque para algunas regiones las probabilidades $p(x_1, x_2)$ no están tan cerca de 0 o 1. Por lo tanto, necesitamos estimar $p(x_1, x_2)$. La suavización es una alternativa para lograr esto. En la Sección \@ref(two-or-seven), vimos que la regresión lineal no era lo suficientemente flexible como para capturar la naturaleza no lineal de $p(x_1, x_2)$; los enfoques de suavización, por ende, pueden proveer una mejora. En el siguiente capítulo describimos un algoritmo popular de _machine learning_, _k vecinos más cercanos_, que se basa en la suavización por compartimientos.
+con $X_1$ y $X_2$ los dos predictores definidos en la Sección \@ref(two-or-seven). En este ejemplo, los 0s y 1s que observamos son "ruidosos" porque para algunas regiones las probabilidades $p(x_1, x_2)$ no están tan cerca de 0 o 1. Por lo tanto, necesitamos estimar $p(x_1, x_2)$. La suavización es una alternativa para lograr esto. En la Sección \@ref(two-or-seven), vimos que la regresión lineal no era lo suficientemente flexible como para capturar la naturaleza no lineal de $p(x_1, x_2)$; los enfoques de suavización, por ende, pueden proveer una mejora. En el siguiente capítulo, describimos un algoritmo popular de _machine learning_, _k vecinos más cercanos_, que se basa en la suavización por compartimientos.
 
 ## Ejercicios
 
