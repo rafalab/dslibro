@@ -1,6 +1,6 @@
 # El paquete caret {#caret}
 
-Ya hemos aprendido sobre la regresión y kNN como algoritmos de _machine learning_. En secciones posteriores, aprendemos sobre varios otros, y estos son solo un pequeño subconjunto de todos los algoritmos disponibles. Muchos de estos algoritmos se implementan en R. Sin embargo, se distribuyen a través de diferentes paquetes, desarrollados por diferentes autores, y a menudo usan una sintaxis diferente. El paquete __caret__ intenta consolidar estas diferencias y dar consistencia. Actualmente incluye 237 métodos diferentes que se resumen en el manual del paquete __caret__^[https://topepo.github.io/caret/available-models.html]. Tengan en cuenta que __caret__ no incluye los paquetes necesarios y, para implementar un paquete a través de __caret__, aún necesitan instalar el paquete. Los paquetes requeridos para cada método se describen en el manual del paquete.
+Ya hemos aprendido sobre regresión y kNN como algoritmos  _machine learning_ y, en secciones posteriores, aprenderemos sobre varios otros. Todos estos son solo un pequeño subconjunto del total de los algoritmos disponibles. Muchos de estos algoritmos se implementan en R. Sin embargo, se distribuyen a través de diferentes paquetes, desarrollados por diferentes autores, y a menudo usan una sintaxis diferente. El paquete __caret__ intenta consolidar estas diferencias y dar consistencia. Actualmente incluye 237 métodos diferentes que se resumen en el manual del paquete __caret__^[https://topepo.github.io/caret/available-models.html]. Tengan en cuenta que __caret__ no incluye los paquetes necesarios y, para implementar un paquete a través de __caret__, tendrán que instalar el paquete. Los paquetes requeridos para cada método se describen en el manual del paquete.
 
 El paquete __caret__ también provee una función que realiza la validación cruzada para nosotros. Aquí oferecemos algunos ejemplos que muestran cómo utilizamos este paquete increíblemente útil. Usaremos el ejemplo "2 o 7" para ilustrar:
 
@@ -66,7 +66,7 @@ Por defecto, la validación cruzada se realiza tomando 25 muestras de _bootstrap
 
 Aquí, presentamos un ejemplo donde probamos 30 valores entre 9 y 67. Para hacer esto con __caret__, necesitamos definir una columna llamada `k` de la siguiente manera: `data.frame(k = seq(9, 67, 2))`.
 
-Noten que al ejecutar este código, estamos ajustando 30 versiones de kNN a 25 muestras de _bootstrap_. Ya que estamos ajustando $30 \times 25 = 750$ kNN modelos, ejecutar este código tomará varios segundos. Fijamos la semilla porque la validación cruzada es un procedimiento aleatorio y queremos asegurarnos de que el resultado aquí sea reproducible.
+Noten que al ejecutar este código, estamos ajustando 30 versiones de kNN a 25 muestras de _bootstrap_. Como estamos ajustando $30 \times 25 = 750$ kNN modelos, ejecutar este código tomará varios segundos. Fijamos la semilla porque la validación cruzada es un procedimiento aleatorio y queremos asegurarnos de que el resultado aquí sea reproducible.
 
 ```{r train-knn-plot}
 set.seed(2008)
@@ -76,7 +76,7 @@ train_knn <- train(y ~ ., method = "knn",
 ggplot(train_knn, highlight = TRUE)
 ```
 
-Para acceder al parámetro que maximiza la precisión, pueden usar esto:
+Para acceder al parámetro que maximiza la exactitud, pueden usar esto:
 
 ```{r}
 train_knn$bestTune
@@ -95,7 +95,7 @@ confusionMatrix(predict(train_knn, mnist_27$test, type = "raw"),
                 mnist_27$test$y)$overall["Accuracy"]
 ```
 
-Si queremos cambiar la forma en que realizamos la validación cruzada, podemos usar la función `trainControl`. Podemos hacer que el código anterior sea un poco más rápido mediante, por ejemplo, la validación cruzada _10 fold_. Esto significa que tenemos 10 muestras cada una usando el 10% de las observaciones. Logramos esto usando el siguiente código:
+Si queremos cambiar la forma en que realizamos la validación cruzada, podemos usar la función `trainControl`. Podemos hacer que el código anterior sea un poco más rápido mediante, por ejemplo, la validación cruzada _10 fold_. Esto significa que tenemos 10 muestras y cada una usa el 10% de las observaciones. Logramos esto usando el siguiente código:
 
 ```{r cv-10-fold-accuracy-estimate}
 control <- trainControl(method = "cv", number = 10, p = .9)
@@ -161,7 +161,7 @@ Luego vemos que tenemos dos parámetros para optimizar:
 modelLookup("gamLoess")
 ```
 
-Nos mantendremos en un grado de 1. Pero para probar diferentes valores para el _span_, todavía tenemos que incluir una columna en la tabla con el nombre `degree` para poder hacer esto:
+Nos mantendremos en un grado de 1. Pero para intentar diferentes valores para _span_, aún tenemos que incluir una columna en la tabla con el nombre `degree`:
 
 ```{r}
 grid <- expand.grid(span = seq(0.15, 0.65, len = 10), degree = 1)

@@ -1,10 +1,10 @@
 # Grandes sets de datos
 
-Los problemas de _machine learning_ a menudo implican sets de datos que son tan o más grandes que el conjunto de datos MNIST. Existe una variedad de técnicas computacionales y conceptos estadísticos que son útiles para el análisis de grandes sets de datos. En este capítulo, solo comenzamos a aprender sobre estas técnicas y conceptos describiendo álgebra matricial, reducción de dimensiones, regularización y factorización de matrices. Utilizamos sistemas de recomendación relacionados con las clasificaciones de películas como un ejemplo motivador.
+Los problemas de _machine learning_ a menudo implican sets de datos que son tan o más grandes que el conjunto de datos MNIST. Existe una variedad de técnicas computacionales y conceptos estadísticos que son útiles para el análisis de grandes sets de datos. En este capítulo, exploramos brevemente estas técnicas y conceptos al describir álgebra matricial, reducción de dimensiones, regularización y factorización de matrices. Utilizamos sistemas de recomendación relacionados con las clasificaciones de películas como un ejemplo motivador.
 
 ## Álgebra matricial {#matrix-algebra}
 
-En _machine learning_, las situaciones en las que todos los predictores son numéricos, o pueden convertirse a numéricos de manera significativa, son comunes. El set de datos de dígitos es un ejemplo: cada píxel registra un número entre 0 y 255. Carguemos los datos:
+En _machine learning_, las situaciones en las que todos los predictores son numéricos, o pueden representarse como números son comunes. El set de datos de dígitos es un ejemplo: cada píxel registra un número entre 0 y 255. Carguemos los datos:
 
 ```{r}
 library(tidyverse)
@@ -12,13 +12,13 @@ library(dslabs)
 if(!exists("mnist")) mnist <- read_mnist()
 ```
 
-En estos casos, a menudo es conveniente guardar los predictores en una matriz y el resultado en un vector en lugar de utilizar un _data frame_. Pueden ver que los predictores se guardan como una matriz:
+En estos casos, a menudo es conveniente guardar los predictores en una matriz y el resultado en un vector en lugar de utilizar un _data frame_. Pueden ver que los predictores se guardan en como una matriz:
 
 ```{r}
 class(mnist$train$images)
 ```
 
-Esta matriz representa 60,000 dígitos, por lo que para los ejemplos en este capítulo, usaremos un subconjunto más manejable. Tomaremos los primeros 1,000 predictores `x` y etiquetas `y`:
+Esta matriz representa 60,000 dígitos, así que para los ejemplos en este capítulo, usaremos un subconjunto más manejable. Tomaremos los primeros 1,000 predictores `x` y etiquetas `y`:
 
 ```{r}
 x <- mnist$train$images[1:1000,]
@@ -33,7 +33,7 @@ Para motivar el uso de matrices, plantearemos cinco preguntas/desafíos:
 
 2\. ¿Algunos píxeles no son informativos? Estudien la variación de cada píxel y eliminen los predictores (columnas) asociados con los píxeles que no cambian mucho y, por lo tanto, no proveen mucha información para la clasificación.
 
-3\. ¿Podemos eliminar las manchas? Primero, observen la distribución de todos los valores de píxeles. Usen esto para elegir un umbral para definir el espacio no escrito. Luego, establezcan cualquier cosa por debajo de ese umbral en 0.
+3\. ¿Podemos eliminar las manchas? Primero, observen la distribución de todos los valores de píxeles. Usen esto para elegir un umbral para definir el espacio no escrito. Luego, cambien cualquier valor por debajo de ese umbral a 0.
 
 4\. Binaricen los datos. Primero, observen la distribución de todos los valores de píxeles. Usen esto para elegir un umbral para distinguir entre escritura y no escritura. Luego, conviertan todas las entradas en 1 o 0, respectivamente.
 
@@ -53,7 +53,7 @@ Los vectores son como los vectores numéricos que definimos en R: incluyen varia
 length(x[,1])
 ```
 
-tiene 1,000 entradas. En álgebra matricial, utilizamos la siguiente notación para un vector que representa una característica/predictor:
+tiene 1,000 entradas. En álgebra matricial, utilizamos la siguiente notación para un vector que representa un atributo/predictor:
 
 $$
 \begin{pmatrix}
@@ -65,8 +65,7 @@ x_N
 $$
 
 
-Del mismo modo, podemos usar la notación matemática para representar diferentes características
-matemáticamente agregando un índice:
+Del mismo modo, podemos usar la notación matemática para representar diferentes atributos matemáticamente agregando un índice:
 
 $$
 \mathbf{X}_1 = \begin{pmatrix}
@@ -101,7 +100,7 @@ x_{N,1}&x_{N,2}
 \end{pmatrix}
 $$
 
-La _dimensión_ de una matriz a menudo es una característica importante necesaria para asegurar que se puedan realizar ciertas operaciones. La dimensión es un resumen de dos números definido como el número de filas $\times$ el número de columnas. En R, podemos extraer la dimensión de una matriz con la función `dim`:
+La _dimensión_ de una matriz a menudo es un atributo importante necesario para asegurar que se puedan realizar ciertas operaciones. La dimensión es un resumen de dos números definido como el número de filas $\times$ el número de columnas. En R, podemos extraer la dimensión de una matriz con la función `dim`:
 
 ```{r}
 dim(x)
@@ -215,7 +214,7 @@ tibble(labels = as.factor(y), row_averages = avg) %>%
   qplot(labels, row_averages, data = ., geom = "boxplot")
 ```
 
-De esta gráfica vemos que, como es lógico, 1s usan menos tinta que los otros dígitos.
+De este gráfico vemos que, como era de esperar, los 1s usan menos tinta que los otros dígitos.
 
 Podemos calcular las sumas y los promedios de la columna usando la función `colSums` y `colMeans`, respectivamente.
 
@@ -223,13 +222,13 @@ El paquete __matrixStats__ agrega funciones que realizan operaciones en cada fil
 
 ### `apply`
 
-Las funciones que acabamos de describir están realizando una operación similar a la que hacen `sapply` y la función `map` de __purrr__: aplicar la misma función a una parte de su objeto. En este caso, la función se aplica a cada fila o cada columna. La función `apply`le permite aplicar cualquier función, no solo `sum` o `mean`, a una matriz. El primer argumento es la matriz, el segundo es la dimensión, 1 para las filas, 2 para las columnas y el tercero es la función. Así, por ejemplo, `rowMeans` se puede escribir como:
+Las funciones que acabamos de describir están realizando una operación similar a la que hacen `sapply` y la función `map` de __purrr__: aplicar la misma función a una parte de su objeto. En este caso, la función se aplica a cada fila o cada columna. La función `apply` les permite aplicar cualquier función, no solo `sum` o `mean`, a una matriz. El primer argumento es la matriz, el segundo es la dimensión, 1 para las filas, 2 para las columnas y el tercero es la función. Así, por ejemplo, `rowMeans` se puede escribir como:
 
 ```{r}
 avgs <- apply(x, 1, mean)
 ```
 
-Pero noten que al igual que con `sapply` y `map`, podemos realizar cualquier función. Entonces, si quisiéramos la desviación estándar para cada columna, podríamos escribir:
+Pero noten que al igual que con `sapply` y `map`, podemos ejecutar cualquier función. Entonces, si quisiéramos la desviación estándar para cada columna, podríamos escribir:
 
 ```{r}
 sds <- apply(x, 2, sd)
@@ -265,7 +264,7 @@ image(1:28, 1:28, matrix(sds, 28, 28)[, 28:1])
 
 Vemos que hay poca variación en las esquinas.
 
-Podríamos eliminar características que no tienen variación ya que estas no pueden ayudarnos a predecir. En la Sección \@ref(matrices), describimos las operaciones utilizadas para extraer columnas:
+Podríamos eliminar atributos que no tienen variación ya que estas no pueden ayudarnos a predecir. En la Sección \@ref(matrices), describimos las operaciones utilizadas para extraer columnas:
 
 ```{r, eval=FALSE}
 x[ ,c(351,352)]
@@ -302,7 +301,7 @@ dim(x[, 1, drop=FALSE])
 
 ### Indexación con matrices
 
-Podemos hacer rápidamente un histograma de todos los valores en nuestro set de datos. Vimos cómo podemos convertir vectores en matrices. También podemos deshacer esto y convertir matrices en vectores. La operación se realizará por fila:
+Podemos hacer rápidamente un histograma de todos los valores en nuestro set de datos. Vimos cómo podemos convertir vectores en matrices. También podemos deshacer esto y convertir matrices en vectores. La operación se realiza por fila:
 
 ```{r}
 mat <- matrix(1:15, 5, 3)
@@ -315,14 +314,14 @@ Para ver un histograma de todos nuestros datos predictores, podemos usar:
 qplot(as.vector(x), bins = 30, color = I("black"))
 ```
 
-Notamos una clara dicotomía que se explica como partes de la imagen con tinta y partes sin ella. Si creemos que los valores menor que, digamos, 50 son manchas, podemos hacerlos rápidamente cero usando:
+Notamos una clara dicotomía que se explica como partes de la imagen con tinta y partes sin ella. Si creemos que los valores menor que, digamos, 50 son manchas, podemos cambiarlos a cero usando:
 
 ```{r, eval=FALSE}
 new_x <- x
 new_x[new_x < 50] <- 0
 ```
 
-Para ver qué hace esto, miramos una matriz más pequeña:
+Para ver un ejemplo de cómo esto ocurre, usamos una matriz más pequeña:
 
 ```{r}
 mat <- matrix(1:15, 5, 3)
@@ -330,7 +329,7 @@ mat[mat < 3] <- 0
 mat
 ```
 
-También podemos usar operaciones lógicas con matriz lógica:
+También podemos usar operaciones lógicas con lógica de matriz:
 
 ```{r}
 mat <- matrix(1:15, 5, 3)

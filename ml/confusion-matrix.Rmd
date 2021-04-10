@@ -27,7 +27,7 @@ En este caso, solo tenemos un predictor, altura, mientras que `y` es claramente 
 
 ### Sets de entrenamiento y de evaluación
 
-En última instancia, un algoritmo de _machine learning_ se evalúa basado en cómo funciona en el mundo real con sets de datos completamente nuevos. Sin embargo, cuando desarrollamos un algoritmo, generalmente tenemos un set de datos para el cual conocemos los resultados, como lo hacemos con las alturas: sabemos el sexo de cada estudiante en nuestro set de datos. Por lo tanto, para imitar el proceso de evaluación final, generalmente dividimos los datos en dos partes y actuamos como si no supiéramos el resultado de una de estas. Dejamos de fingir que no conocemos el resultado para evaluar el algoritmo, pero solo _después_ de haber terminado de construirlo. Nos referimos al grupo para el que conocemos el resultado  y que usamos para desarrollar el algoritmo como el _set de entrenamiento_ (_training set_ en inglés). Nos referimos al grupo para el que aparentamos no conocer el resultado como el _set de evaluación_ (_test set_ en inglés).
+En última instancia, un algoritmo  _machine learning_ se evalúa basado en cómo funciona en el mundo real con sets de datos completamente nuevos. Sin embargo, cuando desarrollamos un algoritmo, generalmente tenemos un set de datos para el cual conocemos los resultados, como lo hacemos con las alturas: sabemos el sexo de cada estudiante en nuestro set de datos. Por lo tanto, para imitar el proceso de evaluación final, generalmente dividimos los datos en dos partes y actuamos como si no supiéramos el resultado de una de estas. Dejamos de fingir que no conocemos el resultado para evaluar el algoritmo, pero solo _después_ de haber terminado de construirlo. Nos referimos al grupo para el que conocemos el resultado  y que usamos para desarrollar el algoritmo como el _set de entrenamiento_ (_training set_ en inglés). Nos referimos al grupo para el que aparentamos no conocer el resultado como el _set de evaluación_ (_test set_ en inglés).
 
 Una forma estándar de generar los sets de entrenamiento y de evaluación es dividiendo aleatoriamente los datos. El paquete __caret__ incluye la función `createDataPartition` que nos ayuda a generar índices para dividir aleatoriamente los datos en sets de entrenamiento y de evaluación:
 
@@ -58,7 +58,7 @@ y_hat <- sample(c("Male", "Female"), length(test_index), replace = TRUE)
 
 Tengan en cuenta que estamos ignorando completamente el predictor y simplemente adivinando el sexo.
 
-En las aplicaciones de _machine learning_, es útil usar factores para representar los resultados categóricos porque las funciones de R desarrolladas para _machine learning_, como las del paquete __caret__, requieren o recomiendan que los resultados categóricos se codifiquen como factores.  Para convertir `y_hat` a factores podemos usar la función `factor`:
+En las aplicaciones de _machine learning_, es útil usar factores para representar los resultados categóricos porque las funciones de R desarrolladas para _machine learning_, como las del paquete __caret__, requieren o recomiendan que los resultados categóricos se codifiquen como factores. Para convertir `y_hat` en factores podemos usar la función `factor`:
 
 ```{r}
 y_hat <- sample(c("Male", "Female"), length(test_index), replace = TRUE) %>%
@@ -165,7 +165,7 @@ prev <- mean(y == "Male")
 prev
 ```
 
-Entonces, al calcular la exactitud general, el alto porcentaje de errores cometidos para las mujeres se ve superado por las ganancias en las predicciones acertadas para los hombres. **Esto puede ser un gran problema en _machine learning_.** Si sus datos de entrenamiento están sesgados de alguna manera, es probable que también desarrolle algoritmos sesgados. El hecho de que hayamos utilizado un set de evaluación no importa porque también se deriva del set de datos sesgado original. Esta es una de las razones por las que observamos métricas distintas de la exactitud general al evaluar un algoritmo de _machine learning_.
+Entonces, al calcular la exactitud general, el alto porcentaje de errores cometidos para prediciendo cuales son mujeres se ve superado por las ganancias en las predicciones acertadas para los hombres. **Esto puede ser un gran problema en _machine learning_.** Si sus datos de entrenamiento están sesgados de alguna manera, es probable que también desarrolle algoritmos sesgados. El hecho de que hayamos utilizado un set de evaluación no importa porque también se deriva del set de datos sesgado original. Esta es una de las razones por las que observamos métricas distintas de la exactitud general al evaluar un algoritmo de _machine learning_.
 
 Hay varias métricas que podemos usar para evaluar un algoritmo de manera que la prevalencia no afecte nuestra evaluación y todas estas pueden derivarse de la matriz de confusión. Una forma general de mejorar el uso de la exactitud general es estudiar _sensibilidad_ y _especificidad_ por separado.
 
@@ -244,7 +244,7 @@ $$
 {\mbox{precision} + \mbox{recall}}
 $$
 
-al definir $F_1$.
+cuando se define $F_1$.
 
 Recuerden que, según el contexto, algunos tipos de errores son más costosos que otros. Por ejemplo, en el caso de la seguridad de los aviones, es mucho más importante maximizar la sensibilidad sobre la especificidad: no predecir el mal funcionamiento de un avión antes de que se estrelle es un error mucho más costoso que impedir que vuela un avión cuando el avión está en perfectas condiciones. En un caso criminal de asesinato, lo contrario es cierto ya que un falso positivo puede resultar en la ejecución de una persona inocente. La medida $F_1$ se puede adaptar para pesar la especificidad y la sensibilidad de manera diferente. Para hacer esto, definimos $\beta$ para representar cuánto más importante es la sensibilidad en comparación con la especificidad y consideramos una media armónica ponderada:
 
@@ -459,13 +459,13 @@ $$
 (\hat{y} - y)^2
 $$
 
-Debido a que frecuentemente tenemos un set de evaluaciones con muchas observaciones, digamos $N$, usamos el error cuadrático medio (_mean squared error_ o MSE por sus siglas en inglés):
+Debido a que frecuentemente tenemos un set de evaluaciones con muchas observaciones, digamos $N$, usamos el _error cuadrático medio_ (_mean squared error_ o MSE por sus siglas en inglés):
 
 $$
 \mbox{MSE} = \frac{1}{N} \mbox{RSS} = \frac{1}{N}\sum_{i=1}^N (\hat{y}_i - y_i)^2
 $$
 
-En la práctica, a menudo indicamos la raiz cudadrada de la desviación cuadrática media (_root mean squared error_ o RMSE por sus siglas en inglés), que es $\sqrt{\mbox{MSE}}$, porque está en las mismas unidades que los resultados. Pero hacer las matemáticas muchas veces es más fácil con el MSE y, por lo tanto, se usa más en los libros de texto, ya que estos generalmente describen las propiedades teóricas de los algoritmos.
+En la práctica, a menudo indicamos la _raiz de la desviación cuadrática media_ (_root mean squared error_ o RMSE por sus siglas en inglés), que es $\sqrt{\mbox{MSE}}$, porque está en las mismas unidades que los resultados. Pero hacer las matemáticas muchas veces es más fácil con el MSE y, por lo tanto, se usa más en los libros de texto, ya que estos generalmente describen las propiedades teóricas de los algoritmos.
 
 Si los resultados son binarios, tanto RMSE como MSE son equivalentes a la exactitud menos uno, ya que $(\hat{y} - y)^2$ es 0 si la predicción fue correcta y 1 en caso contrario. En general, nuestro objetivo es construir un algoritmo que minimice la pérdida para que esté lo más cerca posible a 0.
 
@@ -484,7 +484,7 @@ $$
 
 con $y_{i}^b$ denotando la observación $i$ en la muestra aleatoria $b$ e $\hat{y}_i^b$ denotando la predicción resultante obtenida de aplicar exactamente el mismo algoritmo a la muestra aleatoria $b$. De nuevo, en la práctica solo observamos una muestra aleatoria, por lo que el MSE esperado es solo teórico. Sin embargo, en el Capítulo \@ref(cross-validation) describimos un enfoque para estimar el MSE que trata de imitar esta cantidad teórica.
 
-Tengan en cuenta que hay funciones de pérdida distintas de la función de pérdida cuadrática. Por ejemplo, el _Error Medio Absoluto_ (_Mean Absolute Error_ en inglés) utiliza valores absolutos, $|\hat{Y}_i - Y_i|$ en lugar de cuadrar los errores
+Tengan en cuenta que hay funciones de pérdida distintas de la función de pérdida cuadrática. Por ejemplo, el _error medio absoluto_ (_mean absolute error_ en inglés) utiliza valores absolutos, $|\hat{Y}_i - Y_i|$ en lugar de cuadrar los errores
 $(\hat{Y}_i - Y_i)^2$. Sin embargo, en este libro nos enfocamos en minimizar la función de pérdida cuadrática ya que es la más utilizada.
 
 

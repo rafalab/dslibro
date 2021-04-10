@@ -4,10 +4,9 @@ Los sistemas de recomendación utilizan clasificaciones que los _consumidores_ l
 
 Netflix utiliza un sistema de recomendación para predecir cuántas _estrellas_ le dará un usuario a una película específica. Una estrella sugiere que no es una buena película, mientras que cinco estrellas sugieren que es una película excelente. Aquí, ofrecemos los conceptos básicos de cómo se hacen estas recomendaciones, motivados por algunos de los enfoques adoptados por los ganadores del _Netflix challenge_.
 
-En octubre de 2006, Netflix dio un reto a la comunidad de ciencia de datos: mejoren nuestro algoritmo de recomendación por un 10% y ganen un millón de dólares. En septiembre de 2009
-los ganadores se anunciaron^[http://bits.blogs.nytimes.com/2009/09/21/netflix-awards-1-million-prize-and-starts-a-new-contest/]. Pueden leer un buen resumen de cómo se creó el algoritmo ganador aquí: [http://blog.echen.me/2011/10/24/winning-the-netflix-prize-a-summary/font](http://blog.echen.me/2011/10/24/winning-the-netflix-prize-a-summary/)
+En octubre de 2006, Netflix dio un reto a la comunidad de ciencia de datos: mejoren nuestro algoritmo de recomendación por un 10% y ganen un millón de dólares. En septiembre de 2009, los ganadores se anunciaron^[http://bits.blogs.nytimes.com/2009/09/21/netflix-awards-1-million-prize-and-starts-a-new-contest/]. Pueden leer un buen resumen de cómo se creó el algoritmo ganador aquí: [http://blog.echen.me/2011/10/24/winning-the-netflix-prize-a-summary/](http://blog.echen.me/2011/10/24/winning-the-netflix-prize-a-summary/)
 y una explicación más detallada aquí:
-[http://www.netflixprize.com/assets/GrandPrize2009_BPC_BellKor.pdffont](http://www.netflixprize.com/assets/GrandPrize2009_BPC_BellKor.pdf). Ahora le mostraremos algunas de las estrategias de análisis de datos utilizadas por el equipo ganador.
+[http://www.netflixprize.com/assets/GrandPrize2009_BPC_BellKor.pdf](http://www.netflixprize.com/assets/GrandPrize2009_BPC_BellKor.pdf). Ahora le mostraremos algunas de las estrategias de análisis de datos utilizadas por el equipo ganador.
 
 ### Datos de Movielens
 
@@ -76,7 +75,7 @@ movielens %>% filter(userId %in% users) %>%
 
 Este reto de _machine learning_ es más complicado de lo que hemos estudiado hasta ahora porque cada resultado $Y$ tiene un set diferente de predictores. Para ver esto, tengan en cuenta que si estamos prediciendo la calificación de la película $i$ por usuario $u$, en principio, todas las otras clasificaciones relacionadas con la película $i$ y por el usuario $u$ pueden usarse como predictores, pero diferentes usuarios califican diferentes películas y un número diferente de películas. Además, podemos usar información de otras películas que hemos determinado que son parecidas a la película $i$ o de usuarios que se consideran similares al usuario $u$. Básicamente, toda la matriz se puede utilizar como predictores para cada celda.
 
-Veamos algunas de las propiedades generales de los datos para comprender mejor los retos.
+Veamos algunas de las propiedades generales de los datos para entender mejor los retos.
 
 Lo primero que notamos es que algunas películas se evalúan más que otras. A continuación se muestra la distribución. Esto no debería sorprendernos dado que hay películas de gran éxito vistas por millones y películas artísticas e independientes vistas por pocos. Nuestra segunda observación es que algunos usuarios son más activos que otros en la calificación de películas:
 
@@ -170,7 +169,7 @@ RMSE(test_set$rating, predictions)
 ```
 
 
-Al observar la distribución de calificaciones, podemos visualizar que esta es la desviación estándar de esa distribución. Obtenemos un RMSE de aproximadamente 1. Para ganar el gran premio de $1,000,000, un equipo participante tuvo que obtener un RMSE de aproximadamente 0.857. ¡Así que definitivamente podemos mejorar!
+Al observar la distribución de calificaciones, podemos visualizar que esta es la desviación estándar de esa distribución. Obtenemos un RMSE de aproximadamente 1. Para ganar el gran premio de $1,000,000, un equipo participante tuvo que obtener un RMSE de aproximadamente 0.857. ¡Definitivamente podemos mejorar!
 
 A medida que avanzamos, compararemos diferentes enfoques. Comencemos creando una tabla de resultados con este enfoque simplista:
 
@@ -194,7 +193,7 @@ De nuevo podemos usar mínimos cuadrados para estimar el $b_i$ de la siguiente m
 fit <- lm(rating ~ as.factor(movieId), data = movielens)
 ```
 
-Como hay miles de $b_i$, a medida que cada película obtiene una, la función `lm()` será muy lenta aquí. Por lo tanto, no recomendamos ejecutar el código anterior. Pero en esta situación particular, sabemos que el estimado de los mínimos cuadrados $\hat{b}_i$ es solo el promedio de $Y_{u,i} - \hat{\mu}$ para cada película $i$. Entonces podemos calcularlos de esta manera (dejaremos de usar la notación `hat` en el código para representar estimados en el futuro):
+Como hay miles de $b_i$, a medida que cada película obtiene una, la función `lm()` será muy lenta aquí. Por eso, no recomendamos ejecutar el código anterior. Pero en esta situación particular, sabemos que el estimado de los mínimos cuadrados $\hat{b}_i$ es solo el promedio de $Y_{u,i} - \hat{\mu}$ para cada película $i$. Entonces podemos calcularlos de esta manera (dejaremos de usar la notación `hat` en el código para representar estimados en el futuro):
 
 ```{r}
 mu <- mean(train_set$rating)
@@ -242,7 +241,7 @@ train_set %>%
   geom_histogram(bins = 30, color = "black")
 ```
 
-Tengan en cuenta que también existe una variabilidad sustancial entre los usuarios: algunos usuarios son muy exigentes y otros adoran cada película. Esto implica que una mejora adicional de nuestro modelo puede ser:
+Noten que también existe una variabilidad sustancial entre los usuarios: algunos usuarios son muy exigentes y otros adoran cada película. Esto implica que una mejora adicional de nuestro modelo puede ser:
 
 $$
 Y_{u,i} = \mu + b_i + b_u + \varepsilon_{u,i}
@@ -326,7 +325,7 @@ c. $Y_{u,i} = \mu + b_i + b_u + d_{u,i}\beta_i + \varepsilon_{u,i}$.
 d. $Y_{u,i} = \mu + b_i + b_u + f(d_{u,i}) + \varepsilon_{u,i}$, con $f$ una función suave de $d_{u,i}$.
 
 
-8\. Los datos `movielens` también tienen un columna `genres`. Esta columna incluye todos los géneros que se aplican a la película. Algunas películas pertenecen a varios géneros. Defina una categoría como cualquier combinación que aparezca en esta columna. Mantenga solo categorías con más de 1,000 calificaciones. Luego, calcule el promedio y error estándar para cada categoría. Grafique estos usando diagramas de barras de error.
+8\. Los datos `movielens` también tienen un columna `genres`. Esta columna incluye todos los géneros que aplican a la película. Algunas películas pertenecen a varios géneros. Defina una categoría como cualquier combinación que aparezca en esta columna. Mantenga solo categorías con más de 1,000 calificaciones. Luego, calcule el promedio y error estándar para cada categoría. Grafique estos usando diagramas de barras de error.
 
 
 9\. El gráfico muestra evidencia convincente de un efecto de género. Si definimos $g_{u,i}$ como el género para la calificación del usuario $u$ de la película $i$, ¿cuál de los siguientes modelos es el más apropiado?
@@ -427,7 +426,7 @@ $$
 
 dónde $n_i$ es la cantidad de clasificaciones hechas para la película $i$. Este enfoque tendrá el efecto deseado: cuando nuestro tamaño de muestra $n_i$ es muy grande, un caso que nos dará una estimación estable, luego la penalización $\lambda$ es efectivamente ignorada desde $n_i+\lambda \approx n_i$. Sin embargo, cuando el $n_i$ es pequeño, entonces el estimado $\hat{b}_i(\lambda)$ se encoge hacia 0. Entre más grande $\lambda$, más nos encogemos.
 
-Calculemos estos estimados regularizadas de $b_i$ utilizando $\lambda=3$. Más adelante, veremos por qué elegimos 3.
+Calculemos estos estimados regularizados de $b_i$ utilizando $\lambda=3$. Más adelante, veremos por qué elegimos 3.
 
 ```{r}
 lambda <- 3
@@ -437,7 +436,7 @@ movie_reg_avgs <- train_set %>%
   summarize(b_i = sum(rating - mu)/(n()+lambda), n_i = n())
 ```
 
-Para ver cómo se reducen los estimados, hagamos un gráfico de los estimados regularizadas versus los estimados de mínimos cuadrados.
+Para ver cómo se reducen los estimados, hagamos un gráfico de los estimados regularizados versus los estimados de mínimos cuadrados.
 
 ```{r regularization-shrinkage}
 tibble(original = movie_avgs$b_i,
@@ -447,7 +446,7 @@ tibble(original = movie_avgs$b_i,
   geom_point(shape=1, alpha=0.5)
 ```
 
-Ahora, echemos un vistazo a las 10 mejores películas basadas en los estimados penalizadas $\hat{b}_i(\lambda)$:
+Ahora, echemos un vistazo a las 10 mejores películas basadas en los estimados penalizados $\hat{b}_i(\lambda)$:
 
 ```{r}
 train_set %>%
@@ -492,7 +491,7 @@ rmse_results
 
 Los estimados penalizados ofrecen una gran mejora sobre las estimados de mínimos cuadrados.
 
-### Elegir los términos de penalización
+### Cómo elegir los términos de penalización
 
 Noten que $\lambda$ es un parámetro de ajuste. Podemos usar validación cruzada para elegirlo.
 
@@ -648,7 +647,7 @@ y luego definir, para cada escuela, cómo se desvía de ese promedio. Escriba un
 
 ## Factorización de matrices
 
-La factorización de matrices es un concepto ampliamente utilizado en _machine learning_. Está muy relacionado con el análisis de factores, la descomposición de valores singulares (_singular value decomposition_ o SVD por sus siglas en inglés) y el análisis de componentes principales (_principal component analysis_ o PCA por sus siglas en inglés). Aquí describimos el concepto en el contexto de los sistemas de recomendación de películas.
+La factorización de matrices es un concepto ampliamente utilizado en _machine learning_. Está muy relacionado con el análisis de factores, la descomposición de valores singulares (_singular value decomposition_ o SVD por sus siglas en inglés) y el análisis de componentes principales (PCA). Aquí describimos el concepto en el contexto de los sistemas de recomendación de películas.
 
 Hemos descrito cómo el modelo:
 
@@ -781,7 +780,7 @@ $$
 Y_{u,i} = \mu + b_i + b_u + p_u q_i + \varepsilon_{u,i}
 $$
 
-Sin embargo, motivamos la necesidad del término $p_u q_i$ con una simulación sencilla. La estructura que se encuentra en los datos suele ser más compleja. Por ejemplo, en esta primera simulación supusimos que solo había un factor $p_u$ que determinó a cuál de las dos películas de géneros $u$ pertenece. Pero la estructura en nuestros datos de películas parece ser mucho más complicada que las películas de gángsters versus las románticas. Podemos tener muchos otros factores. Aquí presentamos una simulación un poco más compleja. Ahora agregamos una sexta película.
+Sin embargo, motivamos la necesidad del término $p_u q_i$ con una simulación sencilla. La estructura que se encuentra en los datos suele ser más compleja. Por ejemplo, en esta primera simulación supusimos que solo había un factor $p_u$ que determinaba a cuál de las dos películas de géneros $u$ pertenece. Pero la estructura en nuestros datos de películas parece ser mucho más complicada que las películas de gángsters versus las románticas. Podemos tener muchos otros factores. Aquí presentamos una simulación un poco más compleja. Ahora agregamos una sexta película.
 
 
 ```{r, echo=FALSE}
@@ -806,7 +805,7 @@ Al explorar la estructura de correlación de este nuevo set de datos:
 colnames(r)[4:6] <- c("YGM", "SS", "SW")
 cor(r)
 ```
-notamos que quizás necesitemos un segundo factor para tomar en cuenta el hecho de que a algunos usuarios les gusta Al Pacino, mientras que a otros no les gusta o no les importa. Observen que la estructura general de la correlación obtenida de los datos simulados no está tan lejos de la correlación real:
+notamos que quizás necesitamos un segundo factor para tomar en cuenta el hecho de que a algunos usuarios les gusta Al Pacino, mientras que a otros no les gusta o no les importa. Observen que la estructura general de la correlación obtenida de los datos simulados no está tan lejos de la correlación real:
 
 ```{r}
 six_movies <- c(m_1, m_2, m_3, m_4, m_5, m_6)
@@ -833,7 +832,7 @@ $$
 Y_{u,i} = \mu + b_i + b_u + p_{u,1} q_{1,i} + p_{u,2} q_{2,i} + \varepsilon_{u,i}
 $$
 
-Tengan en cuenta que en una aplicación de datos real, necesitamos ajustar este modelo a los datos. Para explicar la compleja correlación que observamos en datos reales, generalmente permitimos que las entradas de $p$ y $q$ sean valores continuos, en lugar de discretos como las que usamos en la simulación. Por ejemplo, en lugar de dividir las películas en gángster o romance, definimos un continuo. También, tengan en cuenta que este no es un modelo lineal y para ajustarlo necesitamos usar un algoritmo diferente a ese usado por `lm` para encontrar los parámetros que minimizan los mínimos cuadrados. Los algoritmos ganadores del _Netflix challenge_ ajustaron un modelo similar al anterior y utilizaron la regularización para penalizar por grandes valores de $p$ y $q$, en lugar de usar mínimos cuadrados. Implementando este enfoque está más allá del alcance de este libro.
+Tengan en cuenta que en una aplicación de datos real, necesitamos ajustar este modelo a los datos. Para explicar la compleja correlación que observamos en datos reales, generalmente permitimos que las entradas de $p$ y $q$ sean valores continuos, en lugar de discretos como las que usamos en la simulación. Por ejemplo, en lugar de dividir las películas en gángster o romance, definimos un continuo. También, tengan en cuenta que este no es un modelo lineal y para ajustarlo necesitamos usar un algoritmo diferente a ese usado por `lm` para encontrar los parámetros que minimizan los mínimos cuadrados. Los algoritmos ganadores del _Netflix challenge_ ajustaron un modelo similar al anterior y utilizaron la regularización para penalizar por grandes valores de $p$ y $q$, en lugar de usar mínimos cuadrados. Implementar este enfoque está más allá del alcance de este libro.
 
 ### Conexión a SVD y PCA
 
@@ -843,15 +842,15 @@ $$
 r_{u,i} \approx p_{u,1} q_{1,i} + p_{u,2} q_{2,i}
 $$
 
-está muy relacionado con SVD y PCA. SVD y PCA son conceptos complicados, pero una forma de entenderlos es que SVD es un algoritmo que encuentra los vectores $p$ y $q$ que nos permiten reescribir la matriz $\mbox{r}$ con $m$ filas y $n$ columnas como:
+está muy relacionado a SVD y PCA. SVD y PCA son conceptos complicados, pero una forma de entenderlos es que SVD es un algoritmo que encuentra los vectores $p$ y $q$ que nos permiten reescribir la matriz $\mbox{r}$ con $m$ filas y $n$ columnas como:
 
 $$
 r_{u,i} = p_{u,1} q_{1,i} + p_{u,2} q_{2,i} + \dots + p_{u,m} q_{m,i}
 $$
 
-con la variabilidad de cada término disminuyendo y con los $p$s no correlacionados. El algoritmo también calcula esta variabilidad para que podamos saber cuánta de la variabilidad total de las matrices se explica a medida que agregamos nuevos términos. Esto puede permitirnos ver que, con solo unos pocos términos, podemos explicar la mayor parte de la variabilidad.
+con la variabilidad de cada término disminuyendo y con los $p$s no correlacionados. El algoritmo también calcula esta variabilidad para que podamos saber cuánta de la variabilidad total de las matrices se explica a medida que agregamos nuevos términos. Esto nos deja ver que, con solo unos pocos términos, podemos explicar la mayor parte de la variabilidad.
 
-Veamos un ejemplo con los datos de la película. Para calcular la descomposición, haremos que los residuos con NA sean iguales a 0:
+Veamos un ejemplo con los datos de la película. Para calcular la descomposición, haremos que los residuos con NAs sean iguales a 0:
 
 ```{r}
 y[is.na(y)] <- 0
@@ -885,7 +884,7 @@ qplot(1:nrow(x), var_explained, xlab = "PC")
 ```
 -->
 
-También notamos que los dos primeros componentes principales están relacionados con la estructura en las opiniones sobre películas:
+También notamos que los dos primeros componentes principales están relacionados a la estructura en las opiniones sobre películas:
 
 ```{r movies-pca, echo=FALSE}
 library(ggrepel)
@@ -906,7 +905,7 @@ Con solo mirar los 10 primeros en cada dirección, vemos un patrón significativ
 pcs %>% select(name, PC1) %>% arrange(PC1) %>% slice(1:10) %>% pull(name)
 ```
 
-y los éxitos de taquilla de Hollywood por el otro:
+y los éxitos de taquilla de Hollywood en el otro:
 
 ```{r, echo=FALSE}
 pcs %>% select(name, PC1) %>% arrange(desc(PC1)) %>% slice(1:10) %>% pull(name)
@@ -929,7 +928,7 @@ Ajustar un modelo que incorpora estos estimados es complicado. Para aquellos int
 
 ## Ejercicios
 
-En este set de ejercicios, trataremos un tema útil para comprender la factorización de matrices: la descomposición de valores singulares (SVD). SVD es un resultado matemático que se usa ampliamente en el _machine learning_, tanto en la práctica como para comprender las propiedades matemáticas de algunos algoritmos. Este es un tema bastante avanzado y para completar este set de ejercicios tendrán que estar familiarizado con conceptos de álgebra lineal, como la multiplicación de matrices, las matrices ortogonales y las matrices diagonales.
+En este set de ejercicios, trataremos un tema útil para comprender la factorización de matrices: la descomposición de valores singulares (SVD). SVD es un resultado matemático que se usa ampliamente en el _machine learning_, tanto en la práctica como para comprender las propiedades matemáticas de algunos algoritmos. Este es un tema bastante avanzado y para completar este set de ejercicios tendrán que estar familiarizados con conceptos de álgebra lineal, como la multiplicación de matrices, las matrices ortogonales y las matrices diagonales.
 
 El SVD nos dice que podemos _descomponer_ un $N\times p$ matriz $Y$ con $p < N$ como:
 
@@ -960,7 +959,7 @@ Nuestro objetivo es describir el desempeño de los estudiantes de la manera más
 
 Pueden visualizar las 24 puntuaciones de las pruebas para los 100 estudiantes al graficar una imagen:
 
-```{r, eval=FALSE}
+```{r, echo=FALSE}
 my_image <- function(x, zlim = range(x), ...){
   colors = rev(RColorBrewer::brewer.pal(9, "RdBu"))
   cols <- 1:ncol(x)
@@ -1020,7 +1019,7 @@ max(abs(y - y_svd))
 Calcule la suma de cuadrados de las columnas de $Y$ y guardarlas en `ss_y`. Luego calcule la suma de cuadrados de columnas del transformado $YV$ y guardarlos en `ss_yv`. Confirme que `sum(ss_y)` es igual a `sum(ss_yv)`.
 
 
-4\. Vemos que se conserva la suma total de cuadrados. Esto es porque $V$ es ortogonal Ahora para comenzar a entender cómo $YV$ es útil, grafique `ss_y` contra el número de columna y luego haga lo mismo para `ss_yv`. ¿Qué observa?
+4\. Vemos que se conserva la suma total de cuadrados. Esto es porque $V$ es ortogonal. Ahora para comenzar a entender cómo $YV$ es útil, grafique `ss_y` contra el número de columna y luego haga lo mismo para `ss_yv`. ¿Qué observa?
 
 5\. Vemos que la variabilidad de las columnas de $YV$ está disminuyendo. Además, vemos que, en relación con los tres primeros, la variabilidad de las columnas más allá del tercero es casi 0. Ahora observe que no tuvimos que calcular `ss_yv` porque ya tenemos la respuesta ¿Cómo? Recuerde que $YV = UD$ y como $U$ es ortogonal, sabemos que la suma de cuadrados de las columnas de $UD$ son las entradas diagonales de $D$ al cuadrado. Confirme esto graficando la raíz cuadrada de `ss_yv` frente a las entradas diagonales de $D$.
 
@@ -1028,7 +1027,7 @@ Calcule la suma de cuadrados de las columnas de $Y$ y guardarlas en `ss_y`. Lueg
 6\.  De lo anterior, sabemos que la suma de cuadrados de las columnas de $Y$ (la suma total de cuadrados) se añaden a la suma de `s$d^2` y que la transformación $YV$ nos da columnas con sumas de cuadrados iguales a `s$d^2`. Ahora calcule qué porcentaje de la variabilidad total se explica solo por las tres primeras columnas de $YV$.
 
 
-7\. Vemos que casi el 99% de la variabilidad se explica por las primeras tres columnas de $YV = UD$. Entonces, esto implica que deberíamos poder explicar gran parte de la variabilidad y estructura que encontramos al explorar los datos con unas pocas columnas. Antes de continuar, vamos a mostrar un truco computacional útil para evitar crear la matriz `diag(s$d)`. Para motivar esto, notamos que si escribimos $U$ en sus columnas $[U_1, U_2,\dots, U_p]$ entonces $UD$ es igual a:
+7\. Vemos que casi el 99% de la variabilidad se explica por las primeras tres columnas de $YV = UD$. Entonces, esto implica que deberíamos poder explicar gran parte de la variabilidad y estructura que encontramos al explorar los datos con unas pocas columnas. Antes de continuar, vamos a mostrar un truco computacional útil para evitar crear la matriz `diag(s$d)`. Para motivar esto, notamos que si escribimos $U$ en sus columnas $[U_1, U_2,\dots, U_p]$, entonces $UD$ es igual a:
 
 $$UD = [U_1 d_{1,1}, U_2 d_{2,2}, \dots, U_p d_{p,p}]$$
 
@@ -1053,7 +1052,7 @@ $$ U D V^{\top} = (-U) D (-V)^{\top} $$
 
 Con esto en mente, vemos que la primera columna de $UD$ es casi idéntica a la puntuación promedio de cada estudiante, excepto por el signo.
 
-Esto implica que multiplicar $Y$ por la primera columna de $V$ debe estar realizando una operación similar a tomar el promedio. Haga un diagrama de imagen de $V$ y describa la primera columna en relación con las otras y cómo se relaciona esto con tomar un promedio.
+Esto implica que multiplicar $Y$ por la primera columna de $V$ debe realizar una operación similar a tomar el promedio. Haga un diagrama de imagen de $V$ y describa la primera columna en relación con las otras y cómo se relaciona esto con tomar un promedio.
 
 
 10\. Ya vimos que podemos reescribir $UD$ como:
@@ -1080,7 +1079,7 @@ my_image(cor(resid), zlim = c(-1,1))
 axis(side = 2, 1:ncol(y), rev(colnames(y)), las = 2)
 ```
 
-Ahora que hemos eliminado el efecto general del estudiante, la gráfica de correlación revela que todavía no hemos explicado la correlación interna de la materia ni el hecho de que las puntuaciones en matemáticas y ciencias son más parecidas entre sí que a las puntuaciones en las artes. Así que exploremos la segunda columna del SVD. Repita el ejercicio anterior pero para la segunda columna: grafique $U_2$, entonces grafique $V_2^{\top}$ usando el mismo rango para los límites del eje y, finalmente haga una imagen de $U_2 d_{2,2} V_2 ^{\top}$ y compárela con la imagen de `resid`.
+Ahora que hemos eliminado el efecto general del estudiante, el gráfico de correlación revela que todavía no hemos explicado la correlación interna de la materia ni el hecho de que las puntuaciones en matemáticas y ciencias son más parecidas entre sí que a las puntuaciones en las artes. Así que exploremos la segunda columna del SVD. Repita el ejercicio anterior pero para la segunda columna: grafique $U_2$, entonces grafique $V_2^{\top}$ usando el mismo rango para los límites del eje y, finalmente haga una imagen de $U_2 d_{2,2} V_2 ^{\top}$ y compárela con la imagen de `resid`.
 
 
 12\. La segunda columna se relaciona claramente con la diferencia de habilidad del estudiante en matemáticas/ciencias versus las artes. Podemos ver esto más claramente en el gráfico de `s$v[,2]`. Al sumar las matrices resultantes usando estas dos columnas ayudará con nuestra aproximación:
@@ -1128,10 +1127,10 @@ Ya no vemos estructura en los residuos: parecen ser independientes entre sí. Es
 
 $$ Y = d_{1,1} U_1 V_1^{\top} + d_{2,2} U_2 V_2^{\top} + d_{3,3} U_3 V_3^{\top} + \varepsilon$$
 
-con $\varepsilon$ una matriz de errores independientes idénticamente distribuidos. Este modelo es útil porque resumimos $100 \times 24$ observaciones con $3 \times (100+24+1) = 375$ números. Además, los tres componentes del modelo tienen interpretaciones útiles: 1) la capacidad general de un estudiante, 2) la diferencia en la habilidad entre las matemáticas/ciencias y las artes, y 3) las diferencias restantes entre las tres materias. Los tamaños $d_{1,1}, d_{2,2}$ y $d_{3,3}$ nos dice la variabilidad explicada por cada componente. Finalmente, tengan en cuenta que los componentes $d_{j,j} U_j V_j^{\top}$ son equivalentes al componente principal j.
+con $\varepsilon$ una matriz de errores independientes idénticamente distribuidos. Este modelo es útil porque resumimos $100 \times 24$ observaciones con $3 \times (100+24+1) = 375$ números. Además, los tres componentes del modelo tienen interpretaciones útiles: 1) la capacidad general de un estudiante, 2) la diferencia en la habilidad entre las matemáticas/ciencias y las artes, y 3) las diferencias restantes entre las tres materias. Los tamaños $d_{1,1}, d_{2,2}$ y $d_{3,3}$ nos dicen la variabilidad explicada por cada componente. Finalmente, tengan en cuenta que los componentes $d_{j,j} U_j V_j^{\top}$ son equivalentes al componente principal j.
 
 Termine el ejercicio graficando una imagen de $Y$, una imagen de $d_{1,1} U_1 V_1^{\top} + d_{2,2} U_2 V_2^{\top} + d_{3,3} U_3 V_3^{\top}$ y una imagen de los residuos, todos con el mismo `zlim`.
 
 
 
-14\. Avanzado. El set de datos `movielens` incluido en el paquete __dslabs__ es un pequeño subconjunto de un set de datos más grande con millones de clasificaciones. Puede encontrar el set de datos más reciente aquí [https://grouplens.org/datasets/movielens/20m/font>](https://grouplens.org/datasets/movielens/20m/). Cree su propio sistema de recomendaciones utilizando todas las herramientas que le hemos mostrado.
+14\. Avanzado. El set de datos `movielens` incluido en el paquete __dslabs__ es un pequeño subconjunto de un set de datos más grande con millones de clasificaciones. Puede encontrar el set de datos más reciente aquí [https://grouplens.org/datasets/movielens/20m/](https://grouplens.org/datasets/movielens/20m/). Cree su propio sistema de recomendaciones utilizando todas las herramientas que le hemos mostrado.
