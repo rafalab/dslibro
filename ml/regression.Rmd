@@ -197,17 +197,17 @@ d. A menos que incluyamos todos los predictores, no tenemos poder de predicción
 
 ## Regresión logística
 
-El enfoque de regresión puede extenderse a datos categóricos. En esta sección, primero ilustramos cómo, para datos binarios, simplemente se pueden asignar valores numéricos de 0 y 1 a los resultados $y$. Entonces, se aplica la regresión como si los datos fueran continuos. Más tarde, señalaremos una limitación de este enfoque y presentaremos la _regresión logística_ como una solución. La regresión logística es un caso específico de un set de _modelos lineales generalizados_. Para ilustrar la regresión logística, la aplicaremos a nuestro ejemplo anterior de predicción de sexo basado en altura: 
+El enfoque de regresión puede extenderse a datos categóricos. En esta sección, primero ilustramos cómo, para datos binarios, simplemente se pueden asignar valores numéricos de 0 y 1 a los resultados $y$. Entonces, se aplica la regresión como si los datos fueran continuos. Más tarde, señalaremos una limitación de este enfoque y presentaremos la _regresión logística_ como una solución. La regresión logística es un caso específico de un set de _modelos lineales generalizados_. Para ilustrar la regresión logística, la aplicaremos a nuestro ejemplo anterior de predicción de sexo basado en altura definido en la Sección \@ref(training-test).
 
-```{r}
-library(dslabs)
-data("heights")
+```{r, echo=FALSE}
+data(heights)
 
-y <- heights$height
-set.seed(2)
+y <- heights$sex
+
+set.seed(2007)
 test_index <- createDataPartition(y, times = 1, p = 0.5, list = FALSE)
-train_set <- heights %>% slice(-test_index)
-test_set <- heights %>% slice(test_index)
+test_set <- heights[test_index, ]
+train_set <- heights[-test_index, ]
 ```
 
 Si definimos el resultado $Y$ como 1 para mujeres y 0 para hombres, y $X$ como la altura, nos interesa la probabilidad condicional:
@@ -220,7 +220,7 @@ Como ejemplo, ofrecemos una predicción para un estudiante que mide 66 pulgadas 
 
 ```{r}
 train_set %>%
-  filter(round(height)==66) %>%
+  filter(round(height) == 66) %>%
   summarize(y_hat = mean(sex=="Female"))
 ```
 
@@ -261,7 +261,7 @@ Para formar una predicción, definimos una _regla de decisión_: predecir mujer 
 ```{r}
 p_hat <- predict(lm_fit, test_set)
 y_hat <- ifelse(p_hat > 0.5, "Female", "Male") %>% factor()
-confusionMatrix(y_hat, test_set$sex)[["Accuracy"]]
+confusionMatrix(y_hat, test_set$sex)$overall[["Accuracy"]]
 ```
 
 Vemos que este método funciona sustancialmente mejor que adivinar.
@@ -348,12 +348,12 @@ Como tenemos un estimado $\hat{p}(x)$, podemos obtener predicciones:
 
 ```{r}
 y_hat_logit <- ifelse(p_hat_logit > 0.5, "Female", "Male") %>% factor
-confusionMatrix(y_hat_logit, test_set$sex)[["Accuracy"]]
+confusionMatrix(y_hat_logit, test_set$sex)$overall[["Accuracy"]]
 ```
 
 Las predicciones resultantes son similares. Esto se debe a que los dos estimados de $p(x)$ mayores que 1/2 en aproximadamente la misma región de x:
 
-```{r glm-prediction}
+```{r glm-prediction, echo=FALSE}
 data.frame(x = seq(min(tmp$x), max(tmp$x))) %>%
   mutate(logistic = plogis(glm_fit$coef[1] + glm_fit$coef[2]*x),
          regression = lm_fit$coef[1] + lm_fit$coef[2]*x) %>%
