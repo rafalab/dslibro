@@ -16,7 +16,7 @@ El set de datos incluye dos componentes, un set de entrenamiento y un set de eva
 names(mnist)
 ```
 
-Cada uno de estos componentes incluye una matriz con características en las columnas:
+Cada uno de estos componentes incluye una matriz con atributos en las columnas:
 
 ```{r}
 dim(mnist$train$images)
@@ -46,9 +46,9 @@ y_test <- factor(mnist$test$labels[index])
 
 En _machine learning_, a menudo transformamos predictores antes de ejecutar el algoritmo de la máquina. También eliminamos predictores que claramente no son útiles. Llamamos a estos pasos _preprocesamiento_ (_preprocessing_ en inglés).
 
-Los ejemplos de preprocesamiento incluyen estandarizar los predictores, transformar logarítmicamente algunos predictores, eliminar los predictores que están altamente correlacionados con otros y eliminar los predictores con muy pocos valores no únicos o una variación cercana a cero. Mostramos un ejemplo a continuación.
+Ejemplos de preprocesamiento incluyen estandarizar los predictores, transformar logarítmicamente algunos predictores, eliminar los predictores que están altamente correlacionados con otros y eliminar los predictores con muy pocos valores no únicos o una variación cercana a cero. Mostramos un ejemplo a continuación.
 
-Podemos ejecutar la función `nearZero` del paquete __caret__ para ver que muchas características no varían mucho de una observación a otra. Podemos ver que hay una gran cantidad de características con variabilidad 0:
+Podemos ejecutar la función `nearZero` del paquete __caret__ para ver que muchos atributos no varían mucho de una observación a otra. Podemos ver que hay una gran cantidad de atributos con variabilidad 0:
 
 ```{r pixel-sds, message=FALSE, warning=FALSE}
 library(matrixStats)
@@ -58,14 +58,14 @@ qplot(sds, bins = 256)
 
 Esto se espera porque hay partes de la imagen que raras veces contienen escritura (píxeles oscuros).
 
-El paquete __caret__ incluye una función que recomienda que se eliminen estas características debido a que la variación es casi cero:
+El paquete __caret__ incluye una función que recomienda que se eliminen estos atributos debido a que la variación es casi cero:
 
 ```{r, message=FALSE, warning=FALSE}
 library(caret)
 nzv <- nearZeroVar(x)
 ```
 
-Podemos ver las columnas recomendadas para la eliminación:
+Podemos ver las columnas que se recomiendan elimiar:
 
 ```{r, eval=FALSE}
 image(matrix(1:784 %in% nzv, 28, 28))
@@ -197,17 +197,17 @@ xaxt="n", yaxt="n")
 ```
 -->
 
-Con algunos ajustes adicionales, podemos obtener una precisión aún mayor.
+Con algunos ajustes adicionales, podemos obtener una exactitud aún mayor.
 
 ## Importancia variable
 
-La siguiente función calcula la importancia de cada característica:
+La siguiente función calcula la importancia de cada atributo:
 
 ```{r}
 imp <- importance(fit_rf)
 ```
 
-Podemos ver qué características se utilizan más al graficar una imagen:
+Podemos ver qué atributos se utilizan más al graficar una imagen:
 
 
 ```{r eval=FALSE}
@@ -283,7 +283,7 @@ En los ejercicios, vamos a construir varios modelos de _machine learning_ para e
 
 ## Ejercicios
 
-1\. Utilice el set de entrenamiento `mnist_27` para construir un modelo con varios de los modelos disponibles del paquete __caret__. Por ejemplo,  puede intentar con estos:
+1\. Utilice el set de entrenamiento `mnist_27` para construir un modelo con varios de los modelos disponibles del paquete __caret__. Por ejemplo, puede tratar estos:
 
 ```{r, eval = FALSE}
 models <- c("glm", "lda", "naive_bayes", "svmLinear", "gamboost",
@@ -292,7 +292,7 @@ models <- c("glm", "lda", "naive_bayes", "svmLinear", "gamboost",
             "adaboost", "svmRadial", "svmRadialCost", "svmRadialSigma")
 ```
 
-Aunque no hemos explicado muchos de estos algoritmos, aplíquelos usando `train` con todos los parámetros predeterminados. Mantenga los resultados en una lista. Es posible que tenga que instalar algunos paquetes. Tenga en cuenta que probablemente recibirá algunas advertencias.
+Aunque no hemos explicado muchos de estos algoritmos, aplíquelos usando `train` con todos los parámetros predeterminados. Guarde los resultados en una lista. Es posible que tenga que instalar algunos paquetes. Tenga en cuenta que probablemente recibirá algunas advertencias.
 
 
 2\. Ahora que tiene todos los modelos entrenados en una lista, use `sapply` o `map` para crear una matriz de predicciones para el set de evaluación. Debería terminar con una matriz con `length(mnist_27$test$y)` filas y `length(models)` columnas.
@@ -310,10 +310,10 @@ Aunque no hemos explicado muchos de estos algoritmos, aplíquelos usando `train`
 7\. Ahora solo consideremos los métodos con una exactitud estimada de 0.8 al construir el conjunto. ¿Cuál es la exactitud ahora?
 
 
-8\. __Avanzado__: si dos métodos dan resultados que son iguales, unirlos no cambiará los resultados en absoluto. Para cada par de métricas,  compare cuán frequentemente predicen lo mismo. Luego use la función `heatmap` para visualizar los resultados. Sugerencia: use el argumento  `method = "binary"` en la función `dist`.
+8\. __Avanzado__: Si dos métodos dan resultados que son iguales, unirlos no cambiará los resultados en absoluto. Para cada par de métricas,  compare cuán frequentemente predicen lo mismo. Entonces use la función `heatmap` para visualizar los resultados. Sugerencia: use el argumento  `method = "binary"` en la función `dist`.
 
 
-9\. __Avanzado__: tenga en cuenta que cada método también puede producir una probabilidad condicional estimada. En lugar del voto mayoritario, podemos tomar el promedio de estas probabilidades condicionales estimadas. Para la mayoría de los métodos, podemos usar el `type = "prob"` en la función `train`. Sin embargo, algunos de los métodos requieren que use el argumento `trControl=trainControl(classProbs=TRUE)` al llamar `train`. Además, estos métodos no funcionan si las clases tienen números como nombres.Sugerencia: cambie los niveles de esta manera
+9\. __Avanzado__: Tenga en cuenta que cada método también puede producir una probabilidad condicional estimada. En lugar del voto mayoritario, podemos tomar el promedio de estas probabilidades condicionales estimadas. Para la mayoría de los métodos, podemos usar el `type = "prob"` en la función `train`. Sin embargo, algunos de los métodos requieren que use el argumento `trControl=trainControl(classProbs=TRUE)` al llamar `train`. Además, estos métodos no funcionan si las clases tienen números como nombres. Sugerencia: cambie los niveles de esta manera:
 
 
 ```{r, eval = FALSE}
