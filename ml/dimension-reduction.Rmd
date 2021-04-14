@@ -6,7 +6,7 @@ rafalib::mypar()
 
 Un reto típico de _machine learning_ incluirá una gran cantidad de predictores, lo que hace que la visualización sea algo retante. Hemos mostrado métodos para visualizar datos univariados y emparejados, pero los gráficos que revelan relaciones entre muchas variables son más complicados en dimensiones más altas. Por ejemplo, para comparar cada uno de las 784 atributos en nuestro ejemplo de predicción de dígitos, tendríamos que crear, por ejemplo, 306,936 diagramas de dispersión. La creación de un único diagrama de dispersión de los datos es imposible debido a la alta dimensionalidad.
 
-Aquí describimos técnicas poderosas útiles para el análisis exploratorio de datos, entre otras cosas, generalmente conocidas como _reducción de dimensiones_. La idea general es reducir la dimensión del set de datos mientras se conservan características importantes, como la distancia entre atributos u observaciones. Con menos dimensiones, la visualización se vuelve más factible. La técnica detrás de todo, la descomposición de valores singulares, también es útil en otros contextos. El análisis de componentes principales (_principal component analysis_ o PCA por sus siglas en inglés) es el enfoque que mostraremos. Antes de aplicar PCA a sets de datos de alta dimensión, motivaremos las ideas detrás con un ejemplo sencillo.
+Aquí describimos técnicas poderosas y útiles para el análisis exploratorio de datos, entre otras cosas, generalmente conocidas como _reducción de dimensiones_. La idea general es reducir la dimensión del set de datos mientras se conservan características importantes, como la distancia entre atributos u observaciones. Con menos dimensiones, la visualización es más factible. La técnica detrás de todo, la descomposición de valores singulares, también es útil en otros contextos. El _análisis de componentes principales_ (_principal component analysis_ o PCA por sus siglas en inglés) es el enfoque que mostraremos. Antes de aplicar PCA a sets de datos de alta dimensión, motivaremos las ideas con un ejemplo sencillo.
 
 ### Preservando la distancia
 
@@ -21,7 +21,7 @@ x <- rbind(mvrnorm(n/ 2, c(69, 69), Sigma),
            mvrnorm(n/ 2, c(55, 55), Sigma))
 ```
 
-Un diagrama de dispersión revela rápidamente que la correlación es alta y que hay dos grupos de gemelos, los adultos (puntos superiores derechos) y los niños (puntos inferiores izquierdos):
+Un diagrama de dispersión revela que la correlación es alta y que hay dos grupos de gemelos, los adultos (puntos superiores derechos) y los niños (puntos inferiores izquierdos):
 
 <!--
 ```{r simulated-twin-heights, fig.width=3, fig.height=3, echo=FALSE, message=FALSE, out.width="50%"}
@@ -183,7 +183,7 @@ $$
 
 Recuerden que si las columnas están centradas para tener un promedio de 0, entonces la suma de los cuadrados es equivalente a la varianza o desviación estándar al cuadrado.
 
-En nuestro ejemplo, para lograr la ortogonalidad, multiplicamos el primer set de coeficientes (primera columna de $A$) por $\sqrt{2}$ y el segundo por $1/\sqrt{2}$, entonces obtenemos la misma distancia exacta si usamos ambas dimensiones:
+En nuestro ejemplo, para lograr ortogonalidad, multiplicamos el primer set de coeficientes (primera columna de $A$) por $\sqrt{2}$ y el segundo por $1/\sqrt{2}$. Entonces obtenemos la misma distancia exacta cuando usamos ambas dimensiones:
 
 ```{r}
 z[,1] <- (x[,1] + x[,2])/ sqrt(2)
@@ -334,7 +334,7 @@ illustrate_pca(x, flip = -1)
 
 Resulta que podemos encontrar esta transformación lineal no solo para dos dimensiones, sino también para matrices de cualquier dimensión $p$.
 
-Para una matriz multidimensional $X$ con $p$ columnas, se puede encontrar una transformación $Z$ que conserva la distancia entre filas, pero con la varianza de las columnas en orden decreciente. La segunda columna es el segundo componente principal, la tercera columna es el tercer componente principal, y así sucesivamente. Como en nuestro ejemplo, si después de un cierto número de columnas, digamos $k$, las variaciones de las columnas de $Z_j$ con $j>k$ son muy pequeñas, significa que estas dimensiones tienen poco que contribuir a la distancia y podemos aproximar la distancia entre dos puntos con solo $k$ dimensiones. Si $k$ es mucho más pequeño que $p$, entonces podemos lograr un resumen muy eficiente de nuestros datos.
+Para una matriz multidimensional $X$ con $p$ columnas, se puede encontrar una transformación $Z$ que conserva la distancia entre filas, pero con la varianza de las columnas en orden decreciente. La segunda columna es el segundo componente principal, la tercera columna es el tercer componente principal y así sucesivamente. Como en nuestro ejemplo, si después de un cierto número de columnas, digamos $k$, las variaciones de las columnas de $Z_j$ con $j>k$ son muy pequeñas, significa que estas dimensiones tienen poco que contribuir a la distancia y podemos aproximar la distancia entre dos puntos con solo $k$ dimensiones. Si $k$ es mucho más pequeño que $p$, entonces podemos lograr un resumen muy eficiente de nuestros datos.
 
 
 ### Ejemplo lirio
@@ -478,7 +478,7 @@ tmp %>% filter(id>5) %>%
 
 Ahora apliquemos la transformación que aprendimos con los datos de entrenamiento a los datos de evaluación, reduzcamos la dimensión y ejecutemos `knn3` en solo un pequeño número de dimensiones.
 
-Intentamos 36 dimensiones ya que esto explica aproximadamente el 80% de los datos. Primero, ajuste el modelo:
+[fix] Intentamos/probamos 36 dimensiones ya que esto explica aproximadamente el 80% de los datos. Primero, ajuste el modelo:
 
 ```{r}
 library(caret)

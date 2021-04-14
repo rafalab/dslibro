@@ -1,6 +1,6 @@
 # Grandes sets de datos
 
-Los problemas de _machine learning_ a menudo implican sets de datos que son tan o más grandes que el set de datos MNIST. Existe una variedad de técnicas computacionales y conceptos estadísticos que son útiles para el análisis de grandes sets de datos. En este capítulo, exploramos brevemente estas técnicas y conceptos al describir álgebra matricial, reducción de dimensiones, regularización y factorización de matrices. Utilizamos sistemas de recomendación relacionados con las clasificaciones de películas como un ejemplo motivador.
+Los problemas de _machine learning_ a menudo implican sets de datos que son tan o más grandes que el set de datos MNIST. Existe una variedad de técnicas computacionales y conceptos estadísticos que son útiles para análisis de grandes sets de datos. En este capítulo, exploramos brevemente estas técnicas y conceptos al describir álgebra matricial, reducción de dimensiones, regularización y factorización de matrices. Utilizamos sistemas de recomendación relacionados con las clasificaciones de películas como un ejemplo motivador.
 
 ## Álgebra matricial {#matrix-algebra}
 
@@ -12,7 +12,7 @@ library(dslabs)
 if(!exists("mnist")) mnist <- read_mnist()
 ```
 
-En estos casos, a menudo es conveniente guardar los predictores en una matriz y el resultado en un vector en lugar de utilizar un _data frame_. Pueden ver que los predictores se guardan en como una matriz:
+En estos casos, a menudo es conveniente guardar los predictores en una matriz y el resultado en un vector en lugar de utilizar un _data frame_. Pueden ver que los predictores se guardan en una matriz:
 
 ```{r}
 class(mnist$train$images)
@@ -25,7 +25,7 @@ x <- mnist$train$images[1:1000,]
 y <- mnist$train$labels[1:1000]
 ```
 
-La razón principal para usar matrices es que ciertas operaciones matemáticas necesarias para desarrollar código eficiente se pueden realizar usando técnicas de una rama de las matemáticas llamada álgebra lineal. De hecho, el álgebra lineal y la notación matricial son elementos clave del lenguaje utilizado en trabajos académicos que describen técnicas de _machine learning_. No cubriremos el álgebra lineal en detalle aquí, pero demostraremos cómo usar matrices en R para que puedan aplicar las técnicas de álgebra lineal ya implementadas en la base R u otros paquetes.
+La razón principal para usar matrices es que ciertas operaciones matemáticas necesarias para desarrollar código eficiente se pueden realizar usando técnicas de una rama de las matemáticas llamada álgebra lineal. De hecho, álgebra lineal y notación matricial son elementos claves del lenguaje utilizado en trabajos académicos que describen técnicas de _machine learning_. No cubriremos álgebra lineal en detalle aquí, pero demostraremos cómo usar matrices en R para que puedan aplicar las técnicas de álgebra lineal ya implementadas en la base R u otros paquetes.
 
 Para motivar el uso de matrices, plantearemos cinco preguntas/desafíos:
 
@@ -41,7 +41,7 @@ Para motivar el uso de matrices, plantearemos cinco preguntas/desafíos:
 
 Para completar esto, tendremos que realizar operaciones matemáticas que involucran varias variables. El __tidyverse__ no está desarrollado para realizar este tipo de operaciones matemáticas. Para esta tarea, es conveniente usar matrices.
 
-Antes de hacer esto, introduciremos la notación matricial y el código R básico para definir y operar en matrices.
+Antes de hacer esto, presentaremos la notación matricial y el código R básico para definir y operar en matrices.
 
 ### Notación
 
@@ -171,13 +171,13 @@ __Advertencia__:  La función `matrix` recicla valores en el vector **sin advert
 matrix(my_vector, 4, 5)
 ```
 
-Para poner las intensidades de píxeles de nuestra, digamos, tercera entrada, `r mnist$train$labels[3]` en la cuadrícula, podemos usar:
+Para poner las intensidades de píxeles de nuestra, digamos, tercera entrada, que es `r mnist$train$labels[3]` en la cuadrícula, podemos usar:
 
 ```{r}
 grid <- matrix(x[3,], 28, 28)
 ```
 
-Para confirmar que, de hecho, lo hemos hecho correctamente, podemos usar la función `image`, que muestra una imagen de su tercer argumento. La parte superior de este gráfico es el píxel 1, que se muestra en la parte inferior para que la imagen se voltee. Para codificar a continuación se incluye un código que muestra cómo voltearlo:
+Para confirmar que lo hemos hecho correctamente, podemos usar la función `image`, que muestra una imagen de su tercer argumento. La parte superior de este gráfico es el píxel 1, que se muestra en la parte inferior para que la imagen se voltee. A continuación incluimos el código que muestra cómo voltearlo:
 
 ```{r, eval=FALSE}
 image(1:28, 1:28, grid)
@@ -207,7 +207,7 @@ También podemos calcular los promedios con `rowMeans` si queremos que los valor
 avg <- rowMeans(x)
 ```
 
-Una vez que tengamos esto, simplemente podemos generar un diagrama de caja:
+Una vez que tengamos esto, podemos generar un diagrama de caja:
 
 ```{r boxplot-of-digit-averages}
 tibble(labels = as.factor(y), row_averages = avg) %>%
@@ -222,7 +222,7 @@ El paquete __matrixStats__ agrega funciones que realizan operaciones en cada fil
 
 ### `apply`
 
-Las funciones que acabamos de describir están realizando una operación similar a la que hacen `sapply` y la función `map` de __purrr__: aplicar la misma función a una parte de su objeto. En este caso, la función se aplica a cada fila o cada columna. La función `apply` les permite aplicar cualquier función, no solo `sum` o `mean`, a una matriz. El primer argumento es la matriz, el segundo es la dimensión, 1 para las filas, 2 para las columnas y el tercero es la función. Así, por ejemplo, `rowMeans` se puede escribir como:
+Las funciones que acabamos de describir están realizando una operación similar a la que hacen `sapply` y la función `map` de __purrr__: aplicar la misma función a una parte de su objeto. En este caso, la función se aplica a cada fila o cada columna. La función `apply` les permite aplicar cualquier función, no solo `sum` o `mean`, a una matriz. El primer argumento es la matriz, el segundo es la dimensión (1 para las filas y 2 para las columnas) y el tercero es la función. Así, por ejemplo, `rowMeans` se puede escribir como:
 
 ```{r}
 avgs <- apply(x, 1, mean)
@@ -264,13 +264,13 @@ image(1:28, 1:28, matrix(sds, 28, 28)[, 28:1])
 
 Vemos que hay poca variación en las esquinas.
 
-Podríamos eliminar atributos que no tienen variación ya que estas no pueden ayudarnos a predecir. En la Sección \@ref(matrices), describimos las operaciones utilizadas para extraer columnas:
+Podríamos eliminar atributos que no tienen variación ya que estas no nos ayuda a predecir. En la Sección \@ref(matrices), describimos las operaciones utilizadas para extraer columnas:
 
 ```{r, eval=FALSE}
 x[ ,c(351,352)]
 ```
 
-y filas:
+y para extraer filas:
 
 ```{r, eval=FALSE}
 x[c(2,3),]
@@ -411,7 +411,7 @@ También podemos usar la función `sweep` que funciona de manera similar a `appl
 X_mean_0 <- sweep(x, 2, colMeans(x))
 ```
 
-La función `sweep` tiene otro argumento que le permite definir la operación aritmética. Entonces, para dividir por la desviación estándar, hacemos lo siguiente:
+La función `sweep` tiene otro argumento que les permite definir la operación aritmética. Entonces, para dividir por la desviación estándar, hacemos lo siguiente:
 
 ```{r}
 x_mean_0 <- sweep(x, 2, colMeans(x))
