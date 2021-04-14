@@ -7,7 +7,7 @@ html_document: default
 
 Los algoritmos que hemos descrito hasta ahora son ejemplos de un enfoque general denominado _machine learning supervisado_. El nombre proviene del hecho de que usamos los resultados en un set de entrenamiento para supervisar la creación de nuestro algoritmo de predicción. Hay otro subconjunto de _machine learning_ denominado _no supervisado_. En este subconjunto no necesariamente conocemos los resultados y, en cambio, estamos interesados en descubrir grupos. Estos algoritmos también se denominan algoritmos de _agrupamiento_ (_clustering_ en inglés) ya que los predictores se utilizan para definir _grupos_ (_clusters_ en inglés).
 
-En los dos ejemplos que hemos utilizado en esta parte del libro, la agrupación no sería muy útil. En el primer ejemplo, si simplemente se nos dan las alturas, no podremos descubrir dos grupos, hombres y mujeres, porque la intersección es grande. En el segundo ejemplo, al graficar los predictores, podemos ver que descubrir los dos dígitos, dos y siete, será retante:
+En los dos ejemplos que hemos utilizado en esta parte del libro, la agrupación no sería muy útil. En el primer ejemplo, si simplemente se nos dan las alturas, no podremos descubrir dos grupos, hombres y mujeres, porque la intersección es grande. En el segundo ejemplo, al graficar los predictores, podemos ver que descubrir los dos dígitos, 2 y 7, será retante:
 
 ```{r mnist-27-unsupervised, message=FALSE, warning=FALSE}
 library(tidyverse)
@@ -53,7 +53,7 @@ d <- dist(x)
 
 ## Agrupación jerárquica
 
-Con la distancia calculada entre cada par de películas, necesitamos un algoritmo para definir grupos a partir de estas. La agrupación jerárquica comienza definiendo cada observación como un grupo separado. Entonces, los dos grupos más cercanos se unen en un grupo de forma iterativa hasta que solo haya un grupo que incluya todas las observaciones. La función `hclust` implementa este algoritmo y toma una distancia como entrada.
+Con la distancia calculada entre cada par de películas, necesitamos un algoritmo para definir grupos a partir de estas. La agrupación jerárquica comienza definiendo cada observación como un grupo separado. Entonces, los dos grupos más cercanos se unen en un grupo de forma iterativa hasta que solo haya un grupo que incluye todas las observaciones. La función `hclust` implementa este algoritmo y toma una distancia como entrada.
 
 ```{r}
 h <- hclust(d)
@@ -106,7 +106,7 @@ plot(h_2, cex = 0.35)
 
 Para usar el algoritmo de agrupamiento _k-means_, tenemos que predefinir $k$, el número de grupos que queremos definir. El algoritmo _k-means_ es iterativo. El primer paso es definir $k$ centros. Luego, cada observación se asigna al grupo con el centro más cercano a esa observación. En un segundo paso, los centros se redefinen utilizando la observación en cada grupo: los medios de columna se utilizan para definir un _centroide_. Repetimos estos dos pasos hasta que los centros converjan.
 
-La función `kmeans` incluida en R-base no funciona con NAs. Con fines ilustrativos, reemplazaremos las NAs con 0s. En general, la decisión de cómo completar los datos que faltan, o si uno debería hacerlo, debe hacerse con cuidado.
+La función `kmeans` incluida en base R no funciona con NAs. Con fines ilustrativos, reemplazaremos las NAs con 0s. En general, la decisión de cómo completar los datos que faltan, o si uno debería hacerlo, debe hacerse con cuidado.
 
 ```{r}
 x_0 <- x
@@ -120,7 +120,7 @@ Las asignaciones de grupos están en el componente `cluster`:
 groups <- k$cluster
 ```
 
-Tengan en cuenta que debido a que el primer centro se elige al azar, los grupos finales son aleatorios. Imponemos cierta estabilidad al repetir la función completa varias veces y tomar el promedio de los resultados. El número de valores iniciales aleatorios para utilizar se puede asignar a través del argumento `nstart`.
+Tengan en cuenta que debido a que el primer centro se elige al azar, los grupos finales son aleatorios. Imponemos cierta estabilidad al repetir la función entera varias veces y tomar el promedio de los resultados. El número de valores iniciales aleatorios para utilizar se puede asignar a través del argumento `nstart`.
 
 ```{r}
 k <- kmeans(x_0, centers = 10, nstart = 25)
