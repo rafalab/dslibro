@@ -1,6 +1,6 @@
 # Inferencia estadística {#inference}
 
-En el capitulo \@ref(models) describiremos, con cierto detalle, cómo los agregadores de encuestas, como FiveThirtyEight, usan los datos para predecir los resultados de las elecciones. Para entender cómo lo hacen, primero debemos aprender los conceptos básicos de la _inferencia estadística_, la parte de la estadística que ayuda a distinguir los patrones reales de esos que surgen del azar. La inferencia estadística es un tema amplio y aquí repasaremos los conceptos básicos utilizando las encuestas como un ejemplo motivador. Para describir los conceptos, complementamos las fórmulas matemáticas con simulaciones Monte Carlo y el código R.
+En el Capítulo \@ref(models), describiremos, con cierto detalle, cómo los agregadores de encuestas, como FiveThirtyEight, usan los datos para predecir los resultados de las elecciones. Para entender cómo lo hacen, primero debemos aprender los conceptos básicos de la _inferencia estadística_, la parte de la estadística que ayuda a distinguir los patrones reales de esos que surgen del azar. La inferencia estadística es un tema amplio y aquí repasaremos los conceptos básicos utilizando las encuestas como un ejemplo motivador. Para describir los conceptos, complementamos las fórmulas matemáticas con simulaciones Monte Carlo y el código R.
 
 ```{r, echo=FALSE}
 img_path <- "inference/img/"
@@ -8,7 +8,7 @@ img_path <- "inference/img/"
 
 ## Encuestas
 
-Las encuestas de opinión se han llevado a cabo desde el siglo XIX. El objetivo general es describir las opiniones de una población específica sobre un set particular de temas. Recientemente, estas encuestas han sido mas notables durante las elecciones presidenciales en EE.UU.. Las encuestas son útiles cuando entrevistar a cada miembro de una población particular es logísticamente imposible. La estrategia general es entrevistar a un grupo más pequeño, elegido al azar, y luego inferir las opiniones de toda la población a partir de las opiniones del grupo más pequeño. La teoría estadística que se usa para justificar el proceso se conoce como _inferencia_ y es el tema principal de este capítulo.
+Las encuestas de opinión se han llevado a cabo desde el siglo XIX. El objetivo general es describir las opiniones de una población específica sobre un set particular de temas. Recientemente, estas encuestas han sido mas notables durante las elecciones presidenciales en EE.UU.. Las encuestas son útiles cuando entrevistar a cada miembro de una población particular es logísticamente imposible. La estrategia general es entrevistar a un grupo más pequeño elegido al azar y luego inferir las opiniones de toda la población a partir de las opiniones del grupo más pequeño. La teoría estadística que se usa para justificar el proceso se conoce como _inferencia_ y es el tema principal de este capítulo.
 
 Quizás las encuestas de opinión más conocidas son esas realizadas para determinar el candidato favorito de los votantes en una elección determinada. Los estrategas políticos hacen uso extensivo de las encuestas para decidir, entre otras cosas, cómo invertir recursos. Por ejemplo, es posible que quieran saber en qué regiones geográficas enfocar sus esfuerzos de "sacar el voto".
 
@@ -16,7 +16,7 @@ Las elecciones son un caso particularmente interesante de encuestas de opinión 
 
 Aunque típicamente los resultados de estas encuestas se mantienen privados, las organizaciones de noticias realizan encuestas similares porque los resultados tienden a ser de interés público y los datos se hacen públicos. Eventualmente estaremos analizando tales datos.
 
-Real Clear Politics^[http://www.realclearpolitics.com] es un ejemplo de un agregador de noticias que organiza y publica resultados de encuestas. Por ejemplo, presentan los siguientes resultados de las encuestas que ofrecen estimaciones del voto popular para las elecciones presidenciales del 2016^[http://www.realclearpolitics.com/epolls/2016/president/us/general_election_trump_vs_clinton-5491.html]:
+Real Clear Politics^[http://www.realclearpolitics.com] es un ejemplo de un agregador de noticias que organiza y publica resultados de encuestas. Por ejemplo, presentan los siguientes resultados de las encuestas que ofrecen estimados del voto popular para las elecciones presidenciales del 2016^[http://www.realclearpolitics.com/epolls/2016/president/us/general_election_trump_vs_clinton-5491.html]:
 
 ```{r, echo=FALSE, message=FALSE, warning=FALSE}
 #knitr::include_graphics(file.path(img_path,"rcp-polls.png"))
@@ -44,16 +44,16 @@ if(knitr::is_html_output()){
 
 Aunque en Estados Unidos el voto popular no determina el resultado de las elecciones presidenciales, lo utilizaremos como un ejemplo ilustrativo y sencillo de cuán bien funcionan las encuestas. Pronosticar la elección es un proceso más complejo ya que implica combinar resultados de 50 estados y DC y lo describiremos en la Sección \@ref(election-forecasting).
 
-Por ahora, hagamos algunas observaciones sobre la tabla anterior. Primero, tengan en cuenta que las diferentes encuestas, todas tomadas días antes de las elecciones, informan una _diferencia_ diferente: la diferencia estimada entre el apoyo a los dos candidatos. Observen también que la diferencia indicada ronda en torno a lo que acabó siendo el resultado real: Clinton ganó el voto popular por 2.1%. También vemos una columna titulada **MoE** que significa _margen de error_ (_margin of error_ en inglés).
+Por ahora, hagamos algunas observaciones sobre la tabla anterior. Primero, tengan en cuenta que las diferentes encuestas, todas tomadas días antes de las elecciones, informan una _diferencia_ (_spread_ en inglés) diferente: la diferencia estimada entre el apoyo a los dos candidatos. Observen también que la diferencia indicada ronda en torno a lo que acabó siendo el resultado real: Clinton ganó el voto popular por 2.1%. También vemos una columna titulada **MoE** que significa _margen de error_ (_margin of error_ en inglés).
 
-En esta sección, mostraremos cómo se pueden aplicar los conceptos de probabilidad que aprendimos en capítulos anteriores para desarrollar enfoques estadísticos que hacen de las encuestas una herramienta eficaz. Estudiaremos los conceptos estadísticos necesarios para definir _estimaciones_ y _márgenes de errores_, y mostraremos cómo podemos usar estos para pronosticar resultados finales relativamente precisos y también proveer una estimación de la precisión de nuestro pronóstico. Una vez que aprendamos esto, podremos entender dos conceptos que son ubicuos en la ciencia de datos: _intervalos de confianza_ y _valores p_. Finalmente, para comprender las declaraciones probabilísticas sobre la probabilidad de que un candidato gane, tendremos que aprender sobre los modelos bayesianos. En las secciones finales, lo reunimos todo para recrear la versión simplificada del modelo de FiveThirtyEight y aplicarlo a las elecciones presidenciales del 2016.
+En esta sección, mostraremos cómo se pueden aplicar los conceptos de probabilidad que aprendimos en capítulos anteriores para desarrollar enfoques estadísticos que hacen de las encuestas una herramienta eficaz. Estudiaremos los conceptos estadísticos necesarios para definir _estimadores_ y _márgenes de errores_, y mostraremos cómo podemos usar estos para pronosticar resultados finales relativamente precisos y también proveer un estimador de la precisión de nuestro pronóstico. Una vez que aprendamos esto, podremos entender dos conceptos que son ubicuos en la ciencia de datos: _intervalos de confianza_ y _valores-p_. Finalmente, para comprender las declaraciones probabilísticas sobre la probabilidad de que un candidato gane, tendremos que aprender sobre los modelos bayesianos. En las secciones finales, lo reunimos todo para recrear la versión simplificada del modelo de FiveThirtyEight y aplicarlo a las elecciones presidenciales del 2016.
 
 Comenzamos conectando la teoría de probabilidad con la tarea de usar encuestas para aprender sobre una población.
 
 
 ### El modelo de muestreo para encuestas
 
-Para ayudarnos a entender la conexión entre las encuestas y lo que hemos aprendido, vamos a construir una situación similar a la que enfrentan los encuestadores. Para imitar el desafío que enfrentan los encuestadores en términos de competir con otros encuestadores para la atención de los medios, utilizaremos una urna llena de cuentas para representar a los votantes y fingiremos que estamos compitiendo por un premio de $25 dólares. El desafío es adivinar la diferencia entre la proporción de cuentas azules y de cuentas rojas en esta urna (en este caso, un frasco de pepinillos):
+Para ayudarnos a entender la conexión entre las encuestas y lo que hemos aprendido, vamos a construir una situación similar a la que enfrentan los encuestadores. Para imitar el desafío que enfrentan los encuestadores en términos de competir con otros encuestadores para la atención de los medios, utilizaremos una urna llena de cuentas para representar a los votantes y fingiremos que estamos compitiendo por un premio de 25 dólares. El desafío es adivinar la diferencia entre la proporción de cuentas azules y de cuentas rojas en esta urna (en este caso, un frasco de pepinillos):
 
 
 ```{r, echo=FALSE, out.width=300}
@@ -80,9 +80,9 @@ take_poll(25)
 
 Piensen en cómo construirían su intervalo según los datos que se muestran arriba.
 
-Acabamos de describir un modelo de muestreo sencillo para encuestas de opinión. Las cuentas dentro de la urna representan a las personas que votarán el día de las elecciones. Los que votarán por el candidato republicano están representados con cuentas rojas y los demócratas con cuentas azules. Para simplificar, supongan que no hay otros colores. Es decir, que solo hay dos partidos: republicano y demócrata.
+Acabamos de describir un modelo de muestreo sencillo para encuestas de opinión. Las cuentas dentro de la urna representan a las personas que votarán el día de las elecciones. Los que votarán por el candidato republicano están representados con cuentas rojas y los demócratas con cuentas azules. Para simplificar, suponemos que no hay otros colores. Es decir, que solo hay dos partidos: republicano y demócrata.
 
-## Poblaciones, muestras, parámetros y estimaciones
+## Poblaciones, muestras, parámetros y estimadores
 
 Queremos predecir la proporción de cuentas azules en la urna. Llamemos a esta cantidad $p$, que luego nos dice la proporción de cuentas rojas $1-p$ y la diferencia $p - (1-p)$, que se simplifica a $2p - 1$.
 
@@ -90,7 +90,7 @@ En los libros de texto estadísticos, las cuentas en la urna se llaman la _pobla
 
 ¿Podemos hacer esto con las 25 observaciones anteriores? Ciertamente es informativo. Por ejemplo, dado que vemos 13 cuentas rojas y 12 azules, es poco probable que $p$ > .9 o $p$ <.1. ¿Pero estamos listos para predecir con certeza que hay más cuentas rojas que azules en el frasco?
 
-Queremos construir una estimación de $p$ utilizando solo la información que observamos. Una estimación se debe considerar un resumen de los datos observados que consideramos informativos sobre el parámetro de interés. Parece intuitivo pensar que la proporción de cuentas azules en la muestra $0.48$ debe estar al menos relacionado con la proporción real $p$. ¿Pero entonces predecimos que $p$ es 0.48? Primero, recuerden que la proporción muestral es una variable aleatoria. Si ejecutamos el comando `take_poll(25)` cuatro veces, obtenemos una respuesta diferente cada vez, ya que la proporción muestral es una variable aleatoria.
+Queremos construir un estimador de $p$ utilizando solo la información que observamos. Un estimador se debe considerar un resumen de los datos observados que consideramos informativos sobre el parámetro de interés. Parece intuitivo pensar que la proporción de cuentas azules en la muestra $0.48$ debe estar al menos relacionado con la proporción real $p$. ¿Pero entonces predecimos que $p$ es 0.48? Primero, recuerden que la proporción muestral es una variable aleatoria. Si ejecutamos el comando `take_poll(25)` cuatro veces, obtenemos una respuesta diferente cada vez, ya que la proporción muestral es una variable aleatoria.
 
 
 ```{r four-simulated-polls, echo=FALSE}
@@ -99,11 +99,11 @@ take_poll(25); take_poll(25); take_poll(25); take_poll(25)
 ```
 
 
-Tengan en cuenta que en las cuatro muestras aleatorias de arriba, las proporciones de la muestra varían de 0.44 a 0.60. Al describir la distribución de esta variable aleatoria, podremos obtener información sobre cuán buena es esta estimación y cómo mejorarla.
+Tengan en cuenta que en las cuatro muestras aleatorias de arriba, las proporciones de la muestra varían de 0.44 a 0.60. Al describir la distribución de esta variable aleatoria, podremos obtener información sobre cuán buena es este estimador y cómo mejorarla.
 
 ### El promedio de la muestra
 
-La realización de una encuesta de opinión se modela como la toma de una muestra aleatoria de una urna. Estamos proponiendo el uso de la proporción de cuentas azules en nuestra muestra como una estimación del parámetro $p$. Una vez que tengamos esta estimación, podemos reportar fácilmente una estimacion para la diferencia $2p-1$, pero, para simplificar, ilustraremos los conceptos para estimar $p$. Usaremos nuestro conocimiento de probabilidad para defender nuestro uso de la proporción muestral y cuantificaremos cuán cerca creemos que está de la proporción poblacional $p$.
+La realización de una encuesta de opinión se modela como la toma de una muestra aleatoria de una urna. Estamos proponiendo el uso de la proporción de cuentas azules en nuestra muestra como un estimador del parámetro $p$. Una vez que tengamos este estimador, podemos reportar fácilmente un estimador para la diferencia $2p-1$, pero, para simplificar, ilustraremos los conceptos para estimar $p$. Usaremos nuestro conocimiento de probabilidad para defender nuestro uso de la proporción muestral y cuantificaremos cuán cerca creemos que está de la proporción poblacional $p$.
 
 Comenzamos definiendo la variable aleatoria $X$ como: $X=1$ si elegimos una cuenta azul al azar y $X=0$ si es roja. Esto implica que la población es una lista de 0s y 1s. Si muestramos $N$ cuentas, entonces el promedio de los sorteos $X_1, \dots, X_N$ es equivalente a la proporción de cuentas azules en nuestra muestra. Esto es porque sumar las $X$s es equivalente a contar las cuentas azules y dividir esta suma por el total $N$ a calcular una proporción. Usamos el símbolo $\bar{X}$ para representar este promedio. En general, en los libros de texto de estadísticas, una barra en la parte superior de un símbolo significa el promedio. La teoría que acabamos de aprender sobre la suma de los sorteos es útil porque el promedio es una suma de sorteos multiplicada por la constante $1/N$:
 
@@ -117,7 +117,7 @@ Aquí encontramos una diferencia importante con lo que hicimos en el capítulo d
 
 Al igual que usamos variables para definir las cantidades desconocidas en los sistemas de ecuaciones, en la inferencia estadística definimos _parámetros_ para definir los componentes desconocidos de nuestros modelos. En el modelo de urna que estamos utilizando para imitar una encuesta de opinión, no sabemos la proporción de cuentas azules en la urna. Definimos los parametros $p$ para representar esta cantidad. $p$ es el promedio de la urna porque si tomamos el promedio de 1s (azul) y 0s (rojo), obtenemos la proporción de cuentas azules. Dado que nuestro objetivo principal es descubrir qué es $p$, vamos a estimar este parámetro.
 
-Las ideas presentadas aquí sobre cómo estimar los parámetros, y proveer información sobre cuán buenas son estas estimaciones, se extrapolan a muchas tareas de la ciencia de datos. Por ejemplo, es posible que queramos saber: ¿cuánto más mejora la salud de los pacientes que reciben un tratamiento comparado a un grupo control? Podemos preguntarnos, ¿cuáles son los efectos de fumar en la salud de una población? ¿Cuáles son las diferencias entre grupos raciales de tiroteos fatales por parte de la policía? ¿Cuál es la tasa de cambio en esperanza de vida en Estados Unidos durante los últimos 10 años? Todas estas preguntas pueden enmarcarse como una tarea de estimar un parámetro de una muestra.
+Las ideas presentadas aquí sobre cómo estimar los parámetros, y proveer información sobre cuán buenas son estos estimadores, se extrapolan a muchas tareas de la ciencia de datos. Por ejemplo, es posible que queramos saber: ¿cuánto más mejora la salud de los pacientes que reciben un tratamiento comparado a un grupo control? Podemos preguntarnos, ¿cuáles son los efectos de fumar en la salud de una población? ¿Cuáles son las diferencias entre grupos raciales de disparos mortales por parte de la policía? ¿Cuál es la tasa de cambio en esperanza de vida en Estados Unidos durante los últimos 10 años? Todas estas preguntas pueden enmarcarse como una tarea de estimar un parámetro de una muestra.
 
 ### Encuesta versus pronóstico
 
@@ -168,7 +168,7 @@ o 1.5 puntos porcentuales. Entonces, incluso con grandes encuestas, para eleccio
 
 4\. ¿Cuál es el error estándar de $\bar{X}$? Sugerencia: es una función de $p$.
 
-5\. Escriba una línea de código que le dé el error estándar `se` para el problema anterior para varios valores de $p$, especificamente para `p <- seq(0, 1, length = 100)`. Haz un gráfico de`se` versus `p`.
+5\. Escriba una línea de código que le dé el error estándar `se` para el problema anterior para varios valores de $p$, especificamente para `p <- seq(0, 1, length = 100)`. Haga un gráfico de `se` versus `p`.
 
 
 6\. Copie el código anterior y póngalo dentro de un bucle-for para hacer el gráfico para $N=25$, $N=100$ y $N=1000$.

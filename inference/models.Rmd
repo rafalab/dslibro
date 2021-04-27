@@ -2,7 +2,7 @@
 
 >> "Todos los modelos están equivocados, pero algunos son útiles." --George E. P. Box
 
-El día antes de las elecciones presidenciales del 2008, FiveThirtyEight de Nate Silver declaró que "Barack Obama parece estar listo para una victoria electoral decisiva". Fueron hasta más lejos y predijeron que Obama ganaría las elecciones con 349 votos electorales a 189, y el voto popular por un margen de 6.1%. FiveThirtyEight también añadió una declaración probabilística a su predicción declarando que Obama tenía una probablidad de 91% de ganar las elecciones. Las predicciones fueron bastante precisas y, en los resultados finales, Obama ganó el colegio electoral 365 a 173 y el voto popular por una diferencia de 7.2%. El desempeño de FiveThirtyEight en las elecciones del 2008 atrajo la atención de expertos políticos y personalidades de la televisión. Cuatro años después, la semana antes de las elecciones presidenciales del 2012, Nate Silver de FiveThirtyEight le estaba dando a Obama una probabilidad de 90% de ganar a pesar de que muchos de los expertos pensaban que los resultados finales estarían más cerca. El comentarista político Joe Scarborough dijo durante su show^[https://www.youtube.com/watch?v=TbKkjm-gheY]:
+El día antes de las elecciones presidenciales del 2008, FiveThirtyEight de Nate Silver declaró que "Barack Obama parece estar listo para una victoria electoral decisiva". Fueron hasta más lejos y predijeron que Obama ganaría las elecciones con 349 votos electorales a 189 y el voto popular por un margen de 6.1%. FiveThirtyEight también añadió una declaración probabilística a su predicción declarando que Obama tenía una probablidad de 91% de ganar las elecciones. Las predicciones fueron bastante precisas y, en los resultados finales, Obama ganó el colegio electoral 365 a 173 y el voto popular por una diferencia de 7.2%. El desempeño de FiveThirtyEight en las elecciones del 2008 atrajo la atención de expertos políticos y personalidades de la televisión. Cuatro años después, la semana antes de las elecciones presidenciales del 2012, Nate Silver de FiveThirtyEight le estaba dando a Obama una probabilidad de 90% de ganar a pesar de que muchos de los expertos pensaban que los resultados finales estarían más cerca. El comentarista político Joe Scarborough dijo durante su show^[https://www.youtube.com/watch?v=TbKkjm-gheY]:
 
 >> Cualquiera que piense que esta elección no está pareja en este momento es un tremendo ideólogo ... son un chiste.
 
@@ -12,7 +12,7 @@ A lo que Nate Silver respondió a través de Twitter:
 
 En 2016, Silver no estaba tan seguro y le dio a Hillary Clinton solo una probabilidad de 71% de ganar. En contraste, la mayoría de los otros pronosticadores estaban casi seguros de que ella ganaría. Ella perdió. Pero 71% sigue siendo más de 50%, ¿se equivocó el Sr. Silver? Además, ¿qué significa la probabilidad en este contexto? ¿Alguien está tirando dados?
 
-En este capítulo demostraremos cómo los _agregadores de encuestas_, como FiveThirtyEight, recopilaron y combinaron datos informados por diferentes expertos para producir mejores predicciones. Introduciremos las ideas detrás de los _modelos estadísticos_, también conocidos como _modelos de probabilidad_, que utilizaron los agregadores de encuestas para mejorar los pronósticos electorales en comparación a las encuestas individuales. En este capítulo, motivamos los modelos, construyendo sobre los conceptos de inferencia estadística que aprendimos en el Capítulo \@ref(inference). Comenzamos con modelos relativamente sencillos, tomando en cuenta que el ejercicio real de la ciencia de datos de pronosticar elecciones involucra algunos modelos bastante complejos, que presentamos al final del capítulo en la Sección \@ref(election-forecasting).
+En este capítulo demostraremos cómo los _agregadores de encuestas_, como FiveThirtyEight, recopilaron y combinaron datos informados por diferentes expertos para producir mejores predicciones. Presentaremos las ideas detrás de los _modelos estadísticos_, también conocidos como _modelos de probabilidad_, que utilizaron los agregadores de encuestas para mejorar los pronósticos electorales en comparación a las encuestas individuales. En este capítulo, motivamos los modelos, construyendo sobre los conceptos de inferencia estadística que aprendimos en el Capítulo \@ref(inference). Comenzamos con modelos relativamente sencillos, tomando en cuenta que el ejercicio real de la ciencia de datos de pronosticar elecciones involucra algunos modelos bastante complejos, que presentamos al final del capítulo en la Sección \@ref(election-forecasting).
 
 ```{r, echo=FALSE, message=FALSE}
 set.seed(2)
@@ -21,7 +21,7 @@ img_path <- "inference/img/"
 
 ## Agregadores de encuestas
 
-Como describimos anteriormente, unas semanas antes de las elecciones del 2012, Nate Silver le estaba dando a Obama una probabilidad de 90% de ganar. ¿Por qué tenía tanta confianza el señor Silver? Utilizaremos una simulación Monte Carlo para ilustrar la idea que tuvo el Sr. Silver y que otros no vieron. Para hacer esto, generamos resultados para 12 encuestas realizadas la semana anterior a las elecciones. Imitaremos tamaños de muestra de encuestas reales y construiremos e informaremos intervalos de confianza de 95\% para cada una de las 12 encuestas. Guardaremos los resultados de esta simulación en un set de datos y añadimos una columna de ID de encuesta.
+Como describimos anteriormente, unas semanas antes de las elecciones del 2012, Nate Silver le estaba dando a Obama una probabilidad de 90% de ganar. ¿Por qué tenía tanta confianza el señor Silver? Utilizaremos una simulación Monte Carlo para ilustrar la idea que tuvo el Sr. Silver y que otros no vieron. Para hacer esto, generamos resultados para 12 encuestas realizadas la semana anterior a las elecciones. Imitaremos tamaños de muestra de encuestas reales y construiremos e informaremos intervalos de confianza de 95\% para cada una de las 12 encuestas. Guardaremos los resultados de esta simulación en un set de datos y añadiremos una columna de ID de encuesta.
 
 
 ```{r, message=FALSE, warning=FALSE}
@@ -66,7 +66,7 @@ Aunque como agregadores no tenemos acceso a los datos sin procesar de la encuest
 sum(polls$sample_size)
 ```
 
-participantes. Básicamente, construimos una estimación de la diferencia, llamémosla $d$, con un promedio ponderado de la siguiente manera:
+participantes. Básicamente, construimos un estimador de la diferencia, llamémosla $d$, con un promedio ponderado de la siguiente manera:
 
 ```{r}
 d_hat <- polls %>%
@@ -74,9 +74,9 @@ d_hat <- polls %>%
   pull(avg)
 ```
 
-Una vez que tengamos una estimación de $d$, podemos construir una estimación de la proporción votando por Obama, que luego podemos usar para estimar el error estándar. Tan pronto hacemos esto, vemos que nuestro margen de error es `r p_hat <- (1+d_hat)/2; moe <- 2*1.96*sqrt(p_hat*(1-p_hat)/sum(polls$sample_size)); moe`.
+Una vez que tengamos un estimador de $d$, podemos construir un estimador de la proporción votando por Obama, que luego podemos usar para estimar el error estándar. Tan pronto hacemos esto, vemos que nuestro margen de error es `r p_hat <- (1+d_hat)/2; moe <- 2*1.96*sqrt(p_hat*(1-p_hat)/sum(polls$sample_size)); moe`.
 
-Por lo tanto, podemos predecir que la diferencia será `r round(d_hat*100,1)` más o menos `r round(moe*100 ,1)`, que no solo incluye el resultado real que observamos en la noche de las elecciones, sino que está bastante lejos de incluir 0. Una vez que combinamos las 12 encuestas, estamos seguros de que Obama ganará el voto popular.
+Por lo tanto, podemos predecir que la diferencia será `r round(d_hat*100,1)` más o menos `r round(moe*100 ,1)`, que no solo incluye el resultado real que observamos en la noche de las elecciones, sino que está bastante lejos de incluir 0. Al combinar las 12 encuestas, acabamos seguros de que Obama ganará el voto popular.
 
 ```{r confidence-coverage-2008-election, echo=FALSE}
 p_hat <- (1+d_hat)/2
@@ -202,7 +202,7 @@ polls <- polls_us_election_2016 %>%
            (grade %in% c("A+","A","A-","B+") | is.na(grade)))
 ```
 
-Agregamos la estimación de la diferencia:
+Agregamos el estimador de la diferencia:
 
 ```{r}
 polls <- polls %>%
@@ -212,7 +212,7 @@ polls <- polls %>%
 Para este ejemplo, suponemos que solo hay dos partes y llamaremos $p$ a la proporción de votos para Clinton y $1-p$ a la proporción votando por Trump. Estamos interesados en la diferencia $2p-1$. Llamemos a la diferencia $d$.
 
 
-Tenemos `r nrow(polls)` estimaciones de la diferencia. La teoría que aprendimos nos dice que estas estimaciones son una variable aleatoria con una distribución de probabilidad que es aproximadamente normal. El valor esperado es la diferencia de la noche electoral $d$ y el error estándar es $2\sqrt{p (1 - p)/ N}$. Suponiendo que el modelo de urna que describimos anteriormente es bueno, podemos usar esta información para construir un intervalo de confianza basado en los datos agregados. La diferencia estimada es:
+Tenemos `r nrow(polls)` estimadores de la diferencia. La teoría que aprendimos nos dice que estos estimadores son una variable aleatoria con una distribución de probabilidad que es aproximadamente normal. El valor esperado es la diferencia de la noche electoral $d$ y el error estándar es $2\sqrt{p (1 - p)/ N}$. Suponiendo que el modelo de urna que describimos anteriormente es bueno, podemos usar esta información para construir un intervalo de confianza basado en los datos agregados. El estimador de la diferencia es:
 
 ```{r}
 d_hat <- polls %>%
@@ -299,7 +299,7 @@ Nuestra tarea es estimar $d$. Como modelamos los valores observados $X_1,\dots X
 Un problema es que no sabemos $\sigma$. Pero la teoría nos dice que podemos estimar el modelo de urna $\sigma$ con la _desviación estándar de la muestra_ definida como
 $s = \sqrt{ \sum_{i=1}^N (X_i - \bar{X})^2/ (N-1)}$.
 
-A diferencia de la definición de desviación estándar de la población, ahora dividimos por $N-1$. Esto hace $s$ una mejor estimación de $\sigma$. Hay una explicación matemática para esto, que se enseña en la mayoría de los libros de texto de estadística, pero no la cubrimos aquí.
+A diferencia de la definición de desviación estándar de la población, ahora dividimos por $N-1$. Esto hace $s$ un mejor estimado de $\sigma$. Hay una explicación matemática para esto, que se enseña en la mayoría de los libros de texto de estadística, pero no la cubrimos aquí.
 
 En R, la función `sd` calcula la desviación estándar de la muestra:
 
@@ -338,7 +338,7 @@ x <- heights %>% filter(sex == "Male") %>%
 1\. Matemáticamente hablando, `x` es nuestra población. Usando la analogía de la urna, tenemos una urna con los valores de `x` dentro de ella. ¿Cuáles son el promedio y la desviación estándar de nuestra población?
 
 
-2\. Llame al promedio de población calculado arriba $\mu$ y la desviación estándar $\sigma$. Ahora tome una muestra de tamaño 50, con reemplazo, y construya una estimación para $\mu$ y $\sigma$.
+2\. Llame al promedio de población calculado arriba $\mu$ y la desviación estándar $\sigma$. Ahora tome una muestra de tamaño 50, con reemplazo, y construya un estimador para $\mu$ y $\sigma$.
 
 3\. ¿Qué nos dice la teoría sobre el promedio de la muestra $\bar{X}$ y como se relaciona con $\mu$?
 
@@ -348,10 +348,10 @@ c. Es una variable aleatoria con valor esperado $\mu$ y error estándar $\sigma$
 d. No contiene información.
 
 
-4\. Entonces, ¿cómo es esto útil? Vamos a utilizar un ejemplo simplificado pero ilustrativo. Supongamos que queremos saber la altura promedio de nuestros estudiantes varones, pero solo llegamos a medir 50 de los 708. Usaremos $\bar{X}$ como nuestra estimación. Sabemos por la respuesta al ejercicio 3 que la estimación estándar de nuestro error $\bar{X}-\mu$ es $\sigma/\sqrt{N}$. Queremos calcular esto, pero no sabemos $\sigma$. Según lo que se describe en esta sección, indique su estimación de $\sigma$.
+4\. Entonces, ¿cómo es esto útil? Vamos a utilizar un ejemplo simplificado pero ilustrativo. Supongamos que queremos saber la altura promedio de nuestros estudiantes varones, pero solo llegamos a medir 50 de los 708. Usaremos $\bar{X}$ como nuestro estimador. Sabemos por la respuesta al ejercicio 3 que el estimador estándar de nuestro error $\bar{X}-\mu$ es $\sigma/\sqrt{N}$. Queremos calcular esto, pero no sabemos $\sigma$. Según lo que se describe en esta sección, indique su estimador de $\sigma$.
 
 
-5\. Ahora que tenemos una estimación de $\sigma$, llamemos a nuestra estimación $s$. Construya un intervalo de confianza de 95% para $\mu$.
+5\. Ahora que tenemos un estimador de $\sigma$, llamemos a nuestro estimador $s$. Construya un intervalo de confianza de 95% para $\mu$.
 
 
 6\. Ahora ejecute una simulación Monte Carlo en la que calcula 10,000 intervalos de confianza como acaba de hacer. ¿Qué proporción de estos intervalos incluye $\mu$?
@@ -414,7 +414,7 @@ polls %>%
 
 15\. Usando lo que aprendimos al responder a las preguntas anteriores, ¿cuál es el error estándar de $\bar{Y}_{2} - \bar{Y}_1$?
 
-16\. La respuesta a la pregunta anterior depende de $\sigma_1$ y $\sigma_2$, que no sabemos. Aprendimos que podemos estimarlos con la desviación estándar de la muestra. Escriba un código que calcule estas dos estimaciones.
+16\. La respuesta a la pregunta anterior depende de $\sigma_1$ y $\sigma_2$, que no sabemos. Aprendimos que podemos estimarlos con la desviación estándar de la muestra. Escriba un código que calcule estos dos estimadores.
 
 
 17\. ¿Qué nos dice el CLT sobre la distribución de $\bar{Y}_2 - \bar{Y}_1$?
@@ -429,13 +429,13 @@ d. Los datos no son 0 o 1, por lo que el CLT no se aplica.
 19\. El intervalo de confianza nos dice que hay un efecto encuestador relativamente fuerte que resulta en una diferencia de aproximadamente 5%. La variabilidad aleatoria no parece explicarlo. Podemos calcular un valor p para explicar el hecho de que el azar no lo explica. ¿Cuál es el valor p?
 
 
-20\. La estadística formada al dividir nuestra estimación de $b_2-b_1$ por su error estándar estimado:
+20\. La estadística formada al dividir nuestro estimador de $b_2-b_1$ por su error estándar estimado:
 
 $$
 \frac{\bar{Y}_2 - \bar{Y}_1}{\sqrt{s_2^2/N_2 + s_1^2/N_1}}
 $$
 
-se llama la estadística t. Ahora observe que tenemos más de dos encuestadores. También podemos probar para el efecto de encuestador utilizando todos los encuestadores, no solo dos. La idea es comparar la variabilidad entre encuestas con la variabilidad dentro de las encuestas. De hecho, podemos construir estadísticas para probar los efectos y aproximar su distribución. El área de estadísticas que hace esto se llama Análisis de la varianza o ANOVA por sus siglas en inglés. No lo cubrimos aquí, pero ANOVA provee un set muy útil de herramientas para responder a preguntas como: ¿hay un efecto encuestador?
+se llama la estadística t. Ahora observe que tenemos más de dos encuestadores. También podemos probar para el efecto de encuestador utilizando todos los encuestadores, no solo dos. La idea es comparar la variabilidad entre encuestas con la variabilidad dentro de las encuestas. De hecho, podemos construir estadísticas para probar los efectos y aproximar su distribución. El área de estadísticas que hace esto se llama _análisis de la varianza_  (ANOVA por sus siglas en inglés). No lo cubrimos aquí, pero ANOVA provee un set muy útil de herramientas para responder a preguntas como: ¿hay un efecto encuestador?
 
 Para este ejercicio, cree una nueva tabla:
 

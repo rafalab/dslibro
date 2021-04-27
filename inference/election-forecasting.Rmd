@@ -172,7 +172,7 @@ Una implicación de añadir este término al modelo es que la desviación están
 sd(one_poll_per_pollster$spread)
 ```
 
-Esta estimación no incluye la variabilidad introducida por $b$. Tengan en cuenta que como:
+Este estimador no incluye la variabilidad introducida por $b$. Tengan en cuenta que como:
 
 $$
 \bar{X} = d + b + \frac{1}{N}\sum_{i=1}^N X_i,
@@ -264,7 +264,7 @@ results %>% mutate(sigma = sd/sqrt(n),
                    posterior_se = sqrt(1/ (1/sigma^2 + 1/tau^2)))
 ```
 
-Las estimaciones basadas en las probabilidades a posteriori mueven las estimaciones hacia 0, aunque los estados con muchas encuestas están menos influenciados. Esto se espera ya que mientras más datos de encuestas recolectamos, más confiamos en esos resultados:
+Los estimadores basadas en las probabilidades a posteriori mueven los estimadores hacia 0, aunque los estados con muchas encuestas están menos influenciados. Esto se espera ya que mientras más datos de encuestas recolectamos, más confiamos en esos resultados:
 
 ```{r posterior-versus-original-estimates, echo=FALSE}
 results %>% mutate(sigma = sd/ sqrt(n),
@@ -308,7 +308,7 @@ geom_vline(xintercept = 269)
 -->
 El Consorcio Electoral de Princeton hizo una predicción similar. Ahora sabemos que fallaron por mucho. ¿Que pasó?
 
-El modelo anterior ignora el sesgo general y supone que los resultados de diferentes estados son independientes. Después de las elecciones, nos dimos cuenta de que el sesgo general en 2016 no era tan grande: estaba entre 1 y 2%. Pero debido a que la elección estuvo cerrada en varios estados grandes y estos estados tenían una gran cantidad de encuestas, los encuestadores que ignoraron el sesgo general subestimaron considerablemente el error estándar. Utilizando la notación que introducimos, suponieron que el error estándar era $\sqrt{\sigma^2/N}$ que con N grande es bastante más pequeño que la estimación más precisa
+El modelo anterior ignora el sesgo general y supone que los resultados de diferentes estados son independientes. Después de las elecciones, nos dimos cuenta de que el sesgo general en 2016 no era tan grande: estaba entre 1 y 2%. Pero debido a que la elección estuvo cerrada en varios estados grandes y estos estados tenían una gran cantidad de encuestas, los encuestadores que ignoraron el sesgo general subestimaron considerablemente el error estándar. Utilizando la notación que introducimos, suponieron que el error estándar era $\sqrt{\sigma^2/N}$ que con N grande es bastante más pequeño que el estimador más preciso
 $\sqrt{\sigma^2/N + \sigma_b^2}$. FiveThirtyEight, que modela el sesgo general de una manera bastante sofisticada, informó un resultado más cercano. Podemos simular los resultados ahora con un término de sesgo. Para el nivel de estado, el sesgo general puede ser mayor, por lo que lo establecemos en $\sigma_b = 0.03$:
 
 
@@ -329,7 +329,7 @@ clinton_EV_2 <- replicate(1000, {
 mean(clinton_EV_2 > 269)
 ```
 
-Esto nos da una estimación mucho más sensata. Al observar los resultados de la simulación, vemos cómo el término de sesgo agrega variabilidad a los resultados finales.
+Esto nos da un estimador mucho más sensato. Al observar los resultados de la simulación, vemos cómo el término de sesgo agrega variabilidad a los resultados finales.
 
 ```{r comparison-forecast-with-and-without-bias, echo=FALSE}
 data.frame(no_bias=clinton_EV, with_bias=clinton_EV_2) %>% gather(approach, result) %>%
@@ -365,7 +365,7 @@ se <- one_pollster %>%
 se
 ```
 
-Pero la desviación estándar empírica es más alta que la estimación teórica más alta posible. Además, los datos de la variabilidad no se ven normales como la teoría predeciría:
+Pero la desviación estándar empírica es más alta que el esimtador teórico más alto posible. Además, los datos de la variabilidad no se ven normales como la teoría predeciría:
 
 ```{r time-trend-variability, echo=FALSE}
 qplot(spread, geom = "histogram", binwidth = 0.01, data = one_pollster, color = I("black"))
@@ -409,7 +409,7 @@ $$
 Y_{i,j,t} = d + b + h_j + b_t + f(t) + \varepsilon_{i,jt,}
 $$
 
-Usualmente vemos el estimado $f(t)$ no para la diferencia, sino para los porcentajes reales para cada candidato así:
+Usualmente vemos el $f(t)$ estimado no para la diferencia, sino para los porcentajes reales para cada candidato así:
 
 ```{r trend-estimate-for-all-pollsters, warning=FALSE, message=FALSE, echo=FALSE}
 polls_us_election_2016 %>%
