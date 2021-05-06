@@ -33,12 +33,12 @@ Los convierte en días desde la época Unix. La función `as.Date` puede convert
 as.Date("1970-01-01") %>% as.numeric
 ```
 
-Funciones que grafican, como las de __ggplot__, conocen el formato de fecha. Esto significa que, por ejemplo, un diagrama de dispersión puede usar la representación numérica para decidir la posición del punto, pero incluir la cadena en las etiquetas:
+Funciones que grafican, como las de __ggplot2__, conocen el formato de fecha. Esto significa que, por ejemplo, un diagrama de dispersión puede usar la representación numérica para decidir la posición del punto, pero incluir la cadena en las etiquetas:
 
 ```{r rawpolls-vs-time}
 polls_us_election_2016 %>% filter(pollster == "Ipsos" & state == "U.S.") %>%
-ggplot(aes(startdate, rawpoll_trump)) +
-geom_line()
+  ggplot(aes(startdate, rawpoll_trump)) +
+  geom_line()
 ```
 
 Noten que se muestran los nombres de los meses, una característica muy conveniente.
@@ -63,9 +63,9 @@ Las funciones `year`, `month` y `day` extraen esos valores:
 
 ```{r}
 tibble(date = dates,
-month = month(dates),
-day = day(dates),
-year = year(dates))
+       month = month(dates),
+       day = day(dates),
+       year = year(dates))
 ```
 
 También podemos extraer las etiquetas del mes:
@@ -79,11 +79,11 @@ Otro conjunto útil de funciones son las que convierten cadenas en fechas. La fu
 
 ```{r}
 x <- c(20090101, "2009-01-02", "2009 01 03", "2009-1-4",
-"2009-1, 5", "Created on 2009 1 6", "200901 !!! 07")
+       "2009-1, 5", "Created on 2009 1 6", "200901 !!! 07")
 ymd(x)
 ```
 
-Otra complicación proviene del hecho de que las fechas a menudo vienen en diferentes formatos donde el orden de año, mes y día son diferentes. El formato preferido es mostrar año (con los cuatro dígitos), mes (dos dígitos) y luego día (dos dígitos), o lo que se llama ISO 8601. Específicamente usamos AAAA-MM-DD para que si ordenamos la cadena, estará ordenado por fecha. Pueden ver que la función `ymd` las devuelve en este formato.
+Otra complicación proviene del hecho de que las fechas a menudo vienen en diferentes formatos donde el orden de año, mes y día son diferentes. El formato preferido es mostrar año (con los cuatro dígitos), mes (dos dígitos) y luego día (dos dígitos), o lo que se llama ISO 8601. Específicamente, usamos AAAA-MM-DD para que si ordenamos la cadena, estará ordenado por fecha. Pueden ver que la función `ymd` las devuelve en este formato.
 
 Pero, ¿qué pasa si encuentran fechas como "01/09/02"? Esto podría ser el 1 de septiembre de 2002 o el 2 de enero de 2009 o el 9 de enero de 2002. En estos casos, examinar todo el vector de fechas los ayudará a determinar qué formato es por proceso de eliminación. Una vez que sepan, pueden usar las muchas funciones ofrecidas por __lubridate__.
 
@@ -130,7 +130,7 @@ now() %>% minute()
 now() %>% second()
 ```
 
-El paquete también incluye una función para convertir cadenas en horas del día, así como funciones que convierte, objetos de horas del día que también incluyen fechas:
+El paquete también incluye una función para convertir cadenas en horas del día, así como funciones que convierten objetos que representan horas del día, que además incluyen las fechas:
 
 
 ```{r}
@@ -158,10 +158,10 @@ Otra función muy útil es `round_date`. Se puede utilizar para redondear las fe
 
 ```{r poll-margin-versus-week}
 polls_us_election_2016 %>%
-mutate(week = round_date(startdate, "week")) %>%
-group_by(week) %>%
-summarize(margin = mean(rawpoll_clinton - rawpoll_trump)) %>%
-qplot(week, margin, data = .)
+  mutate(week = round_date(startdate, "week")) %>%
+  group_by(week) %>%
+  summarize(margin = mean(rawpoll_clinton - rawpoll_trump)) %>%
+  qplot(week, margin, data = .)
 ```
 
 
@@ -176,22 +176,22 @@ library(purrr)
 library(pdftools)
 
 fn <- system.file("extdata", "RD-Mortality-Report_2015-18-180531.pdf",
-package="dslabs")
+                  package="dslabs")
 tab <- map_df(str_split(pdf_text(fn), "\n"), function(s){
-s <- str_trim(s)
-header_index <- str_which(s, "2015")[1]
-tmp <- str_split(s[header_index], "\\s+", simplify = TRUE)
-month <- tmp[1]
-header <- tmp[-1]
-tail_index <- str_which(s, "Total")
-n <- str_count(s, "\\d+")
-out <- c(1:header_index, which(n==1), which(n>=28), tail_index:length(s))
-s[-out] %>% str_remove_all("[^\\d\\s]") %>% str_trim() %>%
-str_split_fixed("\\s+", n = 6) %>% .[,1:5] %>% as_tibble() %>%
-setNames(c("day", header)) %>%
-mutate(month = month, day = as.numeric(day)) %>%
-gather(year, deaths, -c(day, month)) %>%
-mutate(deaths = as.numeric(deaths))
+  s <- str_trim(s)
+  header_index <- str_which(s, "2015")[1]
+  tmp <- str_split(s[header_index], "\\s+", simplify = TRUE)
+  month <- tmp[1]
+  header <- tmp[-1]
+  tail_index <- str_which(s, "Total")
+  n <- str_count(s, "\\d+")
+  out <- c(1:header_index, which(n==1), which(n>=28), tail_index:length(s))
+  s[-out] %>% str_remove_all("[^\\d\\s]") %>% str_trim() %>%
+    str_split_fixed("\\s+", n = 6) %>% .[,1:5] %>% as_tibble() %>%
+    setNames(c("day", header)) %>%
+    mutate(month = month, day = as.numeric(day)) %>%
+    gather(year, deaths, -c(day, month)) %>%
+    mutate(deaths = as.numeric(deaths))
 })
 ```
 
@@ -204,11 +204,11 @@ mutate(deaths = as.numeric(deaths))
 3\. Grafique muertes versus fecha.
 
 
-4\. Tenga en cuenta que después del 31 de mayo de 2018, las muertes son todas 0. Los datos probablemente aún no se han ingresado. También vemos una caída a partir del 1 de mayo. Redefina `tab` para excluir observaciones tomadas a partir del 1 de mayo de 2018. Luego, rehaga el gráfico.
+4\. Noten que después del 31 de mayo de 2018, las muertes son todas 0. Los datos probablemente aún no se han ingresado. También vemos una caída a partir del 1 de mayo. Redefina `tab` para excluir observaciones tomadas a partir del 1 de mayo de 2018. Luego, rehaga el gráfico.
 
 
 
-5\. Vuelva a hacer el gráfico anterior, pero esta vez grafique las muertes versus el día del año, por ejemplo, 12 de enero de 2016 y 12 de enero de 2017, son ambos el día 12. Use el color para indicar los diferentes años. Sugerencia: use la función `yday` de __lubridate__ .
+5\. Vuelva a hacer el gráfico anterior, pero esta vez grafique las muertes versus el día del año; por ejemplo, 12 de enero de 2016 y 12 de enero de 2017, son ambos el día 12. Use el color para indicar los diferentes años. Sugerencia: use la función `yday` de __lubridate__ .
 
 
 

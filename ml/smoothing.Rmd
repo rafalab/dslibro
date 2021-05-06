@@ -4,7 +4,7 @@
 img_path <- "ml/img/"
 ```
 
-Antes de continuar aprendiendo sobre algoritmos de _machine learning_, presentamos el importante concepto de _suavización_ (_smoothing_ en inglés). La suavización es una técnica muy poderosa comúnmente usada en el análisis de datos. Otros nombres dados a esta técnica son _ajustamiento de curvas_ y _filtro de paso bajo_ (_curve fitting_ y _low pass filtering_ en inglés). La suavización está diseñada para detectar tendencias en presencia de datos ruidosos en casos en los que se desconoce la forma de la tendencia. El nombre _suavización_ proviene del hecho de que para lograr esta hazaña, suponemos que la tendencia es _suave_, como una superficie lisa. En contraste, el ruido (_noise_ en inglés), o la desviación de la tendencia, es impredeciblemente ondulante:
+Antes de continuar aprendiendo sobre algoritmos de _machine learning_, presentamos el importante concepto de _suavización_ (_smoothing_ en inglés). La suavización es una técnica muy poderosa comúnmente usada en el análisis de datos. Otros nombres dados a esta técnica son _ajustamiento de curvas_ y _filtro de paso bajo_ (_curve fitting_ y _low pass filtering_ en inglés). La suavización está diseñada para detectar tendencias en presencia de datos ruidosos cuando se desconoce la forma real de la tendencia. El nombre _suavización_ proviene del hecho de que para lograr esta hazaña, suponemos que la tendencia es _suave_, como una superficie lisa. En contraste, el ruido (_noise_ en inglés), o la desviación de la tendencia, es impredeciblemente ondulante:
 
 ```{r signal-plus-noise-example, message=FALSE, warning=FALSE, fig.height=6, echo=FALSE}
 library(tidyverse)
@@ -20,7 +20,7 @@ gridExtra::grid.arrange(p1, p2, p3)
 
 Parte de lo que explicamos en esta sección son los supuestos que nos permiten extraer la tendencia del ruido.
 
-**Para entender por qué cubrimos este tema, recuerden que los conceptos detrás de las técnicas de suavización son extremadamente útiles en _machine learning_ porque las expectativas/probabilidades condicionales pueden considerarse como tendencias de formas desconocidas que necesitamos estimar en presencia de incertidumbre.**
+**Para entender por qué cubrimos este tema, recuerden que los conceptos detrás de las técnicas de suavización son extremadamente útiles en _machine learning_ porque las expectativas/probabilidades condicionales que necesitamos estimar pueden considerarse como tendencias de formas desconocidas afectadas por incertidumbre.**
 
 Para explicar estos conceptos, nos enfocaremos primero en un problema con un solo predictor. Específicamente, tratamos de estimar la tendencia temporal en el margen de la encuesta de votación popular de 2008 en Estados Unidos (la diferencia entre Obama y McCain).
 
@@ -61,9 +61,9 @@ $$
 E[Y_i | X_i = x_i ] \approx \mu \mbox{ if } |x_i - x_0| \leq 3.5
 $$
 
-En la suavización, llamamos el tamaño del intervalo que satisface $|x_i - x_0| \leq 3.5$, el _tamaño de la ventana_, _parámetro de suavizado_ o _span_. Más adelante, veremos que intentamos optimizar este parámetro.
+En la suavización, llamamos el tamaño del intervalo que satisface $|x_i - x_0| \leq 3.5$, el _tamaño de la ventana_, _parámetro de suavizado_ o _span_. Más adelante, aprenderemos como intentamos optimizar este parámetro.
 
-Esta suposición implica que una buen estimado de $f(x)$ es el promedio de $Y_i$ valores en la ventana. Si definimos $A_0$ como el conjunto de índices $i$ tal que $|x_i - x_0| \leq 3.5$ y $N_0$ como el número de índices en $A_0$, entonces nuestro estimado es:
+Esta suposición implica que un buen estimado de $f(x)$ es el promedio de $Y_i$ valores en la ventana. Si definimos $A_0$ como el conjunto de índices $i$ tal que $|x_i - x_0| \leq 3.5$ y $N_0$ como el número de índices en $A_0$, entonces nuestro estimado es:
 
 $$
 \hat{f}(x_0) = \frac{1}{N_0} \sum_{i \in A_0} Y_i
@@ -235,7 +235,7 @@ Hay varias funciones en R que implementan suavizadores de compartimientos. Un ej
 
 ## Regresión ponderada local (loess)
 
-Una limitación del enfoque de suavización de compartimientos que acabamos de describir es que necesitamos ventanas pequeñas para que se cumpla el supuesto de que la función es aproximadamente constante. Como resultado, terminamos con un pequeño número de puntos de datos para promediar y obtener estimaciones imprecisas $\hat{f}(x)$. Aquí describimos cómo la _regresión ponderada local_ (loess o _local weighted regression_ en inglés) nos permite considerar tamaños de ventana más grandes. Para hacer esto, usaremos un resultado matemático, conocido como el teorema de Taylor, que dice que para cualquier función suave $f(x)$, si la examinamos muy de cerca, parecerá una línea. Para ver por qué esto tiene sentido, consideren los bordes curvos que hacen los jardineros con palas rectas:
+Una limitación del enfoque de suavización de compartimientos que acabamos de describir es que necesitamos ventanas pequeñas para que se cumpla el supuesto de que la función es aproximadamente constante. Como resultado, terminamos con un pequeño número de puntos de datos para promediar y obtener estimaciones imprecisas $\hat{f}(x)$. Aquí describimos cómo la _regresión ponderada local_ (loess o _local weighted regression_ en inglés) nos permite considerar tamaños de ventana más grandes. Para hacer esto, usaremos un resultado matemático, conocido como el teorema de Taylor, que dice que si examinamos muy de cerca cualquier función suave $f(x)$, parecerá una línea. Para ver por qué esto tiene sentido, consideren los bordes curvos que hacen los jardineros con palas rectas:
 
 ```{r, echo=FALSE}
 knitr::include_graphics(file.path(img_path, "garden.png"))
@@ -322,9 +322,9 @@ polls_2008 %>% mutate(smooth = fit$fitted) %>%
   geom_line(aes(day, smooth), color="red")
 ```
 
-Diferentes _spans_ producen diferentes estimados. Podemos ver cómo diferentes tamaños de ventana conducen a diferentes estimados:
+Podemos ver cómo diferentes tamaños de ventanas, _spans_, conducen a diferentes estimados:
 
-```{r loess-multi-span-animation, echo=FALSE, warning=FALSE}
+```{r loess-multi-span-animation, echo=FALSE, warning=FALSE, message=FALSE}
 spans <- c(.66, 0.25, 0.15, 0.10)
 
 fits <- tibble(span = spans) %>%
@@ -455,7 +455,7 @@ polls_2008 %>% mutate(smooth_1 = fit_1$fitted, smooth_2 = fit_2$fitted) %>%
 
 ### Cuidado con los parámetros de suavización predeterminados
 
-`ggplot` utiliza loess en su función `geom_smooth`:
+__ggplot2__ utiliza loess en su función `geom_smooth`:
 
 ```{r ggplot-loess-default, warning=FALSE, message=FALSE}
 polls_2008 %>% ggplot(aes(day, margin)) +
