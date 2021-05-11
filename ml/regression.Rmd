@@ -44,7 +44,7 @@ m <- mean(train_set$son)
 m
 ```
 
-Nuestro error cuadrático medio es:
+Nuestro perdida cuadrática es:
 
 ```{r}
 mean((m - test_set$son)^2)
@@ -91,7 +91,7 @@ y_hat <- predict(fit, test_set)
 mean((y_hat - test_set$son)^2)
 ```
 
-`predict` no siempre devuelve objetos del mismo tipo; depende del tipo de objeto que se le envíe. Para conocer los detalles, deben consultar el archivo de ayuda específico para el tipo de objeto de ajuste que se está utilizando. `predict` es un tipo de función especial en R (denominada _función genérica_) que llama a otras funciones según el tipo de objeto que recibe.  Así que si `predict` recibe un objeto producido por la función `lm`, llamará `predict.lm`. Si recibe un objeto producido por la función `glm`, llamará `predict.glm`. Estas dos funciones son similares pero con algunas diferencias. Pueden obtener más información sobre las diferencias leyendo los archivos de ayuda:
+`predict` no siempre devuelve objetos del mismo tipo; depende del tipo de objeto que se le envíe. Para conocer los detalles, deben consultar el archivo de ayuda específico para el tipo de objeto de ajuste. `predict` es un tipo de función especial en R (denominada _función genérica_) que llama a otras funciones según el tipo de objeto que recibe.  Así que si `predict` recibe un objeto producido por la función `lm`, llamará `predict.lm`. Si recibe un objeto producido por la función `glm`, llamará `predict.glm`. Estas dos funciones son similares pero con algunas diferencias. Pueden obtener más información sobre las diferencias leyendo los archivos de ayuda:
 
 ```{r, eval=FALSE}
 ?predict.lm
@@ -236,7 +236,7 @@ heights %>%
   geom_point()
 ```
 
-Dado que los resultados del gráfico anterior son casi lineal, y es el único enfoque que conocemos actualmente, intentaremos la regresión lineal. Suponemos que:
+Dado que los resultados del gráfico anterior son casi lineal y que es el único enfoque que hemos aprendido hasta ahora, intentaremos la regresión lineal. Suponemos que:
 
 $$p(x) = \mbox{Pr}( Y = 1 | X=x) = \beta_0 + \beta_1 x$$
 
@@ -264,7 +264,7 @@ y_hat <- ifelse(p_hat > 0.5, "Female", "Male") %>% factor()
 confusionMatrix(y_hat, test_set$sex)$overall[["Accuracy"]]
 ```
 
-Vemos que este método funciona sustancialmente mejor que adivinar.
+Vemos que este método funciona mucho mejor que adivinar.
 
 ### Modelos lineales generalizados
 
@@ -291,7 +291,7 @@ Pero estamos estimando una probabilidad: $\mbox{Pr}( Y = 1 \mid X = x)$ que est�
 
 La idea de los modelos lineales generalizados (_generalized linear models_ o GLM por sus siglas en inglés) es 1) definir una distribución de $Y$ que sea consistente con sus posibles resultados y
 2) encontrar una función $g$ tal que $g(\mbox{Pr}( Y = 1 \mid X = x))$ se pueda modelar como una combinación lineal de predictores.
-La regresión logística es el GLM más utilizado. Es una extensión de regresión lineal que asegura que el estimado de $\mbox{Pr}( Y = 1 \mid X = x)$ esté entre 0 y 1. Este enfoque utiliza la transformación _logística_ introducida en la Sección \@ref(logit):
+La regresión logística es el GLM más utilizado. Es una extensión de regresión lineal que asegura que el estimado de $\mbox{Pr}( Y = 1 \mid X = x)$ esté entre 0 y 1. Este enfoque utiliza la transformación _logística_ que presentamos en la Sección \@ref(logit):
 
 $$ g(p) = \log \frac{p}{1-p}$$
 
@@ -353,7 +353,7 @@ confusionMatrix(y_hat_logit, test_set$sex)$overall[["Accuracy"]]
 
 Las predicciones resultantes son similares. Esto se debe a que los dos estimados de $p(x)$ mayores que 1/2 en aproximadamente la misma región de x:
 
-```{r glm-prediction, echo=FALSE}
+```{r glm-prediction}
 data.frame(x = seq(min(tmp$x), max(tmp$x))) %>%
   mutate(logistic = plogis(glm_fit$coef[1] + glm_fit$coef[2]*x),
          regression = lm_fit$coef[1] + lm_fit$coef[2]*x) %>%
@@ -377,7 +377,7 @@ $$
 
 ### Regresión logística con más de un predictor
 
-En esta sección, aplicamos la regresión logística a  los datos "2 o 7" introducidos en la Sección \@ref(two-or-seven). En este caso, estamos interesados en estimar una probabilidad condicional que depende de dos variables. El modelo de regresión logística estándar en este caso supondrá que:
+En esta sección, aplicamos la regresión logística a  los datos "2 o 7" presentados en la Sección \@ref(two-or-seven). En este caso, estamos interesados en estimar una probabilidad condicional que depende de dos variables. El modelo de regresión logística estándar en este caso supondrá que:
 
 $$
 g\{p(x_1, x_2)\}= g\{\mbox{Pr}(Y=1 \mid X_1=x_1 , X_2 = x_2)\} =
@@ -425,7 +425,7 @@ g^{-1}(\hat{\beta}_0 + \hat{\beta}_1 x_1 + \hat{\beta}_2 x_2) = 0.5 \implies
 x_2 = -\hat{\beta}_0/\hat{\beta}_2 -\hat{\beta}_1/\hat{\beta}_2 x_1
 $$
 
-Por eso $x_2$ es una función lineal de $x_1$. Esto implica que, al igual que la regresión, nuestro enfoque de regresión logística no tiene ninguna posibilidad de capturar la naturaleza no lineal de la verdadera $p(x_1,x_2)$. Una vez que pasemos a ejemplos más complejos, veremos que la regresión lineal y la regresión lineal generalizada son limitadas y no lo suficientemente flexibles como para ser útiles para la mayoría de los desafíos de _machine learning_. Las nuevas técnicas que aprendemos son esencialmente enfoques para estimar la probabilidad condicional de una manera más flexible.
+Por eso, $x_2$ es una función lineal de $x_1$. Esto implica que, al igual que la regresión, nuestro enfoque de regresión logística no tiene ninguna posibilidad de capturar la naturaleza no lineal de la verdadera $p(x_1,x_2)$. Una vez que pasemos a ejemplos más complejos, veremos que la regresión lineal y la regresión lineal generalizada son limitadas y no lo suficientemente flexibles como para ser útiles para la mayoría de los desafíos de _machine learning_. Las nuevas técnicas que aprendemos son esencialmente enfoques para estimar la probabilidad condicional de una manera más flexible.
 
 ## Ejercicios
 

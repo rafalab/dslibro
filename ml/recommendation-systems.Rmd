@@ -60,7 +60,7 @@ if(knitr::is_html_output()){
 }
 ```
 
-Pueden pensar en la tarea de un sistema de recomendación como completar los `NA`s en la tabla de arriba. Para ver cuán dispersa es la matriz, aquí está la matriz para una muestra aleatoria de 100 películas y 100 usuarios con amarillo indicando una combinación de usuario/película para la que tenemos una calificación.
+Pueden pensar en la tarea de un sistema de recomendación como completar los `NA`s en la tabla de arriba. Para ver cuán dispersa es la matriz, aquí tenemos la matriz para una muestra aleatoria de 100 películas y 100 usuarios con amarillo indicando una combinación de usuario/película para la que tenemos una calificación.
 
 ```{r sparsity-of-movie-recs, echo=FALSE, fig.width=3, fig.height=3, out.width="40%"}
 users <- sample(unique(movielens$userId), 100)
@@ -97,7 +97,7 @@ gridExtra::grid.arrange(p1, p2, ncol = 2)
 ```
 
 
-### Sistemas de recomendación como un desafío de machine learning
+### Sistemas de recomendación como un desafío de _machine learning_
 
 Para ver cómo esto se puede considerar _machine learning_, noten que necesitamos construir un algoritmo con los datos que hemos recopilado que luego se aplicarán fuera de nuestro control, a medida que los usuarios busquen recomendaciones de películas. Así que creamos un set de evaluación para evaluar la exactitud de los modelos que implementamos.
 
@@ -187,7 +187,7 @@ $$
 
 Los libros de texto de estadísticas se refieren a $b$s como efectos. Sin embargo, en los artículos sobre el _Netflix challenge_, se refieren a ellos como "sesgo" (o _bias_ en inglés; por lo tanto, la notación $b$).
 
-De nuevo podemos usar mínimos cuadrados para estimar el $b_i$ de la siguiente manera:
+De nuevo podemos usar mínimos cuadrados para estimar la $b_i$ de la siguiente manera:
 
 ```{r, eval=FALSE}
 fit <- lm(rating ~ as.factor(movieId), data = movielens)
@@ -208,7 +208,7 @@ Podemos ver que estos estimados varían sustancialmente:
 qplot(b_i, data = movie_avgs, bins = 10, color = I("black"))
 ```
 
-Recuerden $\hat{\mu}=3.5$ entonces un $b_i = 1.5$ implica una calificación perfecta de cinco estrellas.
+Recuerden $\hat{\mu}=3.5$ entonces una $b_i = 1.5$ implica una calificación perfecta de cinco estrellas.
 
 Veamos cuánto mejora nuestra predicción cuando usamos $\hat{y}_{u,i} = \hat{\mu} + \hat{b}_i$:
 
@@ -306,7 +306,7 @@ Entre las películas que salieron en 1993 o más tarde, ¿cuáles son las 25 pel
 
 a. Completar los valores faltantes con la calificación promedio de todas las películas.
 b. Completar los valores faltantes con 0.
-c. Completar el valor con un valor más bajo que el promedio ya que la falta de calificación está asociada con calificaciones más bajas. Pruebe diferentes valores y evalúe la predicción en un set de evaluación.
+c. Completar el valor con un valor más bajo que el promedio ya que la falta de calificación se asocia con calificaciones más bajas. Pruebe diferentes valores y evalúe la predicción en un set de evaluación.
 d. Ninguna de las anteriores.
 
 
@@ -414,7 +414,7 @@ $$
 Y_{u,i} = \mu + b_i + \varepsilon_{u,i}
 $$
 
-Supongamos que sabemos que la calificación promedio es, digamos, $\mu = 3$. Si usamos mínimos cuadrados, el estimado para el primer efecto de película $b_1$ es el promedio de las 100 calificaciones de los usuarios, $1/100 \sum_{i=1}^{100} (Y_{i,1} - \mu)$, que esperamos sea bastante preciso. Sin embargo, el estimado para las películas 2, 3, 4 y 5 será simplemente la desviación observada de la calificación promedio $\hat{b}_i = Y_{u,i} - \hat{\mu}$. Pero esto es un estimado basado en un solo número, por lo cual no será preciso. Tengan en cuenta que estos estimados hacen el error $Y_{u,i} - \mu + \hat{b}_i$ igual a 0 para $i=2,3,4,5$, pero este es un caso de sobreentrenamiento. De hecho, ignorando al único usuario y adivinando que las películas 2, 3, 4 y 5 son solo películas promedio ($b_i = 0$) podría ofrecer una mejor predicción. La idea general de la regresión penalizada es controlar la variabilidad total de los efectos de la película: $\sum_{i=1}^5 b_i^2$. Específicamente, en lugar de minimizar la ecuación de mínimos cuadrados, minimizamos una ecuación que añade una penalización:
+Supongan que sabemos que la calificación promedio es, digamos, $\mu = 3$. Si usamos mínimos cuadrados, el estimado para el primer efecto de película $b_1$ es el promedio de las 100 calificaciones de los usuarios, $1/100 \sum_{i=1}^{100} (Y_{i,1} - \mu)$, que esperamos sea bastante preciso. Sin embargo, el estimado para las películas 2, 3, 4 y 5 será simplemente la desviación observada de la calificación promedio $\hat{b}_i = Y_{u,i} - \hat{\mu}$. Pero esto es un estimado basado en un solo número, por lo cual no será preciso. Tengan en cuenta que estos estimados hacen el error $Y_{u,i} - \mu + \hat{b}_i$ igual a 0 para $i=2,3,4,5$, pero este es un caso de sobreentrenamiento. De hecho, ignorando al único usuario y adivinando que las películas 2, 3, 4 y 5 son solo películas promedio ($b_i = 0$) podría ofrecer una mejor predicción. La idea general de la regresión penalizada es controlar la variabilidad total de los efectos de la película: $\sum_{i=1}^5 b_i^2$. Específicamente, en lugar de minimizar la ecuación de mínimos cuadrados, minimizamos una ecuación que añade una penalización:
 
 $$\frac{1}{N} \sum_{u,i} \left(y_{u,i} - \mu - b_i\right)^2 + \lambda \sum_{i} b_i^2$$
 
@@ -637,7 +637,7 @@ overall <- mean(sapply(scores, mean))
 
 y luego definir, para cada escuela, cómo se desvía de ese promedio. Escriba un código que calcule la puntuación por encima del promedio de cada escuela pero dividiéndolo por $n + \lambda$ en lugar de $n$, con $n$ el tamaño de la escuela y $\lambda$ un parámetro de regularización. Intente con $\lambda = 3$.
 
-6\. Noten que esto mejora un poco las cosas. El número de escuelas pequeñas que no están que no figuran entre las mejores ahora es 4. ¿Existe una mejor $\lambda$? Encuentre el $\lambda$ que minimiza el RMSE = $1/100 \sum_{i=1}^{100} (\mbox{quality} - \mbox{estimate})^2$.
+6\. Noten que esto mejora un poco las cosas. El número de escuelas pequeñas que no figuran entre las mejores ahora es 4. ¿Existe una mejor $\lambda$? Encuentre el $\lambda$ que minimiza el RMSE = $1/100 \sum_{i=1}^{100} (\mbox{quality} - \mbox{estimate})^2$.
 
 
 7\. Clasifique las escuelas según el promedio obtenido con los mejores $\alpha$. Tengan en cuenta que ninguna escuela pequeña se incluye incorrectamente.
@@ -655,7 +655,7 @@ $$
 Y_{u,i} = \mu + b_i + b_u + \varepsilon_{u,i}
 $$
 
-explica las diferencias de película a película a través del $b_i$ y las diferencias de usuario a usuario a través de la $b_u$. Pero este modelo omite una fuente importante de variación relacionada con el hecho de que los grupos de películas tienen patrones de calificación similares y los grupos de usuarios también tienen patrones de calificación similares. Descubriremos estos patrones estudiando los residuos:
+explica las diferencias de película a película a través de la $b_i$ y las diferencias de usuario a usuario a través de la $b_u$. Pero este modelo omite una fuente importante de variación relacionada con el hecho de que los grupos de películas tienen patrones de calificación similares y los grupos de usuarios también tienen patrones de calificación similares. Descubriremos estos patrones estudiando los residuos:
 
 $$
 r_{u,i} = y_{u,i} - \hat{b}_i - \hat{b}_u
@@ -726,7 +726,7 @@ colnames(x) <- short_names
 cor(x, use="pairwise.complete")
 ```
 
-Parece que hay personas a las que les gustan las comedias románticas más de lo esperado, mientras que otras personas a las que les gustan las películas de gángsters más de lo esperado.
+Parece que hay personas a las que les gustan las comedias románticas más de lo esperado, mientras que hay otras personas a las que les gustan las películas de gángsters más de lo esperado.
 
 Estos resultados nos dicen que hay estructura en los datos. Pero, ¿cómo podemos modelar esto?
 
