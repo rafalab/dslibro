@@ -5,7 +5,7 @@ html_document: default
 ---
 # Agrupación {#clustering}
 
-Los algoritmos que hemos descrito hasta ahora son ejemplos de un enfoque general denominado _machine learning supervisado_. El nombre proviene del hecho de que usamos los resultados en un set de entrenamiento para supervisar la creación de nuestro algoritmo de predicción. Hay otro subconjunto de _machine learning_ denominado _no supervisado_. En este subconjunto no necesariamente conocemos los resultados y, en cambio, estamos interesados en descubrir grupos. Estos algoritmos también se denominan algoritmos de _agrupamiento_ (_clustering_ en inglés) ya que los predictores se utilizan para definir _grupos_ (_clusters_ en inglés).
+Los algoritmos que hemos descrito hasta ahora son ejemplos de un enfoque general denominado _machine learning supervisado_. El nombre proviene del hecho de que usamos los resultados en un set de entrenamiento para supervisar la creación de nuestro algoritmo de predicción. Hay otro subconjunto de _machine learning_ denominado _no supervisado_. En este subconjunto, no necesariamente conocemos los resultados y, en cambio, estamos interesados en descubrir grupos. Estos algoritmos también se denominan algoritmos de _agrupamiento_ (_clustering_ en inglés) ya que los predictores se utilizan para definir _grupos_ (_clusters_ en inglés).
 
 En los dos ejemplos que hemos utilizado en esta parte del libro, la agrupación no sería muy útil. En el primer ejemplo, si simplemente se nos dan las alturas, no podremos descubrir dos grupos, hombres y mujeres, porque la intersección es grande. En el segundo ejemplo, al graficar los predictores, podemos ver que descubrir los dos dígitos, 2 y 7, será retante:
 
@@ -25,18 +25,18 @@ Construiremos un ejemplo sencillo basado en clasificaciones de películas. Aquí
 ```{r}
 data("movielens")
 top <- movielens %>%
-group_by(movieId) %>%
-summarize(n=n(), title = first(title)) %>%
-top_n(50, n) %>%
-pull(movieId)
+  group_by(movieId) %>%
+  summarize(n=n(), title = first(title)) %>%
+  top_n(50, n) %>%
+  pull(movieId)
 
 x <- movielens %>%
-filter(movieId %in% top) %>%
-group_by(userId) %>%
-filter(n() >= 25) %>%
-ungroup() %>%
-select(title, userId, rating) %>%
-spread(userId, rating)
+  filter(movieId %in% top) %>%
+  group_by(userId) %>%
+  filter(n() >= 25) %>%
+  ungroup() %>%
+  select(title, userId, rating) %>%
+  spread(userId, rating)
 
 row_names <- str_remove(x$title, ": Episode") %>% str_trunc(20)
 x <- x[,-1] %>% as.matrix()
@@ -120,7 +120,7 @@ Las asignaciones de grupos están en el componente `cluster`:
 groups <- k$cluster
 ```
 
-Tengan en cuenta que debido a que el primer centro se elige al azar, los grupos finales son aleatorios. Imponemos cierta estabilidad al repetir la función entera varias veces y tomar el promedio de los resultados. El número de valores iniciales aleatorios para utilizar se puede asignar a través del argumento `nstart`.
+Recuerden que debido a que el primer centro se elige al azar, los grupos finales son aleatorios. Imponemos cierta estabilidad al repetir la función entera varias veces y tomar el promedio de los resultados. El número de valores iniciales aleatorios para utilizar se puede asignar a través del argumento `nstart`.
 
 ```{r}
 k <- kmeans(x_0, centers = 10, nstart = 25)
@@ -145,7 +145,7 @@ Ahora podemos usar los resultados de esta agrupación para ordenar las filas y c
 image(x[h_1$order, h_2$order])
 ```
 
-Pero hay una función,`heatmap`, que lo hace por nosotros:
+Pero hay una función,`heatmap` que lo hace por nosotros:
 
 ```{r heatmap-2, out.width="100%", fig.height=7, eval=FALSE}
 heatmap(x, col = RColorBrewer::brewer.pal(11, "Spectral"))
@@ -155,7 +155,7 @@ No mostramos los resultados de la función `heatmap` porque hay demasiados atrib
 
 ## Filtrando atributos
 
-Si la información sobre los grupos se incluye en unos pocos atributos, incluir todos los atributos puede agregar suficiente ruido como para que detectar grupos sea retante. Un enfoque sencillo para tratar de eliminar atributos sin información es incluir solo aquellas con alta varianza. En el ejemplo de la película, un usuario con baja variación en sus calificaciones no es realmente informativo: todas las películas le parecen iguales. Aquí hay un ejemplo de cómo podemos incluir solo los atributos con alta varianza.
+Si la información sobre los grupos se incluye en unos pocos atributos, incluir todos los atributos puede agregar suficiente ruido como para que detectar grupos sea retante. Un enfoque sencillo para tratar de eliminar atributos sin información es incluir solo aquellos con alta varianza. En el ejemplo de la película, un usuario con baja variación en sus calificaciones no es realmente informativo: todas las películas le parecen iguales. Aquí hay un ejemplo de cómo podemos incluir solo los atributos con alta varianza.
 
 ```{r heatmap-3, out.width="100%", fig.height=5, fig.width=6, message=FALSE, warning=FALSE}
 library(matrixStats)

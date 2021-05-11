@@ -147,7 +147,7 @@ $$
 Y_{u,i} = \mu + \varepsilon_{u,i}
 $$
 
-con $\varepsilon_{i,u}$ errores independientes muestreados de la misma distribución centrada en 0 y $\mu$ la calificación "verdadera" para todas las películas. Sabemos que el estimado que minimiza el RMSE es el estimado de mínimos cuadrados de $\mu$ y, en este caso, es el promedio de todas las calificaciones:
+con $\varepsilon_{i,u}$ errores independientes muestreados de la misma distribución centrada en 0 y $\mu$ la calificación "verdadera" para todas las películas. Sabemos que el estimador que minimiza el RMSE es el estimador de mínimos cuadrados de $\mu$ y, en este caso, es el promedio de todas las calificaciones:
 
 ```{r}
 mu_hat <- mean(train_set$rating)
@@ -179,7 +179,7 @@ rmse_results <- tibble(method = "Just the average", RMSE = naive_rmse)
 
 ### Modelando los efectos de películas
 
-Sabemos por experiencia que algunas películas generalmente tienen una calificación más alta que otras. Esta intuición, que las diferentes películas se clasifican de manera diferente, se confirma por los datos. Podemos aumentar nuestro modelo anterior agregando el término $b_i$ para representar la clasificación promedio de la película $i$:
+Sabemos por experiencia que algunas películas generalmente tienen una calificación más alta que otras. Esta intuición, que las diferentes películas se clasifican de manera diferente, la confirma los datos. Podemos expandir nuestro modelo anterior agregando el término $b_i$ para representar la clasificación promedio de la película $i$:
 
 $$
 Y_{u,i} = \mu + b_i + \varepsilon_{u,i}
@@ -187,13 +187,13 @@ $$
 
 Los libros de texto de estadísticas se refieren a $b$s como efectos. Sin embargo, en los artículos sobre el _Netflix challenge_, se refieren a ellos como "sesgo" (o _bias_ en inglés; por lo tanto, la notación $b$).
 
-De nuevo podemos usar mínimos cuadrados para estimar la $b_i$ de la siguiente manera:
+De nuevo podemos usar mínimos cuadrados para estimar  $b_i$ de la siguiente manera:
 
 ```{r, eval=FALSE}
 fit <- lm(rating ~ as.factor(movieId), data = movielens)
 ```
 
-Como hay miles de $b_i$, a medida que cada película obtiene una, la función `lm()` será muy lenta aquí. Por eso, no recomendamos ejecutar el código anterior. Pero en esta situación particular, sabemos que el estimado de los mínimos cuadrados $\hat{b}_i$ es solo el promedio de $Y_{u,i} - \hat{\mu}$ para cada película $i$. Entonces podemos calcularlos de esta manera (dejaremos de usar la notación `hat` en el código para representar estimados en el futuro):
+Como hay miles de $b_i$, a medida que cada película obtiene una, la función `lm()` será muy lenta aquí. Por eso, no recomendamos ejecutar el código anterior. Pero en esta situación particular, sabemos que el estimador de los mínimos cuadrados $\hat{b}_i$ es solo el promedio de $Y_{u,i} - \hat{\mu}$ para cada película $i$. Entonces podemos calcularlos de esta manera (dejaremos de usar la notación `hat` en el código para representar los estimadores en el futuro):
 
 ```{r}
 mu <- mean(train_set$rating)
@@ -202,7 +202,7 @@ movie_avgs <- train_set %>%
   summarize(b_i = mean(rating - mu))
 ```
 
-Podemos ver que estos estimados varían sustancialmente:
+Podemos ver que estos estimadores varían sustancialmente:
 
 ```{r movie-effects}
 qplot(b_i, data = movie_avgs, bins = 10, color = I("black"))
@@ -398,13 +398,13 @@ train_set %>% count(movieId) %>%
   pull(n)
 ```
 
-Las supuestas películas "mejores" y "peores" fueron calificadas por muy pocos usuarios, en la mayoría de los casos por solo 1. Estas películas son en su mayoría desconocidas. Esto se debe a que con solo unos pocos usuarios, tenemos más incertidumbre. Por lo tanto, mayores estimados de $b_i$, negativo o positivo, son más probables.
+Las supuestas películas "mejores" y "peores" fueron calificadas por muy pocos usuarios, en la mayoría de los casos por solo 1. Estas películas son en su mayoría desconocidas. Esto se debe a que con solo unos pocos usuarios, tenemos más incertidumbre. Por lo tanto, mayores estimadores de $b_i$, negativo o positivo, son más probables.
 
-Estos son estimados ruidosos en los que no debemos confiar, especialmente cuando se trata de predicciones. Grandes errores pueden aumentar nuestro RMSE, por lo que preferimos ser conservadores cuando no estamos seguros.
+Estos son estimadores ruidosos en los que no debemos confiar, especialmente cuando se trata de predicciones. Grandes errores pueden aumentar nuestro RMSE, por lo que preferimos ser conservadores cuando no estamos seguros.
 
 En secciones anteriores, calculamos el error estándar y construimos intervalos de confianza para tomar en cuenta los diferentes niveles de incertidumbre. Sin embargo, al hacer predicciones, necesitamos un número, una predicción, no un intervalo. Para esto, presentamos el concepto de regularización.
 
-La regularización nos permite penalizar grandes estimados que se forman utilizando pequeños tamaños de muestra. Tienen puntos en común con el enfoque bayesiano que redujo las predicciones descritas en la Sección \@ref(bayesian-statistics).
+La regularización nos permite penalizar estimadores más grandes que se forman utilizando pequeños tamaños de muestra. Tienen puntos en común con el enfoque bayesiano que redujo las predicciones descritas en la Sección \@ref(bayesian-statistics).
 
 ### Mínimos cuadrados penalizados
 
@@ -414,7 +414,7 @@ $$
 Y_{u,i} = \mu + b_i + \varepsilon_{u,i}
 $$
 
-Supongan que sabemos que la calificación promedio es, digamos, $\mu = 3$. Si usamos mínimos cuadrados, el estimado para el primer efecto de película $b_1$ es el promedio de las 100 calificaciones de los usuarios, $1/100 \sum_{i=1}^{100} (Y_{i,1} - \mu)$, que esperamos sea bastante preciso. Sin embargo, el estimado para las películas 2, 3, 4 y 5 será simplemente la desviación observada de la calificación promedio $\hat{b}_i = Y_{u,i} - \hat{\mu}$. Pero esto es un estimado basado en un solo número, por lo cual no será preciso. Tengan en cuenta que estos estimados hacen el error $Y_{u,i} - \mu + \hat{b}_i$ igual a 0 para $i=2,3,4,5$, pero este es un caso de sobreentrenamiento. De hecho, ignorando al único usuario y adivinando que las películas 2, 3, 4 y 5 son solo películas promedio ($b_i = 0$) podría ofrecer una mejor predicción. La idea general de la regresión penalizada es controlar la variabilidad total de los efectos de la película: $\sum_{i=1}^5 b_i^2$. Específicamente, en lugar de minimizar la ecuación de mínimos cuadrados, minimizamos una ecuación que añade una penalización:
+Supongan que sabemos que la calificación promedio es, digamos, $\mu = 3$. Si usamos mínimos cuadrados, el estimador para el primer efecto de película $b_1$ es el promedio de las 100 calificaciones de los usuarios, $1/100 \sum_{i=1}^{100} (Y_{i,1} - \mu)$, que esperamos sea bastante preciso. Sin embargo, el estimador para las películas 2, 3, 4 y 5 será simplemente la desviación observada de la calificación promedio $\hat{b}_i = Y_{u,i} - \hat{\mu}$. Pero esto es un estimador basado en un solo número, por lo cual no será preciso. Tengan en cuenta que estos estimadores hacen el error $Y_{u,i} - \mu + \hat{b}_i$ igual a 0 para $i=2,3,4,5$, pero este es un caso de sobreentrenamiento. De hecho, ignorando al único usuario y adivinando que las películas 2, 3, 4 y 5 son solo películas promedio ($b_i = 0$) podría ofrecer una mejor predicción. La idea general de la regresión penalizada es controlar la variabilidad total de los efectos de la película: $\sum_{i=1}^5 b_i^2$. Específicamente, en lugar de minimizar la ecuación de mínimos cuadrados, minimizamos una ecuación que añade una penalización:
 
 $$\frac{1}{N} \sum_{u,i} \left(y_{u,i} - \mu - b_i\right)^2 + \lambda \sum_{i} b_i^2$$
 
@@ -424,9 +424,9 @@ $$
 \hat{b}_i(\lambda) = \frac{1}{\lambda + n_i} \sum_{u=1}^{n_i} \left(Y_{u,i} - \hat{\mu}\right)
 $$
 
-dónde $n_i$ es la cantidad de clasificaciones hechas para la película $i$. Este enfoque tendrá el efecto deseado: cuando nuestro tamaño de muestra $n_i$ es muy grande, un caso que nos dará un estimado estable, entonces la penalización $\lambda$ es efectivamente ignorada ya que $n_i+\lambda \approx n_i$. Sin embargo, cuando el $n_i$ es pequeño, entonces el estimado $\hat{b}_i(\lambda)$ se encoge hacia 0. Entre más grande $\lambda$, más lo encogemos.
+dónde $n_i$ es la cantidad de clasificaciones hechas para la película $i$. Este enfoque tendrá el efecto deseado: cuando nuestro tamaño de muestra $n_i$ es muy grande, un caso que nos dará un estimador estable, entonces la penalización $\lambda$ es efectivamente ignorada ya que $n_i+\lambda \approx n_i$. Sin embargo, cuando el $n_i$ es pequeño, entonces el estimador $\hat{b}_i(\lambda)$ se encoge hacia 0. Entre más grande $\lambda$, más lo encogemos.
 
-Calculemos estos estimados regularizados de $b_i$ utilizando $\lambda=3$. Más adelante, veremos por qué elegimos 3.
+Calculemos estos estimadores regularizados de $b_i$ utilizando $\lambda=3$. Más adelante, veremos por qué elegimos 3.
 
 ```{r}
 lambda <- 3
@@ -436,7 +436,7 @@ movie_reg_avgs <- train_set %>%
   summarize(b_i = sum(rating - mu)/(n()+lambda), n_i = n())
 ```
 
-Para ver cómo se reducen los estimados, hagamos un gráfico de los estimados regularizados versus los estimados de mínimos cuadrados.
+Para ver cómo se reducen los estimadores, hagamos un gráfico de los estimadores regularizados versus los estimadores de mínimos cuadrados.
 
 ```{r regularization-shrinkage}
 tibble(original = movie_avgs$b_i,
@@ -446,7 +446,7 @@ tibble(original = movie_avgs$b_i,
   geom_point(shape=1, alpha=0.5)
 ```
 
-Ahora, echemos un vistazo a las 10 mejores películas según los estimados penalizados $\hat{b}_i(\lambda)$:
+Ahora, echemos un vistazo a las 10 mejores películas según los estimadores penalizados $\hat{b}_i(\lambda)$:
 
 ```{r}
 train_set %>%
@@ -489,7 +489,7 @@ rmse_results <- bind_rows(rmse_results,
 rmse_results
 ```
 
-Los estimados penalizados ofrecen una gran mejora sobre las estimados de mínimos cuadrados.
+Los estimadores penalizados ofrecen una gran mejora sobre los estimadores de mínimos cuadrados.
 
 ### Cómo elegir los términos de penalización
 
@@ -524,7 +524,7 @@ $$
 \lambda \left(\sum_{i} b_i^2 + \sum_{u} b_u^2\right)
 $$
 
-Los estimados que minimizan esto se pueden encontrar de manera similar a lo que hicimos anteriormente. Aquí usamos validación cruzada para elegir un $\lambda$:
+Los estimadores que minimizan esto se pueden encontrar de manera similar a lo que hicimos anteriormente. Aquí usamos validación cruzada para elegir un $\lambda$:
 
 ```{r best-lambdas}
 lambdas <- seq(0, 10, 0.25)
@@ -848,7 +848,7 @@ $$
 r_{u,i} = p_{u,1} q_{1,i} + p_{u,2} q_{2,i} + \dots + p_{u,m} q_{m,i}
 $$
 
-con la variabilidad de cada término disminuyendo y con los $p$s no correlacionados. El algoritmo también calcula esta variabilidad para que podamos saber cuánta de la variabilidad total de las matrices se explica a medida que vayamos agregando nuevos términos. Esto nos deja ver que, con solo unos pocos términos, podemos explicar la mayor parte de la variabilidad.
+con la variabilidad de cada término disminuyendo y con las $p$s no correlacionadas. El algoritmo también calcula esta variabilidad para que podamos saber cuánta de la variabilidad total de las matrices se explica a medida que vayamos agregando nuevos términos. Esto nos deja ver que, con solo unos pocos términos, podemos explicar la mayor parte de la variabilidad.
 
 Veamos un ejemplo con los datos de la película. Para calcular la descomposición, haremos que los residuos con NAs sean iguales a 0:
 
@@ -905,7 +905,7 @@ Con solo mirar los 10 primeros en cada dirección, vemos un patrón significativ
 pcs %>% select(name, PC1) %>% arrange(PC1) %>% slice(1:10) %>% pull(name)
 ```
 
-y los éxitos de taquilla de Hollywood en el otro:
+y los éxitos de taquilla de Hollywood en otro:
 
 ```{r, echo=FALSE}
 pcs %>% select(name, PC1) %>% arrange(desc(PC1)) %>% slice(1:10) %>% pull(name)
@@ -923,7 +923,7 @@ hacia favoritas de los _nerds_:
 pcs %>% select(name, PC2) %>% arrange(desc(PC2)) %>% slice(1:10) %>% pull(name)
 ```
 
-Ajustar un modelo que incorpora estos estimados es complicado. Para aquellos interesados en implementar un enfoque que incorpore estas ideas, recomendamos el paquete __recommenderlab__. Los detalles están más allá del alcance de este libro.
+Ajustar un modelo que incorpora estos estimadores es complicado. Para aquellos interesados en implementar un enfoque que incorpore estas ideas, recomendamos el paquete __recommenderlab__. Los detalles están más allá del alcance de este libro.
 
 
 ## Ejercicios
@@ -1009,7 +1009,7 @@ s <- svd(y)
 names(s)
 ```
 
-Puede verificar que el SVD funciona escribiendo:
+Puede verificar que el SVD funciona al escribir:
 
 ```{r, eval=FALSE}
 y_svd <- s$u %*% diag(s$d) %*% t(s$v)
@@ -1021,7 +1021,7 @@ Calcule la suma de cuadrados de las columnas de $Y$ y guárdelas en `ss_y`. Lueg
 
 4\. Vemos que se conserva la suma total de cuadrados. Esto es porque $V$ es ortogonal. Ahora para comenzar a entender cómo $YV$ es útil, grafique `ss_y` contra el número de columna y luego haga lo mismo para `ss_yv`. ¿Qué observa?
 
-5\. Vemos que la variabilidad de las columnas de $YV$ está disminuyendo. Además, vemos que, en relación con los tres primeros, la variabilidad de las columnas más allá del tercero es casi 0. Ahora observe que no tuvimos que calcular `ss_yv` porque ya tenemos la respuesta ¿Cómo? Recuerde que $YV = UD$ y como $U$ es ortogonal, sabemos que la suma de cuadrados de las columnas de $UD$ son las entradas diagonales de $D$ al cuadrado. Confirme esto graficando la raíz cuadrada de `ss_yv` frente a las entradas diagonales de $D$.
+5\. Vemos que la variabilidad de las columnas de $YV$ está disminuyendo. Además, vemos que, en relación con los tres primeros, la variabilidad de las columnas más allá del tercero es casi 0. Ahora observe que no tuvimos que calcular `ss_yv` porque ya tenemos la respuesta ¿Cómo? Recuerde que $YV = UD$ y como $U$ es ortogonal, sabemos que la suma de cuadrados de las columnas de $UD$ son las entradas diagonales de $D$ al cuadrado. Confirme esto graficando la raíz cuadrada de `ss_yv` versus las entradas diagonales de $D$.
 
 
 6\.  De lo anterior, sabemos que la suma de cuadrados de las columnas de $Y$ (la suma total de cuadrados) se añade a la suma de `s$d^2` y que la transformación $YV$ nos da columnas con sumas de cuadrados iguales a `s$d^2`. Ahora calcule qué porcentaje de la variabilidad total se explica solo por las tres primeras columnas de $YV$.
@@ -1052,7 +1052,7 @@ $$ U D V^{\top} = (-U) D (-V)^{\top} $$
 
 Con esto en mente, vemos que la primera columna de $UD$ es casi idéntica a la puntuación promedio de cada estudiante, excepto por el signo.
 
-Esto implica que multiplicar $Y$ por la primera columna de $V$ debe realizar una operación similar a tomar el promedio. Haga un diagrama de imagen de $V$ y describa la primera columna en relación con las otras y cómo se relaciona esto con tomar un promedio.
+Esto implica que multiplicar $Y$ por la primera columna de $V$ debe realizar una operación similar a tomar el promedio. Haga un gráfico de imagen de $V$ y describa la primera columna en relación con las otras y cómo se relaciona esto con tomar un promedio.
 
 
 10\. Ya vimos que podemos reescribir $UD$ como:
@@ -1133,4 +1133,4 @@ Termine el ejercicio graficando una imagen de $Y$, una imagen de $d_{1,1} U_1 V_
 
 
 
-14\. Avanzado. El set de datos `movielens` incluido en el paquete __dslabs__ es un pequeño subconjunto de un set de datos más grande con millones de clasificaciones. Puede encontrar el set de datos más reciente aquí [https://grouplens.org/datasets/movielens/20m/](https://grouplens.org/datasets/movielens/20m/). Cree su propio sistema de recomendaciones utilizando todas las herramientas que le hemos mostrado.
+14\. Avanzado: El set de datos `movielens` incluido en el paquete __dslabs__ es un pequeño subconjunto de un set de datos más grande con millones de clasificaciones. Puede encontrar el set de datos más reciente aquí [https://grouplens.org/datasets/movielens/20m/](https://grouplens.org/datasets/movielens/20m/). Cree su propio sistema de recomendaciones utilizando todas las herramientas que le hemos mostrado.
