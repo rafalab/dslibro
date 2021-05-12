@@ -1,19 +1,19 @@
 ```{r, include=FALSE}
 if(knitr::is_html_output()){
-knitr::opts_chunk$set(out.width = "500px",
-out.extra='style="display: block; margin-left: auto; margin-right: auto; background-color: #000; padding:3px;"')
+  knitr::opts_chunk$set(out.width = "500px",
+                        out.extra='style="display: block; margin-left: auto; margin-right: auto; background-color: #000; padding:3px;"')
 } else{
-knitr::opts_chunk$set(out.width = "45%")
+  knitr::opts_chunk$set(out.width = "45%")
 }
 ```
 
 # Proyectos reproducibles con RStudio y R Markdown
 
-El producto final de un proyecto de análisis de datos frecuentemente es un informe. Muchas publicaciones científicas pueden considerarse como un informe final de un análisis de datos. Lo mismo es cierto para los artículos de noticias basados en datos, un informe de análisis para su empresa o notas para una clase sobre cómo analizar datos. Los informes suelen estar en papel o en un PDF que incluyen una descripción textual de los resultados junto con algunas figuras y tablas resultantes del análisis.
+El producto final de un proyecto de análisis de datos frecuentemente es un informe. Muchas publicaciones científicas pueden considerarse como un informe final de un análisis de datos. Lo mismo es cierto para los artículos de noticias basados en datos, un informe de análisis para su empresa o notas para una clase sobre cómo analizar datos. Los informes suelen estar en papel o en un PDF que incluyen una descripción textual de los resultados junto con algunos gráficos y tablas resultantes del análisis.
 
-Imaginen que después de finalizar el análisis y el informe, les informan que les dieron el set de datos incorrecto, les enviarán uno nuevo y les piden que ejecuten el mismo análisis con este nuevo set de datos. ¿O qué pasa si se dan cuenta de que se cometió un error y necesitan volver a examinar el código, corregir el error y volver a ejecutar el análisis? ¿O supongan que alguien a quien están entrenando quiere ver el código y poder reproducir los resultados para conocer su enfoque?
+Imaginen que después de finalizar el análisis y el informe, les informan que les dieron el set de datos incorrecto, les enviarán uno nuevo y les piden que ejecuten el mismo análisis con este nuevo set de datos. ¿O qué pasa si se dan cuenta de que cometieron un error y necesitan volver a examinar el código, corregir el error y volver a ejecutar el análisis? ¿O supongan que alguien a quien están entrenando quiere ver el código y poder reproducir los resultados para conocer su enfoque?
 
-Situaciones como las que acabamos de describir son en realidad bastante comunes para un científico de datos. Aquí, describimos cómo pueden mantener sus proyectos de ciencia de datos organizados con RStudio para que el proceso de volver a ejecutar un análisis sea sencillo. Luego demostramos cómo generar informes reproducibles con R Markdown y el paquete __knitR__ de una manera que ayudará enormemente a recrear informes con esfuerzo mínimo. Esto es posible debido a que los documentos de _R Markdown_ permiten combinar códigos y descripciones textuales en el mismo documento, y las figuras y tablas producidas por el código se agregan automáticamente al documento.
+Situaciones como las que acabamos de describir son bastante comunes para los científicos de datos. Aquí, describimos cómo pueden mantener sus proyectos de ciencia de datos organizados con RStudio para que el proceso de volver a ejecutar un análisis sea sencillo. Luego demostramos cómo generar informes reproducibles con R Markdown y el paquete __knitR__ de una manera que ayudará enormemente a recrear informes con esfuerzo mínimo. Esto es posible debido a que los documentos de _R Markdown_ permiten combinar códigos y descripciones textuales en el mismo documento, y las figuras y tablas producidas por el código se agregan automáticamente al documento.
 
 ```{r, echo=FALSE}
 img_path <- "productivity/img/"
@@ -25,16 +25,16 @@ mac_screenshots <- file.path(img_path,"mac-screenshots", mac_screenshots)
 
 ## Proyectos de RStudio
 
-RStudio proporciona una manera de mantener todos los componentes de un proyecto de análisis de datos organizados en una carpeta y mantener un registro de la información sobre este proyecto, como el estatus Git de los archivos, en un archivo. En la Sección \@ref(rstudio-git), demostramos cómo RStudio facilita el uso de Git y GitHub a través de proyectos de RStudio. En esta sección, demostramos rápidamente cómo comenzar un nuevo proyecto y ofrecemos algunas recomendaciones sobre cómo mantenerlos organizados. Los proyectos de RStudio también le permiten tener abiertas varias sesiones de RStudio y mantener un registro de cuál es cuál.
+RStudio ofrece una manera de mantener todos los componentes de un proyecto de análisis de datos organizados en una carpeta y mantener un registro de la información sobre este proyecto, como el estatus Git de los archivos, en un archivo. En la Sección \@ref(rstudio-git), demostramos cómo RStudio facilita el uso de Git y GitHub a través de proyectos de RStudio. En esta sección, demostramos cómo comenzar un nuevo proyecto y ofrecemos algunas recomendaciones sobre cómo mantenerlos organizados. Los proyectos de RStudio también les permiten tener abiertas varias sesiones de RStudio y mantener un registro de cuál es cuál.
 
-Para comenzar un proyecto, hagan clic en _File_ y luego en _New Project_. A menudo, ya hemos creado una carpeta para guardar el trabajo, como lo hicimos en la Sección \@ref(prep-project), y seleccionamos _Existing Directory_. Aquí les mostramos un ejemplo
+Para comenzar un proyecto, hagan clic en _File_ y luego en _New Project_. Muchas veces ya hemos creado una carpeta para guardar el trabajo, como lo hicimos en la Sección \@ref(prep-project), en cual caso seleccionamos _Existing Directory_. Aquí les mostramos un ejemplo
 en el que aún no hemos creado una carpeta y seleccionamos la opción _New Directory_.
 
 ```{r, echo=FALSE}
 knitr::include_graphics(screenshots[49:50])
 ```
 
-Luego, para un proyecto de análisis de datos, generalmente seleccionan la opción _New project_:
+Entonces para un proyecto de análisis de datos, generalmente seleccionan la opción _New project_:
 
 ```{r, echo=FALSE, out.width="70%"}
 knitr::include_graphics(screenshots[51])
@@ -291,7 +291,7 @@ Ahora estamos listos para escribir un _script_ para leer estos datos y preparar 
 library(tidyverse)
 murders <- read_csv("data/murders.csv")
 murders <-murders %>% mutate(region = factor(region),
-rate = total/ population * 10^5)
+                             rate = total/ population * 10^5)
 save(murders, file = "rdas/murders.rda")
 ```
 
@@ -308,9 +308,9 @@ library(tidyverse)
 load("rdas/murders.rda")
 
 murders %>% mutate(abb = reorder(abb, rate)) %>%
-ggplot(aes(abb, rate)) +
-geom_bar(width = 0.5, stat = "identity", color = "black") +
-coord_flip()
+  ggplot(aes(abb, rate)) +
+  geom_bar(width = 0.5, stat = "identity", color = "black") +
+  coord_flip()
 ```
 
 Si ejecutan este análisis, verán que genera un gráfico.
