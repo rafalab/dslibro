@@ -35,7 +35,7 @@ movielens %>%
             n_movies = n_distinct(movieId))
 ```
 
-Si multiplicamos esos dos números, obtenemos un número mayor de 5 millones. Sin embargo, nuestra tabla de datos tiene aproximadamente 100,000 filas. Esto implica que no todos los usuarios calificaron todas las películas. Por lo tanto, podemos pensar en estos datos como una matriz muy grande, con usuarios en las filas y películas en las columnas, con muchas celdas vacías. La función `gather` nos permite convertirla a este formato, pero si lo intentamos para toda la matriz, colgaremos a R. Mostremos la matriz para siete usuarios y cuatro películas.
+Si multiplicamos esos dos números, obtenemos un número mayor de 5 millones. Sin embargo, nuestra tabla de datos tiene aproximadamente 100,000 filas. Esto implica que no todos los usuarios calificaron todas las películas. Por lo tanto, podemos pensar en estos datos como una matriz muy grande, con usuarios en las filas y películas en las columnas, con muchas celdas vacías. La función `gather` nos permite convertirla a este formato, pero si lo intentamos para toda la matriz, colgaremos a R. Mostremos la matriz para seis usuarios y cuatro películas.
 
 ```{r, echo=FALSE}
 keep <- movielens %>%
@@ -230,13 +230,13 @@ Ya observamos una mejora. ¿Pero podemos mejorar más?
 
 ### Efectos de usuario
 
-Calculemos la calificación promedio para el usuario $u$ para aquellos que han calificado más de 100 películas:
+Calculemos la calificación promedio para el usuario $u$ para aquellos que han calificado 100 o más películas:
 
 ```{r user-effect-hist}
 train_set %>%
   group_by(userId) %>%
-  summarize(b_u = mean(rating)) %>%
   filter(n()>=100) %>%
+  summarize(b_u = mean(rating)) %>%
   ggplot(aes(b_u)) +
   geom_histogram(bins = 30, color = "black")
 ```
@@ -520,7 +520,7 @@ Sin embargo, si bien mostramos esto como una ilustración, en la práctica deber
 También podemos utilizar la regularización para estimar los efectos del usuario. Estamos minimizando:
 
 $$
-\frac{1}{N} \sum_{u,i} \left(y_{u,i} - \mu - b_i - b_u \right)^2 +
+\sum_{u,i} \left(y_{u,i} - \mu - b_i - b_u \right)^2 +
 \lambda \left(\sum_{i} b_i^2 + \sum_{u} b_u^2\right)
 $$
 
