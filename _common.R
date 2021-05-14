@@ -7,7 +7,7 @@ library(dslabs)
 ds_theme_set()
 
 ## Adapted from Hadley Wickham and Garrett Grolemund's r4ds
-options(digits = 3, width = 72, formatR.indent = 2)
+options(digits = 3, width = 72, formatR.indent = 2, dplyr.summarise.inform = FALSE)
 
 knitr::opts_chunk$set(
   comment = "#>",

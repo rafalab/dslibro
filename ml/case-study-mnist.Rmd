@@ -148,7 +148,7 @@ Debido a que con el bosque aleatorio el ajuste es la parte más lenta del proced
 Finalmente, para calcular en un set de datos más pequeño, tomaremos una muestra aleatoria de las observaciones al construir cada árbol. Podemos cambiar este número con el argumento `nSamp`.
 
 
-```{r mnist-rf, message=FALSE, warning=FALSE, cache=TRUE}
+```{r mnist-rf, message=FALSE, warning=FALSE, eval=FALSE}
 library(randomForest)
 control <- trainControl(method="cv", number = 5)
 grid <- data.frame(mtry = c(1, 5, 10, 25, 50, 100))
@@ -159,16 +159,20 @@ train_rf <- train(x[, col_index], y,
                   trControl = control,
                   tuneGrid = grid,
                   nSamp = 5000)
-
-ggplot(train_rf)
-train_rf$bestTune
 ```
 
 Ahora que hemos optimizado nuestro algoritmo, estamos listos para ajustar nuestro modelo final:
 
-```{r, cache=TRUE}
+```{r, eval=FALSE}
 fit_rf <- randomForest(x[, col_index], y,
                        minNode = train_rf$bestTune$mtry)
+```
+
+
+```{r, echo=FALSE}
+## we hard wire to 10 do make book compilation faster.
+## we ran previous code once to determin 10 was the best
+fit_rf <- randomForest(x[, col_index], y,  minNode = 10)
 ```
 
 Para verificar que ejecutamos suficientes árboles, podemos usar la función `plot`:

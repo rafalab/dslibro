@@ -24,11 +24,11 @@ En general, podemos extraer datos directamente de Twitter usando el paquete __rt
 ```{r, eval=FALSE}
 url <- 'http://www.trumptwitterarchive.com/data/realdonaldtrump/%s.json'
 trump_tweets <- map(2009:2017, ~sprintf(url, .x)) %>%
-map_df(jsonlite::fromJSON, simplifyDataFrame = TRUE) %>%
-filter(!is_retweet & !str_detect(text, '^"')) %>%
-mutate(created_at = parse_date_time(created_at,
-orders = "a b! d! H!:M!:S! z!* Y!",
-tz="EST"))
+  map_df(jsonlite::fromJSON, simplifyDataFrame = TRUE) %>%
+  filter(!is_retweet & !str_detect(text, '^"')) %>%
+  mutate(created_at = parse_date_time(created_at,
+                                      orders = "a b! d! H!:M!:S! z!* Y!",
+                                      tz="EST"))
 ```
 
 Para facilitar el análisis, incluimos el resultado del código anterior en el paquete __dslabs__:
@@ -66,12 +66,13 @@ Estamos interesados en lo que sucedió durante la campaña, por lo que para este
 
 ```{r}
 campaign_tweets <- trump_tweets %>%
-extract(source, "source", "Twitter for (.*)") %>%
-filter(source %in% c("Android", "iPhone") &
-created_at >= ymd("2015-06-17") &
-created_at < ymd("2016-11-08")) %>%
-filter(!is_retweet) %>%
-arrange(created_at)
+  extract(source, "source", "Twitter for (.*)") %>%
+  filter(source %in% c("Android", "iPhone") &
+           created_at >= ymd("2015-06-17") &
+           created_at < ymd("2016-11-08")) %>%
+  filter(!is_retweet) %>%
+  arrange(created_at)  %>%
+  as_tibble()
 ```
 
 Ahora podemos usar la visualización de datos para explorar la posibilidad de que dos grupos diferentes hayan escrito los mensajes desde estos dispositivos. Para cada tuit, extraeremos la hora en que se publicó (hora de la costa este de EE.UU. o EST por sus siglas en inglés), y luego calcularemos la proporción de tuits tuiteada a cada hora para cada dispositivo:
@@ -79,16 +80,16 @@ Ahora podemos usar la visualización de datos para explorar la posibilidad de qu
 ```{r tweets-by-time-by-device}
 ds_theme_set()
 campaign_tweets %>%
-mutate(hour = hour(with_tz(created_at, "EST"))) %>%
-count(source, hour) %>%
-group_by(source) %>%
-mutate(percent = n/ sum(n)) %>%
-ungroup %>%
-ggplot(aes(hour, percent, color = source)) +
-geom_line() +
-geom_point() +
-scale_y_continuous(labels = percent_format()) +
-labs(x = "Hour of day (EST)", y = "% of tweets", color = "")
+  mutate(hour = hour(with_tz(created_at, "EST"))) %>%
+  count(source, hour) %>%
+  group_by(source) %>%
+  mutate(percent = n/ sum(n)) %>%
+  ungroup %>%
+  ggplot(aes(hour, percent, color = source)) +
+  geom_line() +
+  geom_point() +
+  scale_y_continuous(labels = percent_format()) +
+  labs(x = "Hour of day (EST)", y = "% of tweets", color = "")
 ```
 
 
@@ -109,9 +110,9 @@ La función principal necesaria para lograr esto es `unnest_tokens`. Un _token_ 
 
 ```{r}
 poem <- c("Roses are red,", "Violets are blue,",
-"Sugar is sweet,", "And so are you.")
+          "Sugar is sweet,", "And so are you.")
 example <- tibble(line = c(1, 2, 3, 4),
-text = poem)
+                  text = poem)
 example
 example %>% unnest_tokens(word, text)
 ```
@@ -122,8 +123,8 @@ Ahora consideremos un ejemplo de los tuits. Miren el tuit número 3008 porque lu
 i <- 3008
 campaign_tweets$text[i] %>% str_wrap(width = 65) %>% cat()
 campaign_tweets[i,] %>%
-unnest_tokens(word, text) %>%
-pull(word)
+  unnest_tokens(word, text) %>%
+  pull(word)
 ```
 
 Noten que la función intenta convertir _tokens_ en palabras. Para hacer esto, sin embargo, elimina los caracteres que son importantes en el contexto de Twitter. Específicamente, la función elimina todos los `#` y `@`. Un _token_ en el contexto de Twitter no es lo mismo que en el contexto del inglés hablado o escrito. Por esta razón, en lugar de usar el valor predeterminado, `words`, usamos el _token_ `tweets` que incluye patrones que comienzan con `@` y `#`:
@@ -158,8 +159,9 @@ Y ahora podemos responder a preguntas como "¿cuáles son las palabras más util
 
 ```{r}
 tweet_words %>%
-count(word) %>%
-arrange(desc(n))
+  count(word) %>%
+  arrange(desc(n)) %>%
+  slice(1:10)
 ```
 
 No es sorprendente que estas sean las palabras principales. Las palabras principales no son informativas. El paquete _tidytext_ tiene una base de datos de estas palabras de uso común, denominadas palabras _stop_, en la minería de textos:
@@ -172,19 +174,19 @@ Si filtramos las filas que representan las palabras _stop_ con `filter(!word %in
 
 ```{r, message=FALSE, warning=FALSE}
 tweet_words <- campaign_tweets %>%
-mutate(text = str_replace_all(text, links, "")) %>%
-unnest_tokens(word, text, token = "tweets") %>%
-filter(!word %in% stop_words$word )
+  mutate(text = str_replace_all(text, links, "")) %>%
+  unnest_tokens(word, text, token = "tweets") %>%
+  filter(!word %in% stop_words$word )
 ```
 
 terminamos con un conjunto mucho más informativo de las 10 palabras más tuiteadas:
 
 ```{r}
 tweet_words %>%
-count(word) %>%
-top_n(10, n) %>%
-mutate(word = reorder(word, n)) %>%
-arrange(desc(n))
+  count(word) %>%
+  top_n(10, n) %>%
+  mutate(word = reorder(word, n)) %>%
+  arrange(desc(n))
 ```
 
 Una exploración de las palabras resultantes (que no se muestran aquí) revela un par de características no deseadas en nuestros _tokens_. Primero, algunos de nuestros _tokens_ son solo números (años, por ejemplo). Queremos eliminarlos y podemos encontrarlos usando la expresión regular `^\d+$`. Segundo, algunos de nuestros _tokens_ provienen de una cita y comienzan con `'`. Queremos eliminar el `'` cuando está al comienzo de una palabra, así que simplemente usamos `str_replace`. Agregamos estas dos líneas al código anterior para generar nuestra tabla final:
@@ -192,11 +194,11 @@ Una exploración de las palabras resultantes (que no se muestran aquí) revela u
 
 ```{r, message=FALSE, warning=FALSE}
 tweet_words <- campaign_tweets %>%
-mutate(text = str_replace_all(text, links, "")) %>%
-unnest_tokens(word, text, token = "tweets") %>%
-filter(!word %in% stop_words$word &
-!str_detect(word, "^\\d+$")) %>%
-mutate(word = str_replace(word, "^'", ""))
+  mutate(text = str_replace_all(text, links, "")) %>%
+  unnest_tokens(word, text, token = "tweets") %>%
+  filter(!word %in% stop_words$word &
+           !str_detect(word, "^\\d+$")) %>%
+  mutate(word = str_replace(word, "^'", ""))
 ```
 
 Ahora que tenemos las palabras en una tabla e información sobre qué dispositivo se usó para componer el tuit, podemos comenzar a explorar qué palabras son más comunes al comparar Android con iPhone.
@@ -205,10 +207,10 @@ Para cada palabra, queremos saber si es más probable que provenga de un tuit de
 
 ```{r}
 android_iphone_or <- tweet_words %>%
-count(word, source) %>%
-spread(source, n, fill = 0) %>%
-mutate(or = (Android + 0.5)/ (sum(Android) - Android + 0.5)/
-( (iPhone + 0.5)/ (sum(iPhone) - iPhone + 0.5)))
+  count(word, source) %>%
+  spread(source, n, fill = 0) %>%
+  mutate(or = (Android + 0.5)/ (sum(Android) - Android + 0.5)/
+           ( (iPhone + 0.5)/ (sum(iPhone) - iPhone + 0.5)))
 ```
 
 Aquí están los riesgos relativos más altos para Android:
@@ -227,10 +229,10 @@ Dado que varias de estas palabras son palabras generales de baja frecuencia, pod
 
 ```{r}
 android_iphone_or %>% filter(Android+iPhone > 100) %>%
-arrange(desc(or))
+  arrange(desc(or))
 
 android_iphone_or %>% filter(Android+iPhone > 100) %>%
-arrange(or)
+  arrange(or)
 ```
 
 Ya vemos un patrón en los tipos de palabras que se tuitean más desde un dispositivo que desde otro. Sin embargo, no estamos interesados en palabras específicas sino en el tono. La afirmación de Vaziri es que los tuits de Android son más hiperbólicos. Entonces, ¿cómo podemos verificar esto con datos? _Hipérbole_ es un sentimiento difícil de extraer de las palabras, ya que se basa en la interpretación de frases. No obstante, las palabras pueden asociarse con sentimientos más básicos como la ira, el miedo, la alegría y la sorpresa. En la siguiente sección, demostramos el análisis básico de sentimientos.
@@ -272,7 +274,7 @@ Para nuestro análisis, estamos interesados en explorar los diferentes sentimien
 
 ```{r}
 nrc <- get_sentiments("nrc") %>%
-select(word, sentiment)
+  select(word, sentiment)
 ```
 
 Podemos combinar las palabras y los sentimientos usando `inner_join`, que solo mantendrá palabras asociadas con un sentimiento. Aquí tenemos 10 palabras aleatorias extraídas de los tuits:
@@ -280,8 +282,8 @@ Podemos combinar las palabras y los sentimientos usando `inner_join`, que solo m
 
 ```{r}
 tweet_words %>% inner_join(nrc, by = "word") %>%
-select(source, word, sentiment) %>%
-sample_n(5)
+  select(source, word, sentiment) %>%
+  sample_n(5)
 ```
 
 Ahora estamos listos para realizar un análisis cuantitativo comparando los sentimientos de los tuits publicados desde cada dispositivo. Podríamos realizar un análisis tuit por tuit, asignando un sentimiento a cada tuit. Sin embargo, esto sería un desafío ya que cada tuit tendrá varios sentimientos adjuntos, uno para cada palabra que aparezca en el léxico. Con fines ilustrativos, realizaremos un análisis mucho más sencillo: contaremos y compararemos las frecuencias de cada sentimiento que aparece en cada dispositivo.
@@ -289,10 +291,10 @@ Ahora estamos listos para realizar un análisis cuantitativo comparando los sent
 
 ```{r}
 sentiment_counts <- tweet_words %>%
-left_join(nrc, by = "word") %>%
-count(source, sentiment) %>%
-spread(source, n) %>%
-mutate(sentiment = replace_na(sentiment, replace = "none"))
+  left_join(nrc, by = "word") %>%
+  count(source, sentiment) %>%
+  spread(source, n) %>%
+  mutate(sentiment = replace_na(sentiment, replace = "none"))
 sentiment_counts
 ```
 
@@ -300,10 +302,10 @@ Para cada sentimiento, podemos calcular las probabilidades de estar en el dispos
 
 ```{r}
 sentiment_counts %>%
-mutate(Android = Android/ (sum(Android) - Android) ,
-iPhone = iPhone/ (sum(iPhone) - iPhone),
-or = Android/iPhone) %>%
-arrange(desc(or))
+  mutate(Android = Android/ (sum(Android) - Android) ,
+         iPhone = iPhone/ (sum(iPhone) - iPhone),
+         or = Android/iPhone) %>%
+  arrange(desc(or))
 ```
 
 Sí vemos algunas diferencias y el orden es particularmente interesante: ¡los tres sentimientos más grandes son el asco, la ira y lo negativo! ¿Pero estas diferencias son solo por casualidad? ¿Cómo se compara esto si solo estamos asignando sentimientos al azar? A fin de responder a esta pregunta, para cada sentimiento podemos calcular un riesgo relativo y un intervalo de confianza, como se definen en la Sección \@ref(association-tests). Agregaremos los dos valores que necesitamos para formar una tabla de dos por dos y el riesgo relativo:
@@ -311,13 +313,13 @@ Sí vemos algunas diferencias y el orden es particularmente interesante: ¡los t
 ```{r}
 library(broom)
 log_or <- sentiment_counts %>%
-mutate(log_or = log((Android/ (sum(Android) - Android))/
-(iPhone/ (sum(iPhone) - iPhone))),
-se = sqrt(1/Android + 1/(sum(Android) - Android) +
-1/iPhone + 1/(sum(iPhone) - iPhone)),
-conf.low = log_or - qnorm(0.975)*se,
-conf.high = log_or + qnorm(0.975)*se) %>%
-arrange(desc(log_or))
+  mutate(log_or = log((Android/ (sum(Android) - Android))/
+                        (iPhone/ (sum(iPhone) - iPhone))),
+         se = sqrt(1/Android + 1/(sum(Android) - Android) +
+                     1/iPhone + 1/(sum(iPhone) - iPhone)),
+         conf.low = log_or - qnorm(0.975)*se,
+         conf.high = log_or + qnorm(0.975)*se) %>%
+  arrange(desc(log_or))
 
 log_or
 ```
@@ -326,12 +328,12 @@ Una visualización gráfica muestra algunos sentimientos que están claramente s
 
 ```{r tweets-log-odds-ratio}
 log_or %>%
-mutate(sentiment = reorder(sentiment, log_or)) %>%
-ggplot(aes(x = sentiment, ymin = conf.low, ymax = conf.high)) +
-geom_errorbar() +
-geom_point(aes(sentiment, log_or)) +
-ylab("Log odds ratio for association between Android and sentiment") +
-coord_flip()
+  mutate(sentiment = reorder(sentiment, log_or)) %>%
+  ggplot(aes(x = sentiment, ymin = conf.low, ymax = conf.high)) +
+  geom_errorbar() +
+  geom_point(aes(sentiment, log_or)) +
+  ylab("Log odds ratio for association between Android and sentiment") +
+  coord_flip()
 ```
 
 Vemos que el disgusto, la ira, los sentimientos negativos, la tristeza y el miedo están asociados con el Android de una manera que es difícil de explicar solo por casualidad. Las palabras no asociadas con un sentimiento estaban fuertemente asociadas con el iPhone, que está de acuerdo con la afirmación original sobre los tuits hiperbólicos.
@@ -340,22 +342,22 @@ Si estamos interesados en explorar qué palabras específicas están impulsando 
 
 ```{r}
 android_iphone_or %>% inner_join(nrc) %>%
-filter(sentiment == "disgust" & Android + iPhone > 10) %>%
-arrange(desc(or))
+  filter(sentiment == "disgust" & Android + iPhone > 10) %>%
+  arrange(desc(or))
 ```
 
 y hacer un gráfico:
 
 ```{r log-odds-by-word, out.width="100%"}
 android_iphone_or %>% inner_join(nrc, by = "word") %>%
-mutate(sentiment = factor(sentiment, levels = log_or$sentiment)) %>%
-mutate(log_or = log(or)) %>%
-filter(Android + iPhone > 10 & abs(log_or)>1) %>%
-mutate(word = reorder(word, log_or)) %>%
-ggplot(aes(word, log_or, fill = log_or < 0)) +
-facet_wrap(~sentiment, scales = "free_x", nrow = 2) +
-geom_bar(stat="identity", show.legend = FALSE) +
-theme(axis.text.x = element_text(angle = 90, hjust = 1))
+  mutate(sentiment = factor(sentiment, levels = log_or$sentiment)) %>%
+  mutate(log_or = log(or)) %>%
+  filter(Android + iPhone > 10 & abs(log_or)>1) %>%
+  mutate(word = reorder(word, log_or)) %>%
+  ggplot(aes(word, log_or, fill = log_or < 0)) +
+  facet_wrap(~sentiment, scales = "free_x", nrow = 2) +
+  geom_bar(stat="identity", show.legend = FALSE) +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))
 ```
 
 
