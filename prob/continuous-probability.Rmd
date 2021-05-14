@@ -2,9 +2,9 @@
 
 En la sección \@ref(cdf-intro), explicamos por qué al resumir una lista de valores numéricos, como las alturas, no es útil construir una distribución que defina una proporción para cada resultado posible. Por ejemplo, imagínemos que medimos a cada persona en una población grande, digamos de tamaño $n$, con una precisión extremadamente alta. Como no hay dos personas con exactamente la misma altura, debemos asignar la proporción $1/n$ a cada valor observado y como consecuencia no se obtiene ningún resumen útil. Del mismo modo, al definir distribuciones de probabilidad, no es útil asignar una probabilidad muy pequeña a cada altura.
 
-Al igual que cuando se usan distribuciones para resumir datos numéricos, es mucho más práctico definir una función que opere en intervalos en lugar de valores individuales. La forma estándar de hacerlo es utilizando la _función de distribución acumulada_, o CDF por sus siglas en inglés.
+Al igual que cuando se usan distribuciones para resumir datos numéricos, es mucho más práctico definir una función que opere en intervalos en lugar de valores individuales. La forma estándar de hacerlo es utilizando la _función de distribución acumulada_ (CDF por sus siglas en inglés).
 
-Describimos la función de distribución acumulada empírica, o eCDF, en la Sección \@ref(cdf-intro) como un resumen básico de una lista de valores numéricos. Como ejemplo, anteriormente definimos la distribución de altura para los estudiantes varones adultos. Aquí definimos el vector $x$ para contener estas alturas:
+Describimos la función de distribución acumulada empírica (eCDF), en la Sección \@ref(cdf-intro) como un resumen básico de una lista de valores numéricos. Como ejemplo, anteriormente definimos la distribución de altura para los estudiantes varones adultos. Aquí definimos el vector $x$ para contener estas alturas:
 
 ```{r, message=FALSE, warning=FALSE}
 library(tidyverse)
@@ -38,13 +38,13 @@ Como podemos calcular la probabilidad de cualquier evento posible de esta manera
 
 ## Distribuciones teóricas continuas
 
-En la sección \@ref(normal-distribution) presentamos la distribución normal como una aproximación útil a muchas distribuciones naturales, incluyendo la altura. La distribución acumulada para la distribución normal se define mediante una fórmula matemática que en R se puede obtener con la función `pnorm`. Decimos que una cantidad aleatoria se distribuye normalmente con un promedio `m` y desviación estándar `s` si su distribución de probabilidad se define por:
+En la sección \@ref(normal-distribution), presentamos la distribución normal como una aproximación útil a muchas distribuciones naturales, incluyendo la altura. La distribución acumulada para la distribución normal se define mediante una fórmula matemática que en R se puede obtener con la función `pnorm`. Decimos que una cantidad aleatoria se distribuye normalmente con un promedio `m` y desviación estándar `s` si su distribución de probabilidad se define por:
 
 ```{r, eval=FALSE}
 F(a) = pnorm(a, m, s)
 ```
 
-Esto es útil porque si estamos dispuestos a usar la aproximación normal para, por ejemplo, la altura, no necesitamos todo el conjunto de datos para responder a preguntas como: ¿cuál es la probabilidad de que un estudiante seleccionado al azar sea más alto que 70 pulgadas? Solo necesitamos la altura promedio y la desviación estándar:
+Esto es útil porque si estamos dispuestos a usar la aproximación normal para, por ejemplo, la altura, no necesitamos todo el set de datos para responder a preguntas como: ¿cuál es la probabilidad de que un estudiante seleccionado al azar sea más alto que 70 pulgadas? Solo necesitamos la altura promedio y la desviación estándar:
 
 ```{r}
 m <- mean(x)
@@ -54,14 +54,14 @@ s <- sd(x)
 
 ### Distribuciones teóricas como aproximaciones
 
-La distribución normal se deriva matemáticamente: no necesitamos datos para definirla. Para los científicos de datos, casi todo lo que hacemos en la práctica involucra datos. Los datos son siempre, desde un punto de vista técnico, discretos. Por ejemplo, podríamos considerar nuestros datos de altura categóricos con cada altura específica como una categoría única. La distribución de probabilidad se define por la proporción de estudiantes que indican cada altura. Aquí hay una gráfica de esa distribución de probabilidad:
+La distribución normal se deriva matemáticamente: no necesitamos datos para definirla. Para los científicos de datos, casi todo lo que hacemos en la práctica involucra datos. Los datos son siempre, desde un punto de vista técnico, discretos. Por ejemplo, podríamos considerar nuestros datos de altura categóricos con cada altura específica como una categoría única. La distribución de probabilidad se define por la proporción de estudiantes que indican cada altura. Aquí hay un gráfico de esa distribución de probabilidad:
 
 ```{r plot-of-height-frequencies, echo=FALSE}
 rafalib::mypar()
 plot(prop.table(table(x)), xlab = "a = Height in inches", ylab = "Pr(X = a)")
 ```
 
-Mientras que la mayoría de los estudiantes redondearon sus alturas a la pulgada más cercana, otros indicaron valores con más precisión. Un estudiante indicó que su altura era 69.6850393700787 pulgadas, que equivale 177 centímetros. La probabilidad asignada a esta altura es `r 1/length(x)` o 1 en `r length(x)`. La probabilidad de 70 pulgadas es mucho mayor en `r mean(x==70)`, pero ¿tiene sentido pensar que la probabilidad de tener exactamente 70 pulgadas es diferente de 69.6850393700787? Claramente, es mucho más útil para fines de análisis de datos tratar este resultado como una variable numérica continua, teniendo en cuenta que muy pocas personas, o tal vez ninguna, son exactamente 70 pulgadas, y que la razón por la que obtenemos más valores en 70 es porque las personas redondean a la pulgada más cercana.
+Mientras que la mayoría de los estudiantes redondearon sus alturas a la pulgada más cercana, otros indicaron valores con más precisión. Un estudiante indicó que su altura era 69.6850393700787 pulgadas, que equivale 177 centímetros. La probabilidad asignada a esta altura es `r 1/length(x)` o 1 en `r length(x)`. La probabilidad de 70 pulgadas es mucho mayor en `r mean(x==70)`, pero ¿tiene sentido pensar que la probabilidad de tener exactamente 70 pulgadas es diferente de 69.6850393700787? Claramente es mucho más útil para fines de análisis de datos tratar este resultado como una variable numérica continua, teniendo en cuenta que muy pocas personas, o tal vez ninguna, son exactamente 70 pulgadas y que la razón por la que obtenemos más valores en 70 es porque las personas redondean a la pulgada más cercana.
 
 Con distribuciones continuas, la probabilidad de un valor singular no se define. Por ejemplo, no tiene sentido preguntar cuál es la probabilidad de que un valor distribuido normalmente sea 70. En cambio, definimos probabilidades para intervalos. Por lo tanto, podríamos preguntar cuál es la probabilidad de que alguien mida entre 69.5 y 70.5.
 
@@ -195,7 +195,7 @@ x <- seq(-4, 4, length.out = 100)
 qplot(x, f, geom = "line", data = data.frame(x, f = dnorm(x)))
 ```
 
-Para la distribución t de Student, descrita más adelante en la Sección \@ref(t-dist), la abreviatura `t` se usa para que las funciones sean `dt` para la densidad, `qt` para los cuantiles, `pt` para la función de distribución acumulada y `rt` para la simulación Monte Carlo.
+Para la distribución t de Student, descrita más adelante en la Sección \@ref(t-distribution), la abreviatura `t` se usa para que las funciones sean `dt` para la densidad, `qt` para los cuantiles, `pt` para la función de distribución acumulada y `rt` para la simulación Monte Carlo.
 
 ## Ejercicios
 

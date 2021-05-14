@@ -65,7 +65,7 @@ library(caret)
 nzv <- nearZeroVar(x)
 ```
 
-Podemos ver las columnas que se recomiendan elimiar:
+Podemos ver las columnas que se recomiendan eliminar:
 
 ```{r, eval=FALSE}
 image(matrix(1:784 %in% nzv, 28, 28))
@@ -83,7 +83,7 @@ col_index <- setdiff(1:ncol(x), nzv)
 length(col_index)
 ```
 
-Ahora estamos listos para adaptarnos a algunos modelos. Antes de comenzar, debemos agregar nombres de columna a las matrices de predictores, ya que estos son requeridos por __caret__:
+Ahora estamos listos para adaptarnos a algunos modelos. Antes de comenzar, debemos agregar nombres de columna a las matrices de predictores, ya que __caret__ los requiere:
 
 ```{r}
 colnames(x) <- 1:ncol(mnist$train$images)
@@ -143,7 +143,7 @@ Ahora veamos si podemos hacerlo aún mejor con el algoritmo de bosque aleatorio.
 
 Con bosque aleatorio, el tiempo de cálculo es un reto. Para cada bosque, necesitamos construir cientos de árboles. También tenemos varios parámetros que podemos ajustar.
 
-Debido a que con el bosque aleatorio el ajuste es la parte más lenta del procedimiento en lugar de la predicción (como con kNN), usaremos solo una validación cruzada de cinco pliegues (_folds_ en inglés). También reduciremos la cantidad de árboles que se ajustan ya que aún no estamos construyendo nuestro modelo final.
+Debido a que con el bosque aleatorio el ajuste es la parte más lenta del procedimiento en lugar de la predicción (como con kNN), usaremos solo una validación cruzada de cinco pliegues (_folds_ en inglés). Además, reduciremos la cantidad de árboles que se ajustan ya que aún no estamos construyendo nuestro modelo final.
 
 Finalmente, para calcular en un set de datos más pequeño, tomaremos una muestra aleatoria de las observaciones al construir cada árbol. Podemos cambiar este número con el argumento `nSamp`.
 
@@ -225,7 +225,7 @@ image(matrix(mat, 28, 28))
 
 ## Evaluaciones visuales
 
-Una parte importante del análisis de datos es visualizar los resultados para determinar por qué estamos fallando. Cómo hacemos esto depende de la aplicación. A continuación mostramos las imágenes de dígitos para los cuales hicimos una predicción incorrecta. Podemos comparar lo que obtenemos con kNN con bosque aleatorio.
+Una parte importante del análisis de datos es visualizar los resultados para determinar por qué estamos fallando. Cómo hacemos esto depende de la aplicación. A continuación mostramos las imágenes de dígitos para los cuales hicimos una predicción incorrecta. Podemos comparar lo que obtenemos con kNN a los resultados de bosque aleatorio.
 
 Aquí vemos unos errores para el bosque aleatorio:
 
@@ -292,7 +292,7 @@ models <- c("glm", "lda", "naive_bayes", "svmLinear", "gamboost",
             "adaboost", "svmRadial", "svmRadialCost", "svmRadialSigma")
 ```
 
-Aunque no hemos explicado muchos de estos algoritmos, aplíquelos usando `train` con todos los parámetros predeterminados. Guarde los resultados en una lista. Es posible que tenga que instalar algunos paquetes. Tenga en cuenta que probablemente recibirá algunas advertencias.
+Aunque no hemos explicado muchos de estos algoritmos, aplíquelos usando `train` con todos los parámetros predeterminados. Guarde los resultados en una lista. Es posible que tenga que instalar algunos paquetes. Es posible que probablemente recibirá algunas advertencias.
 
 
 2\. Ahora que tiene todos los modelos entrenados en una lista, use `sapply` o `map` para crear una matriz de predicciones para el set de evaluación. Debería terminar con una matriz con `length(mnist_27$test$y)` filas y `length(models)` columnas.

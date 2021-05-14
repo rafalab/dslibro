@@ -23,7 +23,7 @@ y <- heights$sex
 x <- heights$height
 ```
 
-En este caso, solo tenemos un predictor, altura, mientras que `y` es claramente un resultado categórico ya que los valores observados son `Male` o `Female`. Sabemos que no podremos predecir $Y$ de forma precisa basado en $X$ porque las alturas promedio masculinas y femeninas no son tan diferentes en relación con la variabilidad dentro del grupo. ¿Pero podemos hacerlo mejor que simplemente adivinar? Para responder a esta pregunta, necesitamos una definición cuantitativa de "mejor".
+En este caso, solo tenemos un predictor, altura, mientras que `y` es claramente un resultado categórico ya que los valores observados son `Male` o `Female`. Sabemos que no podremos predecir $Y$ de forma precisa basado en $X$ porque las alturas promedio masculinas y femeninas no son tan diferentes en relación con la variabilidad dentro del grupo. ¿Pero podemos hacerlo mejor que con simplemente adivinar? Para responder a esta pregunta, necesitamos una definición cuantitativa de "mejor".
 
 ### Sets de entrenamiento y de evaluación {#training-test}
 
@@ -165,15 +165,15 @@ prev <- mean(y == "Male")
 prev
 ```
 
-Entonces, al calcular la exactitud general, el alto porcentaje de errores cometidos para prediciendo cuales son mujeres se ve superado por las ganancias en las predicciones acertadas para los hombres. **Esto puede ser un gran problema en _machine learning_.** Si sus datos de entrenamiento están sesgados de alguna manera, es probable que también desarrolle algoritmos sesgados. El hecho de que hayamos utilizado un set de evaluación no importa porque también se deriva del set de datos sesgado original. Esta es una de las razones por las que observamos métricas distintas de la exactitud general al evaluar un algoritmo de _machine learning_.
+Entonces, al calcular la exactitud general, el alto porcentaje de errores cometidos prediciendo cuales son mujeres se ve superado por las ganancias en las predicciones acertadas para los hombres. **Esto puede ser un gran problema en _machine learning_.** Si sus datos de entrenamiento están sesgados de alguna manera, es probable que también desarrolle algoritmos sesgados. El hecho de que hayamos utilizado un set de evaluación no importa porque también se deriva del set de datos sesgado original. Esta es una de las razones por las que observamos métricas distintas de la exactitud general al evaluar un algoritmo de _machine learning_.
 
-Hay varias métricas que podemos usar para evaluar un algoritmo de manera que la prevalencia no afecte nuestra evaluación y todas estas pueden derivarse de la matriz de confusión. Una forma general de mejorar el uso de la exactitud general es estudiar _sensibilidad_ y _especificidad_ por separado.
+Hay varias métricas que podemos usar para evaluar un algoritmo de manera que la prevalencia no afecte nuestra evaluación y todas estas pueden derivarse de la matriz de confusión. Una forma general de mejorar el uso de la exactitud general es estudiar la _sensibilidad_ y la _especificidad_ por separado.
 
-### Sensibilidad y especificidad
+### La sensibilidad y la especificidad
 
-Para definir la sensibilidad y especificidad, necesitamos un resultado binario. Cuando los resultados son categóricos, podemos definir estos términos para una categoría específica. En el ejemplo de dígitos, podemos pedir la especificidad en el caso de predecir correctamente 2 en lugar de algún otro dígito. Una vez que especifiquemos una categoría de interés, podemos hablar sobre resultados positivos, $Y=1$, y resultados negativos, $Y=0$.
+Para definir la sensibilidad y la especificidad, necesitamos un resultado binario. Cuando los resultados son categóricos, podemos definir estos términos para una categoría específica. En el ejemplo de dígitos, podemos pedir la especificidad en el caso de predecir correctamente 2 en lugar de algún otro dígito. Una vez que especifiquemos una categoría de interés, podemos hablar sobre resultados positivos, $Y=1$, y resultados negativos, $Y=0$.
 
-En general, la _sensibilidad_ se define como la capacidad de un algoritmo para predecir un resultado positivo cuando el resultado real es positivo: $\hat{Y}=1$ cuando $Y=1$. Un algoritmo que predice que todo es positivo ( $\hat{Y}=1$ pase lo que pase) tiene una sensibilidad perfecta, pero esta métrica por sí sola no es suficiente para evaluar un algoritmo. Por esta razón, también examinamos la _especificidad_, que generalmente se define como la capacidad de un algoritmo para no predecir un resultado positivo $\hat{Y}=0$ cuando el resultado real no es positivo $Y=0$. Podemos resumir de la siguiente manera:
+En general, la _sensibilidad_ se define como la capacidad de un algoritmo para predecir un resultado positivo cuando el resultado real es positivo: $\hat{Y}=1$ cuando $Y=1$. Un algoritmo que predice que todo es positivo ($\hat{Y}=1$ pase lo que pase) tiene una sensibilidad perfecta, pero esta métrica por sí sola no es suficiente para evaluar un algoritmo. Por esta razón, también examinamos la _especificidad_, que generalmente se define como la capacidad de un algoritmo para no predecir un resultado positivo $\hat{Y}=0$ cuando el resultado real no es positivo $Y=0$. Podemos resumir de la siguiente manera:
 
 * Alta sensibilidad: $Y=1 \implies \hat{Y}=1$
 * Alta especificidad: $Y=0 \implies \hat{Y} = 0$
@@ -212,7 +212,7 @@ sensibilidad | TPR | Recall | $\frac{\mbox{TP}}{\mbox{TP} + \mbox{FN}}$ | $\mbox
 especificidad | TNR | 1-FPR | $\frac{\mbox{TN}}{\mbox{TN}+\mbox{FP}}$ | $\mbox{Pr}(\hat{Y}=0 \mid Y=0)$ |
 especificidad | PPV | Precisión | $\frac{\mbox{TP}}{\mbox{TP}+\mbox{FP}}$ | $\mbox{Pr}(Y=1 \mid \hat{Y}=1)$|
 
-Aquí, TPR es tasa de positivos verdaderos, FPR es tasa de falsos positivos y PPV es valor predictivo positivo. La función `confusionMatrix` del paquete __caret__ calcula todas estas métricas para nosotros una vez que definamos qué categoría es "positiva". La función espera factores como entrada, y el primer nivel se considera el resultado positivo o $Y=1$. En nuestro ejemplo, `Female` es el primer nivel porque viene antes de `Male` alfabéticamente. Si escriben esto en R, verán varias métricas que incluyen exactitud, sensibilidad, especificidad y PPV.
+Aquí, TPR es la tasa de positivos verdaderos, FPR es la tasa de falsos positivos y PPV es el valor predictivo positivo. La función `confusionMatrix` del paquete __caret__ calcula todas estas métricas para nosotros una vez que definamos qué categoría es "positiva". La función espera factores como entrada y el primer nivel se considera el resultado positivo o $Y=1$. En nuestro ejemplo, `Female` es el primer nivel porque viene antes de `Male` alfabéticamente. Si escriben esto en R, verán varias métricas que incluyen exactitud, sensibilidad, especificidad y PPV.
 
 ```{r}
 cm <- confusionMatrix(data = y_hat, reference = test_set$sex)
@@ -228,16 +228,16 @@ cm$byClass[c("Sensitivity","Specificity", "Prevalence")]
 Podemos ver que la alta exactitud general es posible a pesar de la sensibilidad relativamente baja. Como sugerimos anteriormente, la razón por la que esto sucede es debido a la baja prevalencia (0.23): la proporción de mujeres es baja. Como la prevalencia es baja, no predecir mujeres reales como mujeres (baja sensibilidad) no disminuye la exactitud tanto como no predecir hombres reales como hombres (baja especificidad). Este es un ejemplo de por qué es importante examinar la sensibilidad y la especificidad y no solo la exactitud. Antes de aplicar este algoritmo a sets de datos generales, debemos preguntarnos si la prevalencia será la misma.
 
 
-### Exactitud equilibrada y medida $F_1$
+### La exactitud equilibrada y la medida $F_1$
 
-Aunque generalmente recomendamos estudiar tanto la especificidad como la sensibilidad, a menudo es útil tener un resumen de un número, por ejemplo, para fines de optimización. Una medida que se prefiere sobre la exactitud general es el promedio de especificidad y sensibilidad, conocida como _exactitud equilibrada_ (_balanced accuracy_ en inglés). Debido a que la especificidad y la sensibilidad son tasas, es más apropiado calcular la _media armónica_ (_harmonic average_ en inglés). De hecho, la _medida $F_1$_ (_$F_1$-score_ en inglés), un resumen de un número ampliamente utilizado, es la media armónica de precisión y _recall_:
+Aunque generalmente recomendamos estudiar tanto la especificidad como la sensibilidad, a menudo es útil tener un resumen de un número, por ejemplo, para fines de optimización. Una medida que se prefiere sobre la exactitud general es el promedio de especificidad y de sensibilidad, conocida como _exactitud equilibrada_ (_balanced accuracy_ en inglés). Debido a que la especificidad y la sensibilidad son tasas, es más apropiado calcular la _media armónica_ (_harmonic average_ en inglés). De hecho, la _medida $F_1$_ (_$F_1$-score_ en inglés), un resumen de un número ampliamente utilizado, es la media armónica de precisión y _recall_:
 
 $$
 \frac{1}{\frac{1}{2}\left(\frac{1}{\mbox{recall}} +
 \frac{1}{\mbox{precision}}\right) }
 $$
 
-Debido a que es más fácil de escribir, a menudo se ve esta media armónica reescrita como:
+Dado que es más fácil de escribir, a menudo se ve esta media armónica reescrita como:
 
 $$
 2 \times \frac{\mbox{precision} \cdot \mbox{recall}}
@@ -491,7 +491,7 @@ $(\hat{Y}_i - Y_i)^2$. Sin embargo, en este libro nos enfocamos en minimizar la 
 ## Ejercicios
 
 
-Los sets de datos `reported_height` y `height` se recopilaron de tres clases impartidas en los Departamentos de Ciencias Computacionales y Bioestadística, así como de forma remota a través de la Escuela de Extensión. La clase de bioestadística se impartió en 2016 junto con una versión en línea ofrecida por la Escuela de Extensión. El 25 de enero de 2016 a las 8:15 a.m., durante una de las clases, los instructores le pidieron a los estudiantes que completaran el cuestionario de sexo y altura que poblaba el set de datos `reported_height`. Los estudiantes en línea completaron la encuesta durante los próximos días, después de que la conferencia se publicara en línea. Podemos usar esta información para definir una variable, llamarla `type`, para denotar el tipo de estudiante: `inclass` (presenciales) o `online` (en línea).
+Los sets de datos `reported_height` y `height` se recopilaron de tres clases impartidas en los Departamentos de Ciencias Computacionales y Bioestadística, así como de forma remota a través de la Escuela de Extensión. La clase de bioestadística se impartió en 2016 junto con una versión en línea ofrecida por la Escuela de Extensión. El 25 de enero de 2016 a las 8:15 a.m., durante una de las clases, los instructores le pidieron a los estudiantes que completaran el cuestionario de sexo y altura que poblaba el set de datos `reported_height`. Los estudiantes en línea completaron la encuesta durante los próximos días, después de que la conferencia se publicara en línea. Podemos usar esta información para definir una variable, llamarla `type`, para denotar el tipo de estudiante: `inclass` (presenciales) o `online` (en línea):
 
 ```{r, eval=FALSE}
 library(lubridate)

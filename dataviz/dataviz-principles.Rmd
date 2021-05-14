@@ -4,9 +4,9 @@
 img_path <- "dataviz/img"
 ```
 
-Ya hemos presentado algunas reglas a seguir mientras creamos gráficos para nuestros ejemplos. Aquí, nuestro objetivo es ofrecer algunos principios generales que podemos usar como guía para una visualización de datos efectiva. Gran parte de esta sección se basa en una charla de Karl Broman^[http://kbroman.org/] titulada "Creating Effective Figures and Tables"^[https://www.biostat.wisc.edu/~kbroman/presentations/graphs2017.pdf] e incluye algunas de las figuras que se hicieron con el código que Karl pone a disposición en su repositorio de GitHub^[https://github.com/kbroman/Talk_Graphs], así como las notas de la clase "Introduction to Data Visualization" de Peter Aldhous^[http://paldhous.github.io/ucb/2016/dataviz/index.html]. Siguiendo el enfoque de Karl, mostramos algunos ejemplos de estilos de gráficos que debemos evitar, explicamos cómo mejorarlos y entonces los usamos como motivación para una lista de principios. Además, comparamos y contrastamos los gráficos que siguen estos principios con otros que los ignoran.
+Ya hemos presentado algunas reglas a seguir mientras creamos gráficos para nuestros ejemplos. Aquí nuestro objetivo es ofrecer algunos principios generales que podemos usar como guía para una visualización de datos efectiva. Gran parte de esta sección se basa en una charla de Karl Broman^[http://kbroman.org/] titulada "Creating Effective Figures and Tables"^[https://www.biostat.wisc.edu/~kbroman/presentations/graphs2017.pdf] e incluye algunas de las figuras que se hicieron con el código que Karl pone a disposición en su repositorio de GitHub^[https://github.com/kbroman/Talk_Graphs], así como las notas de la clase "Introduction to Data Visualization" de Peter Aldhous^[http://paldhous.github.io/ucb/2016/dataviz/index.html]. Siguiendo el enfoque de Karl, mostramos algunos ejemplos de estilos de gráficos que debemos evitar, explicamos cómo mejorarlos y entonces los usamos como motivación para una lista de principios. Además, comparamos y contrastamos los gráficos que siguen estos principios con otros que los ignoran.
 
-Los principios se basan principalmente en investigaciones relacionadas a la manera en que los humanos detectan patrones y hacen comparaciones visuales. Los enfoques preferidos son aquellos que mejor se adaptan a la forma en que nuestros cerebros procesan la información visual. Al escoger las herramientas de visualización, es importante tener en cuenta nuestro objetivo. Podemos estar comparando una cantidad de números suficientemente pequeña que se pueden distinguir, describiendo distribuciones de datos categóricos o valores numéricos, comparando los datos de dos grupos o describiendo la relación entre dos variables y esto afecta la presentación que escojeremos. Como nota final, queremos enfatizar que para los científicos de datos es importante adaptar y optimizar los gráficos para la audiencia. Por ejemplo, un gráfico exploratorio hecho para nosotros será diferente a una tabla destinada a comunicar un hallazgo a una audiencia general.
+Los principios se basan principalmente en investigaciones relacionadas a la manera en que los humanos detectan patrones y hacen comparaciones visuales. Los enfoques preferidos son aquellos que mejor se adaptan a la forma en que nuestros cerebros procesan la información visual. Al escoger las herramientas de visualización, es importante tener en cuenta nuestro objetivo. Podemos estar comparando una cantidad de números suficientemente pequeña que se pueden distinguir, describiendo distribuciones de datos categóricos o valores numéricos, comparando los datos de dos grupos o describiendo la relación entre dos variables. Todo esto afecta la presentación que escojeremos. Como nota final, queremos enfatizar que para los científicos de datos es importante adaptar y optimizar los gráficos para la audiencia. Por ejemplo, un gráfico exploratorio hecho para nosotros será diferente a una tabla destinada a comunicar un hallazgo a una audiencia general.
 
 Utilizaremos estos paquetes:
 
@@ -31,7 +31,7 @@ browsers <- data.frame(Browser = rep(c("Opera","Safari","Firefox","IE","Chrome")
 ```
 
 
-Para ilustrar cómo se comparan algunas de estas estrategias, supongamos que queremos informar los resultados de dos encuestas hipotéticas, tomadas en 2000 y luego en 2015, con respecto a la preferencia de navegador. Para cada año, simplemente estamos comparando cinco cantidades: los cinco porcentajes. Una representación gráfica de porcentajes ampliamente utilizada, y popularizada por Microsoft Excel, es el gráfico circular:
+Para ilustrar cómo se comparan algunas de estas estrategias, supongamos que queremos informar los resultados de dos encuestas hipotéticas, tomadas en 2000 y luego en 2015, con respecto a la preferencia de navegador. Para cada año, simplemente estamos comparando cinco cantidades: los cinco porcentajes. Una representación gráfica de porcentajes ampliamente utilizada y popularizada por Microsoft Excel, es el gráfico circular:
 
 
 ```{r piechart, echo=FALSE}
@@ -66,7 +66,7 @@ Para ver cuán difícil es cuantificar los ángulos y el área, recuerden que la
 > Los gráficos circulares son una forma muy mala de mostrar información. El ojo es bueno juzgando medidas lineales y malo juzagando áreas relativas. Un diagrama de barras o de puntos es una forma preferible de mostrar este tipo de datos.
 
 
-En este caso, simplemente mostrar los números no solo es más claro, sino que también ahorraría costos de impresión si imprime una copia en papel:
+En este caso, simplemente mostrar los números no solo es más claro, sino que también ahorraría costos de impresión si imprimen una copia en papel:
 
 ```{r, echo=FALSE}
 if(knitr::is_html_output()){
@@ -92,7 +92,7 @@ grid.arrange(p1, p2, nrow = 2)
 
 Observen lo fácil que es ver las diferencias en el diagrama de barras. De hecho, ahora podemos determinar los porcentajes reales siguiendo una línea horizontal hasta el eje-x.
 
-Si, por alguna razón, tienen que hacer un gráfico circular, etiqueten cada sección del círculo con su porcentaje respectivo para que la audiencia no tenga que inferirlos de los ángulos o del área:
+Si por alguna razón tienen que hacer un gráfico circular, etiqueten cada sección del círculo con su porcentaje respectivo para que la audiencia no tenga que inferirlos de los ángulos o del área:
 
 ```{r excel-barplot, warning = FALSE, message=FALSE, echo=FALSE}
 library(scales)
@@ -113,7 +113,7 @@ browsers %>% ggplot(aes(x = "", y = Percentage, fill = Browser)) +
 
 En general, cuando se muestran cantidades, se prefieren la posición y la longitud sobre los ángulos y/o el área. El brillo y el color son aún más difíciles de cuantificar que los ángulos. Pero, como veremos más adelante, a veces son útiles cuando se deben mostrar más de dos dimensiones a la vez.
 
-## Sepa cuándo incluir 0
+## Sepan cuándo incluir 0
 
 Cuando se usan diagramas de barras, es erróneo no comenzar las barras en 0. Esto se debe a que, al usar un diagrama de barras, estamos implicando que la longitud es proporcional a las cantidades que se muestran. Al evitar 0, se pueden hacer diferencias relativamente pequeñas verse mucho más grandes de lo que realmente son. Este acercamiento a menudo es utilizado por políticos o medios de comunicación que intentan exagerar la diferencia. A continuación se muestra un ejemplo ilustrativo utilizado por Peter Aldhous en esta conferencia: http://paldhous.github.io/ucb/2016/dataviz/week2.html^[http://paldhous.github.io/ucb/2016/dataviz/week2.html].
 
@@ -225,7 +225,7 @@ gdp_data %>%
 Cuando uno de los ejes se usa para mostrar categorías, como se hace en los diagramas de barras, el comportamiento por defecto de __ggplot2__ es ordenar las categorías alfabéticamente cuando se definen por cadenas de caracteres. Si están definidas por factores, se ordenan según los niveles de factores. Raras veces queremos usar el orden alfabético. En cambio, debemos ordenar por una cantidad significativa. En todos los casos anteriores, los diagramas de barras se ordenaron según los valores que mostraban. La excepción fueron los diagramas de barras comparando navegadores. En ese caso, mantuvimos el orden igual en todos los diagramas de barras para facilitar la comparación. Específicamente, en vez de ordenar los navegadores por separado en los dos años, ordenamos ambos años por el valor promedio de 2000 y 2015.
 
 
-Anteriormente aprendimos a usar la función `reorder`, que nos ayuda a lograr este objetivo. Para apreciar cómo el orden correcto puede ayudar a transmitir un mensaje, supongamos que queremos crear un gráfico para comparar la tasa de homicidios en todos los estados de EE.UU.. Estamos particularmente interesados en los estados más peligrosos y los más seguros. Tengan en cuenta la diferencia cuando ordenamos alfabéticamente, la accion por defecto, versus cuando ordenamos por la tasa real:
+Anteriormente aprendimos a usar la función `reorder`, que nos ayuda a lograr este objetivo. Para apreciar cómo el orden correcto puede ayudar a transmitir un mensaje, supongamos que queremos crear un gráfico para comparar la tasa de homicidios en todos los estados de EE.UU. Estamos particularmente interesados en los estados más peligrosos y los más seguros. Tengan en cuenta la diferencia cuando ordenamos alfabéticamente, la accion por defecto, versus cuando ordenamos por la tasa real:
 
 ```{r do-not-order-alphabetically, fig.height = 5, echo=FALSE}
 data(murders)
@@ -290,7 +290,7 @@ El primer gráfico ordena las regiones alfabéticamente, mientras que el segundo
 
 ## Mostrar los datos
 
-Nos hemos enfocado en mostrar cantidades únicas en todas las categorías. Ahora cambiamos nuestra atención a la visualización de datos, con un enfoque en la comparación de grupos.
+Nos hemos enfocado en mostrar cantidades únicas en todas las categorías. Ahora cambiamos nuestra atención a la visualización de datos con un enfoque en la comparación de grupos.
 
 Para motivar nuestro primer principio, "mostrar los datos", volvemos a nuestro ejemplo artificial de describir alturas a ET, un extraterrestre. Esta vez supongamos que ET está interesado en la diferencia de alturas entre hombres y mujeres. Un gráfico comúnmente utilizado para comparaciones entre grupos y popularizado por software como Microsoft Excel, es el _dynamite plot_, que muestra el promedio y los errores estándar (los errores estándar se definen en un capítulo posterior, pero no los confundan con la desviación estándar de los datos). El gráfico se ve así:
 
@@ -331,7 +331,7 @@ Ahora comenzamos a sentir que, en promedio, los varones son más altos que las h
 
 ## Cómo facilitar comparaciones
 
-### Use ejes comunes
+### Usen ejes comunes
 
 Como hay tantos puntos, es más efectivo mostrar distribuciones que puntos individuales. Por lo tanto, mostramos histogramas para cada grupo:
 
@@ -351,7 +351,7 @@ heights %>%
   facet_grid(.~sex)
 ```
 
-### Alinee gráficos verticalmente para ver cambios horizontales y horizontalmente para ver cambios verticales
+### Alineen gráficos verticalmente para ver cambios horizontales y horizontalmente para ver cambios verticales
 
 En estos histogramas, la señal visual relacionada con las disminuciones o los aumentos de altura son los cambios hacia la izquierda o hacia la derecha, respectivamente: los cambios horizontales. Alinear los gráficos verticalmente nos ayuda a ver este cambio cuando los ejes son fijos:
 
@@ -391,7 +391,7 @@ heights %>%
   ylab("Height in inches")
 ```
 
-Ahora comparen y contrasten estos tres gráficos, basados exactamente en los mismos datos:
+Ahora comparen y contrasten estos tres gráficos, basados en exactamente los mismos datos:
 
 ```{r show-the-data-comparison, out.width="100%", echo=FALSE}
 grid.arrange(p1, p2, p3, ncol = 3)
@@ -399,11 +399,11 @@ grid.arrange(p1, p2, p3, ncol = 3)
 
 Observen cuánto más aprendemos de los dos gráficos a la derecha. Los diagramas de barras son útiles para mostrar un número, pero no son muy útiles cuando queremos describir distribuciones.
 
-### Considere transformaciones
+### Consideren transformaciones
 
 Hemos motivado el uso de la transformación logarítmica en los casos en que los cambios son multiplicativos. El tamaño de la población fue un ejemplo en el que encontramos que una transformación logarítmica produjo una transformación más informativa.
 
-La combinación de un diagrama de barras elegido incorrectamente y no usar una transformación logarítimica cuando sea necesaria puede ser particularmente distorsionante. Como ejemplo, considere este diagrama de barras que muestra los tamaños de población promedio para cada continente en 2015:
+La combinación de un diagrama de barras elegido incorrectamente y no usar una transformación logarítimica cuando sea necesario puede ser particularmente distorsionante. Como ejemplo, consideren este diagrama de barras que muestra los tamaños de población promedio para cada continente en 2015:
 
 ```{r no-transformations-wrong-use-of-barplot, echo=FALSE}
 data(gapminder)
@@ -477,7 +477,7 @@ gapminder %>%
   ylab("Income in dollars per day")
 ```
 
-### Use color
+### Usen color
 
 La comparación se hace aún más fácil si usamos color para denotar las dos cosas que queremos comparar:
 
@@ -494,7 +494,7 @@ gapminder %>%
 ```
 
 
-## Piense en los daltónicos
+## Piensen en los daltónicos
 
 Alrededor de 10% de la población es daltónica. Desafortunadamente, los colores por defecto utilizados en __ggplot2__ no son óptimos para este grupo. Sin embargo, __ggplot2__ hace fácil cambiar la paleta de colores utilizada en los gráficos. Aquí se describe un ejemplo de cómo podemos usar una paleta que considera los daltónicos: [http://www.cookbook-r.com/Graphs/Colors_(ggplot2)/#a-colorblind-friendly-palettefont](http:// www.cookbook-r.com/Graphs/Colors_(ggplot2)/#a-colorblind-friendly-palette):
 
@@ -525,15 +525,15 @@ p1 <- data.frame(x=1:8, y=rep(1,8), col = as.character(1:8)) %>%
 p1 + scale_color_manual(values=color_blind_friendly_cols)
 ```
 
-Además, hay varios recursos que pueden ayudarlos a seleccionar colores, por ejemplo este: [http://bconnelly.net/2013/10/creating-colorblind-friendly-figures/font](http://bconnelly.net/2013/10/ creating-colorblind-friendly-figures/).
+Además, hay varios recursos que pueden ayudarlos a seleccionar colores, por ejemplo: [http://bconnelly.net/2013/10/creating-colorblind-friendly-figures/font](http://bconnelly.net/2013/10/ creating-colorblind-friendly-figures/).
 
 ## Gráficos para dos variables
 
 En general, deben usar diagramas de dispersión para visualizar la relación entre dos variables. Para cada caso en el que hemos examinado la relación entre dos variables, incluyendo asesinatos totales versus tamaño de población, esperanza de vida versus tasas de fertilidad y mortalidad infantil versus ingresos, hemos utilizado diagramas de dispersión y ese es el gráfico que generalmente recomendamos. Sin embargo, hay algunas excepciones y aquí describimos dos gráficos alternativos: el _slope chart_ y el _gráfico Bland-Altman_.
 
-### Slope charts
+### _Slope charts_
 
-Una excepción en la que otro tipo de gráfico puede ser más informativo es cuando se comparan variables del mismo tipo, pero en diferentes momentos y para un número relativamente pequeño de comparaciones. Por ejemplo, si estamos comparando la esperanza de vida entre 2010 y 2015. En ese caso, podríamos recomendar un _slope chart_.
+Una excepción en la que otro tipo de gráfico puede ser más informativo es cuando se comparan variables del mismo tipo, pero en diferentes momentos y para un número relativamente pequeño de comparaciones. Por ejemplo, si estamos comparando la esperanza de vida entre 2010 y 2015. En ese caso, recomendaríamos un _slope chart_.
 
 No hay geometría para los _slope charts_ en __ggplot2__, pero podemos construir una usando `geom_line`. Necesitamos hacer algunos ajustes para añadir etiquetas. A continuación, mostramos un ejemplo que compara 2010 a 2015 para los grandes países occidentales:
 
@@ -559,7 +559,7 @@ dat %>%
   xlab("") + ylab("Life Expectancy")
 ```
 
-Una ventaja del _slope chart_ es que rápidamente nos permite tener una idea de los cambios basados en la pendiente de las líneas. Aunque estamos usando el ángulo como señal visual, también posición para determinar los valores exactos. Comparar las mejoras es un poco más difícil con un diagrama de dispersión:
+Una ventaja del _slope chart_ es que rápidamente nos permite tener una idea de los cambios basados en la pendiente de las líneas. Aunque estamos usando el ángulo como señal visual, también utilizamos la posición para determinar los valores exactos. Comparar las mejoras es un poco más difícil con un diagrama de dispersión:
 
 
 ```{r scatter-plot-instead-of-slope, echo=FALSE}
@@ -673,7 +673,7 @@ rafalib::mypar()
 display.brewer.all(type="seq")
 ```
 
-Los colores divergentes se utilizan para representar valores que divergen de un centro. Ponemos igual énfasis en ambos extremos del rango de datos: más alto que el centro y más bajo que el centro. Un ejemplo de cuándo usaríamos un patrón divergente sería cuando mostramos la altura en cuántas desviaciones estándar están del promedio. Aquí hay algunos ejemplos de patrones divergentes:
+Los colores divergentes se utilizan para representar valores que divergen de un centro. Ponemos igual énfasis en ambos extremos del rango de datos: más altos que el centro y más bajos que el centro. Un ejemplo de cuándo usaríamos un patrón divergente sería cuando mostramos la altura en cuántas desviaciones estándar están del promedio. Aquí hay algunos ejemplos de patrones divergentes:
 
 ```{r eval=FALSE}
 library(RColorBrewer)
@@ -688,7 +688,7 @@ display.brewer.all(type="div")
 ```
 
 
-## Evite los gráficos pseudo-tridimensionales
+## Eviten los gráficos pseudo-tridimensionales
 
 La siguiente figura, tomada de la literatura científica^[https://projecteuclid.org/download/pdf_1/euclid.ss/1177010488],
 muestra tres variables: dosis, tipo de fármaco y supervivencia. Aunque sus pantallas o páginas de libros son planas y bidimensionales, el gráfico intenta imitar tres dimensiones y asigna una dimensión a cada variable.
@@ -699,7 +699,7 @@ knitr::include_graphics(file.path(img_path,"fig8b.png"))
 ```
 (Imagen cortesía de Karl Broman)
 
-Los humanos no son buenos para ver en tres dimensiones (que explica por qué es difícil estacionar en paralelo) y nuestra limitación es aún peor con respecto a las pseudo-tres dimensiones. Para ver esto, intenten determinar los valores de la variable de supervivencia en el gráfico anterior. ¿Pueden decir cuándo la cinta púrpura se cruza con la roja? Este es un ejemplo en el que podemos fácilmente usar  color para representar la variable categórica en lugar de un pseudo-3D:
+Los humanos no son buenos para ver en tres dimensiones (que explica por qué es difícil estacionar en paralelo) y nuestra limitación es aún peor con respecto a las pseudo-tres dimensiones. Para ver esto, intenten determinar los valores de la variable de supervivencia en el gráfico anterior. ¿Pueden identificar cuándo la cinta púrpura se cruza con la roja? Este es un ejemplo en el que podemos fácilmente usar  color para representar la variable categórica en lugar de un pseudo-3D:
 
 ```{r colors-for-different-lines, echo=FALSE}
 ##First read data
@@ -713,7 +713,7 @@ dat %>% gather(drug, survival, -log.dose) %>%
   geom_line()
 ```
 
-Observe cuánto más fácil es determinar los valores de supervivencia.
+Observen cuánto más fácil es determinar los valores de supervivencia.
 
 Pseudo-3D a veces se usa de forma totalmente gratuita: los gráficos se hacen para que se vean en 3D incluso cuando la tercera dimensión no representa una cantidad. Esto solo añade confusión y hace que sea más difícil transmitir su mensaje. Aquí hay dos ejemplos:
 
@@ -725,7 +725,7 @@ knitr::include_graphics(file.path(img_path,c("fig1e.png", "fig2d.png")))
 (Imágenes cortesía de Karl Broman)
 
 
-## Evite demasiados dígitos significativos
+## Eviten demasiados dígitos significativos
 
 Por defecto, el software estadístico como R devuelve muchos dígitos significativos. El comportamiento por defecto en R es mostrar 7 dígitos significativos. Esa cantidad de dígitos a menudo no añade información y el desorden visual agregado puede dificultar que se entienda el mensaje. Como ejemplo, aquí están las tasas de enfermedades por cada 10,000 para California en cinco décadas, calculadas de los totales y la población con R:
 
@@ -787,11 +787,11 @@ if(knitr::is_html_output()){
 }
 ```
 
-## Conozca a su audiencia
+## Consideren a su audiencia
 
 Los gráficos se pueden usar para 1) nuestros propios análisis exploratorios de datos, 2) para transmitir un mensaje a los expertos o 3) para ayudar a contar una historia a una audiencia general. Asegúrense de que el público destinario comprenda cada elemento del gráfico.
 
-Como un ejemplo sencillo, considere que para su propia exploración puede ser más útil transformar logarítmicamente los datos y luego graficarlos. Sin embargo, para una audiencia general que no está familiarizada con la conversión de valores logarítmicos a las medidas originales, será mucho más fácil entender el uso de una escala logarítmica para el eje en lugar de los valores transformados logarítmicamente.
+Como un ejemplo sencillo, consideren que para su propia exploración puede ser más útil transformar logarítmicamente los datos y luego graficarlos. Sin embargo, para una audiencia general que no está familiarizada con la conversión de valores logarítmicos a las medidas originales, será mucho más fácil entender el uso de una escala logarítmica para el eje en lugar de los valores transformados logarítmicamente.
 
 
 ## Ejercicios
@@ -853,7 +853,7 @@ p2 <- us_contagious_diseases %>%
   xlab("")
 grid.arrange(p1, p2, ncol = 2)
 ```
-¿Qué gráfico es más fácil de leer si quieren determinar cuáles son los mejores y peores estados en términos de tasas, y por qué?
+¿Qué gráfico es más fácil de leer si quiere determinar cuáles son los mejores y peores estados en términos de tasas, y por qué?
 
 a. Dan la misma información, por lo que ambos son igual de buenos.
 b. El gráfico de la izquierda es mejor porque ordena los estados alfabéticamente.
@@ -888,10 +888,10 @@ rate <- dat$count/dat$population*10000*52/dat$weeks_reporting
 Redefina el objeto `state` para que los niveles se reordenen. Imprima el nuevo objeto `state` y sus niveles para que pueda ver que los niveles no reordenan el vector.
 
 
-5\. Ahora edite el código de arriba para redefinir `dat` para que los niveles de la variable `state` se reordenen por la variable `rate`. Luego haga un diagrama de barras usando el código anterior, pero para este nuevo `dat`.
+5\. Ahora edite el código de arriba para redefinir `dat` para que los niveles de la variable `state` se reordenen por la variable `rate`. Entonces haga un diagrama de barras usando el código anterior, pero para este nuevo `dat`.
 
 
-6\. Digamos que está interesado en comparar las tasas de homicidios con armas de fuego en todas las regiones de los EE. UU. Ve este gráfico:
+6\. Digamos que está interesado en comparar las tasas de homicidios con armas de fuego en todas las regiones de EE. UU. vea este gráfico:
 
 
 ```{r us-murders-barplot}
@@ -955,7 +955,7 @@ abline(v=2, col=3)
 
 ¿Por qué pasa esto?
 
-a. Los humanos no son buenos para leer gráficos pseudo-3D.
+a. Los humanos no son buenos leyendo gráficos pseudo-3D.
 b. Debe haber un error en el código.
 c. Los colores nos confunden.
 d. Los diagramas de dispersión no se deben usar para comparar dos variables cuando tenemos acceso a tres variables.
@@ -970,4 +970,4 @@ d. Los diagramas de dispersión no se deben usar para comparar dos variables cua
 11\. Para el estado de California, haga gráficos de series de tiempo que muestren las tasas de todas las enfermedades. Incluya solo años en los cuales se proveen datos en 10 o más semanas. Use un color diferente para cada enfermedad.
 
 
-12\. Ahora haga lo mismo con las tasas para EE. UU.. Sugerencia: calcule la tasa de EE. UU. usando `summarize`, el total de casos dividido por la población total.
+12\. Ahora haga lo mismo con las tasas para EE. UU. Sugerencia: calcule la tasa de EE. UU. usando `summarize`, el total de casos dividido por la población total.

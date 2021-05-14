@@ -4,7 +4,7 @@ Los datos numéricos a menudo se resumen con el valor _promedio_. Por ejemplo, l
 
 Nuestro primer componente básico de visualización de datos es aprender a resumir listas de factores o vectores numéricos. Generalmente, la mejor manera de compartir o explorar este resumen es a través de la visualización de datos. El resumen estadístico más básico de una lista de objetos o números es su distribución. Una vez que un vector se haya resumido como una distribución, existen varias técnicas de visualización de datos para transmitir esta información de manera efectiva.
 
-En este capítulo, primero discutiremos las propiedades de una variedad de distribuciones y cómo visualizar las distribuciones usando un ejemplo motivante de alturas de estudiantes. Luego, en la Sección \@ref(other-geometries), discutiremos las geometrías de __ggplot2__ para estas visualizaciones.
+En este capítulo, primero discutiremos las propiedades de una variedad de distribuciones y cómo visualizar las distribuciones usando un ejemplo motivante de alturas de estudiantes. Luego en la Sección \@ref(other-geometries), discutiremos las geometrías de __ggplot2__ para estas visualizaciones.
 
 
 ## Tipos de variables
@@ -15,7 +15,7 @@ Cuando cada entrada en un vector proviene de uno de un pequeño número de grupo
 
 Ejemplos de datos numéricos son el tamaño de la población, las tasas de asesinatos y las alturas. Algunos datos numéricos se pueden tratar como ordenados categóricos. Podemos dividir aún más los datos numéricos en continuos y discretos. Las variables continuas son aquellas que pueden tomar cualquier valor, como las alturas, si se miden con suficiente precisión. Por ejemplo, un par de gemelos pueden medir 68.12 y 68.11 pulgadas, respectivamente. Los conteos, como el tamaño de la población, son discretos porque tienen que ser números redondos.
 
-Tengan en cuenta que los datos numéricos discretos pueden considerarse ordinales. Aunque esto es técnicamente cierto, generalmente reservamos el término datos ordinales para variables que pertenecen a un pequeño número de grupos diferentes, y cada grupo tiene muchos miembros. En contraste, cuando tenemos muchos grupos con pocos casos en cada grupo, generalmente nos referimos a ellos como variables numéricas discretas. Entonces, por ejemplo, el número de paquetes de cigarrillos que una persona fuma al día, redondeado al paquete más cercano, se consideraría ordinal, mientras que el número real de cigarrillos se consideraría una variable numérica. Sin embargo, hay ejemplos que pueden considerarse tanto numéricos como ordinales cuando se trata de visualizar datos.
+Tengan en cuenta que los datos numéricos discretos pueden considerarse ordinales. Aunque esto es técnicamente cierto, generalmente reservamos el término datos ordinales para variables que pertenecen a un pequeño número de grupos diferentes, y cada grupo tiene muchos miembros. En cambio, cuando tenemos muchos grupos con pocos casos en cada grupo, generalmente nos referimos a ellos como variables numéricas discretas. Entonces, por ejemplo, el número de paquetes de cigarrillos que una persona fuma al día, redondeado al paquete más cercano, se consideraría ordinal, mientras que el número real de cigarrillos se consideraría una variable numérica. Sin embargo, hay ejemplos que pueden considerarse tanto numéricos como ordinales cuando se trata de visualizar datos.
 
 ## Estudio de caso: describiendo alturas de estudiantes
 
@@ -41,7 +41,7 @@ El resumen estadístico más básico de una lista de objetos o números es su di
 prop.table(table(heights$sex))
 ```
 
-Esta _tabla de frecuencia_ de dos categorías es la forma más simple de una distribución. Realmente no necesitamos visualizarla ya que un número describe todo lo que necesitamos saber: `r round(mean(heights$sex=="Female")*100)`% son mujeres y el resto son hombres. Cuando hay más categorías, un diagrama de barras sencillo describe la distribución. Aquí hay un ejemplo con las regiones estatales de EE. UU.:
+Esta _tabla de frecuencia_ de dos categorías es la forma más sencilla de una distribución. Realmente no necesitamos visualizarla ya que un número describe todo lo que necesitamos saber: `r round(mean(heights$sex=="Female")*100)`% son mujeres y el resto son hombres. Cuando hay más categorías, un diagrama de barras sencillo describe la distribución. Aquí hay un ejemplo con las regiones estatales de EE. UU.:
 
 ```{r state-region-distribution, echo=FALSE}
 murders %>% group_by(region) %>%
@@ -59,7 +59,7 @@ Este gráfico simplemente nos muestra cuatro números, uno para cada categoría.
 
 Los datos numéricos que no son categóricos también tienen distribuciones. En general, cuando los datos no son categóricos, indicar la frecuencia de cada entrada no es un resumen efectivo, ya que la mayoría de las entradas son únicas. En nuestro estudio de caso, por ejemplo, mientras varios estudiantes reportaron una altura de 68 pulgadas, un estudiante indicó una altura de `68.503937007874` pulgadas y otro una altura `68.8976377952756` pulgadas. Suponemos que convirtieron sus alturas de 174 y 175 centímetros, respectivamente.
 
-Los libros de texto de estadísticas nos enseñan que una forma más útil de definir una distribución de datos numéricos es definir una función que indique la proporción de los datos a continuación $a$ para todos los valores posibles de $a$. Esta función se llama la función de distribución acumulada, o CDF por sus siglas en inglés. En estadística, se usa la siguiente notación:
+Los libros de texto de estadísticas nos enseñan que una forma más útil de definir una distribución de datos numéricos es definir una función que indique la proporción de los datos a continuación $a$ para todos los valores posibles de $a$. Esta función se llama la _función de distribución acumulada_ (_cumulative distribution function_ o CDF por sus siglas en inglés). En estadística, se usa la siguiente notación:
 
 $$ F(a) = \mbox{Pr}(x \leq a) $$
 
@@ -72,17 +72,17 @@ heights %>% filter(sex=="Male") %>% ggplot(aes(height)) +
   ylab("F(a)") + xlab("a")
 ```
 
-Similar a lo que hace la tabla de frecuencias para datos categóricos, el CDF define la distribución de datos numéricos. En el gráfico, podemos ver que `r round(ecdf(heights$height[heights$sex == "Male"]) (66) * 100) `% de los valores son menos de 65, ya que $F(66)=$ `r ecdf(heights$height[heights$sex == "Male"])(66) `, o que `r round(ecdf (heights$height[heights$sex == "Male"])(72) * 100) `% de los valores son menos de 72, ya que $F(72)=$ `r ecdf(heights$height[heights$sex == "Male"]) (72) `,
-y así. De hecho, podemos informar la proporción de valores entre dos alturas, digamos $a$ y $b$, al computar $F(b) - F(a)$. Esto significa que si enviamos este diagrama a ET, tendrá toda la información necesaria para reconstruir la lista completa. Parafraseando la expresión "una imagen vale más que mil palabras", en este caso una imagen es tan informativa como `r sum(heights$sex=="Male")` números.
+Similar a lo que hace la tabla de frecuencias para datos categóricos, la CDF define la distribución de datos numéricos. En el gráfico, podemos ver que `r round(ecdf(heights$height[heights$sex == "Male"]) (66) * 100) `% de los valores son menos de 65, ya que $F(66)=$ `r ecdf(heights$height[heights$sex == "Male"])(66) `, o que `r round(ecdf (heights$height[heights$sex == "Male"])(72) * 100) `% de los valores son menos de 72, ya que $F(72)=$ `r ecdf(heights$height[heights$sex == "Male"]) (72) `,
+y así. De hecho, podemos informar la proporción de valores entre dos alturas, digamos $a$ y $b$, al calcular $F(b) - F(a)$. Esto significa que si enviamos este diagrama a ET, tendrá toda la información necesaria para reconstruir la lista completa. Parafraseando la expresión "una imagen vale más que mil palabras", en este caso una imagen es tan informativa como `r sum(heights$sex=="Male")` números.
 
-Una nota final: debido a que los CDF pueden definirse matemáticamente, la palabra _empírica_ se añade para distinguir cuando se usan los datos. Por lo tanto, utilizamos el término CDF empírico, o eCDF por sus siglas en inglés.
+Una nota final: debido a que las CDF pueden definirse matemáticamente, la palabra _empírica_ se añade para distinguir cuando se usan los datos. Por lo tanto, utilizamos el término CDF empírico (o eCDF por sus siglas en inglés).
 
 
 ## Histogramas
 
-Aunque el concepto de CDF se discute ampliamente en los libros de texto de estadística, el gráfico no es muy popular en la práctica. La razón principal es que no transmite fácilmente características de interés como: ¿En qué valor se centra la distribución? ¿La distribución es simétrica? ¿Qué rangos contienen el 95% de los valores? Los histogramas son preferidos porque facilitan enormemente la respuesta a tales preguntas. Los histogramas sacrifican solo un poco de información para producir gráficos que son mucho más fáciles de interpretar.
+Aunque el concepto de CDF se discute ampliamente en los libros de texto de estadística, el gráfico no es muy popular en la práctica. La razón principal es que no transmite fácilmente características de interés como: ¿en qué valor se centra la distribución? ¿La distribución es simétrica? ¿Qué rangos contienen el 95% de los valores? Los histogramas son preferidos porque facilitan enormemente la respuesta a tales preguntas. Los histogramas sacrifican solo un poco de información para producir gráficos que son mucho más fáciles de interpretar.
 
-La forma más sencilla de hacer un histograma es dividir el _span_ de nuestros datos en _compartimientos_ (_bins_ en inglés) no superpuestos del mismo tamaño. Luego, para cada compartimiento, contamos el número de valores que se encuentran en ese intervalo. El histograma grafica estos conteos como barras con la base de la barra definida por los intervalos. A continuación tenemos el histograma para los datos de altura que dividen el rango de valores en intervalos de una pulgada: $[49.5, 50.5], [51.5,52.5],(53.5,54.5],...,(82.5,83.5]$
+La forma más sencilla de hacer un histograma es dividir el _span_ de nuestros datos en _compartimientos_ (_bins_ en inglés) no superpuestos del mismo tamaño. Entonces para cada compartimiento, contamos el número de valores que se encuentran en ese intervalo. El histograma grafica estos conteos como barras con la base de la barra definida por los intervalos. A continuación tenemos el histograma para los datos de altura que dividen el rango de valores en intervalos de una pulgada: $[49.5, 50.5], [51.5,52.5],(53.5,54.5],...,(82.5,83.5]$.
 
 ```{r height-histogram, echo=FALSE}
 heights %>%
@@ -113,7 +113,7 @@ heights %>%
 
 En este gráfico, ya no tenemos bordes afilados en los límites de intervalo y  se han eliminado muchos de los picos locales. Además, la escala del eje-y cambió de conteos a _densidad_.
 
-Para entender las densidades suaves, tenemos que entender las _estimaciones_, un tema que no abordamos hasta más tarde. Sin embargo, ofrecemos una explicación heurística para ayudarles a entender los conceptos básicos y así poder utilizar esta herramienta útil de visualización de datos.
+Para entender las densidades suaves, tenemos que entender los _estimados_, un tema que no abordamos hasta más tarde. Sin embargo, ofrecemos una explicación heurística para ayudarles a entender los conceptos básicos y así poder utilizar esta herramienta útil de visualización de datos.
 
 El nuevo concepto principal que deben entender es que suponemos que nuestra lista de valores observados es un subconjunto de una lista mucho más grande de valores no observados. En el caso de las alturas, pueden imaginar que nuestra lista de `r sum(heights$sex=="Male")` estudiantes varones proviene de una lista hipotética que contiene todas las alturas de todos los estudiantes varones en todo el mundo, medidos todos con mucha precisión. Digamos que hay 1,000,000 de estas medidas. Esta lista de valores tiene una distribución, como cualquier lista de valores, y esta distribución considerable es realmente lo que queremos transmitir a ET, ya que es mucho más general. Desafortunadamente, no podemos ver esa lista grandísima.
 
@@ -146,7 +146,7 @@ x %>% ggplot(aes(height)) +
 
 Ahora, de vuelta a la realidad. No tenemos millones de medidas. En cambio, tenemos `r sum(heights$sex=="Male")` y no podemos hacer un histograma con compartimientos muy pequeños.
 
-Por lo tanto, hacemos un histograma, utilizando tamaños de compartimiento apropiados para nuestros datos y frecuencias de cómputo en lugar de conteos. Además, dibujamos una curva suave que pasa por la parte superior de las barras del histograma. Los siguientes gráficos muestran los pasos que conducen a una densidad suave:
+Por lo tanto, hacemos un histograma utilizando tamaños de compartimiento apropiados para nuestros datos y frecuencias de cómputo en lugar de conteos. Además, dibujamos una curva suave que pasa por la parte superior de las barras del histograma. Los siguientes gráficos muestran los pasos que conducen a una densidad suave:
 
 ```{r smooth-density-2, echo=FALSE, out.width = "100%"}
 hist1 <- heights %>%
@@ -376,9 +376,9 @@ En vez de usar datos, la distribución normal se define con una fórmula matemá
 $$\mbox{Pr}(a < x < b) = \int_a^b \frac{1}{\sqrt{2\pi}s} e^{-\frac{1}{2}\left( \frac{x-m}{s} \right)^2} \, dx$$
 
 
-No necesitan memorizar o comprender los detalles de la fórmula. Sin embargo, recuerden que está completamente definida por solo dos parámetros: $m$ y $s$. El resto de los símbolos en la fórmula representan los extremos del intervalo que determinamos, $a$ y $b$ y las conocidas constantes matemáticas $\pi$ y $e$. Estos dos parámetros, $m$ y $s$, se conocen respectivamente como el _promedio_ (o _la media_) y _la desviación estándar_, o SD por sus siglas en inglés, de la distribución.
+No necesitan memorizar o comprender los detalles de la fórmula. Sin embargo, recuerden que está completamente definida por solo dos parámetros: $m$ y $s$. El resto de los símbolos en la fórmula representan los extremos del intervalo que determinamos $a$ y $b$ y las conocidas constantes matemáticas $\pi$ y $e$. Estos dos parámetros, $m$ y $s$, se conocen respectivamente como el _promedio_ (o _la media_) y _la desviación estándar_, o SD por sus siglas en inglés, de la distribución.
 
-La distribución es simétrica, centrada en el promedio y la mayoría de los valores (alrededor del 95%) están dentro de 2 SD del promedio. Así es como se ve la distribución normal cuando el promedio es 0 y la SD es 1:
+La distribución es simétrica, centrada en el promedio, y la mayoría de los valores (alrededor del 95%) están dentro de 2 SD del promedio. Así es como se ve la distribución normal cuando el promedio es 0 y la SD es 1:
 
 ```{r normal-distribution-density, echo=FALSE}
 mu <- 0; s <- 1
@@ -431,7 +431,7 @@ La distribución normal parece ser una buena aproximación aquí. Ahora veremos 
 
 Para los datos que se distribuyen aproximadamente normalmente, es conveniente pensar en términos de _unidades estándar_. La unidad estándar de un valor nos dice cuántas desviaciones estándar se alejan del promedio. Específicamente, para un valor `x` de un vector `X`, definimos el valor de `x` en unidades estándar como `z = (x - m)/s` con `m` y `s` el promedio y la desviación estándar de `X`, respectivamente. ¿Por qué es conveniente hacer esto?
 
-Primero repasen la fórmula para la distribución normal y observen que lo que se está exponiendo es $-z^2/2$ con $z$ equivalente a $x$ en unidades estándar. El hecho de que el máximo de $e^{-z^2/2}$ es cuando $z=0$ explica por qué la distribución ocurre en el promedio. También explica la simetría ya que $- z^2/2$ es simétrico alrededor de 0. Además, noten que si convertimos los datos distribuidos normalmente a unidades estándar, podemos saber rápidamente si, por ejemplo, una persona es aproximadamente promedio ( $z=0$), entre los más altos ( $z \approx 2$), entre los más pequeños ( $z \approx -2$), o una ocurrencia extremadamente rara ( $z > 3$ o $z < -3$). Recuerden que no importa cuáles sean las unidades originales, estas reglas aplican a cualquier dato que es aproximadamente normal.
+Primero, repasen la fórmula para la distribución normal y observen que lo que se está exponiendo es $-z^2/2$ con $z$ equivalente a $x$ en unidades estándar. El hecho de que el máximo de $e^{-z^2/2}$ es cuando $z=0$ explica por qué la distribución ocurre en el promedio. También explica la simetría ya que $- z^2/2$ es simétrico alrededor de 0. Además, noten que si convertimos los datos distribuidos normalmente a unidades estándar, podemos saber rápidamente si, por ejemplo, una persona es aproximadamente promedio ($z=0$), entre los más altos ($z \approx 2$), entre los más bajos ($z \approx -2$), o una ocurrencia extremadamente rara ($z > 3$ o $z < -3$). Recuerden que no importa cuáles sean las unidades originales, estas reglas aplican a cualquier dato que es aproximadamente normal.
 
 En R, podemos obtener unidades estándar usando la función `scale`:
 ```{r}
@@ -449,16 +449,16 @@ mean(abs(z) < 2)
 
 ## Gráficos Q-Q
 
-Una forma sistemática de evaluar cuán bien se ajusta la distribución normal a los datos es verificar si las proporciones observadas y predecidas coinciden. En general, este es el acercamiento del gráfico Q-Q.
+Una manera sistemática de evaluar cuán bien se ajusta la distribución normal a los datos es verificar si las proporciones observadas y predecidas coinciden. En general, este es el acercamiento del gráfico Q-Q.
 
-Primero, definimos los cuantiles teóricos para la distribución normal. En los libros de estadísticas usamos el símbolo $\Phi(x)$ para definir la función que nos da la probabilidad de que una distribución normal estándar sea menos que $x$. Así por ejemplo, $\Phi(-1.96) = 0.025$ y $\Phi(1.96) = 0.975$. En R, podemos evaluar $\Phi$ utilizando la función `pnorm`:
+Primero, definimos los cuantiles teóricos para la distribución normal. En los libros de estadísticas usamos el símbolo $\Phi(x)$ para definir la función que nos da la probabilidad de que una distribución normal estándar sea menos que $x$. Entonces, por ejemplo, $\Phi(-1.96) = 0.025$ y $\Phi(1.96) = 0.975$. En R, podemos evaluar $\Phi$ utilizando la función `pnorm`:
 
 ```{r}
 pnorm(-1.96)
 ```
 
 
-La función inversa $\Phi^{-1}(x)$ nos da los _cuantiles teóricos_ para la distribución normal. Así por ejemplo, $\Phi^{-1}(0.975) = 1.96$. En R, podemos evaluar el inverso de $\Phi$ utilizando la función `qnorm`.
+La función inversa $\Phi^{-1}(x)$ nos da los _cuantiles teóricos_ para la distribución normal. Así, por ejemplo, $\Phi^{-1}(0.975) = 1.96$. En R, podemos evaluar el inverso de $\Phi$ utilizando la función `qnorm`.
 
 ```{r}
 qnorm(0.975)
@@ -470,13 +470,13 @@ Tengan en cuenta que estos cálculos son para la distribución normal estándar 
 qnorm(0.975, mean = 5, sd = 2)
 ```
 
-Para la distribución normal, todos los cálculos relacionados con los cuantiles se realizan sin datos, de ahí el nombre de _cuantiles teóricos_. Pero los cuantiles se pueden definir para cualquier distribución, incluso una empírica. Entonces, si tenemos datos en un vector $x$, podemos definir el cuantil asociado con cualquier proporción $p$ como el $q$ para el cual la proporción de valores por debajo de $q$ es $p$. Usando el código R, podemos definir `q` como el valor para el cual `mean(x <= q) = p`. Observen que no todo $p$ tiene un $q$ para el cual la proporción es exactamente $p$. Hay varias maneras de definir el mejor $q$ como se discute en la página de ayuda para la función `quantile`.
+Para la distribución normal, todos los cálculos relacionados con los cuantiles se realizan sin datos, de ahí el nombre de _cuantiles teóricos_. Pero los cuantiles se pueden definir para cualquier distribución, incluso una empírica. Entonces si tenemos datos en un vector $x$, podemos definir el cuantil asociado con cualquier proporción $p$ como el $q$ para el cual la proporción de valores por debajo de $q$ es $p$. Usando el código R, podemos definir `q` como el valor para el cual `mean(x <= q) = p`. Observen que no todo $p$ tiene un $q$ para el cual la proporción es exactamente $p$. Hay varias maneras de definir el mejor $q$ como se discute en la página de ayuda para la función `quantile`.
 
 Como ejemplo rápido, para los datos de alturas masculinas, vemos que:
 ```{r}
 mean(x <= 69.5)
 ```
-Entonces, alrededor del 50% son más bajos o iguales a 69 pulgadas. Esto implica que si $p=0.50$, entonces $q=69.5$.
+Alrededor del 50% son más bajos o iguales a 69 pulgadas. Esto implica que si $p=0.50$, entonces $q=69.5$.
 
 La idea de un gráfico Q-Q es que si sus datos están bien aproximados por la distribución normal, los cuantiles de sus datos deberían ser similares a los cuantiles de una distribución normal. Para construir un gráfico Q-Q, hacemos lo siguiente:
 
@@ -486,7 +486,7 @@ La idea de un gráfico Q-Q es que si sus datos están bien aproximados por la di
 4. Graficamos los cuantiles muestrales versus los cuantiles teóricos.
 
 
-Construyamos un diagrama Q-Q usando el código R. Comiencen definiendo el vector de proporciones.
+Construyamos un gráfico Q-Q usando el código R. Comiencen definiendo el vector de proporciones.
 ```{r}
 p <- seq(0.05, 0.95, 0.05)
 ```
@@ -496,7 +496,7 @@ Para obtener los cuantiles de los datos, podemos usar la función `quantile` as�
 sample_quantiles <- quantile(x, p)
 ```
 
-Para obtener los cuantiles teóricos de distribución normal con promedio y SD correspondiente, utilizamos la función `qnorm`:
+Para obtener los cuantiles teóricos de distribución normal con promedio y desviación estándar (SD) correspondiente, utilizamos la función `qnorm`:
 ```{r}
 theoretical_quantiles <- qnorm(p, mean = mean(x), sd = sd(x))
 ```
@@ -538,8 +538,7 @@ Otro caso especial que recibe un nombre son los _cuartiles_, que se obtienen al 
 
 ## Diagramas de caja
 
-Para presentar los diagramas de caja (_boxplots_ en inglés) volveremos a los datos de asesinatos de EE. UU..
-Supongamos que queremos resumir la distribución de la tasa de asesinatos. Usando la técnica de visualización de datos que hemos aprendido, podemos ver que la aproximación normal no aplica aquí:
+Para presentar los diagramas de caja (_boxplots_ en inglés), volveremos a los datos de asesinatos de EE. UU. Supongamos que queremos resumir la distribución de la tasa de asesinatos. Usando la técnica de visualización de datos que hemos aprendido, podemos ver que la aproximación normal no aplica aquí:
 
 ```{r hist-qqplot-non-normal-data, out.width = "100%", fig.width = 6, fig.height = 3, echo=FALSE}
 data(murders)
@@ -556,7 +555,7 @@ En este caso, el histograma anterior o un gráfico de densidad suave serviría c
 
 Ahora supongamos que los que están acostumbrados a recibir solo dos números como resúmenes nos piden un resumen numérico más compacto.
 
-Aquí Tukey ofreció algunos consejos. Primero, recomendó proveer un resumen de cinco números compuestos por el rango junto con los cuartiles (los percentiles 25, 50 y 75). Además, Tukey sugirió ignorar los _valores atípicos_ al calcular el rango y, en su lugar, graficarlos como puntos independientes. Ofreceremos una explicación detallada de los valores atípicos más adelante. Finalmente, recomendó que graficáramos estos números como una "caja" con "bigotes" así:
+Aquí Tukey ofreció algunos consejos. Primero, recomendó proveer un resumen de cinco números compuestos por el rango junto con los cuartiles (los percentiles 25, 50 y 75). Además, Tukey sugirió ignorar los _valores atípicos_ (_outliers_ en inglés) al calcular el rango y, en su lugar, graficarlos como puntos independientes. Ofreceremos una explicación detallada de los valores atípicos más adelante. Finalmente, recomendó que graficáramos estos números como una "caja" con "bigotes" así:
 
 
 ```{r first-boxplot, echo=FALSE}
@@ -566,7 +565,7 @@ murders %>% ggplot(aes("",rate)) + geom_boxplot() +
 
 con el cuadro definido por los percentiles 25% y 75% y los bigotes mostrando el rango. La distancia entre estos dos se llama el rango _intercuartil_. Los dos puntos son valores atípicos según la definición de Tukey. La mediana se muestra con una línea horizontal. 
 
-A partir de este simple gráfico, hoy conocido como un _diagrama de caja_, sabemos que la mediana es de aproximadamente 2.5, que la distribución no es simétrica y que el rango es de 0 a 5 para la gran mayoría de los estados con dos excepciones.
+A partir de este gráfico sencillo, hoy conocido como un _diagrama de caja_, sabemos que la mediana es de aproximadamente 2.5, que la distribución no es simétrica y que el rango es de 0 a 5 para la gran mayoría de los estados con dos excepciones.
 
 Discutimos cómo crear diagramas de caja en la Sección \@ref(other-geometries).
 
@@ -578,7 +577,7 @@ La estratificación es común en la visualización de datos porque a menudo esta
 
 ## Estudio de caso: descripción de alturas de estudiantes (continuación) {#student-height-cont}
 
-Usando el histograma, los gráficos de densidad y los gráficos Q-Q, nos hemos convencido de que los datos de altura masculina se aproximan bien con una distribución normal. En este caso, le damos a ET un resumen muy sucinto: las alturas masculinas siguen una distribución normal con un promedio de `r round(m, 1)` pulgadas y una SD de `r round(s,1)` pulgadas. Con esta información, ET tendrá una buena idea de qué esperar cuando conozca a nuestros estudiantes varones. Sin embargo, para proporcionar una imagen completa, también debemos proporcionar un resumen de las alturas femeninas.
+Usando el histograma, los gráficos de densidad y los gráficos Q-Q, nos hemos convencido de que los datos de altura masculina se aproximan bien con una distribución normal. En este caso, le damos a ET un resumen muy sucinto: las alturas masculinas siguen una distribución normal con un promedio de `r round(m, 1)` pulgadas y una SD de `r round(s,1)` pulgadas. Con esta información, ET tendrá una buena idea de qué esperar cuando conozca a nuestros estudiantes varones. Sin embargo, para proporcionar una imagen completa, también debemos proveer un resumen de las alturas femeninas.
 
 Aprendimos que los diagramas de caja son útiles cuando queremos comparar rápidamente dos o más distribuciones. Aquí vemos las alturas para varones y hembras:
 
@@ -600,9 +599,9 @@ p2 <- heights %>% filter(sex == "Female") %>%
 grid.arrange(p1, p2, ncol=2)
 ```
 
-Vemos algo que no observamos para los varones: el gráfico de densidad tiene una segunda protuberancia. Además, el gráfico Q-Q muestra que los puntos más altos tienden a ser más altos de lo esperado por la distribución normal. Finalmente, también vemos cinco puntos en el gráfico Q-Q que sugieren alturas más bajas de lo esperado para una distribución normal. Al nuevamente informar a ET, es posible que necesitemos proporcionar un histograma en lugar de solo el promedio y la desviación estándar para las alturas femeninas.
+Vemos algo que no observamos para los varones: el gráfico de densidad tiene una segunda protuberancia. Además, el gráfico Q-Q muestra que los puntos más altos tienden a ser más altos de lo esperado por la distribución normal. Finalmente, también vemos cinco puntos en el gráfico Q-Q que sugieren alturas más bajas de lo esperado para una distribución normal. Al nuevamente informar a ET, es posible que necesitemos proveer un histograma en lugar de solo el promedio y la desviación estándar para las alturas femeninas.
 
-Sin embargo, releemos la cita de Tukey y nos damos cuenta de que hemos notado lo que no esperábamos ver. Si observamos otras distribuciones de altura femenina, encontramos que están bien aproximadas con una distribución normal. Entonces, ¿por qué nuestras alumnas son diferentes? ¿Es nuestra clase un requisito para el equipo femenino de baloncesto? ¿Hay una proporción pequeña de mujeres que dicen ser más altas de lo que son? Otra explicación, quizás más probable, es que en el formulario en que los estudiantes ingresaron sus alturas, `FEMALE` era el sexo predeterminado y algunos varones ingresaron sus alturas, pero olvidaron cambiar la variable de sexo. En cualquier caso, la visualización de datos ha ayudado a descubrir una posible falla en nuestros datos.
+Sin embargo, releemos la cita de Tukey y nos damos cuenta de que hemos notado lo que no esperábamos ver. Si observamos otras distribuciones de altura femenina, encontramos que están bien aproximadas con una distribución normal. Entonces, ¿por qué son diferentes nuestras alumnas? ¿Es nuestra clase un requisito para el equipo femenino de baloncesto? ¿Hay una proporción pequeña de mujeres que dicen ser más altas de lo que son? Otra explicación, quizás más probable, es que en el formulario en que los estudiantes ingresaron sus alturas, `FEMALE` era el sexo predeterminado y algunos varones ingresaron sus alturas, pero olvidaron cambiar la variable de sexo. En cualquier caso, la visualización de datos ha ayudado a descubrir una posible falla en nuestros datos.
 
 Con respecto a los cinco valores más pequeños, noten que estos valores son:
 ```{r}
@@ -652,7 +651,7 @@ tab %>% ggplot(aes(x=continent, y=population/10^6)) +
 5\. ¿Cuál es la mediana del tamaño poblacional de África al millón más cercano?
 
 
-6\. ¿Qué proporción de países en Europa tienen poblaciones menos de 14 millones?
+6\. ¿Qué proporción de países en Europa tiene poblaciones menos de 14 millones?
 
 a. 0.99
 b. 0.75
@@ -712,7 +711,7 @@ tab <- murders %>%
 tab
 ```
 
-Ya no queremos que `geom_bar` cuente, sino simplemente grafique una barra a la altura proporcionada por la variable `proportion`. Para esto necesitamos proveer `x` (las categorías) y `y` (los valores) y usar la opción `stat="identity"`.
+Ya no queremos que `geom_bar` cuente, sino que simplemente grafique una barra a la altura proporcionada por la variable `proportion`. Para esto necesitamos proveer `x` (las categorías) e `y` (los valores) y usar la opción `stat="identity"`.
 
 ```{r region-freq-barplot}
 tab %>% ggplot(aes(region, proportion)) + geom_bar(stat = "identity")
@@ -922,7 +921,7 @@ d. `heights$height`
 
 3\. Ahora estamos listos para añadir una capa para hacer el histograma. Utilice el objeto creado en el ejercicio anterior y la función `geom_histogram` para hacer el histograma.
 
-4\. Cuando ejecutamos el código en el ejercicio anterior recibimos la advertencia:
+4\. Cuando ejecutamos el código en el ejercicio anterior, recibimos la advertencia:
 `stat_bin()` utilizando `bins = 30`. Elija un mejor valor con `binwidth`.
 
 Utilice el argumento `binwidth` para cambiar el histograma creado en el ejercicio anterior para usar compartimientos de tamaño de 1 pulgada.

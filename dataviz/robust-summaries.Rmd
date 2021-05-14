@@ -60,7 +60,7 @@ La mediana es lo que los diagramas de caja muestran como una línea horizontal.
 
 ## El rango intercuartil (IQR)
 
-La caja en un diagrama de caja se define por el primer y tercer cuartil. Estos están destinados a proveer una idea de la variabilidad en los datos: el 50% de los datos están dentro de este rango. La diferencia entre el 3er y 1er cuartil (o los percentiles 75 y 25) se conoce como el rango intercuartil, o IQR por sus siglas en inglés. Como sucede con la mediana, esta cantidad será robusta para los valores atípicos ya que los valores grandes no la afectan. Podemos hacer algunos cálculos y ver que para los datos que siguen la distribución normal, el IQR / 1.349 se aproxima a la desviación estándar de los datos si un valor atípico no hubiera estado presente. Podemos ver que esto funciona bien en nuestro ejemplo, ya que obtenemos una estimado de la desviación estándar de:
+La caja en un diagrama de caja se define por el primer y tercer cuartil. Estos están destinados a proveer una idea de la variabilidad en los datos: el 50% de los datos están dentro de este rango. La diferencia entre el 3er y 1er cuartil (o los percentiles 75 y 25) se conoce como el rango intercuartil (IQR por sus siglas en inglés). Como sucede con la mediana, esta cantidad será robusta para los valores atípicos ya que los valores grandes no la afectan. Podemos hacer algunos cálculos y ver que para los datos que siguen la distribución normal, el IQR/1.349 se aproxima a la desviación estándar de los datos si un valor atípico no hubiera estado presente. Podemos ver que esto funciona bien en nuestro ejemplo, ya que obtenemos una estimado de la desviación estándar de:
 
 ```{r}
 IQR(outlier_example)/ 1.349
@@ -118,7 +118,7 @@ qqline(x)
 
 ## Desviación absoluta mediana
 
-Otra opción para estimar la desviación estándar de manera robusta en presencia de valores atípicos es usar la desviación absoluta mediana, o MAD por sus siglas en inglés. Para calcular el MAD, primero calculamos la mediana y luego, para cada valor, calculamos la distancia entre ese valor y la mediana. El MAD se define como la mediana de estas distancias. Por razones técnicas que no discutimos aquí, esta cantidad debe multiplicarse por 1.4826 para asegurar que se aproxime a la desviación estándar real. La función  `mad` ya incorpora esta corrección. Para los datos de altura, obtenemos una MAD de:
+Otra opción para estimar la desviación estándar de manera robusta en presencia de valores atípicos es usar la desviación absoluta mediana (_median absolute deviation_ o MAD por sus siglas en inglés). Para calcular el MAD, primero calculamos la mediana y luego, para cada valor, calculamos la distancia entre ese valor y la mediana. El MAD se define como la mediana de estas distancias. Por razones técnicas que no discutimos aquí, esta cantidad debe multiplicarse por 1.4826 para asegurar que se aproxime a la desviación estándar real. La función  `mad` ya incorpora esta corrección. Para los datos de altura, obtenemos una MAD de:
 
 ```{r}
 mad(outlier_example)
@@ -196,7 +196,7 @@ Tengan en cuenta que recibimos una advertencia sobre los NAs. Esto se debe a que
 reported_heights %>% filter(is.na(height)) %>% head()
 ```
 
-Algunos estudiantes indicaron sus alturas usando pies y pulgadas en lugar de solo pulgadas. Otros usaron centímetros y otros solo estaban trolleando. Por ahora eliminaremos estas entradas:
+Algunos estudiantes indicaron sus alturas usando pies y pulgadas en lugar de solo pulgadas. Otros usaron centímetros y otros solo estaban "trolleando". Por ahora eliminaremos estas entradas:
 
 
 ```{r}
@@ -226,7 +226,7 @@ Vemos algunos valores bastante extremos. Para ver cuáles son estos valores, pod
 reported_heights %>% arrange(desc(height)) %>% top_n(10, height)
 ```
 
-Las primeras siete entradas parecen errores extraños. Sin embargo, las siguientes entradas parecen haber sido ingresadas en centímetros en lugar de pulgadas. Dado que 184 cm es equivalente a seis pies de altura, sospechamos que 184 realmente significa 72 pulgadas.
+Las primeras siete entradas parecen errores extraños. Sin embargo, las siguientes entradas parecen haber sido ingresadas en centímetros en lugar de pulgadas. Dado que 184cm es equivalente a seis pies de altura, sospechamos que 184 realmente significa 72 pulgadas.
 
 Podemos revisar todas las respuestas sin sentido examinando los datos que Tukey considera _far out_ o _extremos_:
 
@@ -240,6 +240,6 @@ reported_heights %>%
   head(n=10) %>% pull(original_heights)
 ```
 
-Revisando estas alturas cuidadosamente, vemos dos errores comunes: entradas en centímetros, que resultan ser demasiado grandes, y entradas del tipo `x.y` con `x` y `y` representando pies y pulgadas respectivamente, que resultan ser demasiado pequeñas. Algunos de los valores aún más pequeños, como 1.6, podrían ser entradas en metros.
+Al revisar estas alturas cuidadosamente, vemos dos errores comunes: entradas en centímetros, que resultan ser demasiado grandes, y entradas del tipo `x.y` con `x` y `y` representando pies y pulgadas respectivamente, que resultan ser demasiado pequeñas. Algunos de los valores aún más pequeños, como 1.6, podrían ser entradas en metros.
 
 En la parte de _data wrangling_ de este libro, aprenderemos técnicas para corregir estos valores y convertirlos en pulgadas. Aquí pudimos detectar este problema mediante una cuidadosa exploración de los datos para descubrir problemas con ellos: el primer paso en la gran mayoría de los proyectos de ciencia de datos.

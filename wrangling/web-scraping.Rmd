@@ -3,22 +3,22 @@
 ```{r, echo=FALSE}
 img_path <- "wrangling/img/"
 ```
- 
-Los datos que necesitamos para responder a una pregunta no siempre están en una hoja de cálculo lista para leer. Por ejemplo, el set de datos sobre asesinatos de EE.UU. que utilizamos en el capítulo "Lo Básico de R" proviene originalmente de esta página de Wikipedia:
+
+Los datos que necesitamos para responder a una pregunta no siempre están en una hoja de cálculo lista para leer. Por ejemplo, el set de datos sobre asesinatos de EE.UU. que utilizamos en el capítulo "Lo básico de R" proviene originalmente de esta página de Wikipedia:
 
 ```{r}
 url <- paste0("https://en.wikipedia.org/w/index.php?title=",
-"Gun_violence_in_the_United_States_by_state",
-"&direction=prev&oldid=810166167")
+              "Gun_violence_in_the_United_States_by_state",
+              "&direction=prev&oldid=810166167")
 ```
 
-Pueden ver la tabla de datos cuando visiten la página web:
+Pueden ver la tabla de datos en la página web:
 
 ```{r, echo=FALSE}
 knitr::include_graphics(file.path(img_path,"murders-data-wiki-page.png"))
 ```
 
-(Página web cortesía de Wikipedia^[https://en.wikipedia.org/w/index.php?title=Gun_violence_in_the_United_States_by_state&amp;direction=prev&amp;oldid=810166167]. Licencia CC-BY-SA-3.0^[https://en.wikipedia.org/wiki/Wikipedia:Text_of_Creative_Commons_Attribution-ShareAlike_3.0_Unported_License].
+(Página web cortesía de Wikipedia^[https://en.wikipedia.org/w/index.php?title=Gun_violence_in_the_United_States_by_state&amp;direction=prev&amp;oldid=810166167]. Licencia CC-BY-SA-3.0)^[https://en.wikipedia.org/wiki/Wikipedia:Text_of_Creative_Commons_Attribution-ShareAlike_3.0_Unported_License].
 
 Desafortunadamente, no hay un enlace a un archivo de datos. Para crear el _data frame_ que se carga cuando escribimos `data(murders)`, tuvimos que hacer un poco de _extracción de la web_ (_web scraping_ o _web harvesting_ en inglés).
 
@@ -30,7 +30,7 @@ knitr::include_graphics(file.path(img_path,"html-code.png"))
 
 ## HTML
 
-Debido a que este código es accesible, podemos descargar el archivo HTML, importarlo a R y luego escribir programas para extraer la información que necesitamos de la página. Sin embargo, al mirar el código HTML, esto puede parecer una tarea desalentadora. Pero le mostraremos algunas herramientas convenientes para facilitar el proceso. Para tener una idea de cómo funciona, aquí hay unas líneas de código de la página de Wikipedia que provee los datos de asesinatos en Estados Unidos:
+Debido a que este código es accesible, podemos descargar el archivo HTML, importarlo a R y luego escribir programas para extraer la información que necesitamos de la página. Sin embargo, al ver el código HTML, esto puede parecer una tarea desalentadora. Pero le mostraremos algunas herramientas convenientes para facilitar el proceso. Para tener una idea de cómo funciona, aquí hay unas líneas de código de la página de Wikipedia que provee los datos de asesinatos en Estados Unidos:
 
 ```
 <table class="wikitable sortable">
@@ -83,7 +83,7 @@ h <- read_html(url)
 ```
 
 
-Tengan en cuenta que la página entera de Wikipedia de Asesinatos en EE. UU. ahora está contenida en `h`. La clase de este objeto es:
+Tengan en cuenta que la página entera de Wikipedia _Gun violence in the United States_ ahora está contenida en `h`. La clase de este objeto es:
 
 ```{r}
 class(h)
@@ -103,7 +103,7 @@ Podemos ver todo el código que define la página web descargada usando la funci
 html_text(h)
 ```
 
-No mostramos el resultado aquí porque incluye miles de caracteres, pero si lo miramos, podemos ver que los datos que buscamos se almacenan en una tabla HTML. Pueden ver esto en esta línea del código HTML anterior: `<table class="wikitable sortable">`. Las diferentes partes de un documento HTML, a menudo definidas con un mensaje entre`<` y `>`, se conocen como _nodos_ (_nodes_ en inglés). El paquete __rvest__ incluye funciones para extraer nodos de un documento HTML: `html_nodes` extrae todos los nodos de diferentes tipos y `html_node` extrae el primero. Para extraer las tablas del código HTML usamos:
+No mostramos el _output_ aquí porque incluye miles de caracteres, pero si lo miramos, podemos ver que los datos que buscamos se almacenan en una tabla HTML. Pueden ver esto en esta línea del código HTML anterior: `<table class="wikitable sortable">`. Las diferentes partes de un documento HTML, a menudo definidas con un mensaje entre `<` y `>`, se conocen como _nodos_ (_nodes_ en inglés). El paquete __rvest__ incluye funciones para extraer nodos de un documento HTML: `html_nodes` extrae todos los nodos de diferentes tipos y `html_node` extrae el primero. Para extraer las tablas del código HTML usamos:
 
 
 ```{r}
@@ -123,7 +123,7 @@ tab[[1]]
 ```
 
 
-Esto claramente no es un set de datos _tidy_, ni siquiera un _data frame_. En el código anterior, claramente podemos ver un patrón y es muy factible escribir código para extraer solo los datos. De hecho, __rvest__ incluye una función solo para convertir tablas HTML en _data frames_:
+Esto claramente no es un set de datos _tidy_, ni siquiera un _data frame_. En el código anterior, podemos ver un patrón y es muy factible escribir código para extraer solo los datos. De hecho, __rvest__ incluye una función solo para convertir tablas HTML en _data frames_:
 
 
 ```{r}
@@ -143,12 +143,12 @@ Todavía tenemos que hacer un poco de _wrangling_. Por ejemplo, necesitamos elim
 
 ## Selectores CSS {#css-selectors}
 
-El aspecto por defecto de una página web hecha con el HTML más básico es poco atractivo. Las páginas estéticamente agradables que vemos hoy usan CSS para definir su aspecto y estilo. El hecho de que todas las páginas de una empresa tienen el mismo estilo generalmente resulta del uso del mismo archivo CSS para definir el estilo. La forma general en que funcionan estos archivos CSS es definiendo cómo se verá cada uno de los elementos de una página web. El título, los encabezados, las listas detalladas, las tablas y los enlaces, por ejemplo, reciben cada uno su propio estilo, que incluye la fuente, el color, el tamaño y la distancia del margen. CSS hace esto aprovechando los patrones utilizados para definir estos elementos, denominados _selectores_. Un ejemplo de dicho patrón, que utilizamos anteriormente, es `table`, pero hay muchos más.
+El aspecto por defecto de una página web hecha con el HTML más básico es poco atractivo. Las páginas estéticamente agradables que vemos hoy usan CSS para definir su aspecto y estilo. El hecho de que todas las páginas de una empresa tienen el mismo estilo generalmente resulta del uso del mismo archivo CSS para definir el estilo. La forma general en que funcionan estos archivos CSS es determinando cómo se verá cada uno de los elementos de una página web. El título, los encabezados, las listas detalladas, las tablas y los enlaces, por ejemplo, reciben cada uno su propio estilo, que incluye la fuente, el color, el tamaño y la distancia del margen. CSS hace esto aprovechando los patrones utilizados para definir estos elementos, denominados _selectores_. Un ejemplo de dicho patrón, que utilizamos anteriormente, es `table`, pero hay muchos más.
 
 Si queremos obtener datos de una página web y conocemos un selector que es único para la parte de la página que contiene estos datos, podemos usar la función `html_nodes`. Sin embargo, saber qué selector puede ser bastante complicado.
-De hecho, la complejidad de las páginas web ha aumentado a medida que se vuelven más sofisticadas. Para algunas de los más avanzadas, parece casi imposible encontrar los nodos que definen un dato en particular. Sin embargo, SelectorGadget lo hace posible.
+De hecho, la complejidad de las páginas web ha aumentado a medida que se vuelven más sofisticadas. Para algunas de las más avanzadas, parece casi imposible encontrar los nodos que definen un dato en particular. Sin embargo, SelectorGadget lo hace posible.
 
-SelectorGadget^[http://selectorgadget.com/] es un _software_ que les permite determinar de manera interactiva qué selector CSS necesitan para extraer componentes específicos de la página web. Si van a extraer datos que no son tablas de páginas html, les recomendamos que lo instalen. Está disponible una extensión de Chrome que les permite encender el _gadget_ y luego, al hacer clic en la página, resalta partes y les muestra el selector que necesitan para extraer estas partes. Hay varias demostraciones de cómo hacer esto, incluyendo la del autor de la viñeta __rvest__, Hadley Wickham, y otros tutoriales que se basen en esa viñeta^[https://cran.r-project.org/web/packages/rvest/vignettes/selectorgadget.html] y otros tutoriales basados en la viñeta^[https://stat4701.github.io/edav/2015/04/02/rvest_tutorial/] ^[https://www.analyticsvidhya.com/blog/2017/03/beginners-guide-on-web-scraping-in-r-using-rvest-with-hands-on-knowledge/].
+SelectorGadget^[http://selectorgadget.com/] es un software que les permite determinar de manera interactiva qué selector CSS necesitan para extraer componentes específicos de la página web. Si van a extraer datos que no son tablas de páginas HTML, les recomendamos que lo instalen. Chrome tiene una extensión que les permite encender el _gadget_ y luego, al hacer clic en la página, resalta partes y les muestra el selector que necesitan para extraer estas partes. Hay varias demostraciones de cómo hacer esto, incluyendo esta vignette de __rvest__^[https://cran.r-project.org/web/packages/rvest/vignettes/selectorgadget.html] y otros tutoriales basados en esa vignette^[https://stat4701.github.io/edav/2015/04/02/rvest_tutorial/] ^[https://www.analyticsvidhya.com/blog/2017/03/beginners-guide-on-web-scraping-in-r-using-rvest-with-hands-on-knowledge/].
 
 ## JSON
 
@@ -210,7 +210,7 @@ El siguiente paso es extraer las tablas. Para esto, podemos usar la función `ht
 html_text(nodes[[8]])
 ```
 
-Si el contenido de este objeto es una tabla html, podemos usar la función `html_table` para convertirlo en un _data frame_. Utilice la función `html_table` para convertir la octava entrada de `nodes` en una tabla.
+Si el contenido de este objeto es una tabla HTML, podemos usar la función `html_table` para convertirlo en un _data frame_. Utilice la función `html_table` para convertir la octava entrada de `nodes` en una tabla.
 
 
 4\. Repita lo anterior para los primeros 4 componentes de `nodes`. ¿Cuáles de las siguientes son tablas de cálculo de nómina?
@@ -241,10 +241,10 @@ d. Todas las anteriores.
 9\. Cree dos tablas utilizando las entradas 10 y 19. Llámelas `tab_1` y `tab_2`.
 
 
-10\. Utilice una  función `full_join` para combinar estas dos tablas. Antes de hacer esto, deberá corregir el problema del encabezado que falta. También deberá hacer que los nombres coincidan.
+10\. Utilice una  función `full_join` para combinar estas dos tablas. Antes de hacer esto, corrija el problema del encabezado que falta y haga que los nombres coincidan.
 
 
-11\. Después de unir las tablas, verá varias `NA`. Esto se debe a que algunos equipos están en una tabla y no en la otra. Utilice la función `anti_join` para tener una mejor idea de por qué sucede esto.
+11\. Después de unir las tablas, verá varias `NA`s. Esto se debe a que algunos equipos están en una tabla y no en la otra. Utilice la función `anti_join` para tener una mejor idea de por qué sucede esto.
 
 
 12\. Vemos que uno de los problemas es que los Yankees figuran como _N.Y. Yankees_ y _NY Yankees_. En la siguiente sección, aprenderemos enfoques eficientes para solucionar problemas como este. Aquí podemos hacerlo "a mano" de la siguiente manera:
@@ -252,12 +252,12 @@ d. Todas las anteriores.
 
 ```{r, eval=FALSE}
 tab_1 <- tab_1 %>%
-mutate(Team = ifelse(Team == "N.Y. Yankees", "NY Yankees", Team))
+  mutate(Team = ifelse(Team == "N.Y. Yankees", "NY Yankees", Team))
 ```
 
 Ahora una las tablas y muestre solo Oakland y los Yankees y las columnas de cálculo de nómina.
 
-13\. Avanzado. Extraiga los títulos de las películas que ganaron el premio de la Mejor Película de este sitio web: [https://m.imdb.com/chart/bestpicture/font](https://m.imdb.com/chart/bestpicture/)
+13\. Avanzado: Extraiga los títulos de las películas que ganaron el premio de _Best Picture_ de este sitio web: [https://m.imdb.com/chart/bestpicture/font](https://m.imdb.com/chart/bestpicture/)
 
 
 

@@ -5,7 +5,7 @@ Con la excepción de las etiquetas utilizadas para representar datos categórico
 
 ## Estudio de caso: tuits de Trump
 
-Durante las elecciones presidenciales estadounidenses de 2016, el candidato Donald J. Trump usó su cuenta de Twitter como una manera de comunicarse con los posibles votantes. El 6 de agosto de 2016, Todd Vaziri tuiteó^[https://twitter.com/tvaziri/status/762005541388378112/photo/1] sobre Trump diciendo que "Cada tweet no hiperbólico es de iPhone (su personal). Cada tweet hiperbólico es de Android (de él) ".
+Durante las elecciones presidenciales estadounidenses de 2016, el candidato Donald J. Trump usó su cuenta de Twitter como una manera de comunicarse con los posibles votantes. El 6 de agosto de 2016, Todd Vaziri tuiteó^[https://twitter.com/tvaziri/status/762005541388378112/photo/1] sobre Trump declarando que "Cada tweet no hiperbólico es de iPhone (su personal). Cada tweet hiperbólico es de Android (de él) ".
 El científico de datos David Robinson realizó un análisis^[http://varianceexplained.org/r/trump-tweets/] para determinar si los datos respaldan esta afirmación. Aquí, revisamos el análisis de David para aprender algunos de los conceptos básicos de la minería de textos. Para obtener más información sobre la minería de textos en R, recomendamos el libro _Text Mining with R_^[https://www.tidytextmining.com/] de Julia Silge y David Robinson.
 
 ```{r,echo=FALSE}
@@ -56,13 +56,13 @@ El archivo de ayuda `?trump_tweets` provee detalles sobre lo que representa cada
 trump_tweets$text[16413] %>% str_wrap(width = options()$width) %>% cat
 ```
 
-y la variable _source_ nos dice qué dispositivo se usó para componer y cargar cada tuit:
+y la variable `source` nos dice qué dispositivo se usó para componer y cargar cada tuit:
 
 ```{r}
 trump_tweets %>% count(source) %>% arrange(desc(n)) %>% head(5)
 ```
 
-Estamos interesados en lo que sucedió durante la campaña, por lo que para este análisis nos enfocaremos en lo que se tuiteó entre el día en que Trump anunció su campaña y el día de las elecciones. Definimos la siguiente tabla que contiene solo los tuits de ese período de tiempo. Tengan en cuenta que usamos `extract` para eliminar la parte `Twitter for` de _source_ y filtrar los _retweets_.
+Estamos interesados en lo que sucedió durante la campaña, por lo que para este análisis nos enfocaremos en lo que se tuiteó entre el día en que Trump anunció su campaña y el día de las elecciones. Definimos la siguiente tabla que contiene solo los tuits de ese período de tiempo. Tengan en cuenta que usamos `extract` para eliminar la parte `Twitter for` de `source` y filtrar los _retweets_.
 
 ```{r}
 campaign_tweets <- trump_tweets %>%
@@ -92,9 +92,9 @@ labs(x = "Hour of day (EST)", y = "% of tweets", color = "")
 ```
 
 
-Notamos un gran pico para Android en las primeras horas de la mañana, entre las 6 y las 8 de la mañana. Parece haber una clara diferencia en estos patrones. Por lo tanto, asumiremos que dos entidades diferentes están utilizando estos dos dispositivos.
+Notamos un gran pico para Android en las primeras horas de la mañana, entre las 6 y las 8 de la mañana. Parece haber una clara diferencia en estos patrones. Por lo tanto, suponemos que dos entidades diferentes están utilizando estos dos dispositivos.
 
-Ahora estudiaremos cómo difieren los tuits cuando comparamos Android con iPhone. Para hacer esto, presentamos el paquete __tidytext__.
+Ahora estudiaremos cómo difieren los tuits cuando comparamos Android con iPhone. Para hacer esto, utilizaremos el paquete __tidytext__.
 
 
 ## Texto como datos
@@ -116,7 +116,7 @@ example
 example %>% unnest_tokens(word, text)
 ```
 
-Ahora consideremos un ejemplo de los tuits. Observen el tuit número 3008 porque luego nos permitirá ilustrar un par de puntos:
+Ahora consideremos un ejemplo de los tuits. Miren el tuit número 3008 porque luego nos permitirá ilustrar un par de puntos:
 
 ```{r}
 i <- 3008
@@ -168,7 +168,7 @@ No es sorprendente que estas sean las palabras principales. Las palabras princip
 stop_words
 ```
 
-Si filtramos las filas que representan la palabras _stop_ con `filter(!word %in% stop_words$word)`:
+Si filtramos las filas que representan las palabras _stop_ con `filter(!word %in% stop_words$word)`:
 
 ```{r, message=FALSE, warning=FALSE}
 tweet_words <- campaign_tweets %>%
@@ -187,7 +187,7 @@ mutate(word = reorder(word, n)) %>%
 arrange(desc(n))
 ```
 
-Una exploración de las palabras resultantes (que no se muestran aquí) revela un par de características no deseadas en nuestros tokens. Primero, algunos de nuestros _tokens_ son solo números (años, por ejemplo). Queremos eliminarlos y podemos encontrarlos usando la expresión regular `^\d+$`. Segundo, algunos de nuestros _tokens_ provienen de una cita y comienzan con `'`. Queremos eliminar el `'` cuando está al comienzo de una palabra, así que simplemente usamos `str_replace`. Agregamos estas dos líneas al código anterior para generar nuestra tabla final:
+Una exploración de las palabras resultantes (que no se muestran aquí) revela un par de características no deseadas en nuestros _tokens_. Primero, algunos de nuestros _tokens_ son solo números (años, por ejemplo). Queremos eliminarlos y podemos encontrarlos usando la expresión regular `^\d+$`. Segundo, algunos de nuestros _tokens_ provienen de una cita y comienzan con `'`. Queremos eliminar el `'` cuando está al comienzo de una palabra, así que simplemente usamos `str_replace`. Agregamos estas dos líneas al código anterior para generar nuestra tabla final:
 
 
 ```{r, message=FALSE, warning=FALSE}
@@ -201,7 +201,7 @@ mutate(word = str_replace(word, "^'", ""))
 
 Ahora que tenemos las palabras en una tabla e información sobre qué dispositivo se usó para componer el tuit, podemos comenzar a explorar qué palabras son más comunes al comparar Android con iPhone.
 
-Para cada palabra, queremos saber si es más probable que provenga de un tuit de Android o un tuit de iPhone. En la sección \@ref(association-tests) introdujimos el _riesgo relativo_ (_odds ratio_ en inglés) como un resumen estadístico útil para cuantificar estas diferencias. Para cada dispositivo y una palabra dada, llamémosla `y`, calculamos el riesgo relativo. Aquí tendremos muchas proporciones que son 0, así que usamos la corrección 0.5 descrita en la Sección \@ref(association-tests).
+Para cada palabra, queremos saber si es más probable que provenga de un tuit de Android o un tuit de iPhone. En la sección \@ref(association-tests), introdujimos el _riesgo relativo_ (_odds ratio_ en inglés) como un resumen estadístico útil para cuantificar estas diferencias. Para cada dispositivo y una palabra dada, llamémosla `y`, calculamos el riesgo relativo. Aquí tendremos muchas proporciones que son 0, así que usamos la corrección 0.5 descrita en la Sección \@ref(association-tests).
 
 ```{r}
 android_iphone_or <- tweet_words %>%
@@ -218,6 +218,7 @@ android_iphone_or %>% arrange(desc(or))
 ```
 
 y los más altos para iPhone:
+
 ```{r}
 android_iphone_or %>% arrange(or)
 ```
@@ -245,7 +246,7 @@ library(tidytext)
 library(textdata)
 ```
 
-El léxico `bing` divide las palabras en sentimientos `positive` y `negative`. Podemos ver esto usando la función `get_sentiments` de _tidytext_:
+El léxico `bing` divide las palabras en sentimientos `positive` y `negative`. Podemos ver esto usando la función `get_sentiments` de __tidytext__:
 
 ```{r, eval=FALSE}
 get_sentiments("bing")
@@ -283,7 +284,7 @@ select(source, word, sentiment) %>%
 sample_n(5)
 ```
 
-Ahora estamos listos para realizar un análisis cuantitativo comparando los sentimientos de los tuits publicados desde cada dispositivo Android y iPhone. Podríamos realizar un análisis tuit por tuit, asignando un sentimiento a cada tuit. Sin embargo, esto sería un desafío ya que cada tuit tendrá varios sentimientos adjuntos, uno para cada palabra que aparezca en el léxico. Con fines ilustrativos, realizaremos un análisis mucho más sencillo: contaremos y compararemos las frecuencias de cada sentimiento que aparece en cada dispositivo.
+Ahora estamos listos para realizar un análisis cuantitativo comparando los sentimientos de los tuits publicados desde cada dispositivo. Podríamos realizar un análisis tuit por tuit, asignando un sentimiento a cada tuit. Sin embargo, esto sería un desafío ya que cada tuit tendrá varios sentimientos adjuntos, uno para cada palabra que aparezca en el léxico. Con fines ilustrativos, realizaremos un análisis mucho más sencillo: contaremos y compararemos las frecuencias de cada sentimiento que aparece en cada dispositivo.
 
 
 ```{r}
@@ -305,7 +306,7 @@ or = Android/iPhone) %>%
 arrange(desc(or))
 ```
 
-Sí vemos algunas diferencias y el orden es particularmente interesante: ¡los tres sentimientos más grandes son el asco, la ira y lo negativo! ¿Pero estas diferencias son solo por casualidad? ¿Cómo se compara esto si solo estamos asignando sentimientos al azar? Para responder a esta pregunta, podemos calcular, para cada sentimiento, un riesgo relativo y un intervalo de confianza, como se define en la Sección \@ref(association-tests). Agregaremos los dos valores que necesitamos para formar una tabla de dos por dos y el riesgo relativo:
+Sí vemos algunas diferencias y el orden es particularmente interesante: ¡los tres sentimientos más grandes son el asco, la ira y lo negativo! ¿Pero estas diferencias son solo por casualidad? ¿Cómo se compara esto si solo estamos asignando sentimientos al azar? A fin de responder a esta pregunta, para cada sentimiento podemos calcular un riesgo relativo y un intervalo de confianza, como se definen en la Sección \@ref(association-tests). Agregaremos los dos valores que necesitamos para formar una tabla de dos por dos y el riesgo relativo:
 
 ```{r}
 library(broom)
@@ -343,7 +344,7 @@ filter(sentiment == "disgust" & Android + iPhone > 10) %>%
 arrange(desc(or))
 ```
 
-y podemos hacer un gráfico:
+y hacer un gráfico:
 
 ```{r log-odds-by-word, out.width="100%"}
 android_iphone_or %>% inner_join(nrc, by = "word") %>%
@@ -402,6 +403,6 @@ gutenberg_metadata
 8\. Haga un gráfico de puntuación de sentimiento versus ubicación en el libro y agregue un suavizador.
 
 
-9\. Suponga que hay 300 palabras por página. Convierta las ubicaciones en páginas y luego calcule el sentimiento promedio en cada página. Grafique ese puntaje promedio por página. Agregue un suavizador que parece pasar por los datos.
+9\. Suponga que hay 300 palabras por página. Convierta las ubicaciones en páginas y luego calcule el sentimiento promedio en cada página. Grafique ese puntaje promedio por página. Agregue un suavizador que pase por los datos.
 
 

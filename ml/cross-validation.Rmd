@@ -1,7 +1,7 @@
 # Validación cruzada {#cross-validation}
 
 
-En este capítulo, presentamos la validación cruzada (_cross validation_ en inglés), una de las ideas más importantes de _machine learning_. Aquí nos centramos en los aspectos conceptuales y matemáticos. Describiremos cómo implementar la validación cruzada en la práctica con el paquete __caret__ en la Sección \@ref(caret-cv) del proximo capitulo. Para motivar el concepto, utilizaremos los dos datos de dígitos predictores presentados en la Sección \@ref(two-or-seven) e introduciremos, por primera vez, un algoritmo real de _machine learning_: _k vecinos más cercanos_ (_k-nearest neighbors_ o kNN por sus siglas en inglés).
+En este capítulo, presentamos la validación cruzada (_cross validation_ en inglés), una de las ideas más importantes de _machine learning_. Aquí nos centramos en los aspectos conceptuales y matemáticos. Describiremos cómo implementar la validación cruzada en la práctica con el paquete __caret__ en la Sección \@ref(caret-cv) del proximo capitulo. Para motivar el concepto, utilizaremos los dos datos de dígitos predictores presentados en la Sección \@ref(two-or-seven) e introduciremos, por primera vez, un algoritmo real de _machine learning_: _k vecinos más cercanos_ (kNN o _k-nearest neighbors_ en inglés).
 
 ## Motivación con k vecinos más cercanos {#knn-cv-intro}
 
@@ -242,7 +242,7 @@ $$
 \frac{1}{B} \sum_{b=1}^B \frac{1}{N}\sum_{i=1}^N \left(\hat{y}_i^b - y_i^b\right)^2
 $$
 con $B$ un número grande que puede considerarse prácticamente infinito.
-Como ya se mencionó, esta es una cantidad teórica porque solo tenemos disponible un set de resultados: $y_1, \dots, y_n$. La validación cruzada se basa en la idea de imitar la configuración teórica anterior de la mejor manera posible con los datos que tenemos. Para hacer esto, tenemos que generar una serie de diferentes muestras aleatorias. Hay varios enfoques que podemos usar, pero la idea general para todos ellos es generar aleatoriamente sets de datos más pequeños que no se usan para el entrenamiento, y en vez se usan para estimar el error verdadero.
+Como ya se mencionó, esta es una cantidad teórica porque solo tenemos disponible un set de resultados: $y_1, \dots, y_n$. La validación cruzada se basa en la idea de imitar la configuración teórica anterior de la mejor manera posible con los datos que tenemos. Para hacer esto, tenemos que generar una serie de diferentes muestras aleatorias. Hay varios enfoques que podemos usar, pero la idea general para todos ellos es generar aleatoriamente sets de datos más pequeños que no se usan para el entrenamiento y en cambio se usan para estimar el error verdadero.
 
 ## Validación cruzada K-fold
 
@@ -282,7 +282,7 @@ Ahora, esto presenta un nuevo problema porque para la mayoría de los algoritmos
 
 Para cada set de parámetros de algoritmo que se considera, queremos un estimado del MSE y luego elegiremos los parámetros con el MSE más pequeño. La validación cruzada nos da este estimado.
 
-Primero, antes de comenzar el procedimiento de validación cruzada, es importante corregir todos los parámetros del algoritmo. Aunque entrenaremos el algoritmo en el conjunto de sets de entrenamiento, los parámetros $\lambda$ serán los mismos en todos los sets de entrenamiento. Usaremos $\hat{y}_i(\lambda)$ para denotar los predictores obtenidos cuando usamos parámetros $\lambda$.
+Primero, antes de comenzar el procedimiento de validación cruzada, es importante fijar todos los parámetros del algoritmo. Aunque entrenaremos el algoritmo en el conjunto de sets de entrenamiento, los parámetros $\lambda$ serán los mismos en todos los sets de entrenamiento. Usaremos $\hat{y}_i(\lambda)$ para denotar los predictores obtenidos cuando usamos parámetros $\lambda$.
 
 Entonces, si vamos a imitar esta definición:
 
@@ -305,7 +305,7 @@ $$
 \hat{\mbox{MSE}}_b(\lambda) = \frac{1}{M}\sum_{i=1}^M \left(\hat{y}_i^b(\lambda) - y_i^b\right)^2
 $$
 
-Tengan en cuenta que esta es solo una muestra y, por lo tanto, devolverá un estimado ruidoso del error verdadero. Por eso tomamos $K$ muestras, no solo una. En la validación cruzada _k-fold_, dividimos aleatoriamente las observaciones en $K$ sets no superpuestos:
+Tengan en cuenta que esta es solo una muestra y, por consiguiente, devolverá un estimado ruidoso del error verdadero. Por eso tomamos $K$ muestras, no solo una. En la validación cruzada _k-fold_, dividimos aleatoriamente las observaciones en $K$ sets no superpuestos:
 
 
 ```{r, echo=FALSE}
@@ -334,7 +334,7 @@ Podemos hacer una validación cruzada nuevamente:
 knitr::include_graphics("ml/img/cv-7.png")
 ```
 
-y obtener un estimado final de nuestra pérdida esperada. Sin embargo, tengan en cuenta que esto significa que todo nuestro tiempo de cálculo se multiplica por $K$. Pronto aprenderán que realizar esta tarea lleva tiempo porque estamos realizando muchos cálculos complejos. Por eso, siempre estamos buscando formas de reducir este tiempo. Para la evaluación final, a menudo solo usamos un set de evaluación.
+y obtener un estimado final de nuestra pérdida esperada. Sin embargo, noten que esto significa que todo nuestro tiempo de cálculo se multiplica por $K$. Pronto aprenderán que realizar esta tarea lleva tiempo porque estamos realizando muchos cálculos complejos. Por eso, siempre estamos buscando formas de reducir este tiempo. Para la evaluación final, a menudo solo usamos un set de evaluación.
 
 Una vez que estemos satisfechos con este modelo y queramos ponerlo a disposición de otros, podríamos reajustar el modelo en todo el set de datos, sin cambiar los parámetros optimizados.
 
@@ -366,7 +366,7 @@ y <- rbinom(n, 1, 0.5) %>% factor()
 x_subset <- x[ ,sample(p, 100)]
 ```
 
-1\. Como `x` y `y` son completamente independientes, no debería poder predecir `y` utilizando `x` con exactitud mayor que 0.5. Confirme esto ejecutando la validación cruzada utilizando regresión logística para ajustar el modelo. Debido a que tenemos tantos predictores, seleccionamos una muestra aleatoria `x_subset`. Use el subconjunto cuando entrene al modelo. Sugerencia: use la función `train` de __caret__. El componente `results` de `train` le muestra la exactitud. Ignore las advertencias.
+1\. Como `x` y `y` son completamente independientes, no debemos poder predecir `y` con `x` con exactitud mayor que 0.5. Confirme esto ejecutando validación cruzada utilizando regresión logística para ajustar el modelo. Debido a que tenemos tantos predictores, seleccionamos una muestra aleatoria `x_subset`. Use el subconjunto cuando entrene el modelo. Sugerencia: use la función `train` de __caret__. El componente `results` de `train` le muestra la exactitud. Ignore las advertencias.
 
 
 2\. Ahora, en lugar de una selección aleatoria de predictores, vamos a buscar aquellos que sean más predictivos del resultado. Podemos hacer esto comparando los valores para el grupo $y=1$ con esos en el grupo $y=0$, para cada predictor, utilizando una prueba t. Puede realizar este paso así:
@@ -387,9 +387,9 @@ Cree un vector de los valores-p y llámelo `pvals`.
 4\. Vuelva a ejecutar la validación cruzada pero después de redefinir `x_subset` como el subconjunto de `x` definido por las columnas que muestran una asociación "estadísticamente significativa" con `y`. ¿Cuál es la exactitud ahora?
 
 
-5\. Vuelva a ejecutar la validación cruzada nuevamente, pero esta vez usando kNN. Pruebe la siguiente cuadrícula de parámetros de ajuste: `k = seq(101, 301, 25)`. Haga un gráfico de la exactitud resultante.
+5\. Vuelva a ejecutar la validación cruzada nuevamente, pero esta vez usando kNN. Pruebe los siguientes parámetros de ajuste: `k = seq(101, 301, 25)`. Haga un gráfico de la exactitud resultante.
 
-6\. En los ejercicios 3 y 4, vemos que a pesar del hecho de que `x` y `y` son completamente independientes, pudimos predecir `y` con una exactitud superior al 70%. Debemos estar haciendo algo mal entonces. ¿Qué es?
+6\. En los ejercicios 3 y 4, vemos que a pesar del hecho de que `x` e `y` son completamente independientes, pudimos predecir `y` con una exactitud superior al 70%. Debemos estar haciendo algo mal entonces. ¿Qué es?
 
 a. La función `train` estima la exactitud usando los mismos datos que usa para entrenar el algoritmo.
 b. Estamos sobreajustando el modelo al incluir 100 predictores.

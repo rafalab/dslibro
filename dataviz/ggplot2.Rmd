@@ -13,7 +13,7 @@ library(dplyr)
 library(ggplot2)
 ```
 
-Hay muchas opciones para graficar disponibles en R. De hecho, las capacidades para graficar que vienen con una instalación básica de R ya son bastante poderosas. También hay otros paquetes para crear gráficos como __grid__ y __lattice__. En este libro, decidimos usar __ggplot2__ porque divide los gráficos en componentes de una manera que le permite a los principiantes crear gráficos relativamente complejos y estéticamente agradables utilizando una sintaxis intuitiva y relativamente fácil de recordar.
+Hay muchas opciones para graficar disponibles en R. De hecho, las capacidades para graficar que vienen con una instalación básica de R ya son bastante poderosas. También hay otros paquetes para crear gráficos como __grid__ y __lattice__. En este libro decidimos usar __ggplot2__ porque divide los gráficos en componentes de una manera que le permite a los principiantes crear gráficos relativamente complejos y estéticamente agradables utilizando una sintaxis intuitiva y relativamente fácil de recordar.
 
 Una razón por la cual __ggplot2__ es generalmente más intuitiva para los principiantes es porque usa una gramática de gráficos^[http://www.springer.com/us/book/9780387245447], el _gg_ de __ggplot2__. Esto es análogo a la forma en que aprender gramática puede ayudar a un estudiante construir cientos de oraciones diferentes al aprender solo una pequeña cantidad de verbos, sustantivos y adjetivos, en vez de memorizar cada oración específica. Del mismo modo, al aprender una pequeña cantidad de los componentes básicos de __ggplot2__ y de su gramática, podrán crear cientos de gráficos diferentes.
 
@@ -25,7 +25,7 @@ Para usar __ggplot2__, tendrán que aprender varias funciones y argumentos. Esto
 
 ## Los componentes de un gráfico
 
-Construiremos un gráfico que resume el set de datos de asesinatos con armas en Estados Unidos como el siguiente:
+Construiremos un gráfico como el siguiente, que resume el set de datos de asesinatos con armas en Estados Unidos:
 
 ```{r ggplot-example-plot, echo=FALSE}
 library(dslabs)
@@ -50,7 +50,7 @@ murders %>% ggplot(aes(x = population/10^6, y = total, label = abb)) +
   theme_economist()
 ```
 
-Podemos ver claramente cuánto varían los estados según el tamaño de la población y el número total de asesinatos. No es sorprendente que también se observe una relación clara entre los totales de asesinatos y el tamaño de la población. Un estado que cae en la línea discontinua gris tiene la misma tasa de asesinatos que el promedio de EE. UU.. Las cuatro regiones geográficas se denotan con color, que señala cómo la mayoría de los estados del sur tienen tasas de asesinatos por encima del promedio.
+Podemos ver claramente cuánto varían los estados según el tamaño de la población y el número total de asesinatos. No es sorprendente que también se observe una relación clara entre los totales de asesinatos y el tamaño de la población. Un estado que cae en la línea discontinua gris tiene la misma tasa de asesinatos que el promedio de EE. UU. Las cuatro regiones geográficas se denotan con color, que señala cómo la mayoría de los estados del sur tienen tasas de asesinatos por encima del promedio.
 
 Esta visualización de datos nos muestra prácticamente toda la información de la tabla de datos. El código necesario para hacer el gráfico es relativamente sencillo. Aprenderemos a crearlo parte por parte.
 
@@ -133,7 +133,7 @@ knitr::include_graphics(c(file.path(img_path,"ggplot2-cheatsheeta.png"),
 
 Los nombres de las funciones de geometría siguen el patrón: `geom_X` donde X es el nombre de la geometría. Algunos ejemplos incluyen `geom_point`, `geom_bar` y `geom_histogram`.
 
-Para que `geom_point` funcione bien, necesitamos proveer datos y una correspondencia. Ya hemos conectado el objeto `p` con la tabla de datos `murders`, y si agregamos la capa `geom_point`, esta por defecto usa los datos de asesinatos. Para saber qué correspondencias se esperan, lean la sección __Aesthetics__ de la página de ayuda de `geom_point`:
+Para que `geom_point` funcione bien, necesitamos proveer datos y una correspondencia. Ya hemos conectado el objeto `p` con la tabla de datos `murders` y si agregamos la capa `geom_point`, esta por defecto usa los datos de asesinatos. Para saber qué correspondencias se esperan, lean la sección __Aesthetics__ de la página de ayuda de `geom_point`:
 
 ```
 > Aesthetics
@@ -153,7 +153,7 @@ y, como se esperaba, vemos que se requieren al menos dos argumentos `x` y `y`.
 
 ## Mapeos estéticos
 
-Los __mapeos estéticos__ (_aesthetic mappings_ en inglés) describen cómo las propiedades de los datos se conectan con las características del gráfico, como la distancia a lo largo de un eje, el tamaño o el color. La función `aes` conecta los datos con lo que vemos en el gráfico mediante la definición de asignaciones estéticas y será una de las funciones que más utilizarán al graficar. El resultado de la función `aes` a menudo se utiliza como argumento de una función de geometría. Este ejemplo produce un diagrama de dispersión de asesinatos totales versus población en millones:
+Los __mapeos estéticos__ (_aesthetic mappings_ en inglés) describen cómo las propiedades de los datos se conectan con las características del gráfico, como la distancia a lo largo de un eje, el tamaño o el color. La función `aes` conecta los datos con lo que vemos en el gráfico mediante la definición de asignaciones estéticas y, por eso, será una de las funciones que más utilizarán al graficar. El resultado de la función `aes` a menudo se utiliza como argumento de una función de geometría. Este ejemplo produce un diagrama de dispersión de asesinatos totales versus población en millones:
 
 ```{r, eval = FALSE}
 murders %>% ggplot() +
@@ -162,7 +162,7 @@ murders %>% ggplot() +
 
 Podemos quitar el `x = ` y `y =` si quisiéramos ya que estos son el primer y el segundo argumento esperado, como se ve en la página de ayuda.
 
-En lugar de definir nuestro gráfico desde cero, también podemos añadir una capa al objeto `p` que se definió anteriormente como `p <- ggplot(data = murders)`:
+En lugar de definir nuestro gráfico desde cero, podemos añadir una capa al objeto `p` que se definió anteriormente como `p <- ggplot(data = murders)`:
 
 ```{r ggplot-example-3}
 p + geom_point(aes(population/10^6, total))
@@ -223,7 +223,7 @@ Esto es preferible puesto que facilita la lectura del texto. En la sección \@re
 
 ## Mapeos estéticos globales versus locales
 
-En la línea anterior de código, definimos el mapeo `aes(population/10^6, total)` dos veces, una vez en cada geometría. Podemos evitar esto usando un mapeo estético _global_ cuando definimos la pizarra en blanco que nos da el objeto `ggplot`. Recuerden que la función `ggplot` contiene un argumento que nos permite definir mapeos estéticos:
+En la línea anterior de código definimos el mapeo `aes(population/10^6, total)` dos veces, una vez en cada geometría. Podemos evitar esto usando un mapeo estético _global_ cuando definimos la pizarra en blanco que nos da el objeto `ggplot`. Recuerden que la función `ggplot` contiene un argumento que nos permite definir mapeos estéticos:
 
 ```{r}
 args(ggplot)
@@ -324,7 +324,7 @@ p + geom_point(aes(col=region), size = 3)
 
 Los mapeos `x` y `y` se heredan de esos ya definidos en `p`, así que no los redefinimos. También movemos `aes` al primer argumento, ya que ahí es donde se esperan los mapeos en esta llamada.
 
-Aquí vemos otro comportamiento útil por defecto: __ggplot2__ automáticamente agrega una leyenda que asigna el color a la región. Para evitar añadir esta leyenda, establecemos el argumento `geom_point` como `show.legend = FALSE`.
+Aquí vemos otro comportamiento útil por defecto: __ggplot2__ automáticamente agrega una leyenda que asigna el color a la región. Si no quieren añadir esta leyenda, establecemos el argumento `geom_point` como `show.legend = FALSE`.
 
 ## Anotación, formas y ajustes
 
@@ -353,7 +353,7 @@ Podemos cambiar el tipo de línea y el color de las líneas usando argumentos. A
 p <- p + geom_abline(intercept = log10(r), lty = 2, color = "darkgrey") +
   geom_point(aes(col=region), size = 3)
 ```
-Noten que hemos redefinido `p` y usaremos este nuevo `p` a continuación y en la siguiente sección.
+Noten que hemos redefinido `p` y usaremos esta nueva `p` a continuación y en la siguiente sección.
 
 Los gráficos por defecto creados por __ggplot2__ ya son muy útiles. Sin embargo, con frecuencia necesitamos hacer pequeños ajustes al comportamiento predeterminado. Aunque no siempre es obvio cómo hacer esto aun con la hoja de referencia, __ggplot2__ es muy flexible.
 
@@ -417,7 +417,7 @@ ds_theme_set()
 
 ## Gráficos rápidos con `qplot` {#qplot}
 
-Hemos aprendido las poderosas técnicas de ggplot para generar visualizaciones. Sin embargo, hay casos en que sólo necesitamos un gráfico rápido de, por ejemplo, un histograma de los valores en un vector, un diagrama de dispersión de los valores en dos vectores o un diagrama de caja usando vectores categóricos y numéricos. Ya hemos demostrado cómo generar estos gráficos con `hist`, `plot` y `boxplot`. Sin embargo, si queremos ser consistentes con el estilo de ggplot, podemos usar la función `qplot`.
+Hemos aprendido las poderosas técnicas de __ggplot2__ para generar visualizaciones. Sin embargo, hay casos en que sólo necesitamos un gráfico rápido de, por ejemplo, un histograma de los valores en un vector, un diagrama de dispersión de los valores en dos vectores o un diagrama de caja usando vectores categóricos y numéricos. Ya hemos demostrado cómo generar estos gráficos con `hist`, `plot` y `boxplot`. Sin embargo, si queremos ser consistentes con el estilo de ggplot, podemos usar la función `qplot`.
 
 Si tenemos valores en dos vectores como:
 
@@ -427,7 +427,7 @@ x <- log10(murders$population)
 y <- murders$total
 ```
 
-y queremos hacer un diagrama de dispersión con ggplot, tendríamos que escribir algo como:
+y queremos hacer un diagrama de dispersión con __ggplot2__, tendríamos que escribir algo como:
 
 ```{r, eval=FALSE}
 data.frame(x = x, y = y) %>%
@@ -435,7 +435,7 @@ data.frame(x = x, y = y) %>%
   geom_point()
 ```
 
-Esto parece ser demasiado código para una gráfico tan sencillo. La función `qplot` sacrifica la flexibilidad ofrecida por el enfoque de `ggplot`, pero nos permite rápidamente generar un gráfico.
+Esto parece ser demasiado código para una gráfico tan sencillo. La función `qplot` sacrifica la flexibilidad ofrecida por el enfoque de __ggplot2__, pero nos permite rápidamente generar un gráfico.
 
 ```{r qplot-example-0, eval = FALSE}
 qplot(x, y)
@@ -563,7 +563,7 @@ d. Como queremos que todos los colores sean azules, no necesitamos asignar color
 12\. Ahora supongamos que queremos usar color para representar las diferentes regiones. En este caso, ¿cuál de los siguientes es el más apropiado?
 
 a. Añadir una columna llamada `color` a `murders` con el color que queremos usar.
-b. Como cada etiqueta necesita un color diferente, mapear los colores a través del argumento de color de `aes` .
+b. Como cada etiqueta necesita un color diferente, mapear los colores a través del argumento de color de `aes`.
 c. Utilizar el argumento `color` en `ggplot`.
 d. Como queremos que todos los colores sean azules, no necesitamos asignar colores, solo usar el argumento de color en `geom_label`.
 

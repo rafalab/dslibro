@@ -6,23 +6,23 @@ img_path <- "R/img"
 
 Hemos estado usando sets de datos ya almacenados como objetos R. Los científicos de datos rara vez tendrán tanta suerte y frecuentemente tendrán que importar datos a R desde un archivo, una base de datos u otras fuentes. Actualmente, una de las formas más comunes de almacenar y compartir datos para el análisis es a través de hojas de cálculo electrónicas. Una hoja de cálculo almacena datos en filas y columnas. Básicamente es una versión de archivo de un _data frame_. Al guardar dicha tabla en un archivo de computadora, uno necesita una manera de definir cuándo termina una nueva fila o columna y cuando comienza la otra. Esto a su vez define las celdas en las que se almacenan los valores individuales.
 
-Al crear hojas de cálculo con archivos de texto, como esas creadas con un editor de texto sencillo, se define una nueva fila con un _return_ y se separan las columnas con un carácter especial predefinido. Los caracteres más comunes son coma ( `,`), punto y coma ( `;`), espacio ( ) y el _tab_ (un número predeterminado de espacios o `\t`). Aquí tenemos un ejemplo de cómo se ve un archivo separado por comas si lo abrimos con un editor básico de texto:
+Al crear hojas de cálculo con archivos de texto, como esas creadas con un editor de texto sencillo, se define una nueva fila con _return_ y se separan las columnas con un carácter especial predefinido. Los caracteres más comunes son coma (`,`), punto y coma (`;`), espacio ( ) y el _tab_ (un número predeterminado de espacios o `\t`). Aquí tenemos un ejemplo de cómo se ve un archivo separado por comas si lo abrimos con un editor básico de texto:
 
 
 ```{r, echo=FALSE}
 knitr::include_graphics(file.path(img_path,"csv-file.png"))
 ```
 
-La primera fila contiene nombres de columnas en lugar de datos. Nos referimos a esto como un _encabezado_ (_header_ en inglés), y cuando leemos (_read-in_ en inglés) datos de una hoja de cálculo es importante saber si el archivo tiene un encabezado o no. La mayoría de las funciones de lectura suponen que hay un encabezado. Para saber si el archivo tiene un encabezado, miren el archivo antes de intentar leerlo. Esto se puede hacer con un editor de texto o con RStudio. En RStudio, podemos hacerlo abriendo el archivo en el editor o navegando a la ubicación del archivo, haciendo doble clic en el archivo y presionando _View File_.
+La primera fila contiene nombres de columnas en lugar de datos. Nos referimos a esto como un _encabezado_ (_header_ en inglés), y cuando leemos (_read-in_ en inglés) datos de una hoja de cálculo es importante saber si el archivo tiene un encabezado o no. La mayoría de las funciones de lectura suponen que hay un encabezado. Para saber si el archivo tiene un encabezado, miren el archivo antes de intentar leerlo. Esto se puede hacer con un editor de texto o con RStudio. En RStudio podemos hacerlo abriendo el archivo en el editor o navegando a la ubicación del archivo, haciendo doble clic en el archivo y presionando _View File_.
 
-Sin embargo, no todos los archivos de hojas de cálculo están en formato de texto. Las hojas de cálculo de Google (_Google Sheets_ en inglés), por ejemplo, se acceden con un navegador. Otro ejemplo es el formato propietario utilizado por Microsoft Excel, que no se puede ver con un editor de texto. A pesar de esto y  debido a la popularidad del _software_ Microsoft Excel, este formato se utiliza ampliamente.
+Sin embargo, no todos los archivos de hojas de cálculo están en formato de texto. Las hojas de cálculo de Google (_Google Sheets_ en inglés), por ejemplo, se acceden con un navegador. Otro ejemplo es el formato propietario utilizado por Microsoft Excel, que no se puede ver con un editor de texto. A pesar de esto y  debido a la popularidad del software Microsoft Excel, este formato se utiliza ampliamente.
 
-Comenzamos este capítulo describiendo las diferencias entre archivos de texto (ASCII), Unicode y binarios y cómo estas afectan la forma en que los importamos. Luego explicamos los conceptos de rutas de archivos y directorios de trabajo, que son esenciales para comprender cómo importar datos de manera efectiva. Entonces presentamos los paquetes __readr__ y  __readxl__ y las funciones disponibles para importar hojas de cálculo en R. Finalmente, ofrecemos algunas recomendaciones sobre cómo almacenar y organizar datos en archivos. Los desafíos más complejos, sin embargo, como la extracción de datos de páginas web o de documentos PDF, se discutirán en la parte del libro "_Wrangling_ de datos".
+Comenzamos este capítulo describiendo las diferencias entre archivos de texto (ASCII), Unicode y binarios y cómo estas afectan la forma en que los importamos. Entonces, explicamos los conceptos de rutas de archivos y directorios de trabajo, que son esenciales para comprender cómo importar datos de manera efectiva. Luego, presentamos los paquetes __readr__ y  __readxl__ y las funciones disponibles para importar hojas de cálculo en R. Finalmente, ofrecemos algunas recomendaciones sobre cómo almacenar y organizar datos en archivos. Los desafíos más complejos, sin embargo, como la extracción de datos de páginas web o de documentos PDF, se discutirán en la parte del libro "_Wrangling_ de datos".
 
 
 ## Las rutas y el directorio de trabajo
 
-El primer paso para importar datos desde una hoja de cálculo es ubicar el archivo que contiene los datos. Aunque no lo recomendamos, pueden utilizar un enfoque similar al que usan para abrir archivos en Microsoft Excel haciendo clic en el menú de "File" de RStudio, haciendo clic en "Import Dataset" y luego haciendo clic en las carpetas hasta encontrar el archivo. Queremos poder escribir código en lugar de estar apuntando y haciendo clic. Las claves y los conceptos que necesitamos para aprender a hacer esto se describen en detalle en la parte del libro "Herramientas de productividad". Aquí ofrecemos una descripción general de los conceptos básicos.
+El primer paso para importar datos desde una hoja de cálculo es ubicar el archivo que contiene los datos. Aunque no lo recomendamos, pueden utilizar un enfoque similar al que usan para abrir archivos en Microsoft Excel haciendo clic en el menú de _File_ de RStudio, haciendo clic en _Import Dataset_ y luego haciendo clic en las carpetas hasta encontrar el archivo. Queremos poder escribir código en lugar de estar apuntando y haciendo clic. Las claves y los conceptos que necesitamos para aprender a hacer esto se describen en detalle en la parte del libro "Herramientas de productividad". Aquí ofrecemos una descripción general de los conceptos básicos.
 
 El principal reto de este primer paso es permitir que las funciones de R que realizan la importación sepan dónde buscar el archivo que contiene los datos. La forma más sencilla de hacer esto es tener una copia del archivo en la carpeta donde las funciones de importación buscan por defecto. Una vez que hagamos esto, solo tenemos que proveerle el nombre del archivo a la función de importación.
 
@@ -42,16 +42,16 @@ library(tidyverse)
 dat <- read_csv(filename)
 ```
 
-Los datos se importan y almacenan en `dat`. El resto de esta sección define algunos conceptos importantes y ofrece una visión general de cómo escribimos código para que R pueda encontrar los archivos que queremos importar. Capítulo \@ref(unix) ofrece más detalles sobre este tema.
+Los datos se importan y almacenan en `dat`. El resto de esta sección define algunos conceptos importantes y ofrece una visión general de cómo escribimos código para que R pueda encontrar los archivos que queremos importar. [FIX] Capítulo \@ref(unix) ofrece más detalles sobre este tema.
 
 ### El sistema de archivos
 
-Pueden pensar en el sistema de archivos (_file system_ en inglés) de su computadora como una serie de carpetas anidadas, cada una con otras carpetas y archivos. Los científicos de datos se refieren a las carpetas como _directorios_ y a la carpeta que contiene todas las demás carpetas como el _directorio raíz_ (_root directory_ en inglés). El directorio en el que estamos ubicados actualmente se llama el _directorio de trabajo_ (_working directory_ en inglés). Por lo tanto, el directorio de trabajo cambia a medida que se muevan por las carpetas: considérenlo como su ubicación actual.
+Pueden pensar en el sistema de archivos (_filesystem_ en inglés) de su computadora como una serie de carpetas anidadas, cada una con otras carpetas y archivos. Los científicos de datos se refieren a las carpetas como _directorios_ y a la carpeta que contiene todas las demás carpetas como el _directorio raíz_ (_root directory_ en inglés). El directorio en el que estamos ubicados actualmente se llama el _directorio de trabajo_ (_working directory_ en inglés). Por lo tanto, el directorio de trabajo cambia a medida que se muevan por las carpetas: considérenlo como su ubicación actual.
 
 
 ### Las rutas relativas y completas
 
-La _ruta_ (_path_ en inglés) de un archivo es una lista de nombres de directorios que se pueden considerar instrucciones sobre en qué carpetas hacer clic y en qué orden encontrar el archivo. Si estas instrucciones son para encontrar el archivo desde el directorio raíz, nos referiremos a ellas como la ruta completa (_full path_ en inglés). Si las instrucciones son para encontrar el archivo desde el directorio de trabajo, nos referimos a ellas como una ruta relativa (_relative path_ en inglés). Sección \@ref(filesystem) ofrece más detalles sobre este tema.
+La _ruta_ (_path_ en inglés) de un archivo es una lista de nombres de directorios que se pueden considerar instrucciones sobre en qué carpetas hacer clic y en qué orden encontrar el archivo. Si estas instrucciones son para encontrar el archivo desde el directorio raíz, nos referiremos a ellas como la ruta completa (_full path_ en inglés). Si las instrucciones son para encontrar el archivo desde el directorio de trabajo, nos referimos a ellas como una ruta relativa (_relative path_ en inglés). [FIX] Sección \@ref(filesystem) ofrece más detalles sobre este tema.
 
 Para ver un ejemplo de una ruta completa en sus sistemas, escriban lo siguiente:
 
@@ -68,17 +68,17 @@ list.files(path = dir)
 
 Estas rutas relativas nos dan la localización de los archivos o directorios si comenzamos en el directorio con la ruta completa. Por ejemplo, la ruta completa al directorio `help` en el ejemplo anterior es: `/Library/Frameworks/R.framework/Versions/3.5/Resources/library/dslabs/help`.
 
-**Nota**: Probablemente no harán mucho uso de la función `system.file` en su trabajo diario de análisis de datos. Lo presentamos en esta sección porque facilita el intercambio de hojas de cálculo al incluirlas en el paquete __dslabs__. Raramente tendrán el lujo de tener datos incluidos en paquetes que ya han instalado. Sin embargo, con frecuencia necesitarán navegar por rutas completas y relativas e importar datos con formato de hoja de cálculo.
+**Nota**: Probablemente no harán mucho uso de la función `system.file` en su trabajo diario de análisis de datos. Lo presentamos en esta sección porque facilita el intercambio de hojas de cálculo al incluirlas en el paquete __dslabs__. Raras veces tendrán el lujo de tener datos incluidos en paquetes que ya han instalado. Sin embargo, con frecuencia necesitarán navegar por rutas completas y relativas e importar datos con formato de hoja de cálculo.
 
 ### El directorio de trabajo
 
-Recomendamos escribir solo rutas relativas en su código ya que las rutas completas son exclusivas de sus computadoras y Uds. quieren que su código sea portátil. Pueden obtener la ruta completa de su directorio de trabajo sin escribirla explícitamente utilizando la función `getwd`:
+Recomendamos escribir solo rutas relativas en su código ya que las rutas completas son exclusivas de sus computadoras y es preferible que su código sea portátil. Pueden obtener la ruta completa de su directorio de trabajo sin escribirla explícitamente utilizando la función `getwd`:
 
 ```{r, eval=FALSE}
 wd <- getwd()
 ```
 
-Si necesitan cambiar su directorio de trabajo, pueden usar la función `setwd` o pueden cambiarlo a través de RStudio haciendo clic en "Session".
+Si necesitan cambiar su directorio de trabajo, pueden usar la función `setwd` o pueden cambiarlo a través de RStudio haciendo clic en _Session_.
 
 ### Cómo generar los nombres de ruta
 
@@ -168,7 +168,7 @@ read_lines("murders.csv", n_max = 3)
 
 Esto también muestra que hay un encabezado. Ahora estamos listos para leer los datos en R. Del sufijo .csv y del vistazo al archivo, sabemos que tenemos que usar `read_csv`:
 
-```{r, message}
+```{r, message=FALSE}
 dat <- read_csv(filename)
 ```
 Tengan en cuenta que recibimos un mensaje informándonos qué tipos de datos se utilizaron para cada columna. También observen que `dat` es un `tibble`, no solo un _data frame_. Esto es porque `read_csv` es un leedor (_parser_ en inglés) del _tidyverse_. Podemos confirmar que los datos se han leído de la siguiente manera:
@@ -234,7 +234,7 @@ Otro lugar común donde residen los datos es en el internet. Cuando estos datos 
 
 ```{r, echo=FALSE}
 url <-
-        "https://raw.githubusercontent.com/rafalab/dslabs/master/inst/extdata/murders.csv"
+  "https://raw.githubusercontent.com/rafalab/dslabs/master/inst/extdata/murders.csv"
 ```
 
 ```{r, eval=FALSE}
@@ -291,9 +291,9 @@ En nuestra experiencia, esto puede ser motivo de confusión ya que una variable 
 
 ### `scan`
 
-Al leer hojas de cálculo, muchas cosas pueden salir mal. El archivo puede tener un encabezado multilíneal, pueden faltar celdas, o puede usar una codificación inesperada^[https://en.wikipedia.org/wiki/Character_encoding]. Les recomendamos que lean esta publicación sobre problemas comunes: [https://www.joelonsoftware.com/2003/10/08/the-absolute-minimum-every-software-developer-absolutely-positively-must-know-about -unicode-and-character-sets-no-excuses/](https://www.joelonsoftware.com/2003/10/08/the-absolute-minimum-every-software-developer-absolutely-positively-must-know -about-unicode-and-character-sets-no-excuses/).
+Al leer hojas de cálculo, muchas cosas pueden salir mal. El archivo puede tener un encabezado multilíneal, pueden faltar celdas, o puede usar una codificación inesperada^[https://en.wikipedia.org/wiki/Character_encoding]. Les recomendamos que lean esta publicación sobre problemas comunes: [https://www.joelonsoftware.com/2003/10/08/the-absolute-minimum-every-software-developer-absolutely-positively-must-know-about-unicode-and-character-sets-no-excuses/](https://www.joelonsoftware.com/2003/10/08/the-absolute-minimum-every-software-developer-absolutely-positively-must-know -about-unicode-and-character-sets-no-excuses/).
 
-Con experiencia, aprenderán a manejar los diferentes retos. Además, les ayudará leer detenidamente los archivos de ayuda para las funciones discutidas aquí. Con `scan` pueden leer cada celda de un archivo, como vemos aquí:
+Con experiencia, aprenderán a manejar los diferentes retos. Además, les ayudará leer detenidamente los archivos de ayuda para las funciones que discutimos aquí. Con `scan` pueden leer cada celda de un archivo, como vemos aquí:
 
 ```{r}
 path <- system.file("extdata", package = "dslabs")
@@ -306,17 +306,17 @@ Noten que el _tidyverse_ incluye `read_lines`, una función igualmente útil.
 
 ## Archivos de texto versus archivos binarios
 
-En la ciencia de datos, los archivos generalmente se pueden clasificar en dos categorías: archivos de texto (también conocidos como archivos ASCII) y archivos binarios. Ya han trabajado con archivos de texto. Todos sus _scripts_ de R son archivos de texto igual que los archivos de R markdown utilizados para crear este libro. Las tablas csv que han leído también son archivos de texto. Una gran ventaja de estos archivos es que podemos "mirarlos" fácilmente sin tener que comprar ningún tipo de _software_ especial o seguir instrucciones complicadas. Se puede usar cualquier editor de texto para examinar un archivo de texto, incluyendo los editores disponibles gratuitamente como RStudio, Notepad, textEdit, vi, emacs, nano y pico. Para ver esto, intenten abrir un archivo csv con la herramienta de RStudio "Open file". Deberían poder ver el contenido directamente en su editor. Sin embargo, si intentan abrir, digamos, un archivo Excel xls, jpg o png, no podrán ver nada inmediatamente útil. Estos son archivos binarios. Los archivos de Excel son carpetas comprimidas con varios archivos de texto dentro de ellas. Pero la principal distinción aquí es que los archivos de texto se pueden examinar fácilmente.
+En la ciencia de datos, los archivos generalmente se pueden clasificar en dos categorías: archivos de texto (también conocidos como archivos ASCII) y archivos binarios. Ya han trabajado con archivos de texto. Todos sus _scripts_ de R son archivos de texto igual que los archivos de R markdown utilizados para crear este libro. Las tablas csv que han leído también son archivos de texto. Una gran ventaja de estos archivos es que podemos "mirarlos" fácilmente sin tener que comprar ningún tipo de software especial o seguir instrucciones complicadas. Se puede usar cualquier editor de texto para examinar un archivo de texto, incluyendo los editores disponibles gratuitamente como RStudio, Notepad, textEdit, vi, emacs, nano y pico. Para ver esto, intenten abrir un archivo csv con la herramienta de RStudio _Open file_. Deberían poder ver el contenido directamente en su editor. Sin embargo, si intentan abrir, digamos, un archivo Excel xls, jpg o png, no podrán ver nada inmediatamente útil. Estos son archivos binarios. Los archivos de Excel son carpetas comprimidas con varios archivos de texto dentro de ellas. Pero la principal distinción aquí es que los archivos de texto se pueden examinar fácilmente.
 
-Aunque R incluye herramientas para leer archivos binarios ampliamente utilizados, como archivos xls, en general es mejor encontrar sets de datos almacenados en archivos de texto. Del mismo modo, al compartir datos, es mejor que estén disponibles como archivos de texto siempre que el almacenamiento no sea un problema (los archivos binarios son mucho más eficientes para ahorrar espacio en su disco). En general, los formatos de texto facilitan el intercambio de datos, ya que no requieren _software_ comercial para trabajar con los datos.
+Aunque R incluye herramientas para leer archivos binarios ampliamente utilizados, como archivos xls, en general es mejor encontrar sets de datos almacenados en archivos de texto. Del mismo modo, al compartir datos, es mejor que estén disponibles como archivos de texto siempre que el almacenamiento no sea un problema (los archivos binarios son mucho más eficientes para ahorrar espacio en su disco). En general, los formatos de texto facilitan el intercambio de datos, ya que no requieren software comercial para trabajar con los datos.
 
 Extraer datos de una hoja de cálculo almacenada como un archivo de texto es quizás la forma más fácil de llevar datos de un archivo a una sesión R. Desafortunadamente, las hojas de cálculo no siempre están disponibles y el hecho de que puedan ver los archivos de texto no necesariamente implica que extraer datos de ellos sea sencillo. En la parte del libro "_Wrangling_ de datos" aprendemos a extraer datos de archivos de texto más complejos, como los archivos html.
 
 ## Unicode versus ASCII
 
-Una trampa en la ciencia de datos es suponer que un archivo es un archivo de texto ASCII cuando en actualidad es otra cosa que puede parecerse mucho a un archivo de texto ASCII: un archivo de texto Unicode.
+Un problema en la ciencia de datos es suponer que un archivo es un archivo de texto ASCII cuando en actualidad es otra cosa que puede parecerse mucho a un archivo de texto ASCII: un archivo de texto Unicode.
 
-Para comprender la diferencia entre estos, recuerden que todo en una computadora necesita convertirse eventualmente en 0s y 1s. ASCII es una _codificación_ (_encoding_ en inglés) que define una correspondencia entre caracteres y números. ASCII usa 7 _bits_ (0s y 1s) que resulta en $2^7 = 128$ elementos únicos, suficientes para codificar todos los caracteres en un teclado en inglés. Sin embargo, otros idiomas, como el español, usan caracteres no incluidos en esta codificación. Por ejemplo, las tildes no están codificadas por ASCII. Por esta razón, se definió una nueva codificación que utiliza más de 7 _bits_: Unicode. Cuando se utiliza Unicode, se puede elegir entre 8, 16 y 32 bits abreviados UTF-8, UTF-16 y UTF-32 respectivamente. RStudio usa la codificación UTF-8 por defecto.
+Para entender la diferencia entre estos, recuerden que todo en una computadora necesita convertirse eventualmente en 0s y 1s. ASCII es una _codificación_ (_encoding_ en inglés) que define una correspondencia entre caracteres y números. ASCII usa 7 _bits_ (0s y 1s) que resulta en $2^7 = 128$ elementos únicos, suficientes para codificar todos los caracteres en un teclado en inglés. Sin embargo, otros idiomas, como el español, usan caracteres no incluidos en esta codificación. Por ejemplo, las tildes no están codificadas por ASCII. Por esta razón, se definió una nueva codificación que utiliza más de 7 _bits_: Unicode. Cuando se utiliza Unicode, se puede elegir entre 8, 16 y 32 _bits_ abreviados UTF-8, UTF-16 y UTF-32 respectivamente. RStudio usa la codificación UTF-8 por defecto.
 
 Aunque no entraremos en detalles sobre cómo lidiar con las diferentes codificaciones aquí, es importante que sepan que existen diferentes codificaciones para que pueden diagnosticar bien un problema si lo encuentran. Una forma en que se manifiestan los problemas es cuando surjen caracteres de "aspecto extraño" que no esperaban. Esta discusión de StackOverflow es un ejemplo: [https://stackoverflow.com/questions/18789330/r-on-windows-character-encoding-hell](https://stackoverflow.com/questions/18789330/r-on-windows-character-encoding-hell).
 
@@ -325,32 +325,27 @@ Aunque no entraremos en detalles sobre cómo lidiar con las diferentes codificac
 Aunque este libro se enfoca casi exclusivamente en el análisis de
 datos, el manejo de datos también es una parte importante de la
 ciencia de datos. Como explicamos en la introducción, no cubrimos este
-tema. Sin embargo, con bastante frecuencia los analistas de datos
-necesitan recopilar datos, o trabajar con otros que recopilan datos,
-de manera que la forma más conveniente de almacenarlos es en una
-hoja de cálculo. Aunque completar una hoja de cálculo a mano es una
-práctica que no recomendamos y preferimos que el proceso
+tema. Sin embargo, los analistas de datos frecuentemente necesitan recopilar datos, o trabajar con otros que recopilan datos, de manera que la forma más conveniente de almacenarlos es en una hoja de cálculo. Aunque completar una hoja de cálculo a mano 
+es una práctica que no recomendamos y preferimos que el proceso
 se automatice lo más posible, a veces no queda otro remedio. Por lo
 tanto, en esta sección, ofrecemos recomendaciones sobre cómo organizar
 los datos en una hoja de cálculo. Aunque hay paquetes R diseñados para
 leer hojas de cálculo de Microsoft Excel, generalmente queremos evitar
 este formato. Recomendamos _Google Sheets_ como una herramienta de
-_software_ gratuita. Abajo
-resumimos las recomendaciones hechas en una publicación de Karl Broman
-y Kara Woo^[https://www.tandfonline.com/doi/abs/10.1080/00031305.2017.1375989].
+software gratuita. Abajo resumimos las recomendaciones hechas en una publicación de Karl Broman y Kara Woo^[https://www.tandfonline.com/doi/abs/10.1080/00031305.2017.1375989].
 Favor de leer el artículo completo para más detalles importantes.
 
 * __Sea coherente__ - Antes de empezar a ingresar datos, tenga un plan. Una vez lo tenga, sea consistente y sígalo.
-* __Elija buenos nombres para las cosas__: Los nombres que elija para los objetos, los archivos y los directorios deben ser memorables, fáciles de deletrear y descriptivos. Este es un equilibrio difícil de lograr y requiere tiempo y reflexión. Una regla importante a seguir es **no usar espacios**, usar guiones bajos `_` o guiones en su lugar `-`. Además, evite los símbolos; es mejor utilizar las letras y los números.
+* __Elija buenos nombres para las cosas__: Los nombres que elije para los objetos, los archivos y los directorios deben ser memorables, fáciles de deletrear y descriptivos. Este es un equilibrio difícil de lograr y requiere tiempo y reflexión. Una regla importante a seguir es **no usar espacios**; en su lugar, usen guiones bajos `_` o guiones `-`. Además, evite los símbolos; es mejor utilizar las letras y los números.
 * __Escriba fechas como AAAA-MM-DD__ - Para evitar confusión, recomendamos utilizar el estándar global ISO 8601.
 * __Evite las celdas vacías__ - Llene todas las celdas y use un código común para los datos faltantes.
 * __Ponga solo una cosa en cada celda__ - Es mejor añadir columnas para almacenar la información adicional en vez de tener más de una pieza de información en una celda.
 * __Hazlo un rectángulo__ - La hoja de cálculo debe ser un rectángulo.
-* __Crea un diccionario de datos__ - Si necesita explicar cosas, por ejemplo cuáles son las columnas o cuáles son las etiquetas utilizadas para las variables categóricas, hágalo en un archivo separado.
+* __Cree un diccionario de datos__ - Si necesita explicar cosas, por ejemplo cuáles son las columnas o cuáles son las etiquetas utilizadas para las variables categóricas, hágalo en un archivo separado.
 * __No haga cálculos en los archivos de datos sin procesar__ - Excel le permite realizar cálculos. No haga esto parte de su hoja de cálculo. El código para los cálculos debe estar en un _script_.
 * __No use color o resaltado como datos__ - La mayoría de funciones de importación no pueden importar esta información. En cambio, codifique esta información como una variable.
 * __Respalde su información__: Respalde sus datos frecuentemente.
-* __Utilice la validación de datos para evitar errores__ - Aproveche las herramientas en su _software_ de hoja de cálculo para que el proceso sea lo más libre posible de errores y  de lesiones por estrés repetitivo.
+* __Utilice la validación de datos para evitar errores__ - Aproveche las herramientas en su software de hoja de cálculo para que el proceso sea lo más libre posible de errores y  de lesiones por estrés repetitivo.
 * __Guarde los datos como archivos de texto__ - Guarde los archivos para compartir en formato delimitado por comas o _tabs_.
 
 ## Ejercicios
