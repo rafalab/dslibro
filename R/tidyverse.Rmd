@@ -599,22 +599,12 @@ grades <- tibble(names = c("John", "Juan", "Jean", "Yao"),
                  exam_2 = c(90, 85, 85, 90))
 ```
 
-Noten que la base R (sin paquetes cargados) tiene una función con un nombre muy similar, `data.frame`, que se puede usar para crear un _data frame_ regular en vez de un _tibble_. Otra diferencia importante es que por defecto `data.frame` fuerza una conversion de caracteres en factores sin proveer una advertencia o un mensaje:
+Noten que la base R (sin paquetes cargados) tiene una función con un nombre muy similar, `data.frame`, que se puede usar para crear un _data frame_ regular en vez de un _tibble_. 
 
 ```{r}
 grades <- data.frame(names = c("John", "Juan", "Jean", "Yao"),
                      exam_1 = c(95, 80, 90, 85),
                      exam_2 = c(90, 85, 85, 90))
-class(grades$names)
-```
-
-Para evitar esto, usamos el argumento bastante complicado `stringsAsFactors`:
-```{r}
-grades <- data.frame(names = c("John", "Juan", "Jean", "Yao"),
-                     exam_1 = c(95, 80, 90, 85),
-                     exam_2 = c(90, 85, 85, 90),
-                     stringsAsFactors = FALSE)
-class(grades$names)
 ```
 
 Para convertir un _data frame_ normal en un _tibble_, pueden usar la función `as_tibble`.
@@ -775,7 +765,9 @@ La función `case_when` es útil para vectorizar declaraciones condicionales. Es
 
 ```{r}
 x <- c(-2, -1, 0, 1, 2)
-case_when(x < 0 ~ "Negative", x > 0 ~ "Positive", TRUE ~ "Zero")
+case_when(x < 0 ~ "Negative",
+          x > 0 ~ "Positive",
+          TRUE ~ "Zero")
 ```
 
 Un uso común de esta función es definir unas variables categóricas basadas en variables existentes. Por ejemplo, supongamos que queremos comparar las tasas de asesinatos en cuatro grupos de estados: _New England_, _West Coast_, _South_ y _Other_. Para cada estado, primero preguntamos si está en _New England_. Si la respuesta es no, entonces preguntamos si está en el _West Coast_, y si no, preguntamos si está en el _South_ y, si no, entonces asignamos ninguna de las anteriores (_Other_). Aquí vemos como usamos `case_when` para hacer esto:

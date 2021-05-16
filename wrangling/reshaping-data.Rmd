@@ -45,7 +45,7 @@ y que cada año resultó en dos filas ya que tenemos dos países y la columna de
 
 ```{r}
 new_tidy_data <- wide_data %>%
-gather(year, fertility, -country)
+  gather(year, fertility, -country)
 ```
 
 El objeto `new_tidy_data` se parece al original `tidy_data` que definimos de esta manera:
@@ -53,8 +53,8 @@ El objeto `new_tidy_data` se parece al original `tidy_data` que definimos de est
 ```{r}
 data("gapminder")
 tidy_data <- gapminder %>%
-filter(country %in% c("South Korea", "Germany") & !is.na(fertility)) %>%
-select(country, year, fertility)
+  filter(country %in% c("South Korea", "Germany") & !is.na(fertility)) %>%
+  select(country, year, fertility)
 ```
 
 con solo una pequeña diferencia. ¿La pueden ver? Miren el tipo de datos de la columna del año:
@@ -68,7 +68,7 @@ La función `gather` supone que los nombres de columna son caracteres. Así que 
 
 ```{r}
 new_tidy_data <- wide_data %>%
-gather(year, fertility, -country, convert = TRUE)
+  gather(year, fertility, -country, convert = TRUE)
 class(new_tidy_data$year)
 ```
 
@@ -77,7 +77,8 @@ Tengan en cuenta que también podríamos haber utilizado `mutate` y `as.numeric`
 Ahora que los datos están _tidy_, podemos usar este código relativamente sencillo de __ggplot2__:
 
 ```{r fertility-year-check, eval=FALSE}
-new_tidy_data %>% ggplot(aes(year, fertility, color = country)) + geom_point()
+new_tidy_data %>% ggplot(aes(year, fertility, color = country)) + 
+  geom_point()
 ```
 
 ## `spread`
@@ -156,8 +157,8 @@ Esto logra la separación que queríamos. Sin embargo, aún no hemos terminado. 
 
 ```{r}
 dat %>%
-separate(key, c("year", "variable_name"), extra = "merge") %>%
-spread(variable_name, value)
+  separate(key, c("year", "variable_name"), extra = "merge") %>%
+  spread(variable_name, value)
 ```
 
 Los datos ahora están en formato _tidy_ con una fila para cada observación con tres variables: año, fertilidad y esperanza de vida.
@@ -168,17 +169,17 @@ A veces es útil hacer el inverso de `separate`, es decir, unir dos columnas en 
 
 ```{r}
 dat %>%
-separate(key, var_names, fill = "right")
+  separate(key, var_names, fill = "right")
 ```
 
 Podemos lograr el mismo resultado final uniendo las segunda y tercera columnas, luego esparciendo las columnas usando `spread` y renombrando `fertility_NA` a `fertility`:
 
 ```{r}
 dat %>%
-separate(key, var_names, fill = "right") %>%
-unite(variable_name, first_variable_name, second_variable_name) %>%
-spread(variable_name, value) %>%
-rename(fertility = fertility_NA)
+  separate(key, var_names, fill = "right") %>%
+  unite(variable_name, first_variable_name, second_variable_name) %>%
+  spread(variable_name, value) %>%
+  rename(fertility = fertility_NA)
 ```
 
 
@@ -188,8 +189,8 @@ rename(fertility = fertility_NA)
 
 ```{r, eval=FALSE}
 co2_wide <- data.frame(matrix(co2, ncol = 12, byrow = TRUE)) %>%
-setNames(1:12) %>%
-mutate(year = as.character(1959:1997))
+  setNames(1:12) %>%
+  mutate(year = as.character(1959:1997))
 ```
 
 Utilice la función _gather_ para _wrangle_ esto en un set de datos _tidy_. Nombre a la columna con las mediciones de CO2 `co2` y nombre a la columna de mes `month`. Nombre al objeto resultante `co2_tidy`.

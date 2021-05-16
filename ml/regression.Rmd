@@ -44,10 +44,10 @@ m <- mean(train_set$son)
 m
 ```
 
-Nuestro perdida cuadrática es:
+La raíz cuadrada de nuestra perdida cuadrática es:
 
 ```{r}
-mean((m - test_set$son)^2)
+sqrt(mean((m - test_set$son)^2))
 ```
 
 ¿Podemos mejorar? En el capítulo de regresión, aprendimos que si el par $(X,Y)$ sigue una distribución normal de dos variables, la expectativa condicional (lo que queremos estimar) es equivalente a la línea de regresión:
@@ -72,7 +72,7 @@ Podemos ver que esto realmente provee una mejora sobre adivinar.
 
 ```{r}
 y_hat <- fit$coef[1] + fit$coef[2]*test_set$father
-mean((y_hat - test_set$son)^2)
+sqrt(mean((y_hat - test_set$son)^2))
 ```
 
 
@@ -88,7 +88,7 @@ Utilizando `predict`, podemos obtener los mismos resultados que obtuvimos anteri
 
 ```{r}
 y_hat <- predict(fit, test_set)
-mean((y_hat - test_set$son)^2)
+sqrt(mean((y_hat - test_set$son)^2))
 ```
 
 `predict` no siempre devuelve objetos del mismo tipo; depende del tipo de objeto que se le envíe. Para conocer los detalles, deben consultar el archivo de ayuda específico para el tipo de objeto de ajuste. `predict` es un tipo de función especial en R (denominada _función genérica_) que llama a otras funciones según el tipo de objeto que recibe.  Así que si `predict` recibe un objeto producido por la función `lm`, llamará `predict.lm`. Si recibe un objeto producido por la función `glm`, llamará `predict.glm`. Estas dos funciones son similares pero con algunas diferencias. Pueden obtener más información sobre las diferencias leyendo los archivos de ayuda:
@@ -268,7 +268,7 @@ Vemos que este método funciona mucho mejor que adivinar.
 
 ### Modelos lineales generalizados
 
-La función $\beta_0 + \beta_1 x$ puede tomar cualquier valor, incluyendo negativos y valores mayores que 1. De hecho, el estimado $\hat{p}(x)$ calculado en la sección de regresión lineal se vuelve negativo alrededor de 76 pulgadas.
+La función $\beta_0 + \beta_1 x$ puede tomar cualquier valor, incluyendo negativos y valores mayores que 1. De hecho, el estimado $\hat{p}(x)$ calculado en la sección de regresión lineal se vuelve negativo.
 
 ```{r regression-prediction}
 heights %>%
@@ -353,7 +353,7 @@ confusionMatrix(y_hat_logit, test_set$sex)$overall[["Accuracy"]]
 
 Las predicciones resultantes son similares. Esto se debe a que los dos estimados de $p(x)$ mayores que 1/2 en aproximadamente la misma región de x:
 
-```{r glm-prediction}
+```{r glm-prediction, echo=FALSE}
 data.frame(x = seq(min(tmp$x), max(tmp$x))) %>%
   mutate(logistic = plogis(glm_fit$coef[1] + glm_fit$coef[2]*x),
          regression = lm_fit$coef[1] + lm_fit$coef[2]*x) %>%
@@ -387,7 +387,7 @@ con $g(p) = \log \frac{p}{1-p}$, la función logística descrita en la sección 
 
 ```{r}
 fit_glm <- glm(y ~ x_1 + x_2, data=mnist_27$train, family = "binomial")
-p_hat_glm <- predict(fit_glm, mnist_27$test)
+p_hat_glm <- predict(fit_glm, mnist_27$test, type = "response")
 y_hat_glm <- factor(ifelse(p_hat_glm > 0.5, 7, 2))
 confusionMatrix(y_hat_glm, mnist_27$test$y)$overall["Accuracy"]
 ```
