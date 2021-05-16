@@ -17,22 +17,23 @@ wide_data <- read_csv(filename)
 ```
 
 
-## `gather`
+## `pivot_longer`
 
-Una de las funciones más usadas del paquete __tidyr__ es `gather`, que nos permite convertir datos anchos (_wide data_ en inglés) en datos _tidy_.
+Una de las funciones más usadas del paquete __tidyr__ es `pivot_longer`, que nos permite convertir datos anchos (_wide data_ en inglés) en datos _tidy_.
 
-Igual que con la mayoría de las funciones de tidyverse, el primer argumento de la función `gather` es el _data frame_ que será procesado. Aquí queremos cambiar la forma del set de datos `wide_data` para que cada fila represente una observación de fertilidad, que implica que necesitamos tres columnas para almacenar el año, el país y el valor observado. En su forma actual, los datos de diferentes años están en diferentes columnas con los valores de año almacenados en los nombres de las columnas. A través del segundo y tercer argumento, le daremos a `gather` los nombres de columna que le queremos asignar a las columnas que contienen los nombres de columna y las observaciones actuales, respectivamente. En este caso, una buena opción para estos dos argumentos serían `year` y `fertility`. Noten que ninguna parte del archivo nos dice que se trata de datos de fertilidad. En cambio, desciframos esto del nombre del archivo. A través del cuarto argumento especificamos las columnas que contienen los valores observados; estas son las columnas que serán _gathered_ o _recopiladas_. La acción por defecto es recopilar todas las columnas, por lo que, en la mayoría de los casos, tenemos que especificar las columnas. En nuestro ejemplo queremos las columnas `1960`, `1961` hasta `2015`.
+Igual que con la mayoría de las funciones de tidyverse, el primer argumento de la función `pivot_longer` es el _data frame_ que será procesado. Aquí queremos cambiar la forma del set de datos `wide_data` para que cada fila represente una observación de fertilidad, que implica que necesitamos tres columnas para almacenar el año, el país y el valor observado. En su forma actual, los datos de diferentes años están en diferentes columnas con los valores de año almacenados en los nombres de las columnas. A través de los argumentos `names_to` y `values_to`, le daremos a `pivot_longer` los nombres de columna que le queremos asignar a las columnas que contienen los nombres de columna y las observaciones actuales, respectivamente. Por defacto estos nombres son `name` (nombre) y `value` (valor), los cuales son buenas opciones en general. En este caso, una mejor opción para estos dos argumentos serían `year` y `fertility`. Noten que ninguna parte del archivo nos dice que se trata de datos de fertilidad. En cambio, desciframos esto del nombre del archivo. A través `cols`, el segundo argumento, especificamos las columnas que contienen los valores observados; estas son las columnas que serán _pivotadas_. La acción por defecto es recopilar todas las columnas, por lo que, en la mayoría de los casos, tenemos que especificar las columnas. En nuestro ejemplo queremos las columnas `1960`, `1961` hasta `2015`.
 
 El código para recopilar los datos de fertilidad se ve así:
 
 ```{r}
-new_tidy_data <- gather(wide_data, year, fertility, `1960`:`2015`)
+new_tidy_data <- pivot_longer(wide_data, `1960`:`2015`, names_to = "year", values_to = "fertility")
 ```
 
 También podemos usar el _pipe_ de esta manera:
 
 ```{r}
-new_tidy_data <- wide_data %>% gather(year, fertility, `1960`:`2015`)
+new_tidy_data <- wide_data %>% 
+  pivot_longer(`1960`:`2015`, names_to = "year", values_to = "fertility")
 ```
 
 Podemos ver que los datos se han convertido al formato _tidy_ con columnas `year` y `fertility`:
@@ -45,7 +46,7 @@ y que cada año resultó en dos filas ya que tenemos dos países y la columna de
 
 ```{r}
 new_tidy_data <- wide_data %>%
-  gather(year, fertility, -country)
+  pivot_longer(-country, names_to = "year", values_to = "fertility")
 ```
 
 El objeto `new_tidy_data` se parece al original `tidy_data` que definimos de esta manera:
@@ -64,12 +65,12 @@ class(tidy_data$year)
 class(new_tidy_data$year)
 ```
 
-La función `gather` supone que los nombres de columna son caracteres. Así que necesitamos un poco más de _wrangling_ antes de poder graficar. Necesitamos convertir la columna con los años en números. La función `gather` incluye el argumento `convert` para este propósito:
+La función `pivot_longer` supone que los nombres de columna son caracteres. Así que necesitamos un poco más de _wrangling_ antes de poder graficar. Necesitamos convertir la columna con los años en números. La función `pivot_longer` incluye el argumento `convert` para este propósito:
 
 ```{r}
 new_tidy_data <- wide_data %>%
-  gather(year, fertility, -country, convert = TRUE)
-class(new_tidy_data$year)
+  pivot_longer(-country, names_to = "year", values_to = "fertility") %>%
+  mutate(year = as.integer(year))
 ```
 
 Tengan en cuenta que también podríamos haber utilizado `mutate` y `as.numeric`.
@@ -81,15 +82,19 @@ new_tidy_data %>% ggplot(aes(year, fertility, color = country)) +
   geom_point()
 ```
 
-## `spread`
+## `pivot_wider`
 
-Como veremos en ejemplos posteriores, a veces es útil convertir datos _tidy_ en datos anchos para fines de _wrangling_ de datos. A menudo usamos esto como un paso intermedio para convertir los datos en formato _tidy_. La función `spread` es básicamente la inversa de `gather`. El primer argumento es para los datos, pero como estamos usando el _pipe_, no lo mostramos. El segundo argumento le dice a `spread` qué variable usar como nombre de columna. El tercer argumento especifica qué variable usar para completar las celdas:
+Como veremos en ejemplos posteriores, a veces es útil convertir datos _tidy_ en datos anchos para fines de _wrangling_ de datos. A menudo usamos esto como un paso intermedio para convertir los datos en formato _tidy_. La función `pivot_wider` es básicamente la inversa de `pivot_longer`. El primer argumento es para los datos, pero como estamos usando el _pipe_, no lo mostramos. El argumento `names_from` le dice a `pivot_longer` qué variable usar como nombre de columna. El argumento `names_to` especifica qué variable usar para completar las celdas:
 
 ```{r}
-new_wide_data <- new_tidy_data %>% spread(year, fertility)
+new_wide_data <- new_tidy_data %>% 
+  pivot_wider(names_from = year, values_from = fertility)
 select(new_wide_data, country, `1960`:`1967`)
 ```
 
+Similar a `pivot_wider`, `names_from` y `values_from` son `name` and `value` por defecto.
+
+<!--
 El siguiente diagrama puede ayudarles a recordar cómo operan estas dos funciones:
 
 ```{r, echo=FALSE}
@@ -98,6 +103,7 @@ knitr::include_graphics(file.path(img_path,"gather-spread.png"))
 
 (Imagen cortesía de RStudio^[https://github.com/rstudio/cheatsheets]. Licencia CC-BY-4.0^[https://github.com/rstudio/cheatsheets/blob/master/LICENSE]. Recortada del original.)
 <!-- (Source: RStudio. The image is a section of this [cheat sheet](https://github.com/rstudio/cheatsheets/raw/master/data-transformation.pdf).)-->
+-->
 
 ## `separate` {#separate}
 
@@ -115,50 +121,50 @@ select(raw_dat, 1:5)
 
 Primero, tengan en cuenta que los datos están en formato ancho. Además, observen que esta tabla incluye valores para dos variables, fertilidad y esperanza de vida, con el nombre (en inglés) de la columna codificando qué columna representa qué variable. No recomendamos codificar la información en los nombres de las columnas, pero, desafortunadamente, es algo bastante común. Usaremos nuestras habilidades de _wrangling_ para extraer esta información y almacenarla de manera _tidy_.
 
-Podemos comenzar el _wrangling_ de datos con la función `gather`, pero ya no deberíamos usar el nombre de la columna `year` para la nueva columna, dado que también contiene el tipo de variable. La nombraremos `key`, el valor predeterminado, por ahora:
+Podemos comenzar el _wrangling_ de datos con la función `pivot_longer`, pero ya no deberíamos usar el nombre de la columna `year` para la nueva columna, dado que también contiene el tipo de variable. La nombraremos `name`, el valor predeterminado, por ahora:
 
 ```{r}
-dat <- raw_dat %>% gather(key, value, -country)
+dat <- raw_dat %>% pivot_longer(-country)
 head(dat)
 ```
 
-El resultado no es exactamente lo que llamamos _tidy_ ya que cada observación está asociada con dos filas en vez de una. Queremos tener los valores de las dos variables, `fertility` y `life_expectancy`, en dos columnas separadas. El primer reto para lograr esto es separar la columna `key` en año y tipo de variable. Observen que las entradas en esta columna separan el año del nombre de la variable con una barra baja:
+El resultado no es exactamente lo que llamamos _tidy_ ya que cada observación está asociada con dos filas en vez de una. Queremos tener los valores de las dos variables, `fertility` y `life_expectancy`, en dos columnas separadas. El primer reto para lograr esto es separar la columna `name` en año y tipo de variable. Observen que las entradas en esta columna separan el año del nombre de la variable con una barra baja:
 
 ```{r}
-dat$key[1:5]
+dat$name[1:5]
 ```
 
 Codificar múltiples variables en el nombre de una columna es un problema tan común que el paquete __readr__ incluye una función para separar estas columnas en dos o más. Aparte de los datos, la función `separate` toma tres argumentos: el nombre de la columna que se separará, los nombres que se utilizarán para las nuevas columnas y el carácter que separa las variables. Entonces, un primer intento de hacer esto es:
 
 ```{r, eval=FALSE}
-dat %>% separate(key, c("year", "variable_name"), "_")
+dat %>% separate(name, c("year", "name"), "_")
 ```
 
 `separate` supone por defecto que`_` es el separador y, por eso, no tenemos que incluirlo en el código:
 
 ```{r}
-dat %>% separate(key, c("year", "variable_name"))
+dat %>% separate(name, c("year", "name"))
 ```
 
 La función separa los valores, pero nos encontramos con un nuevo problema. Recibimos la advertencia `Too many values at 112 locations:` y la variable `life_expectancy` se corta a `life`. Esto es porque el `_` se usa para separar `life` y `expectancy`, no solo el año y el nombre de la variable. Podríamos añadir una tercera columna para guardar esto y dejar que la función `separate` sepa cual columna _llenar_ con los valores faltantes, `NA`, cuando no hay un tercer valor. Aquí le decimos que llene la columna de la derecha:
 
 ```{r}
 var_names <- c("year", "first_variable_name", "second_variable_name")
-dat %>% separate(key, var_names, fill = "right")
+dat %>% separate(name, var_names, fill = "right")
 ```
 
 Sin embargo, si leemos el archivo de ayuda de `separate`, encontramos que un mejor enfoque es fusionar las dos últimas variables cuando hay una separación adicional:
 
 ```{r}
-dat %>% separate(key, c("year", "variable_name"), extra = "merge")
+dat %>% separate(name, c("year", "name"), extra = "merge")
 ```
 
-Esto logra la separación que queríamos. Sin embargo, aún no hemos terminado. Necesitamos crear una columna para cada variable. Como aprendimos, la función `spread` hace eso:
+Esto logra la separación que queríamos. Sin embargo, aún no hemos terminado. Necesitamos crear una columna para cada variable. Como aprendimos, la función `pivot_wider` hace eso:
 
 ```{r}
 dat %>%
-  separate(key, c("year", "variable_name"), extra = "merge") %>%
-  spread(variable_name, value)
+  separate(name, c("year", "name"), extra = "merge") %>%
+  pivot_wider()
 ```
 
 Los datos ahora están en formato _tidy_ con una fila para cada observación con tres variables: año, fertilidad y esperanza de vida.
@@ -168,17 +174,18 @@ Los datos ahora están en formato _tidy_ con una fila para cada observación con
 A veces es útil hacer el inverso de `separate`, es decir, unir dos columnas en una. Para demostrar cómo usar `unite`, mostramos un código que, aunque _no_ es el acercamiento óptimo, sirve como ilustración. Supongamos que no supiéramos sobre `extra` y usáramos este comando para separar:
 
 ```{r}
+var_names <- c("year", "first_variable_name", "second_variable_name")
 dat %>%
-  separate(key, var_names, fill = "right")
+  separate(name, var_names, fill = "right")
 ```
 
-Podemos lograr el mismo resultado final uniendo las segunda y tercera columnas, luego esparciendo las columnas usando `spread` y renombrando `fertility_NA` a `fertility`:
+Podemos lograr el mismo resultado final uniendo las segunda y tercera columnas, luego esparciendo las columnas usando `pivot_wider` y renombrando `fertility_NA` a `fertility`:
 
 ```{r}
 dat %>%
-  separate(key, var_names, fill = "right") %>%
-  unite(variable_name, first_variable_name, second_variable_name) %>%
-  spread(variable_name, value) %>%
+  separate(name, var_names, fill = "right") %>%
+  unite(name, first_variable_name, second_variable_name) %>%
+  pivot_wider() %>%
   rename(fertility = fertility_NA)
 ```
 
@@ -193,7 +200,7 @@ co2_wide <- data.frame(matrix(co2, ncol = 12, byrow = TRUE)) %>%
   mutate(year = as.character(1959:1997))
 ```
 
-Utilice la función _gather_ para _wrangle_ esto en un set de datos _tidy_. Nombre a la columna con las mediciones de CO2 `co2` y nombre a la columna de mes `month`. Nombre al objeto resultante `co2_tidy`.
+Utilice la función _pivot_longer_ para _wrangle_ esto en un set de datos _tidy_. Nombre a la columna con las mediciones de CO2 `co2` y nombre a la columna de mes `month`. Nombre al objeto resultante `co2_tidy`.
 
 
 2\. Grafique CO2 versus mes con una curva diferente para cada año usando este código:
@@ -209,7 +216,7 @@ class(co2_tidy$month)
 ```
 
 
-Reescriba la llamada a _gather_ usando un argumento que asegure que la columna de mes será numérica. Luego haga el gráfico
+Reescriba el código y que asegúrese que la columna de mes será numérica. Luego haga el gráfico
 
 
 3\. ¿Qué aprendemos de este gráfico?
@@ -227,19 +234,19 @@ load(admissions)
 dat <- admissions %>% select(-applicants)
 ```
 
-Si pensamos en una observación como una concentración, y que cada observación tiene dos variables (porcentaje de hombres admitidos y porcentaje de mujeres admitidas), entonces esto no es _tidy_. Utilice la función `spread` para _wrangle_ en la forma _tidy_ que queremos: una fila para cada concentración.
+Si pensamos en una observación como una concentración, y que cada observación tiene dos variables (porcentaje de hombres admitidos y porcentaje de mujeres admitidas), entonces esto no es _tidy_. Utilice la función `pivot_wider` para _wrangle_ en la forma _tidy_ que queremos: una fila para cada concentración.
 
 
-5\. Ahora intentaremos un reto más avanzado de _wrangling_. Queremos _wrangle_ los datos de admisión para cada concentración para tener 4 observaciones : `admitted_men`, `admitted_women`, `applicants_men` y `applicants_women`. El _truco_ que hacemos aquí es realmente bastante común: primero usamos _gather_ para generar un _data frame_ intermedio y luego usamos _spread_  para obtener los datos _tidy_ que queremos. Iremos paso a paso en este y en los próximos dos ejercicios.
+5\. Ahora intentaremos un reto más avanzado de _wrangling_. Queremos _wrangle_ los datos de admisión para cada concentración para tener 4 observaciones : `admitted_men`, `admitted_women`, `applicants_men` y `applicants_women`. El _truco_ que hacemos aquí es realmente bastante común: primero usamos _pivot_longer_ para generar un _data frame_ intermedio y luego usamos _pivot_wider_  para obtener los datos _tidy_ que queremos. Iremos paso a paso en este y en los próximos dos ejercicios.
 
-Utilice la función `gather` para crear un _data frame_ `tmp` con una columna que contiene el tipo de observación `admitted` o `applicants`. Nombre a las nuevas columnas `key` y `value`.
-
-
-6\. Ahora tiene un objeto `tmp` con columnas `major`, `gender`, `key` y `value`. Tenga en cuenta que si combina `key` y `gender`, se obtienen los nombres de columna que queremos: `admitted_men`, `admitted_women`, `applicants_men` y `applicants_women`. Use la función `unite` para crear una nueva columna llamada `column_name`.
+Utilice la función `pivot_longer` para crear un _data frame_ `tmp` con una columna que contiene el tipo de observación `admitted` o `applicants`. Nombre a las nuevas columnas `name` y `value`.
 
 
+6\. Ahora tiene un objeto `tmp` con columnas `major`, `gender`, `name` y `value`. Tenga en cuenta que si combina `name` y `gender`, se obtienen los nombres de columna que queremos: `admitted_men`, `admitted_women`, `applicants_men` y `applicants_women`. Use la función `unite` para crear una nueva columna llamada `column_name`.
 
-7\. Ahora use la función `spread` para generar los datos _tidy_ con cuatro variables para cada concentración.
+
+
+7\. Ahora use la función `pivot_wider` para generar los datos _tidy_ con cuatro variables para cada concentración.
 
 
 8\. Ahora use el _pipe_ para escribir una línea de código que convierta `admissions` en la tabla producida en el ejercicio anterior.

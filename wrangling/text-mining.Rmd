@@ -207,9 +207,9 @@ Para cada palabra, queremos saber si es más probable que provenga de un tuit de
 ```{r}
 android_iphone_or <- tweet_words %>%
   count(word, source) %>%
-  spread(source, n, fill = 0) %>%
-  mutate(or = (Android + 0.5)/ (sum(Android) - Android + 0.5)/
-           ( (iPhone + 0.5)/ (sum(iPhone) - iPhone + 0.5)))
+  pivot_wider(names_from = "source", values_from = "n", values_fill = 0) %>%
+  mutate(or = (Android + 0.5) / (sum(Android) - Android + 0.5) / 
+           ( (iPhone + 0.5) / (sum(iPhone) - iPhone + 0.5)))
 ```
 
 Aquí están los riesgos relativos más altos para Android:
@@ -292,7 +292,7 @@ Ahora estamos listos para realizar un análisis cuantitativo comparando los sent
 sentiment_counts <- tweet_words %>%
   left_join(nrc, by = "word") %>%
   count(source, sentiment) %>%
-  spread(source, n) %>%
+  pivot_wider(names_from = "source", values_from = "n") %>%
   mutate(sentiment = replace_na(sentiment, replace = "none"))
 sentiment_counts
 ```

@@ -35,7 +35,7 @@ movielens %>%
             n_movies = n_distinct(movieId))
 ```
 
-Si multiplicamos esos dos números, obtenemos un número mayor de 5 millones. Sin embargo, nuestra tabla de datos tiene aproximadamente 100,000 filas. Esto implica que no todos los usuarios calificaron todas las películas. Por lo tanto, podemos pensar en estos datos como una matriz muy grande, con usuarios en las filas y películas en las columnas, con muchas celdas vacías. La función `gather` nos permite convertirla a este formato, pero si lo intentamos para toda la matriz, colgaremos a R. Mostremos la matriz para seis usuarios y cuatro películas.
+Si multiplicamos esos dos números, obtenemos un número mayor de 5 millones. Sin embargo, nuestra tabla de datos tiene aproximadamente 100,000 filas. Esto implica que no todos los usuarios calificaron todas las películas. Por lo tanto, podemos pensar en estos datos como una matriz muy grande, con usuarios en las filas y películas en las columnas, con muchas celdas vacías. La función `pivot_longer` nos permite convertirla a este formato, pero si lo intentamos para toda la matriz, colgaremos a R. Mostremos la matriz para seis usuarios y cuatro películas.
 
 ```{r, echo=FALSE}
 keep <- movielens %>%
@@ -49,7 +49,7 @@ tab <- movielens %>%
   select(userId, title, rating) %>%
   mutate(title = str_remove(title, ", The"),
          title = str_remove(title, ":.*")) %>%
-  spread(title, rating)
+  pivot_wider(names_from="title", values_from="rating")
 
 if(knitr::is_html_output()){
   knitr::kable(tab, "html") %>%
@@ -670,9 +670,9 @@ train_small <- movielens %>%
   group_by(userId) %>%
   filter(n() >= 50) %>% ungroup()
 
-y <- train_small %>%
+y <- train_small %>% 
   select(userId, movieId, rating) %>%
-  spread(movieId, rating) %>%
+  pivot_wider(names_from = "movieId", values_from = "rating") %>%
   as.matrix()
 ```
 

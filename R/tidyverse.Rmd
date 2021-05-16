@@ -322,23 +322,6 @@ s$standard_deviation
 
 Igual que con la mayoría de las otras funciones de __dplyr__, `summarize` conoce los nombres de las variables y podemos usarlos directamente. Entonces, cuando escribimos `mean(height)` dentro de la llamada a la función `summarize`, la función accede a la columna con el nombre "height", o altura, y luego calcula el promedio del vector numérico resultante. Podemos calcular cualquier otro resumen que opera en vectores y devuelve un solo valor. Por ejemplo, podemos añadir las alturas mediana, mínima y máxima de esta manera:
 
-```{r}
-heights %>%
-  filter(sex == "Female") %>%
-  summarize(median = median(height), minimum = min(height),
-            maximum = max(height))
-```
-
-Podemos obtener estos tres valores con solo una línea usando la función `quantile`: por ejemplo, `quantile(x, c(0,0.5,1))` devuelve el mínimo (percentil 0), la mediana (percentil 50) y el máximo (percentil 100) del vector `x`. Sin embargo, si intentamos usar una función como esta que devuelve dos o más valores dentro de `summarize`:
-
-```{r, eval=FALSE}
-heights %>%
-  filter(sex == "Female") %>%
-  summarize(range = quantile(height, c(0, 0.5, 1)))
-```
-
-recibiremos un error: `Error: expecting result of length one, got : 2`. Con la función `summarize`, solo podemos llamar a funciones que devuelven un solo valor. En la sección \@ref(do), aprenderemos cómo lidiar con funciones que devuelven más de un valor.
-
 Para otro ejemplo de cómo podemos usar la función `summarize`, calculemos la tasa promedio de asesinatos en Estados Unidos. Recuerden que nuestra tabla de datos incluye los asesinatos totales y el tamaño de la población para cada estado y ya hemos usado __dplyr__ para añadir una columna de índice de asesinatos:
 
 ```{r}
@@ -361,7 +344,72 @@ us_murder_rate
 
 Este cálculo cuenta estados más grandes proporcionalmente a su tamaño, lo que da como resultado un valor mayor.
 
-### `pull`
+### Resúmenes múltiples
+
+Suponga que queremos tres resúmenes de una variabla, como por ejemplo la mediana, el mínimo, y le máximo. Podemos usar `summarize` así:
+
+
+```{r}
+heights %>% 
+  filter(sex == "Female") %>%
+  summarize(median = median(height), minimum = min(height), 
+            maximum = max(height))
+```
+
+Pero podemos obtener estos tres valores con una sola línea de código usando la función `quantile`: `quantile(x, c(0.5, 0, 1))` devuelve la mediana (percentil 50), el mínimo (percentil 0), y el máximo (percentil 100). Podemos usar la función con `summarize` así:
+
+```{r}
+heights %>% 
+  filter(sex == "Female") %>%
+  summarize(median_min_max = quantile(height, c(0.5, 0, 1)))
+```
+
+Ahora, noten que los resúmenes se devuelven en filas separadas. Para obtenerlos en columnas, tenemos aue definir una función que devuelve un data frame así:
+
+
+```{r}
+median_min_max <- function(x){
+  qs <- quantile(x, c(0.5, 0, 1))
+  data.frame(median = qs[1], minimum = qs[2], maximum = qs[3])
+}
+heights %>% 
+  filter(sex == "Female") %>%
+  summarize(median_min_max(height))
+```
+
+En la próxima sección vermos cúan útil esto puede ser cuando resumimos por grupo.
+
+
+### Cómo agrupar y luego resumir con `group_by` {#group-by}
+
+Una operación común en la exploración de datos es dividir primero los datos en grupos y luego calcular resúmenes para cada grupo. Por ejemplo, podemos querer calcular el promedio y la desviación estándar para las alturas de hombres y mujeres por separado. La función `group_by` nos ayuda a hacer esto.
+
+Si escribimos esto:
+
+```{r}
+heights %>% group_by(sex)
+```
+
+El resultado no se ve muy diferente de `heights`, excepto que vemos `Groups: sex [2]` cuando imprimimos el objeto. Aunque no es inmediatamente obvio por su apariencia, esto ahora es un _data frame_ especial llamado un _grouped data frame_ y las funciones de __dplyr__, en particular `summarize`, se comportarán de manera diferente cuando actúan sobre este objeto. Conceptualmente, pueden pensar en esta tabla como muchas tablas, con las mismas columnas pero no necesariamente el mismo número de filas, apiladas juntas en un objeto. Cuando resumimos los datos después de la agrupación, esto es lo que sucede:
+
+```{r}
+heights %>%
+  group_by(sex) %>%
+  summarize(average = mean(height), standard_deviation = sd(height))
+```
+
+La función `summarize` aplica el resumen a cada grupo por separado.
+
+Para ver otro ejemplo, calculemos la mediana, el mínimo y máximo de la tasa  de asesinatos en las cuatro regiones del país usando la función `median_min_max` definida anteriormente:
+
+```{r}
+murders %>%
+  group_by(region) %>%
+  summarize(median_min_max(rate))
+```
+
+
+## `pull`
 
 El objeto `us_murder_rate` definido anteriormente representa solo un número. Sin embargo, lo estamos almacenando en un _data frame_:
 
@@ -393,34 +441,6 @@ que ahora es numérico:
 
 ```{r}
 class(us_murder_rate)
-```
-
-### Cómo agrupar y luego resumir con `group_by` {#group-by}
-
-Una operación común en la exploración de datos es dividir primero los datos en grupos y luego calcular resúmenes para cada grupo. Por ejemplo, podemos querer calcular el promedio y la desviación estándar para las alturas de hombres y mujeres por separado. La función `group_by` nos ayuda a hacer esto.
-
-Si escribimos esto:
-
-```{r}
-heights %>% group_by(sex)
-```
-
-El resultado no se ve muy diferente de `heights`, excepto que vemos `Groups: sex [2]` cuando imprimimos el objeto. Aunque no es inmediatamente obvio por su apariencia, esto ahora es un _data frame_ especial llamado un _grouped data frame_ y las funciones de __dplyr__, en particular `summarize`, se comportarán de manera diferente cuando actúan sobre este objeto. Conceptualmente, pueden pensar en esta tabla como muchas tablas, con las mismas columnas pero no necesariamente el mismo número de filas, apiladas juntas en un objeto. Cuando resumimos los datos después de la agrupación, esto es lo que sucede:
-
-```{r}
-heights %>%
-  group_by(sex) %>%
-  summarize(average = mean(height), standard_deviation = sd(height))
-```
-
-La función `summarize` aplica el resumen a cada grupo por separado.
-
-Para ver otro ejemplo, calculemos la tasa media de asesinatos en las cuatro regiones del país:
-
-```{r}
-murders %>%
-  group_by(region) %>%
-  summarize(median_rate = median(rate))
 ```
 
 ## Cómo ordenar los _data frames_
@@ -645,64 +665,6 @@ rates <-filter(murders, region == "South") %>%
 median(rates)
 ```
 
-En la siguiente sección, veremos otras instancias en las que usar el `.` es útil.
-
-## `do` {#do}
-
-Las funciones del _tidyverse_ saben interpretar _tibbles_ agrupados. Además, para facilitar la secuencia de comandos a través del _pipe_ `%>%`, las funciones del _tidyverse_ constantemente devuelven _data frames_, ya que esto asegura que el _output_ de una función sea aceptada como el _input_ de otra. Pero la mayoría de las funciones de R no reconocen los _tibbles_ agrupados ni devuelven _data frames_. La función `quantile` es un ejemplo que describimos en la Sección \@ref(summarize). La función `do` sirve como puente entre las funciones de R, como `quantile` y el _tidyverse_. La función `do` entiende _tibbles_ agrupados y siempre devuelve un _data frame_.
-
-En la sección \@ref(summarize), notamos que si intentamos usar `quantile` para obtener el mínimo, la mediana y el máximo en una llamada, recibiremos un error: `Error: expecting result of length one, got : 2`.
-
-```{r, eval=FALSE}
-data(heights)
-heights %>%
-  filter(sex == "Female") %>%
-  summarize(range = quantile(height, c(0, 0.5, 1)))
-```
-
-Podemos usar la función `do` para arreglar esto.
-
-Primero, tenemos que escribir una función que se ajuste al enfoque del _tidyverse_; es decir, recibe un _data frame_ y devuelve un _data frame_.
-
-```{r}
-my_summary <- function(dat){
-  x <- quantile(dat$height, c(0, 0.5, 1))
-  tibble(min = x[1], median = x[2], max = x[3])
-}
-```
-
-Ahora podemos aplicar la función al set de datos de alturas para obtener los resúmenes:
-
-```{r}
-heights %>%
-  group_by(sex) %>%
-  my_summary
-```
-
-Pero esto no es lo que queremos. Queremos un resumen para cada sexo y el código devolvió solo un resumen. Esto es porque `my_summary` no es parte del _tidyverse_ y no sabe cómo manejar los _tibbles_ agrupados. `do` hace esta conexión:
-
-```{r}
-heights %>%
-  group_by(sex) %>%
-  do(my_summary(.))
-```
-
-Recuerden que aquí necesitamos usar el operador punto. El _tibble_ creado por `group_by` se canaliza a `do`. Dentro de la llamada a `do`, el nombre de este _tibble_ es `.` y queremos enviarlo a `my_summary`. Si no usan el punto, entonces `my_summary` __no tiene ningún argumento__ y devuelve un error que nos dice que falta el `argument "dat"` . Pueden ver el error escribiendo:
-
-```{r, eval=FALSE}
-heights %>%
-  group_by(sex) %>%
-  do(my_summary())
-```
-
-Si no usan el paréntesis, entonces la función no se ejecuta y en su lugar `do` intenta devolver la función. Esto da un error porque `do` siempre debe devolver un _data frame_. Pueden ver el error escribiendo:
-
-
-```{r, eval=FALSE}
-heights %>%
-  group_by(sex) %>%
-  do(my_summary)
-```
 
 ## El paquete __purrr__
 

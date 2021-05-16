@@ -592,17 +592,17 @@ Como estamos interesados principalmente en la diferencia, tiene sentido dedicarl
 
 ```{r, bland-altman}
 library(ggrepel)
-dat %>%
+dat %>% 
   mutate(year = paste0("life_expectancy_", year)) %>%
-  select(country, year, life_expectancy) %>%
-  spread(year, life_expectancy) %>%
+  select(country, year, life_expectancy) %>% 
+  pivot_wider(names_from = "year", values_from="life_expectancy") %>% 
   mutate(average = (life_expectancy_2015 + life_expectancy_2010)/2,
          difference = life_expectancy_2015 - life_expectancy_2010) %>%
-  ggplot(aes(average, difference, label = country)) +
+  ggplot(aes(average, difference, label = country)) + 
   geom_point() +
   geom_text_repel() +
   geom_abline(lty = 2) +
-  xlab("Average of 2010 and 2015") +
+  xlab("Average of 2010 and 2015") + 
   ylab("Difference between 2015 and 2010")
 ```
 
