@@ -75,7 +75,7 @@ Si realizamos una regresión en este grupo e interpretamos el valor-p, afirmarí
 library(broom)
 sim_data %>%
   filter(group == res$group[which.max(res$r)]) %>%
-  do(tidy(lm(y ~ x, data = .))) %>%
+  summarize(tidy(lm(y ~ x))) %>%
   filter(term == "x")
 ```
 
@@ -157,7 +157,7 @@ GaltonFamilies %>%
   filter(childNum == 1 & gender == "male") %>%
   select(father, childHeight) %>%
   rename(son = childHeight) %>%
-  do(tidy(lm(father ~ son, data = .)))
+  summarize(tidy(lm(father ~ son)))
 ```
 
 El modelo se ajusta muy bien a los datos. Si observamos la formulación matemática del modelo anterior, podría interpretarse fácilmente de manera incorrecta para sugerir que el hijo siendo alto hace que el padre sea alto. Pero dado lo que sabemos sobre genética y biología, sabemos que es al revés. El modelo es técnicamente correcto. Los estimadores y los valores-p también se obtuvieron correctamente. Lo que está mal aquí es la interpretación.
@@ -191,7 +191,7 @@ admissions %>% group_by(gender) %>%
   summarize(total_admitted = round(sum(admitted/ 100 * applicants)),
             not_admitted = sum(applicants) - sum(total_admitted)) %>%
   select(-gender) %>%
-  do(tidy(chisq.test(.))) %>% .$p.value
+  summarize(tidy(chisq.test(.))) %>% .$p.value
 ```
 
 Pero una inspección más cuidadosa muestra un resultado paradójico. Aquí están los porcentajes de admisión por concentración :
@@ -349,7 +349,7 @@ Construya la tabla 2 X 2 utilizada para la conclusión sobre las diferencias en 
 
 6\. Definitivamente no vemos el mismo nivel de confusión que en el ejemplo de U.C. Berkeley. Es difícil decir que hay un factor de confusión aquí. Sin embargo, vemos que, según las tasas observadas, algunos campos favorecen a los hombres y otros favorecen a las mujeres. Además, vemos que los dos campos con la mayor diferencia que favorecen a los hombres también son los campos con más solicitudes. Pero, a diferencia del ejemplo de U.C. Berkeley, no es más probable que las mujeres soliciten las concentraciones más difíciles. Entonces, quizás algunos de los comités de selección son parciales y otros no.
 
-Pero, antes de concluir esto, debemos verificar si estas diferencias son diferentes de lo que obtenemos por casualidad. ¿Alguna de las diferencias vistas anteriormente es estadísticamente significativa? Tengan en cuenta que incluso cuando no hay sesgo, veremos diferencias debido a la variabilidad aleatoria en el proceso de revisión, así como entre los candidatos. Realice una prueba de Chi-cuadrado para cada disciplina. Sugerencia: defina una función que reciba el total de una tabla 2 X 2 y devuelva un _data frame_ con el valor-p. Use la corrección 0.5. Luego use la función `do`.
+Pero, antes de concluir esto, debemos verificar si estas diferencias son diferentes de lo que obtenemos por casualidad. ¿Alguna de las diferencias vistas anteriormente es estadísticamente significativa? Tengan en cuenta que incluso cuando no hay sesgo, veremos diferencias debido a la variabilidad aleatoria en el proceso de revisión, así como entre los candidatos. Realice una prueba de Chi-cuadrado para cada disciplina. Sugerencia: defina una función que reciba el total de una tabla 2 X 2 y devuelva un _data frame_ con el valor-p. Use la corrección 0.5. Luego use la función `summarize`.
 
 
 7\. Para las ciencias médicas, parece haber una diferencia estadísticamente significativa. ¿Pero es esto una correlación espuria? Realice 9 pruebas. Informar solo el caso con un valor-p inferior a 0.05 podría considerarse un ejemplo de dragado de datos. Repita el ejercicio anterior, pero en lugar de un valor-p, calcule un logaritmo de riesgo relativo (_log odds ratio_ en inglés) dividido por su error estándar. Luego, use un gráfico Q-Q para ver cuánto se desvían estos logaritmos de riesgo relativo de la distribución normal que esperaríamos: una distribución normal estándar.

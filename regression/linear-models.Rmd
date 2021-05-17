@@ -129,7 +129,7 @@ $$
 
 Este modelo sugiere que si el número de HR se fija en $x_2$, observamos una relación lineal entre carreras y BB con un intercepto de $\beta_0 + \beta_2 x_2$. Nuestro análisis exploratorio de datos sugirió esto. El modelo también sugiere que a medida que aumenta el número de HR, el crecimiento del intercepto también es lineal y está determinado por $\beta_1 x_1$.
 
-En este análisis, denominado _regresión lineal múltiple_ (_multivariate linear regression_ en inglés), a menudo escucharán a la gente decir que la pendiente BB $\beta_1$ está _ajustada_ (_adjusted_ en inglés) para el efecto HR. Si el modelo es correcto, entonces se ha tomado en cuenta la confusión. ¿Pero cómo estimamos $\beta_1$ y $\beta_2$ de los datos? Para esto, aprendemos sobre modelos lineales y estimaciones de mínimos cuadrados.
+En este análisis, denominado _regresión lineal múltiple_ (_multivariable linear regression_ en inglés), a menudo escucharán a la gente decir que la pendiente BB $\beta_1$ está _ajustada_ (_adjusted_ en inglés) para el efecto HR. Si el modelo es correcto, entonces se ha tomado en cuenta la confusión. ¿Pero cómo estimamos $\beta_1$ y $\beta_2$ de los datos? Para esto, aprendemos sobre modelos lineales y estimaciones de mínimos cuadrados.
 
 ## Estimaciones de mínimos cuadrados {#lse}
 
@@ -374,68 +374,34 @@ dat %>%
 
 no obtenemos el resultado que queremos. La función `lm` ignora el `group_by` ya que `lm` no es parte del __tidyverse__ y no sabe cómo manejar el resultado de un tibble agrupado.
 
-Las funciones de __tidyverse__ saben cómo interpretar los tibbles agrupados. Además, para facilitar la creación de una secuencia de comandos con el _pipe_ `%>%`, las funciones de __tidyverse__ consistentemente devuelven _data frames_, ya que esto asegura que el resultado de una función sea aceptado como la entrada de otra. Pero la mayoría de las funciones de R no reconocen los tibbles agrupados ni devuelven _data frames_. La función `lm`  es un ejemplo. La función `do` sirve como un puente entre las funciones de R, como `lm`, y el __tidyverse__. `do` entiende tibbles agrupados y siempre devuelve un _data frame_.
+Las funciones de __tidyverse__ saben cómo interpretar los tibbles agrupados. Además, para facilitar la creación de una secuencia de comandos con el _pipe_ `%>%`, las funciones de __tidyverse__ consistentemente devuelven _data frames_, ya que esto asegura que el resultado de una función sea aceptado como la entrada de otra. Pero la mayoría de las funciones de R no reconocen los tibbles agrupados ni devuelven _data frames_. La función `lm`  es un ejemplo. Sin embargo, podemos escribir una función que usa `lm` para calcular y devolver los resúmenes relevantes en un data frame y entonces usar `summarize`: 
 
-Entonces, intentemos usar la función `do` para ajustar una línea de regresión a cada estrato de HR:
 
 ```{r}
-dat %>%
-  group_by(HR) %>%
-  do(fit = lm(R ~ BB, data = .))
-```
-
-Observen que ajustamos una línea de regresión a cada estrato. La función `do` creará un _data frame_ con la primera columna como el valor de los estratos y una columna denominada `fit` (escogimos el nombre, pero puede ser cualquier cosa). La columna contendrá el resultado de la llamada `lm`. Por lo tanto, el tibble resultante tiene una columna con objetos `lm`, que no es muy útil.
-
-Además, si no nombramos una columna (noten que arriba la nombramos `fit`), entonces `do` devolverá el _output_ real de `lm`, no un _data frame_, y esto dará como resultado un error ya que `do` espera un _data frame_ como resultado.
-
-```{r, eval=FALSE}
-dat %>%
-  group_by(HR) %>%
-  do(lm(R ~ BB, data = .))
-```
-
-`Error: Results 1, 2, 3, 4, 5, ... must be data frames, not lm`
-
-
-Para construir un _data frame_ útil, el _output_ de la función también debe ser un _data frame_. Podríamos construir una función que devuelva solo lo que queremos en forma de un _data frame_:
-
-```{r}
-get_slope <- function(data){
-  fit <- lm(R ~ BB, data = data)
-  data.frame(slope = fit$coefficients[2],
-             se = summary(fit)$coefficient[2,2])
+get_slope <- function(x, y){
+  fit <- lm(y ~ x)
+  tibble(slope = fit$coefficients[2], 
+         se = summary(fit)$coefficient[2,2])
 }
-```
-
-Y luego usar `do` **sin** nombrar el _output_, puesto que ya estamos obteniendo un _data frame_:
-
-```{r}
-dat %>%
+dat %>%  
   group_by(HR) %>%
-  do(get_slope(.))
+  summarize(get_slope(BB, R))
 ```
 
-Si nombramos el _output_, obtenemos algo que no queremos, una columna que contiene _data frames_:
+Aquí un ejemplo que devuelve estimadores para ambos parametros:
+
 
 ```{r}
-dat %>%
-  group_by(HR) %>%
-  do(slope = get_slope(.))
-```
-
-Esto no es muy útil, así que discutamos una última característica de `do`. Si el _data frame_ que se devuelve tiene más de una fila, se concatenarán adecuadamente. Aquí hay un ejemplo en el que devolvemos los estimados de ambos parámetros:
-
-```{r}
-get_lse <- function(data){
-  fit <- lm(R ~ BB, data = data)
+get_lse <- function(x, y){
+  fit <- lm(y ~ x)
   data.frame(term = names(fit$coefficients),
-             slope = fit$coefficients,
-             se = summary(fit)$coefficient[,2])
+    slope = fit$coefficients, 
+    se = summary(fit)$coefficient[,2])
 }
 
-dat %>%
+dat %>%  
   group_by(HR) %>%
-  do(get_lse(.))
+  summarize(get_lse(BB, R))
 ```
 
 Si creen que todo esto es demasiado complicado, no son los únicos. Para simplificar las cosas, presentamos el paquete __broom__ que fue diseñado para facilitar el uso de funciones que ajustan modelos, como `lm`, con el __tidyverse__.
@@ -458,12 +424,12 @@ Podemos agregar otros resúmenes importantes, como los intervalos de confianza:
 tidy(fit, conf.int = TRUE)
 ```
 
-Debido a que el resultado es un _data frame_, podemos usarlo inmediatamente con `do` para unir los comandos que producen la tabla que queremos. Como se devuelve un _data frame_, podemos filtrar y seleccionar las filas y columnas que queramos, que facilita trabajar con __ggplot2__:
+Debido a que el resultado es un _data frame_, podemos usarlo inmediatamente con `summarize` para unir los comandos que producen la tabla que queremos. Como se devuelve un _data frame_, podemos filtrar y seleccionar las filas y columnas que queramos, que facilita trabajar con __ggplot2__:
 
 ```{r do-tidy-example}
-dat %>%
+dat %>%  
   group_by(HR) %>%
-  do(tidy(lm(R ~ BB, data = .), conf.int = TRUE)) %>%
+  summarize(tidy(lm(R ~ BB), conf.int = TRUE)) %>%
   filter(term == "BB") %>%
   select(HR, estimate, conf.low, conf.high) %>%
   ggplot(aes(HR, y = estimate, ymin = conf.low, ymax = conf.high)) +
@@ -471,7 +437,7 @@ dat %>%
   geom_point()
 ```
 
-Ahora volvemos a discutir nuestra tarea original de determinar si las pendientes cambiaron. El gráfico que acabamos de hacer, usando `do` y `tidy`, muestra que los intervalos de confianza se superponen, que provee una buena confirmación visual de que nuestra suposición de que la pendiente no cambia es cierta.
+Ahora volvemos a discutir nuestra tarea original de determinar si las pendientes cambiaron. El gráfico que acabamos de hacer, usando `summarize` y `tidy`, muestra que los intervalos de confianza se superponen, que provee una buena confirmación visual de que nuestra suposición de que la pendiente no cambia es cierta.
 
 Las otras funciones ofrecidas por __broom__, `glance` y `augment`, se relacionan con resultados específicos del modelo y de la observación, respectivamente. Aquí podemos ver los resúmenes que resultan de ajustar modelos que `glance` devuelve:
 
@@ -520,13 +486,13 @@ cors <- galton_heights %>%
 5\. Ajuste un modelo de regresión lineal para obtener los efectos de BB y HR en las carreras (a nivel de equipo) para el año 1971. Utilice la función `tidy` del paquete __broom__ para obtener los resultados en un _data frame_.
 
 
-6\. Ahora repitamos lo anterior para cada año desde 1961 y hagamos un gráfico. Utilice `do` y el paquete __broom__ para ajustar este modelo para cada año desde 1961.
+6\. Ahora repitamos lo anterior para cada año desde 1961 y hagamos un gráfico. Utilice `summarize` y el paquete __broom__ para ajustar este modelo para cada año desde 1961.
 
 
 7\. Use los resultados del ejercicio anterior para graficar los efectos estimados de BB en las carreras.
 
 
-8\. __Avanzado__. Escriba una función que tome R, HR y BB como argumentos y ajuste dos modelos lineales: `R ~ BB` y `R~BB+HR`. Luego use la función `do` para obtener el `BB` para ambos modelos para cada año desde 1961. Finalmente, grafíquelos como función de tiempo y compárelos.
+8\. __Avanzado__. Escriba una función que tome R, HR y BB como argumentos y ajuste dos modelos lineales: `R ~ BB` y `R~BB+HR`. Luego use la función `summarize` para obtener el `BB` para ambos modelos para cada año desde 1961. Finalmente, grafíquelos como función de tiempo y compárelos.
 
 
 ## Estudio de caso: Moneyball (continuación)
