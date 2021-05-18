@@ -68,7 +68,7 @@
 | __I__ | | | | |
 | image plot | mapa de matriz| | | | 
 | indentation | indentación | | indentar | indentación |
-| Integrated Development Environment (IDE) | _Integrated Development Environment_ (_IDE_) | ambiente integrado de desarrollo o en ocasiones no se traduce | IDE |
+| Integrated Development Environment (IDE) | Entorno de desarrollo integrado (_IDE_) | ambiente integrado de desarrollo o en ocasiones no se traduce | IDE |
 | index (verb) | indexar | integers are used to index vectors | indexar, indizar  | indexar | 
 | indexing | indexación |R provides a convenient way of indexing vectors |  | indexación |
 | input (noun) | | entrada | `mean` takes a vector as input | input (no se traduce; anglicismo aceptado), entrada | entrada |
@@ -82,7 +82,7 @@
 | K-means | K-medios | | | |
 | k nearest neighbors | k vecinos más cercanos | | k-nearest neighbors, k vecinos más cercanos | k vecinos más cercanos |
 | kernel | kernel | | | |
-| key bindings | | combinaciones de teclas | combinaciones de teclas |
+| key bindings | | atajo de teclado | combinaciones de teclas |
 | keyboard shortcut | Use the keyboard shortcut command-S | atajo del teclado | atajo de teclado |
 | __L__ | | | | |
 | log odds ratio | logaritmo de riesgo relativo |  |  |
@@ -120,6 +120,7 @@ transformación logarítmica   |  |
 | overall accuracy | exactitud general |  |  |  |
 | overfitting | sobreajuste |  |  |  |
 | __P__ | | | | |
+| panes | paneles |  |  |  |
 | parse | leer y procesar |  |  |  |
 | path  |ruta | Relative and full paths, the path of a file list | rutas | ruta |
 | pipe | _pipe_ | `%>%` |  _pipe_ | tubería |
