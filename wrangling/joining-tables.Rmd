@@ -6,7 +6,7 @@ img_path <- "wrangling/img"
 
 Es posible que la información que necesitamos para un análisis no esté en solo en una tabla. Por ejemplo, cuando pronosticamos elecciones usamos la función `left_join` para combinar la información de dos tablas. Aquí usamos un ejemplo más sencillo para ilustrar el desafío general de combinar tablas.
 
-Supongamos que queremos explorar la relación entre el tamaño de la población de los estados de EE. UU. y los votos electorales. Tenemos el tamaño de la población en esta tabla:
+Supongan que queremos explorar la relación entre el tamaño de la población de los estados de EE. UU. y los votos electorales. Tenemos el tamaño de la población en esta tabla:
 
 ```{r, warning=FALSE, message=FALSE}
 library(tidyverse)
@@ -32,7 +32,7 @@ Las funciones que usamos para unir (_join_ en inglés), descritas a continuació
 
 ## Funciones para unir {#joins}
 
-Las funciones para unir del paquete __dplyr__ aseguran que las tablas se combinen de tal forma que las filas equivalentes estén juntas. Si conocen SQL, verán que el acercamiento y la sintaxis son muy similares. La idea general es que uno necesita identificar una o más columnas que servirán para emparejar las dos tablas. Entonces se devuelve una nueva tabla con la información combinada. Observen lo que sucede si unimos las dos tablas anteriores por estado usando `left_join` (eliminaremos la columna `others`y renombraremos `electoral_votes` para que las tablas quepen en la página):
+Las funciones para unir del paquete __dplyr__ aseguran que las tablas se combinen de tal forma que las filas equivalentes estén juntas. Si conocen SQL, verán que el acercamiento y la sintaxis son muy similares. La idea general es que uno necesita identificar una o más columnas que servirán para emparejar las dos tablas. Entonces se devuelve una nueva tabla con la información combinada. Observen lo que sucede si unimos las dos tablas anteriores por estado usando `left_join` (eliminaremos la columna `others` y renombraremos `electoral_votes` para que las tablas quepen en la página):
 
 ```{r}
 tab <- left_join(murders, results_us_election_2016, by = "state") %>%
@@ -72,7 +72,7 @@ Utilizaremos estas dos tablas como ejemplos en las siguientes secciones.
 
 ### Left join
 
-Supongamos que queremos una tabla como `tab_1`, pero agregando votos electorales a cualquier estado que tengamos disponible. Para esto, usamos `left_join` con `tab_1` como el primer argumento. Especificamos qué columna usar para que coincida con el argumento `by`.
+Supongan que queremos una tabla como `tab_1`, pero agregando votos electorales a cualquier estado que tengamos disponible. Para esto, usamos `left_join` con `tab_1` como el primer argumento. Especificamos qué columna usar para que coincida con el argumento `by`.
 
 ```{r}
 left_join(tab_1, tab_2, by = "state")
@@ -142,7 +142,7 @@ Aunque todavía no lo hemos usado en este libro, otra forma común en la que se 
 
 ### Pegando columnas
 
-La función _bind_cols_ de __dplyr__ pega dos objetos convirtiéndolos en columnas en un _tibble_. Por ejemplo, queremos crear rápidamente un _data frame_ que consiste de números que podemos usar.
+La función `bind_cols` de __dplyr__ pega dos objetos convirtiéndolos en columnas en un _tibble_. Por ejemplo, queremos crear rápidamente un _data frame_ que consiste de números que podemos usar.
 
 ```{r}
 bind_cols(a = 1:3, b = 4:6)
@@ -150,7 +150,7 @@ bind_cols(a = 1:3, b = 4:6)
 
 Esta función requiere que asignemos nombres a las columnas. Aquí elegimos `a` y `b`.
 
-Tengan en cuenta que hay una función de R `cbind` con exactamente la misma funcionalidad. Una diferencia importante es que `cbind` puede crear diferentes tipos de objetos, mientras `bind_cols` siempre produce un _data frame_.
+Noten que hay una función de R, `cbind`, con exactamente la misma funcionalidad. Una diferencia importante es que `cbind` puede crear diferentes tipos de objetos, mientras `bind_cols` siempre produce un _data frame_.
 
 `bind_cols` también puede pegar dos _data frames_ diferentes. Por ejemplo, aquí separamos el _data frame_ `tab` en tres _data frames_ y luego volvemos a pegarlos:
 
@@ -204,7 +204,7 @@ dplyr::intersect(tab_1, tab_2)
 
 ### Unión
 
-Del mismo modo, _union_ toma la unión de vectores. Por ejemplo:
+Del mismo modo, `union` toma la unión de vectores. Por ejemplo:
 
 ```{r}
 union(1:10, 6:15)
@@ -261,7 +261,7 @@ dplyr::setequal(tab_1, tab_2)
 ## Ejercicios
 
 
-1\. Instale y cargue la biblioteca __Lahman__. Esta base de datos incluye datos relacionados a equipos de béisbol. Incluya estadísticas sobre cómo se desempeñaron los jugadores ofensiva y defensivamente durante varios años. También incluya información personal sobre los jugadores.
+1\. Instale y cargue la biblioteca __Lahman__. Esta base de datos incluye datos relacionados a equipos de béisbol. Incluya estadísticas sobre cómo se desempeñaron los jugadores ofensiva y defensivamente durante varios años. También incluye información personal sobre los jugadores.
 
 El _data frame_ `Batting` contiene las estadísticas ofensivas de todos los jugadores durante muchos años. Puede ver, por ejemplo, los 10 mejores bateadores ejecutando este código:
 
@@ -301,10 +301,10 @@ co2_wide <- data.frame(matrix(co2, ncol = 12, byrow = TRUE)) %>%
   mutate(month = as.numeric(month))
 ```
 
-Queremos ver si la tendencia mensual está cambiando, por lo que eliminaremos los efectos del año y luego graficaremos los resultados. Primero calcularemos los promedios del año. Utilice `group_by` y `summarize` para calcular el CO2 promedio de cada año. Guárdelo en un objeto llamado `yearly_avg`.
+Queremos ver si la tendencia mensual está cambiando, por lo que eliminaremos los efectos del año y luego graficaremos los resultados. Primero, calcularemos los promedios del año. Utilice `group_by` y `summarize` para calcular el CO2 promedio de cada año. Guárdelo en un objeto llamado `yearly_avg`.
 
 
-4\. Ahora use la función `left_join` para agregar el promedio anual al set de datos `co2_wide`. Luego calcule los residuos: medida de CO2 observada - promedio anual.
+4\. Ahora use la función `left_join` para agregar el promedio anual al set de datos `co2_wide`. Entonces calcule los residuos: medida de CO2 observada - promedio anual.
 
 
 5\. Haga un diagrama de las tendencias estacionales por año, pero solo después de eliminar el efecto del año.
