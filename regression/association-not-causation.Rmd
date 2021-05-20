@@ -40,9 +40,9 @@ sim_data <- tibble(group = rep(1:g, each=N),
                    y = rnorm(N * g))
 ```
 
-La primera columna denota grupo. Creamos `r cat(prettyNum(g, big.mark=",",scientific=FALSE))` grupos y para cada uno generamos un par de vectores independientes, $X$ y $Y$, cada una con `r N` observaciones, almacenadas en la segunda y tercera columnas. Debido a que construimos la simulación, sabemos que $X$ y $Y$ no están correlacionadas.
+La primera columna denota grupo. Creamos `r cat(prettyNum(g, big.mark=",",scientific=FALSE))` grupos y para cada uno generamos un par de vectores independientes, $X$ e $Y$, cada una con `r N` observaciones, almacenadas en la segunda y tercera columnas. Debido a que construimos la simulación, sabemos que $X$ e $Y$ no están correlacionadas.
 
-A continuación, calculamos la correlación entre `X` y `Y` para cada grupo y miramos el máximo:
+A continuación, calculamos la correlación entre `X` e `Y` para cada grupo y miramos el máximo:
 
 ```{r}
 res <- sim_data %>%
@@ -52,7 +52,7 @@ res <- sim_data %>%
 res
 ```
 
-Vemos una correlación máxima de `r max (res $r)` y si solo graficamos los datos del grupo con esta correlación, vemos un gráfico convincente que $X$ e $Y$ sí están correlacionados:
+Vemos una correlación máxima de `r max (res $r)` y, si solo graficamos los datos del grupo con esta correlación, vemos un gráfico convincente que $X$ e $Y$ sí están correlacionados:
 
 ```{r dredging}
 sim_data %>% filter(group == res$group[which.max(res$r)]) %>%
@@ -84,7 +84,7 @@ Esta forma particular de dragado de datos se conoce como _p-hacking_. El _p-hack
 
 ## Valores atípicos
 
-Supongamos que tomamos medidas de dos resultados independientes, $X$ y $Y$, y estandarizamos las medidas. Sin embargo, cometemos un error y olvidamos estandarizar la entrada 23. Podemos simular dichos datos usando:
+Supongan que tomamos medidas de dos resultados independientes, $X$ e $Y$, y estandarizamos las medidas. Sin embargo, cometemos un error y olvidamos estandarizar la entrada 23. Podemos simular dichos datos usando:
 
 ```{r}
 set.seed(1985)
@@ -130,7 +130,7 @@ La correlación de Spearman también se puede calcular así:
 cor(x, y, method = "spearman")
 ```
 
-Además, hay métodos robustos para ajustar modelos lineales que pueden aprender, por ejemplo, en este libro: _Robust Statistics: Edition 2_ de Peter J. Huber y Elvezio M. Ronchetti.
+Además, hay métodos robustos para ajustar modelos lineales que pueden aprender, por ejemplo, en en libro _Robust Statistics: Edition 2_ de Peter J. Huber y Elvezio M. Ronchetti.
 
 
 ## Inversión de causa y efecto
@@ -148,7 +148,7 @@ Fácilmente podemos construir un ejemplo de inversión de causa y efecto utiliza
 
 $$X_i = \beta_0 + \beta_1 y_i + \varepsilon_i, i=1, \dots, N$$
 
-a los datos de altura de padre e hijo, con $X_i$ la altura del padre y $y_i$ la altura del hijo, obtenemos un resultado estadísticamente significativo:
+a los datos de altura de padre e hijo, con $X_i$ la altura del padre e $y_i$ la altura del hijo, obtenemos un resultado estadísticamente significativo:
 
 ```{r}
 library(HistData)
@@ -167,7 +167,7 @@ El modelo se ajusta muy bien a los datos. Si observamos la formulación matemát
 
 Los factores de confusión son quizás la razón más común que conduce a que las asociaciones se malinterpreten.
 
-Si $X$ y $Y$ están correlacionados, llamamos $Z$ un _factor de confusión_ (_confounder_ en inglés) si cambios en $Z$ provocan cambios en ambos $X$ y $Y$. Anteriormente, al estudiar los datos del béisbol, vimos cómo los cuadrangulares eran un factor de confusión que resultaban en una correlación más alta de lo esperado al estudiar la relación entre BB y HR. En algunos casos, podemos usar modelos lineales para tomar en cuenta los factores de confusión. Sin embargo, este no siempre es el caso.
+Si $X$ e $Y$ están correlacionados, llamamos $Z$ un _factor de confusión_ (_confounder_ en inglés) si cambios en $Z$ provocan cambios en ambos $X$ e $Y$. Anteriormente, al estudiar los datos del béisbol, vimos cómo los cuadrangulares eran un factor de confusión que resultaban en una correlación más alta de lo esperado al estudiar la relación entre BB y HR. En algunos casos, podemos usar modelos lineales para tomar en cuenta los factores de confusión. Sin embargo, este no siempre es el caso.
 
 La interpretación incorrecta debido a factores de confusión es omnipresente en la prensa laica y, a menudo, son difíciles de detectar. Aquí, presentamos un ejemplo ampliamente utilizado relacionado con las admisiones a la universidad.
 
@@ -245,7 +245,7 @@ ggplot(aes(gender, y = percent_admitted, fill = major)) +
 geom_bar(stat = "identity", position = "stack")
 ```
 -->
-También desglosamos las aceptaciones por concentración. Este gráfico nos permite ver que la mayoría de los hombres aceptados provenían de dos concentraciones: A y B. Además nos permite ver que pocas mujeres solicitaron estas concentraciones.
+También desglosamos las aceptaciones por concentración. Este gráfico nos permite ver que la mayoría de los hombres aceptados provenían de dos concentraciones: A y B, y que pocas mujeres solicitaron estas concentraciones.
 
 
 ### Promedio después de estratificar
@@ -269,7 +269,7 @@ admissions %>% group_by(gender) %>% summarize(average = mean(admitted))
 
 ## La paradoja de Simpson
 
-El caso que acabamos de discutir es un ejemplo de la paradoja de Simpson. Se le llama paradoja porque vemos que el signo de la correlación cambia al comparar la población entera y estratos específicos. Como ejemplo ilustrativo, supongan que observamos realizaciones de las tres variables aleatorias $X$, $Y$ y $Z$. Aquí hay un gráfico de observaciones simuladas para $X$ y $Y$ junto con la correlación de muestra:
+El caso que acabamos de discutir es un ejemplo de la paradoja de Simpson. Se le llama paradoja porque vemos que el signo de la correlación cambia al comparar la población entera y estratos específicos. Como ejemplo ilustrativo, supongan que observamos realizaciones de las tres variables aleatorias $X$, $Y$ y $Z$. Aquí hay un gráfico de observaciones simuladas para $X$ e $Y$ junto con la correlación de muestra:
 
 ```{r simpsons-paradox, echo=FALSE}
 N <- 100
@@ -293,7 +293,7 @@ dat %>% ggplot(aes(x, y)) + geom_point(alpha = .5) +
   ggtitle(paste("Correlation = ", round(cor(dat$x, dat$y), 2)))
 ```
 
-Pueden ver que $X$ y $Y$ están correlacionados negativamente. Sin embargo, una vez que estratificamos por $Z$ (se muestra en diferentes colores a continuación), surge otro patrón:
+Pueden ver que $X$ e $Y$ están correlacionados negativamente. Sin embargo, una vez que estratificamos por $Z$ (se muestra en diferentes colores a continuación), surge otro patrón:
 
 
 ```{r simpsons-paradox-explained, echo=FALSE}
@@ -309,7 +309,7 @@ dat %>% ggplot(aes(x, y, color = z)) +
   annotate("text", x = means$x, y = means$y, label = paste("z =", means$z), cex = 5)
 ```
 
-Realmente es $Z$ que está negativamente correlacionada con $X$. Si estratificamos por $Z$, las $X$ y $Y$ están positivamente correlacionadas como se observa en el gráfico anterior.
+Realmente es $Z$ que está negativamente correlacionada con $X$. Si estratificamos por $Z$, las $X$ e $Y$ están positivamente correlacionadas como se observa en el gráfico anterior.
 
 ## Ejercicios
 
@@ -352,6 +352,6 @@ Construya la tabla 2 X 2 utilizada para la conclusión sobre las diferencias en 
 Pero, antes de concluir esto, debemos verificar si estas diferencias son diferentes de lo que obtenemos por casualidad. ¿Alguna de las diferencias vistas anteriormente es estadísticamente significativa? Tengan en cuenta que incluso cuando no hay sesgo, veremos diferencias debido a la variabilidad aleatoria en el proceso de revisión, así como entre los candidatos. Realice una prueba de Chi-cuadrado para cada disciplina. Sugerencia: defina una función que reciba el total de una tabla 2 X 2 y devuelva un _data frame_ con el valor-p. Use la corrección 0.5. Luego use la función `summarize`.
 
 
-7\. Para las ciencias médicas, parece haber una diferencia estadísticamente significativa. ¿Pero es esto una correlación espuria? Realice 9 pruebas. Informar solo el caso con un valor-p inferior a 0.05 podría considerarse un ejemplo de dragado de datos. Repita el ejercicio anterior, pero en lugar de un valor-p, calcule un logaritmo de riesgo relativo (_log odds ratio_ en inglés) dividido por su error estándar. Luego, use un gráfico Q-Q para ver cuánto se desvían estos logaritmos de riesgo relativo de la distribución normal que esperaríamos: una distribución normal estándar.
+7\. Para las ciencias médicas, parece haber una diferencia estadísticamente significativa. ¿Pero es esto una correlación espuria? Realice 9 pruebas. Informar solo el caso con un valor-p inferior a 0.05 podría considerarse un ejemplo de dragado de datos. Repita el ejercicio anterior, pero en lugar de un valor-p, calcule un logaritmo de riesgo relativo (_log odds ratio_ en inglés) dividido por su error estándar. Entonces use un gráfico Q-Q para ver cuánto se desvían estos logaritmos de riesgo relativo de la distribución normal que esperaríamos: una distribución normal estándar.
 
 

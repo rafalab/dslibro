@@ -26,7 +26,7 @@
 | bivariate normal distribution | distribución normal de dos variables  |  |  |
 | boxplot | diagrama de caja | display the data in a boxplot| diagrama de caja y bigote | | 
 | __C__ | | | | |
-| call |  | llamada |  |
+| call | llamada |  |  |
 | case study | caso de estudio| one case study which is helpful | | caso de estudio |
 | character strings | cadenas de caracteres | vector of character strings | secuencia de caracteres | cadenas de caracteres | 
 | cheat sheet | hoja de referencia |  |  |
@@ -34,6 +34,7 @@
 | coerce (verb)| forzar una conversión |R coerced the data into characters  | forzar | convertir |
 | commands | comandos | type in the command | comando (singular) o comandos (plural) | comandos |
 | command | tecla _command_ | hit the command key |command o cmd | tecla de comando |
+| confounding | confusión | |  |
 | __D__ | | | | |
 | dashboard | tablero |un _dashboard_  |  |
 | data management | manejo de datos |  | manejo de datos | gestión de datos |
@@ -85,6 +86,8 @@
 | key bindings | | atajo de teclado | combinaciones de teclas |
 | keyboard shortcut | Use the keyboard shortcut command-S | atajo del teclado | atajo de teclado |
 | __L__ | | | | |
+| least squares | mínimos cuadrados|  |  |
+| least squares estimates (LSE) | estimadores de mínimos cuadrados o LSE|  |  |
 | log odds ratio | logaritmo de riesgo relativo |  |  |
 | log transformation | transformación logarítmica | |
 transformación logarítmica   |  |
@@ -92,8 +95,8 @@ transformación logarítmica   |  |
 | loop |  | bucle |  |
 | loss function | función de pérdida |  |  |
 | __M__ | | | | |
-| machine learning | _machine learning_ | | machine learning o la traducción literal aprendizaje de máquina | [aprendizaje automático](http://portal.uned.es/portal/page?_pageid=93,61703783&_dad=portal&_schema=PORTAL&idAsignatura=71014023) |
-| map (noun) | mapeo | |  |  |
+| machine learning | _machine learning_ | | machine learning o la traducción literal aprendizaje de máquina | |
+| map (noun) | mapeo | |  |  
 | map (verb) | definir una correspondencia o mapear | |  |  |
 | mapping | correspondencia | | mapear |  |
 | (aesthetic) mappings | mapeos estéticos | |  |  |
@@ -137,6 +140,7 @@ transformación logarítmica   |  |
 | quote (verb) | entrecomillar  | we need to quote strings |entrecomillar |  |
 | __R__ | | | | |
 | recall | recall  | |  |
+|residual sum of squares (RSS) | suma de errores cuadrados o RSS | |  |
 | R software environment | ambiente de _software_ R | |ambiente de trabajo en R | entorno de R |
 | R environment | ambiente de R | | ambiente de R/ambiente de trabajo | entorno de R |
 | random forests | _random forest_| | random forest | |
