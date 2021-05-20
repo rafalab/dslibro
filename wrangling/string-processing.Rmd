@@ -175,7 +175,7 @@ reported_heights %>%
   head(n=10)
 ```
 
-Inmediatamente vemos lo que está sucediendo. Algunos de los estudiantes no reportaron sus alturas en pulgadas según lo solicitado. Podríamos descartar estos datos y continuar. Sin embargo, muchas de las entradas siguen patrones que, en principio, podemos convertir fácilmente a pulgadas. Por ejemplo, en el resultado anterior, vemos varios casos que usan el formato `x'y''` con `x` y `y` representando pies y pulgadas, respectivamente. Cada uno de estos casos puede ser leído y convertido a pulgadas por un humano, por ejemplo `5'4''` es `5*12 + 4 = 64`. Entonces podríamos arreglar todas las entradas problemáticas _a mano_. Sin embargo, los humanos son propensos a cometer errores, por lo que es preferible un enfoque automatizado. Además, debido a que planeamos continuar recolectando datos, será conveniente escribir código que lo haga automáticamente.
+Inmediatamente vemos lo que está sucediendo. Algunos de los estudiantes no reportaron sus alturas en pulgadas según lo solicitado. Podríamos descartar estos datos y continuar. Sin embargo, muchas de las entradas siguen patrones que, en principio, podemos convertir fácilmente a pulgadas. Por ejemplo, en el resultado anterior, vemos varios casos que usan el formato `x'y''` con `x` e `y` representando pies y pulgadas, respectivamente. Cada uno de estos casos puede ser leído y convertido a pulgadas por un humano, por ejemplo `5'4''` es `5*12 + 4 = 64`. Entonces podríamos arreglar todas las entradas problemáticas _a mano_. Sin embargo, los humanos son propensos a cometer errores, por lo que es preferible un enfoque automatizado. Además, debido a que planeamos continuar recolectando datos, será conveniente escribir código que lo haga automáticamente.
 
 Un primer paso en este tipo de tarea es examinar las entradas problemáticas e intentar definir patrones específicos seguidos por un gran grupo de entradas. Cuanto más grandes sean estos grupos, más entradas podremos arreglar con un solo enfoque programático. Queremos encontrar patrones que puedan describirse con precisión con una regla, como "un dígito, seguido por un símbolo de pie, seguido por uno o dos dígitos, seguido por un símbolo de pulgadas".
 
@@ -206,7 +206,7 @@ length(problems)
 
 Ahora podemos ver todos los casos simplemente imprimiéndolos. No hacemos eso aquí porque hay `length(problems)`, pero después de examinarlos cuidadosamente, vemos que podemos usar tres patrones para definir tres grandes grupos dentro de estas excepciones.
 
-1\. Un patrón de la forma `x'y` o `x' y''` o `x'y"` con `x` y `y` representando pies y pulgadas, respectivamente. Aquí hay diez ejemplos:
+1\. Un patrón de la forma `x'y` o `x' y''` o `x'y"` con `x` e `y` representando pies y pulgadas, respectivamente. Aquí hay diez ejemplos:
 
 ```{r, echo=FALSE}
 pattern <- "^\\d\\s*'\\s*\\d{1,2}\\.*\\d*'*\"*$"
@@ -231,7 +231,7 @@ problems[ind] %>% head(n=10) %>% cat
 
 Una vez que veamos que estos grupos grandes siguen patrones específicos, podemos desarrollar un plan de ataque. Recuerden que raras veces hay una sola forma de realizar estas tareas. Aquí elegimos una que nos ayuda a enseñar varias técnicas útiles, aunque seguramente hay una forma más eficiente de realizar la tarea.
 
-**Plan de ataque**: convertiremos las entradas que siguen a los dos primeros patrones en una estandarizada. Luego aprovecharemos la estandarización para extraer los pies y pulgadas y convertirlos a pulgadas. Entonces definiremos un procedimiento para identificar entradas que están en centímetros y convertirlas a pulgadas. Después de aplicar estos pasos, verificaremos nuevamente para ver qué entradas no se corrigieron y ver si podemos ajustar nuestro enfoque para que sea más completo.
+**Plan de ataque**: convertiremos las entradas que siguen a los dos primeros patrones en una estandarizada. Luego, aprovecharemos la estandarización para extraer los pies y pulgadas y convertirlos a pulgadas. Entonces, definiremos un procedimiento para identificar entradas que están en centímetros y convertirlas a pulgadas. Después de aplicar estos pasos, verificaremos nuevamente para ver qué entradas no se corrigieron y ver si podemos ajustar nuestro enfoque para que sea más completo.
 
 Al final, esperamos tener un _script_ que haga que los métodos de recolección de datos basados en la web sean robustos para los errores más comunes de los usuarios.
 
@@ -329,7 +329,7 @@ Los caracteres de escape son algo que a menudo tenemos que usar al procesar cade
 
 ## Expresiones regulares
 
-Una expresión regular es una forma de describir patrones específicos de caracteres de texto. Se pueden usar para determinar si una cadena dada corresponde con el patrón. Se ha definido un conjunto de reglas para hacer esto de manera eficiente y precisa y aquí mostramos algunos ejemplos. Podemos aprender más sobre estas reglas leyendo tutoriales  detallados^[https://www.regular-expressions.info/tutorial.html] ^[http://r4ds.had.co.nz/strings.html#matching-patrones-con-expresiones-regulares]. La hoja de referencia de RStudio^[https://www.rstudio.com/wp-content/uploads/2016/09/RegExCheatsheet.pdf] también es muy útil.
+Una expresión regular (_regex_) es una forma de describir patrones específicos de caracteres de texto. Se pueden usar para determinar si una cadena dada corresponde con el patrón. Se ha definido un conjunto de reglas para hacer esto de manera eficiente y precisa y aquí mostramos algunos ejemplos. Podemos aprender más sobre estas reglas leyendo tutoriales  detallados^[https://www.regular-expressions.info/tutorial.html] ^[http://r4ds.had.co.nz/strings.html#matching-patrones-con-expresiones-regulares]. La hoja de referencia de RStudio también es muy útil^[https://www.rstudio.com/wp-content/uploads/2016/09/RegExCheatsheet.pdf].
 
 
 Los patrones suministrados a las funciones __stringr__ pueden ser una expresión regular en lugar de una cadena estándar. Aprenderemos cómo funciona esto a través de una serie de ejemplos.
@@ -407,7 +407,7 @@ knitr::include_graphics(file.path(img_path,"str_view-2.png"))
 ```
 
 
-Hay muchos otros caracteres especiales. Aprenderemos algunos mas a continuación, pero pueden ver la mayoría o todos en la hoja de referencia^[https://www.rstudio.com/wp-content/uploads/2016/09/RegExCheatsheet.pdf] mencionada anteriormente.
+Hay muchos otros caracteres especiales. Aprenderemos algunos mas a continuación, pero pueden ver la mayoría o todos en la hoja de referencia mencionada anteriormente^[https://www.rstudio.com/wp-content/uploads/2016/09/RegExCheatsheet.pdf].
 
 
 ### Clases de caracteres
@@ -422,7 +422,7 @@ knitr::include_graphics(file.path(img_path,"str_view-3.png"))
 ```
 
 
-Supongamos que queremos unir valores entre 4 y 7. Una forma común de definir clases de caracteres es con rangos. Así por ejemplo, `[0-9]` es equivalente a `\\d`. El patrón que queremos entonces es `[4-7]`.
+Supongan que queremos unir valores entre 4 y 7. Una forma común de definir clases de caracteres es con rangos. Así por ejemplo, `[0-9]` es equivalente a `\\d`. El patrón que queremos entonces es `[4-7]`.
 
 
 ```{r}
@@ -615,7 +615,7 @@ pattern <- "^[4-7]'\\d{1,2}\"$"
 sum(str_detect(problems, pattern))
 ```
 
-Para ver por qué esto es así, mostramos algunos ejemplos que exponen por qué no tenemos más equivalencias:
+Para ver por qué esto es así, mostramos algunos ejemplos que ilustran por qué no tenemos más equivalencias:
 
 ```{r, eval=FALSE}
 problems[c(2, 10, 11, 12, 15)] %>% str_view(pattern)
@@ -976,7 +976,7 @@ Vemos alturas de `51`, `52` y `53`. Estas alturas tan bajas son raras y es proba
 
 ## División de cadenas
 
-Otra operación de _wrangling_ de datos muy común es la división de cadenas. Para ilustrar cómo surge esto, comenzaremos con un ejemplo ilustrativo. Supongamos que no tenemos la función `read_csv` o `read.csv` disponible. En cambio, tenemos que leer un archivo csv usando la función de base R `readLines` así:
+Otra operación de _wrangling_ de datos muy común es la división de cadenas. Para ilustrar cómo surge esto, comenzaremos con un ejemplo ilustrativo. Supongan que no tenemos la función `read_csv` o `read.csv` disponible. En cambio, tenemos que leer un archivo csv usando la función de base R `readLines` así:
 
 ```{r}
 filename <- system.file("extdata/murders.csv", package = "dslabs")
@@ -1180,7 +1180,7 @@ identical(research_funding_rates, new_research_funding_rates)
 
 ## Recodificación {#recode}
 
-Otra operación común que involucra cadenas es recodificar los nombres de variables categóricas. Supongamos que tienen nombres largos para sus niveles y los mostrarán en gráficos. Es posible que quieran utilizar versiones más cortas de estos nombres. Por ejemplo, en los vectores de caracteres con nombres de países, es posible que quieran cambiar "Estados Unidos de América" a "Estados Unidos" y "Reino Unido" a "RU", y así sucesivamente. Podemos hacer esto con `case_when`, aunque __tidyverse__ ofrece una opción específicamente diseñada para esta tarea: la función `recode`.
+Otra operación común que involucra cadenas es recodificar los nombres de variables categóricas. Supongan que tienen nombres largos para sus niveles y los mostrarán en gráficos. Es posible que quieran utilizar versiones más cortas de estos nombres. Por ejemplo, en los vectores de caracteres con nombres de países, es posible que quieran cambiar "Estados Unidos de América" a "Estados Unidos" y "Reino Unido" a "RU", y así sucesivamente. Podemos hacer esto con `case_when`, aunque __tidyverse__ ofrece una opción específicamente diseñada para esta tarea: la función `recode`.
 
 Aquí hay un ejemplo que muestra cómo cambiar el nombre de los países con nombres largos:
 
