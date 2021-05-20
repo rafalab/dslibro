@@ -73,7 +73,7 @@ Aunque sabemos que este sesgo afecta a nuestras encuestas, no tenemos forma de s
 
 ### Representaciones matemáticas de modelos
 
-Imagínese que estamos recopilando datos de un encuestador y suponemos que no hay sesgo general. El encuestador recoge varias encuestas con un tamaño de muestra de $N$, por lo que observamos varias mediciones de la variabilidad $X_1, \dots, X_J$. La teoría nos dice que estas variables aleatorias tienen un valor esperado $d$ y un error estándar $2 \sqrt{p(1-p)/N}$. Comencemos usando el siguiente modelo para describir la variabilidad observada:
+Imagínense que estamos recopilando datos de un encuestador y suponemos que no hay sesgo general. El encuestador recoge varias encuestas con un tamaño de muestra de $N$, por lo que observamos varias mediciones de la variabilidad $X_1, \dots, X_J$. La teoría nos dice que estas variables aleatorias tienen un valor esperado $d$ y un error estándar $2 \sqrt{p(1-p)/N}$. Comencemos usando el siguiente modelo para describir la variabilidad observada:
 
 $$
 X_j = d + \varepsilon_j.
@@ -231,7 +231,7 @@ Aquí están los cinco estados con los resultados más cerrados según las encue
 results %>% arrange(abs(avg))
 ```
 
-Ahora utilizaremos el comando `left_join` que nos permitirá añadir fácilmente el número de votos electorales para cada estado del set de datos `us_electoral_votes_2016`. Describiremos esta función en detalle en el capítulo sobre _wrangling_ de datos. Aquí, simplemente observaremos que la función combina los dos sets de datos para que la información del segundo argumento se agregue a la información del primero:
+Ahora utilizaremos el comando `left_join` que nos permitirá añadir fácilmente el número de votos electorales para cada estado del set de datos `us_electoral_votes_2016`. Describiremos esta función en detalle en el capítulo "_Wrangling_ de datos". Aquí, simplemente observaremos que la función combina los dos sets de datos para que la información del segundo argumento se agregue a la información del primero:
 
 ```{r}
 results <- left_join(results, results_us_election_2016, by = "state")
@@ -253,7 +253,7 @@ results <- results %>%
   mutate(sd = ifelse(is.na(sd), median(results$sd, na.rm = TRUE), sd))
 ```
 
-Para hacer argumentos probabilísticos, utilizaremos una simulación Monte Carlo. Para cada estado, aplicamos el enfoque bayesiano para generar una $d$ para el día de elecciones. Podríamos construir las probabilidades a priori de cada estado basado en la historia reciente. Sin embargo, para simplificar, asignamos una probabilidad a priori a cada estado que supone que no sabemos nada sobre lo que sucederá. Dado que de un año electoral a otro, los resultados de un estado específico no cambian tanto, asignaremos una desviación estándar de 2% o $\tau=0.02$. Por ahora, vamos a suponer, incorrectamente, que los resultados de la encuesta de cada estado son independientes. El código para el cálculo bayesiano bajo estos supuestos se ve así:
+Para hacer argumentos probabilísticos, utilizaremos una simulación Monte Carlo. Para cada estado, aplicamos el enfoque bayesiano para generar una $d$ para el día de elecciones. Podríamos construir las probabilidades a priori de cada estado basado en la historia reciente. Sin embargo, para simplificar, asignamos una probabilidad a priori a cada estado que supone que no sabemos nada sobre lo que sucederá. Dado que de un año electoral a otro, los resultados de un estado específico no cambian tanto, asignaremos una desviación estándar de 2% o $\tau=0.02$. Por ahora, vamos a suponer incorrectamente que los resultados de la encuesta de cada estado son independientes. El código para el cálculo bayesiano bajo estos supuestos se ve así:
 
 ```{r, echo=FALSE}
 mu <- 0
@@ -308,7 +308,7 @@ geom_vline(xintercept = 269)
 -->
 El Consorcio Electoral de Princeton hizo una predicción similar. Ahora sabemos que fallaron por mucho. ¿Que pasó?
 
-El modelo anterior ignora el sesgo general y supone que los resultados de diferentes estados son independientes. Después de las elecciones, nos dimos cuenta de que el sesgo general en 2016 no era tan grande: estaba entre 1 y 2%. Pero debido a que la elección estuvo cerrada en varios estados grandes y estos estados tenían una gran cantidad de encuestas, los encuestadores que ignoraron el sesgo general subestimaron considerablemente el error estándar. Utilizando la notación que introducimos, suponieron que el error estándar era $\sqrt{\sigma^2/N}$ que con N grande es bastante más pequeño que el estimador más preciso
+El modelo anterior ignora el sesgo general y supone que los resultados de diferentes estados son independientes. Después de las elecciones, nos dimos cuenta de que el sesgo general en 2016 no era tan grande: estaba entre 1 y 2%. Pero debido a que la elección estuvo cerrada en varios estados grandes y estos estados tenían una gran cantidad de encuestas, los encuestadores que ignoraron el sesgo general subestimaron considerablemente el error estándar. Utilizando la notación que presentamos, supusieron que el error estándar era $\sqrt{\sigma^2/N}$ que con N grande es bastante más pequeño que el estimador más preciso
 $\sqrt{\sigma^2/N + \sigma_b^2}$. FiveThirtyEight, que modela el sesgo general de una manera bastante sofisticada, informó un resultado más cercano. Podemos simular los resultados ahora con un término de sesgo. Para el nivel de estado, el sesgo general puede ser mayor, por lo que lo establecemos en $\sigma_b = 0.03$:
 
 
@@ -365,13 +365,13 @@ se <- one_pollster %>%
 se
 ```
 
-Pero la desviación estándar empírica es más alta que el esimtador teórico más alto posible. Además, los datos de la variabilidad no se ven normales como la teoría predeciría:
+Pero la desviación estándar empírica es más alta que el estimador teórico más alto posible. Además, los datos de la variabilidad no se ven normales como la teoría predeciría:
 
 ```{r time-trend-variability, echo=FALSE}
 qplot(spread, geom = "histogram", binwidth = 0.01, data = one_pollster, color = I("black"))
 ```
 
-Los modelos que hemos descrito incluyen la variabilidad entre encuestadores y el error de muestreo. Pero este gráfico es para un encuestador y la variabilidad que vemos ciertamente no la explica el error de muestreo. ¿De dónde viene la variabilidad extra? Los siguientes gráficos muestran un fuerte argumento de que esta variabilidad proviene de fluctuaciones de tiempo no explicadas por la teoría que supone que $p$ es fijo:
+Los modelos que hemos descrito incluyen la variabilidad entre encuestadores y el error de muestreo. Pero este gráfico es para un encuestador y la variabilidad que vemos ciertamente no la explica el error de muestreo. ¿De dónde viene la variabilidad extra? Los siguientes gráficos muestran un fuerte argumento de que esta variabilidad proviene de fluctuaciones de tiempo no explicadas por la teoría que supone que $p$ es fija:
 
 
 ```{r time-trend-estimate, echo=FALSE}

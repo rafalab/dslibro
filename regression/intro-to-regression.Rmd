@@ -1,10 +1,10 @@
 # Regresión {#regression}
 
-Hasta ahora, este libro se ha enfocado principalmente en variables individuales. Sin embargo, en aplicaciones de ciencia de datos, es muy común estar interesado en la relación entre dos o más variables. Por ejemplo, en el Capítulo \@ref(linear-models) utilizaremos un enfoque basado en datos que examina la relación entre las estadísticas de los jugadores y el éxito para guiar la construcción de un equipo de béisbol con un presupuesto limitado. Antes de profundizar en este ejemplo más complejo, presentamos los conceptos necesarios para entender la regresión utilizando una ilustración más sencilla. De hecho, utilizamos el set de datos con el cual se inventó la regresión.
+Hasta ahora, este libro se ha enfocado principalmente en variables individuales. Sin embargo, en aplicaciones de ciencia de datos, es muy común estar interesado en la relación entre dos o más variables. Por ejemplo, en el Capítulo \@ref(linear-models), utilizaremos un enfoque basado en datos que examina la relación entre las estadísticas de los jugadores y el éxito para guiar la construcción de un equipo de béisbol con un presupuesto limitado. Antes de profundizar en este ejemplo más complejo, presentamos los conceptos necesarios para entender la regresión utilizando una ilustración más sencilla. De hecho, utilizamos el set de datos con el cual se inventó la regresión.
 
 El ejemplo es de la genética. Francis Galton^[https://en.wikipedia.org/wiki/Francis_Galton] estudió la variación y la herencia de los rasgos humanos. Entre muchos otros rasgos, Galton recopiló y estudió datos de estatura de familias para tratar de entender la herencia. Mientras hacía eso, desarrolló los conceptos de correlación y regresión, así como una conexión a pares de datos que siguen una distribución normal. Por supuesto, en el momento en que se recopilaron estos datos, nuestro conocimiento de la genética era bastante limitado en comparación con lo que sabemos hoy. Una pregunta muy específica que Galton intentó contestar fue: ¿cuán bien podemos predecir la altura de un niño basándose en la altura de los padres? La técnica que desarrolló para responder a esta pregunta, la regresión, también se puede aplicar a nuestra pregunta de béisbol y a muchas otras circunstancias.
 
-__Nota histórica__: Galton hizo importantes contribuciones a las estadísticas y la genética, pero también fue uno de los primeros defensores de la eugenesia, un movimiento filosófico científicamente defectuoso favorecido por muchos biólogos de la época de Galton, pero con terribles consecuencias históricas. Pueden leer más sobre el tema aquí: [https://pged.org/history-eugenics-and-genetics/font](https://pged.org/history-eugenics-and-genetics/).
+__Nota histórica__: Galton hizo importantes contribuciones a las estadísticas y la genética, pero también fue uno de los primeros defensores de la eugenesia, un movimiento filosófico científicamente defectuoso favorecido por muchos biólogos de la época de Galton, pero con terribles consecuencias históricas^[https://pged.org/history-eugenics-and-genetics/font].
 
 ## Estudio de caso: ¿la altura es hereditaria?
 
@@ -27,7 +27,7 @@ galton_heights <- GaltonFamilies %>%
 
 En los ejercicios, veremos otras relaciones, incluyendo la de madres e hijas.
 
-Supongamos que nos piden que resumamos los datos de padre e hijo. Dado que ambas distribuciones están bien aproximadas por la distribución normal, podríamos usar los dos promedios y las dos desviaciones estándar como resúmenes:
+Supongan que nos piden que resumamos los datos de padre e hijo. Dado que ambas distribuciones están bien aproximadas por la distribución normal, podríamos usar los dos promedios y las dos desviaciones estándar como resúmenes:
 
 ```{r, message=FALSE, warning=FALSE}
 galton_heights %>%
@@ -100,7 +100,7 @@ Antes de continuar conectando la correlación con la regresión, recordemos la v
 
 En la mayoría de las aplicaciones de ciencia de datos, observamos datos que incluyen variación aleatoria. Por ejemplo, en muchos casos, no observamos datos para toda la población de interés, sino para una muestra aleatoria. Al igual que con la desviación promedio y estándar, la _correlación de muestra_ (_sample correlation_ en inglés) es el estimador más comúnmente utilizado de la correlación de la población. Esto implica que la correlación que calculamos y usamos como resumen es una variable aleatoria.
 
-A modo de ilustración, supongamos que los `r nrow(galton_heights)` pares de padres e hijos es toda nuestra población. Un genetista menos afortunado solo puede permitirse mediciones de una muestra aleatoria de 25 pares. La correlación de la muestra se puede calcular con:
+A modo de ilustración, supongan que los `r nrow(galton_heights)` pares de padres e hijos es toda nuestra población. Un genetista menos afortunado solo puede permitirse mediciones de una muestra aleatoria de 25 pares. La correlación de la muestra se puede calcular con:
 
 ```{r}
 R <- sample_n(galton_heights, 25, replace = TRUE) %>%
@@ -166,7 +166,7 @@ La correlación solo tiene sentido en un contexto particular. Para ayudarnos a e
 
 ## Valor esperado condicional {#conditional-expectation}
 
-Supongamos que se nos pide que adivinemos la altura de un hijo, seleccionado al azar, y no sabemos la altura de su padre. Debido a que la distribución de las alturas de los hijos es aproximadamente normal, conocemos que la altura promedio, `r round(mean(galton_heights$son), 1)`, es el valor con la mayor proporción y sería la predicción con la mayor probabilidad de minimizar el error. Pero, ¿qué pasa si nos dicen que el padre es más alto que el promedio, digamos que mide 72 pulgadas, todavía adivinaríamos `r round(mean(galton_heights$son), 1)` para el hijo?
+Supongan que se nos pide que adivinemos la altura de un hijo, seleccionado al azar, y no sabemos la altura de su padre. Debido a que la distribución de las alturas de los hijos es aproximadamente normal, conocemos que la altura promedio, `r round(mean(galton_heights$son), 1)`, es el valor con la mayor proporción y sería la predicción con la mayor probabilidad de minimizar el error. Pero, ¿qué pasa si nos dicen que el padre es más alto que el promedio, digamos que mide 72 pulgadas, todavía adivinaríamos `r round(mean(galton_heights$son), 1)` para el hijo?
 
 Resulta que si pudiéramos recopilar datos de un gran número de padres que miden 72 pulgadas, la distribución de las alturas de sus hijos sigue una distribución normal. Esto implica que el promedio de la distribución calculada en este subconjunto sería nuestra mejor predicción.
 
@@ -207,7 +207,7 @@ conditional_avg
 ```
 
 
-Noten que un padre que mide 72 pulgadas es más alto que el promedio, específicamente (72.0 - `r round(mean(galton_heights$father), 1)`/`r round(sd(galton_heights$father), 1)` =
+Noten que un padre que mide 72 pulgadas es más alto que el promedio, específicamente (72.0 - `r round(mean(galton_heights$father), 1)`)/`r round(sd(galton_heights$father), 1)` =
 `r round((72-mean(galton_heights$father))/sd(galton_heights$father), 1)` desviaciones estándar más alto que el padre promedio. Nuestra predicción `r conditional_avg` también es más alta que el promedio, pero solo `r round((conditional_avg - mean(galton_heights$son))/sd(galton_heights$son), 2)` desviaciones estándar más que el hijo promedio. Los hijos de padres que miden 72 pulgadas han _retrocedido_ (_regressed_ en inglés) un poco hacia la altura promedio. Observamos que la reducción en la cantidad de desviaciones estandár es de aproximadamente 0.5, que es la correlación. Como veremos en una sección posterior, esto no es una coincidencia.
 
 Si queremos hacer una predicción de cualquier altura, no solo 72 pulgadas, podríamos aplicar el mismo enfoque a cada estrato. La estratificación seguida por diagramas de caja nos permite ver la distribución de cada grupo:
@@ -329,7 +329,7 @@ sd(regression_prediction)
 
 La línea de regresión es, por lo tanto, mucho más estable que la media condicional. Hay una razón intuitiva para esto. El promedio condicional se basa en un subconjunto relativamente pequeño: los padres que miden aproximadamente 72 pulgadas. De hecho, en algunas de las permutaciones no tenemos datos, por eso utilizamos `na.rm=TRUE`. La regresión siempre usa todos los datos.
 
-Entonces, ¿por qué no siempre usar la regresión para predecir? Porque no siempre es apropiado. Por ejemplo, Anscombe constuyó casos para los cuales los datos no tienen una relación lineal. Entonces, ¿tiene sentido usar la línea de regresión para predecir en nuestro ejemplo? Galton encontró que sí, en el caso de los datos de altura. La justificación, que incluimos en la siguiente sección, es algo más avanzada que el resto del capítulo.
+Entonces, ¿por qué no siempre usar la regresión para predecir? Porque no siempre es apropiado. Por ejemplo, Anscombe ofreció casos para los cuales los datos no tienen una relación lineal. Entonces, ¿tiene sentido usar la línea de regresión para predecir en nuestro ejemplo? Galton encontró que sí, en el caso de los datos de altura. La justificación, que incluimos en la siguiente sección, es algo más avanzada que el resto del capítulo.
 
 ### Distribución normal de dos variables (avanzada)
 
@@ -391,7 +391,7 @@ $$
 \mbox{SD}(Y \mid X=x ) = \sigma_Y \sqrt{1-\rho^2}
 $$
 
-Para ver por qué esto es intuitivo, observen que sin condicionar, $\mbox{SD}(Y) = \sigma_Y$, estamos viendo la variabilidad de todos los hijos. Pero tan pronto condicionamos, solo observamos la variabilidad de los hijos con un padre alto, de 72 pulgadas. Este grupo tendrá a ser algo alto, por lo que se reduce la desviación estándar.
+Para ver por qué esto es intuitivo, observen que sin condicionar, $\mbox{SD}(Y) = \sigma_Y$, estamos viendo la variabilidad de todos los hijos. Pero tan pronto condicionamos, solo observamos la variabilidad de los hijos con un padre alto, de 72 pulgadas. Este grupo tenderá a ser algo alto, por lo que se reduce la desviación estándar.
 
 Específicamente, se reduce a $\sqrt{1-\rho^2} = \sqrt{1 - 0.25}$ = 0.87 de lo que era originalmente. Podríamos decir que las alturas de los padres "explican" el 13% de la variabilidad observada en las alturas de los hijos.
 
