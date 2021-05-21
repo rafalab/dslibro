@@ -107,6 +107,7 @@ transformación logarítmica   |  |
 | (aesthetic) mappings | mapeos estéticos | |  |  |
 | match (verb)| aparear  | | coincidencia |  |
 | match (noun)| apareado |  | coincidencia |  |
+| matrix of logicals | matriz de valores lógicos |  |  |  |
 | maximum likelihood estimation | estimación de máxima verosimilitud | | | |
 | maximum likelihood estimator | estimador de máxima verosimilitud | | | |
 | mean absolute error | error medio absoluto | |  |  |
@@ -143,6 +144,7 @@ transformación logarítmica   |  |
 | __prebuilt objects__  | objetos predefinidos |   | objetos predefinidos |  |
 | precision | precisión |  |  |  |
 | prediction bias | sesgo de predicción |  |  |  |
+| principal component analysis (PCA) | análisis de componentes principales o PCA |  |  |  |
 | __Q__ | | | | |
 | Q-Q plot | gráfico Q-Q  | |  |
 |quadratic discriminant analysis_ (QDA)| análisis discriminante cuadrático o QDA | |  |
