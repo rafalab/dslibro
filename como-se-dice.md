@@ -32,6 +32,7 @@
 | cheat sheet | hoja de referencia |  |  |
 | click (verb) | clic, hacer clic  |  | clic |  |
 | coerce (verb)| forzar una conversión |R coerced the data into characters  | forzar | convertir |
+| coercion | conversión forzada |  |  |
 | commands | comandos | type in the command | comando (singular) o comandos (plural) | comandos |
 | command | tecla _command_ | hit the command key |command o cmd | tecla de comando |
 | complexity parameter (cp) | parámetro de complejidad o cp |  |  |
@@ -85,7 +86,7 @@
 | K-means | K-medios | | | |
 | k nearest neighbors | k vecinos más cercanos | | k-nearest neighbors, k vecinos más cercanos | k vecinos más cercanos |
 | kernel | kernel | | | |
-| key bindings | | atajo de teclado | combinaciones de teclas |
+| key bindings | atajo de teclado | combinaciones de teclas |  |
 | keyboard shortcut | Use the keyboard shortcut command-S | atajo del teclado | atajo de teclado |
 | __L__ | | | | |
 | least squares | mínimos cuadrados|  |  |
@@ -94,6 +95,7 @@
 | log odds ratio | logaritmo de riesgo relativo |  |  |
 | log transformation | transformación logarítmica | |
 transformación logarítmica   |  |
+| logical operators | operadores lógicos |  |  |
 | logicals |  lógicos o booleanos | to get a vector of logicals | operadores lógicos o booleanos | lógicos o booleanos |
 | loop |  | bucle |  |
 | loss function | función de pérdida |  |  |
