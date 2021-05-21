@@ -27,7 +27,7 @@ galton_heights <- GaltonFamilies %>%
   rename(son = childHeight)
 ```
 
-Supongamos que tienen la tarea de construir un algoritmo de _machine learning_ que prediga la altura del hijo $Y$ usando la altura del padre $X$. Generemos sets de evaluación y de entrenamiento:
+Supongan que tienen la tarea de construir un algoritmo de _machine learning_ que prediga la altura del hijo $Y$ usando la altura del padre $X$. Generemos sets de evaluación y de entrenamiento:
 
 ```{r, message=FALSE, warning=FALSE}
 y <- galton_heights$son
@@ -56,14 +56,14 @@ $$
 f(x) = \mbox{E}( Y \mid X= x ) = \beta_0 + \beta_1 x
 $$
 
-En la Sección \@ref(lse), introdujimos los mínimos cuadrados como método para estimar la pendiente $\beta_0$ y el intercepto $\beta_1$:
+En la Sección \@ref(lse), presentamos los mínimos cuadrados como método para estimar la pendiente $\beta_0$ y el intercepto $\beta_1$:
 
 ```{r}
 fit <- lm(son ~ father, data = train_set)
 fit$coef
 ```
 
-Esto nos da una estimado de la expectativa condicional:
+Esto nos da una estimador de la expectativa condicional:
 
 $$ \hat{f}(x) = 35 + 0.25 x $$
 
@@ -133,7 +133,7 @@ y póngalo dentro de una llamada a `replicate`.
 3\. Describa lo que observa con el RMSE a medida que aumenta el tamaño del set de datos.
 
 a. En promedio, el RMSE no cambia mucho ya que `n` se hace más grande, mientras que la variabilidad de RMSE disminuye.
-b. Debido a la ley de los grandes números, el RMSE disminuye: más datos significa estimados más precisos.
+b. Debido a la ley de los grandes números, el RMSE disminuye: más datos significa estimadores más precisos.
 c. `n = 10000` no es lo suficientemente grande. Para ver una disminución en RMSE, necesitamos hacerla más grande.
 d. El RMSE no es una variable aleatoria.
 
@@ -155,7 +155,7 @@ Repita el ejercicio y observe lo que le sucede al RMSE ahora.
 
 a. Es solo suerte. Si lo hacemos nuevamente, será más grande.
 b. El teorema del límite central nos dice que el RMSE es normal.
-c. Cuando aumentamos la correlación entre `x` e `y`, `x` tiene más poder predictivo y, por lo tanto, provee un mejor estimado de `y`. Esta correlación tiene un efecto mucho mayor en RMSE que `n`. `n` grande simplemente ofrece estimados más precisos de los coeficientes del modelo lineal.
+c. Cuando aumentamos la correlación entre `x` e `y`, `x` tiene más poder predictivo y, por lo tanto, provee un mejor estimador de `y`. Esta correlación tiene un efecto mucho mayor en RMSE que `n`. `n` grande simplemente ofrece estimadores más precisos de los coeficientes del modelo lineal.
 d. Ambos son ejemplos de regresión, por lo que el RMSE tiene que ser el mismo.
 
 
@@ -250,7 +250,7 @@ lm_fit <- mutate(train_set, y = as.numeric(sex == "Female")) %>%
 ```
 
 
-Una vez que tengamos estimados $\hat{\beta}_0$ y $\hat{\beta}_1$, podemos obtener una predicción real. Nuestro estimado de la probabilidad condicional $p(x)$ es:
+Una vez que tengamos estimadores $\hat{\beta}_0$ y $\hat{\beta}_1$, podemos obtener una predicción real. Nuestro estimador de la probabilidad condicional $p(x)$ es:
 
 $$
 \hat{p}(x) = \hat{\beta}_0+ \hat{\beta}_1 x
@@ -268,7 +268,7 @@ Vemos que este método funciona mucho mejor que adivinar.
 
 ### Modelos lineales generalizados
 
-La función $\beta_0 + \beta_1 x$ puede tomar cualquier valor, incluyendo negativos y valores mayores que 1. De hecho, el estimado $\hat{p}(x)$ calculado en la sección de regresión lineal se vuelve negativo.
+La función $\beta_0 + \beta_1 x$ puede tomar cualquier valor, incluyendo negativos y valores mayores que 1. De hecho, el estimador $\hat{p}(x)$ calculado en la sección de regresión lineal se vuelve negativo.
 
 ```{r regression-prediction}
 heights %>%
@@ -289,9 +289,9 @@ range(p_hat)
 
 Pero estamos estimando una probabilidad: $\mbox{Pr}( Y = 1 \mid X = x)$ que está restringida entre 0 y 1.
 
-La idea de los modelos lineales generalizados (_generalized linear models_ o GLM por sus siglas en inglés) es 1) definir una distribución de $Y$ que sea consistente con sus posibles resultados y
+La idea de los _modelos lineales generalizados_ (_generalized linear models_ o GLM por sus siglas en inglés) es 1) definir una distribución de $Y$ que sea consistente con sus posibles resultados y
 2) encontrar una función $g$ tal que $g(\mbox{Pr}( Y = 1 \mid X = x))$ se pueda modelar como una combinación lineal de predictores.
-La regresión logística es el GLM más utilizado. Es una extensión de regresión lineal que asegura que el estimado de $\mbox{Pr}( Y = 1 \mid X = x)$ esté entre 0 y 1. Este enfoque utiliza la transformación _logística_ que presentamos en la Sección \@ref(logit):
+La regresión logística es el GLM más utilizado. Es una extensión de regresión lineal que asegura que el estimador de $\mbox{Pr}( Y = 1 \mid X = x)$ esté entre 0 y 1. Este enfoque utiliza la transformación _logística_ que presentamos en la Sección \@ref(logit):
 
 $$ g(p) = \log \frac{p}{1-p}$$
 
@@ -309,9 +309,9 @@ g\left\{ \mbox{Pr}(Y = 1 \mid X=x) \right\} = \beta_0 + \beta_1 x
 $$
 
 
-Con este modelo, ya no podemos usar mínimos cuadrados. En su lugar, calculamos  el _estimado de máxima verosimilitud_ (_maximum likelihood estimation_ o MLE por sus siglas en inglés). Pueden aprender más sobre este concepto en un libro de texto de teoría estadística^[http://www.amazon.com/Mathematical-Statistics-Analysis-Available-Enhanced/dp/0534399428].
+Con este modelo, ya no podemos usar mínimos cuadrados. En su lugar, calculamos la _estimación de máxima verosimilitud_ (_maximum likelihood estimation_ o MLE por sus siglas en inglés). Pueden aprender más sobre este concepto en un libro de texto de teoría estadística^[http://www.amazon.com/Mathematical-Statistics-Analysis-Available-Enhanced/dp/0534399428].
 
-En R, podemos ajustar el modelo de regresión logística con la función `glm`: modelos lineales generalizados (_generalized linear models_ o GLM por sus siglas en inglés). Esta función puede ajustar varios modelos, no solo regresión logística, por lo cual tenemos que especificar el modelo que queremos a través del argumento `family`:
+En R, podemos ajustar el modelo de regresión logística con la función `glm`: modelos lineales generalizados. Esta función puede ajustar varios modelos, no solo regresión logística, por lo cual tenemos que especificar el modelo que queremos a través del argumento `family`:
 
 ```{r}
 glm_fit <- train_set %>%
@@ -344,14 +344,14 @@ tmp %>%
             mapping = aes(x, p_hat), lty = 2)
 ```
 
-Como tenemos un estimado $\hat{p}(x)$, podemos obtener predicciones:
+Como tenemos un estimador $\hat{p}(x)$, podemos obtener predicciones:
 
 ```{r}
 y_hat_logit <- ifelse(p_hat_logit > 0.5, "Female", "Male") %>% factor
 confusionMatrix(y_hat_logit, test_set$sex)$overall[["Accuracy"]]
 ```
 
-Las predicciones resultantes son similares. Esto se debe a que los dos estimados de $p(x)$ mayores que 1/2 en aproximadamente la misma región de x:
+Las predicciones resultantes son similares. Esto se debe a que los dos estimadores de $p(x)$ mayores que 1/2 en aproximadamente la misma región de x:
 
 ```{r glm-prediction, echo=FALSE}
 data.frame(x = seq(min(tmp$x), max(tmp$x))) %>%
@@ -363,7 +363,7 @@ data.frame(x = seq(min(tmp$x), max(tmp$x))) %>%
   geom_hline(yintercept = 0.5, lty = 5)
 ```
 
-Las regresiones lineales y logísticas proveen un estimado de la expectativa condicional:
+Las regresiones lineales y logísticas proveen un estimador de la expectativa condicional:
 
 $$
 \mbox{E}(Y \mid X=x)
@@ -392,7 +392,7 @@ y_hat_glm <- factor(ifelse(p_hat_glm > 0.5, 7, 2))
 confusionMatrix(y_hat_glm, mnist_27$test$y)$overall["Accuracy"]
 ```
 
-Comparando con los resultados que obtuvimos en la Sección \@ref(two-or-seven), vemos que la regresión logística funciona de manera similar a la regresión. Esto no es sorprendente dado que el estimado de $\hat{p}(x_1, x_2)$ se ve similar también:
+Comparando con los resultados que obtuvimos en la Sección \@ref(two-or-seven), vemos que la regresión logística funciona de manera similar a la regresión. Esto no es sorprendente dado que el estimador de $\hat{p}(x_1, x_2)$ se ve similar también:
 
 ```{r, echo=FALSE}
 # We use this function to plot the estimated conditional probabilities

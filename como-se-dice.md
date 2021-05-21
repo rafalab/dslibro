@@ -12,7 +12,7 @@
 | access (verb) | acceder | you access the column with `$` | | acceder a |
 | access operator | operador de acceso | `$` is the access operator  | | operador de acceso a |
 | accessor | operador de acceso | `$` is called the accessor   | accesador? | acceso |
-| accuracy |exactitud  | |  |
+| accuracy | exactitud  | |  |
 | add-ons | complementos|  add-ons | complementos | complementos o plugins |
 | arithmetic operator |operador aritmético  | addition is an arithmentic operator | | operador aritmético |
 | assignment operator | operador de asignación |`<-` is the  assignment operator |operador de asignación  | |
@@ -64,12 +64,13 @@
 | functions | funciones | We will use the functions `mean` and `sd` | funciones | funciones o rutina |
 | function call | llamada a función | there is no difference between this function call and the previous one | llamada a función | llamadas a funciones, invocar función|
 | __G__ | | | | |
+|generalized linear models (GLM)| modelos lineales generalizados o GLM | | | |
 | __H__ | | | | |
 | harmonic average | media armónica | | | |
 | __I__ | | | | |
 | image plot | mapa de matriz| | | | 
 | indentation | indentación | | indentar | indentación |
-| Integrated Development Environment (IDE) | Entorno de desarrollo integrado (_IDE_) | ambiente integrado de desarrollo o en ocasiones no se traduce | IDE |
+| Integrated Development Environment (IDE) | Entorno de desarrollo integrado o IDE | ambiente integrado de desarrollo o en ocasiones no se traduce | IDE |
 | index (verb) | indexar | integers are used to index vectors | indexar, indizar  | indexar | 
 | indexing | indexación |R provides a convenient way of indexing vectors |  | indexación |
 | input (noun) | | entrada | `mean` takes a vector as input | input (no se traduce; anglicismo aceptado), entrada | entrada |
@@ -102,13 +103,14 @@ transformación logarítmica   |  |
 | (aesthetic) mappings | mapeos estéticos | |  |  |
 | match (verb)| aparear  | | coincidencia |  |
 | match (noun)| apareado |  | coincidencia |  |
+| maximum likelihood estimation | estimación de máxima verosimilitud | | | |
+| maximum likelihood estimator | estimador de máxima verosimilitud | | | |
 | mean absolute error | error medio absoluto | |  |  |
 | mean square error | error cuadrático medio | |  |  |
 | missing data | datos faltantes| | datos perdidos |
 | missing value | valor faltante | | valor faltante |  |  
 | modelling|  modelando ||modelado  |  |
 | motivating| motivantes |motivating examples, motivating case studies |ilustrativo, estimulante, motivante| ilustrativo | 
-| maximum likelihood estimation | estimación de máxima verosimilitud | | | |
 | __N__ | | | | |
 | Naive Bayes | Naive Bayes  |  |  |  |
 | named list | lista con nombres |  | lista nombrada  |  |
@@ -123,6 +125,7 @@ transformación logarítmica   |  |
 | output layer| capa de salida || |  |
 | overall accuracy | exactitud general |  |  |  |
 | overfitting | sobreajuste |  |  |  |
+| over-smoothing | sobre-suavización |  |  |  |
 | __P__ | | | | |
 | panes | paneles |  |  |  |
 | parse | leer y procesar |  |  |  |
@@ -134,6 +137,7 @@ transformación logarítmica   |  |
 | plot (noun) | gráfico | make a plot of the data | gráfico, gráfica | gráfico |
 | plot (verb) | graficar |plot the data | graficar | graficar, representar |
 | __prebuilt objects__  | objetos predefinidos |   | objetos predefinidos |  |
+| precision | precisión |  |  |  |
 | prediction bias | sesgo de predicción |  |  |  |
 | __Q__ | | | | |
 | Q-Q plot | gráfico q-q  | |  |
