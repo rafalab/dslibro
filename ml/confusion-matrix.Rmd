@@ -138,7 +138,7 @@ mean(y_hat == test_set$sex)
 
 Vemos que es un poco más baja que la exactitud observada para el set de entrenamiento, pero aún es mejor que adivinar. Y al probar en un set de datos en el que no entrenamos, sabemos que nuestro resultado no se debe a que se haya elegido para dar un buen resultado en el set de evaluación.
 
-### La matriz de confusión
+### Matriz de confusión
 
 La regla de predicción que desarrollamos en la sección anterior predice `Male` si el alumno es más alto que `r best_cutoff` pulgadas. Dado que la mujer promedio es aproximadamente `r best_cutoff` pulgadas, esta regla de predicción parece incorrecta. ¿Que pasó? Si la altura de un estudiante es la de la mujer promedio, ¿no deberíamos predecir `Female`?
 
@@ -169,7 +169,7 @@ Entonces, al calcular la exactitud general, el alto porcentaje de errores cometi
 
 Hay varias métricas que podemos usar para evaluar un algoritmo de manera que la prevalencia no afecte nuestra evaluación y todas estas pueden derivarse de la matriz de confusión. Una forma general de mejorar el uso de la exactitud general es estudiar la _sensibilidad_ y la _especificidad_ por separado.
 
-### La sensibilidad y la especificidad
+### Sensibilidad y especificidad
 
 Para definir la sensibilidad y la especificidad, necesitamos un resultado binario. Cuando los resultados son categóricos, podemos definir estos términos para una categoría específica. En el ejemplo de dígitos, podemos pedir la especificidad en el caso de predecir correctamente 2 en lugar de algún otro dígito. Una vez que especifiquemos una categoría de interés, podemos hablar sobre resultados positivos, $Y=1$, y resultados negativos, $Y=0$.
 
@@ -228,7 +228,7 @@ cm$byClass[c("Sensitivity","Specificity", "Prevalence")]
 Podemos ver que la alta exactitud general es posible a pesar de la sensibilidad relativamente baja. Como sugerimos anteriormente, la razón por la que esto sucede es debido a la baja prevalencia (0.23): la proporción de mujeres es baja. Como la prevalencia es baja, no predecir mujeres reales como mujeres (baja sensibilidad) no disminuye la exactitud tanto como no predecir hombres reales como hombres (baja especificidad). Este es un ejemplo de por qué es importante examinar la sensibilidad y la especificidad y no solo la exactitud. Antes de aplicar este algoritmo a sets de datos generales, debemos preguntarnos si la prevalencia será la misma.
 
 
-### La exactitud equilibrada y la medida $F_1$
+### Exactitud equilibrada y medida $F_1$
 
 Aunque generalmente recomendamos estudiar tanto la especificidad como la sensibilidad, a menudo es útil tener un resumen de un número, por ejemplo, para fines de optimización. Una medida que se prefiere sobre la exactitud general es el promedio de especificidad y de sensibilidad, conocida como _exactitud equilibrada_ (_balanced accuracy_ en inglés). Debido a que la especificidad y la sensibilidad son tasas, es más apropiado calcular la _media armónica_ (_harmonic average_ en inglés). De hecho, la _medida $F_1$_ (_$F_1$-score_ en inglés), un resumen de un número ampliamente utilizado, es la media armónica de precisión y _recall_:
 
@@ -449,7 +449,7 @@ bind_rows(tmp_1, tmp_2) %>%
 En este gráfico inmediatamente vemos que la precisión de adivinar no es alta. Esto se debe a que la prevalencia es baja. También vemos que si cambiamos los positivos para que representen "Male" en lugar de "Female", la curva ROC permanece igual, pero el gráfico _precision-recall_ cambia.
 
 
-### La función de pérdida {#loss-function}
+### Función de pérdida {#loss-function}
 
 Hasta ahora hemos descrito métricas de evaluación que se aplican exclusivamente a datos categóricos. Específicamente, para los resultados binarios, hemos descrito cómo la sensibilidad, especificidad, precisión y $F_1$ se pueden utilizar como cuantificación. Sin embargo, estas métricas no son útiles para resultados continuos. En esta sección, describimos cómo el enfoque general para definir "mejor" en _machine learning_ es definir una _función de pérdida_ (_loss function_ en inglés), que puede aplicarse tanto a datos categóricos como continuos.
 
@@ -482,7 +482,7 @@ $$
 \frac{1}{B} \sum_{b=1}^B \frac{1}{N}\sum_{i=1}^N \left(\hat{y}_i^b - y_i^b\right)^2
 $$
 
-con $y_{i}^b$ denotando la observación $i$ en la muestra aleatoria $b$ e $\hat{y}_i^b$ denotando la predicción resultante obtenida de aplicar exactamente el mismo algoritmo a la muestra aleatoria $b$. De nuevo, en la práctica solo observamos una muestra aleatoria, por lo que el MSE esperado es solo teórico. Sin embargo, en el Capítulo \@ref(cross-validation) describimos un enfoque para estimar el MSE que trata de imitar esta cantidad teórica.
+con $y_{i}^b$ denotando la observación $i$ en la muestra aleatoria $b$ e $\hat{y}_i^b$ denotando la predicción resultante obtenida de aplicar exactamente el mismo algoritmo a la muestra aleatoria $b$. De nuevo, en la práctica solo observamos una muestra aleatoria, por lo que el MSE esperado es solo teórico. Sin embargo, en el Capítulo \@ref(cross-validation), describimos un enfoque para estimar el MSE que trata de imitar esta cantidad teórica.
 
 Tengan en cuenta que hay funciones de pérdida distintas de la función de pérdida cuadrática. Por ejemplo, el _error medio absoluto_ (_mean absolute error_ en inglés) utiliza valores absolutos, $|\hat{Y}_i - Y_i|$ en lugar de cuadrar los errores
 $(\hat{Y}_i - Y_i)^2$. Sin embargo, en este libro nos enfocamos en minimizar la función de pérdida cuadrática ya que es la más utilizada.

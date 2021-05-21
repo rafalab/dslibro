@@ -102,6 +102,7 @@ transformación logarítmica   |  |
 | (aesthetic) mappings | mapeos estéticos | |  |  |
 | match (verb)| aparear  | | coincidencia |  |
 | match (noun)| apareado |  | coincidencia |  |
+| mean absolute error | error medio absoluto | |  |  |
 | mean square error | error cuadrático medio | |  |  |
 | missing data | datos faltantes| | datos perdidos |
 | missing value | valor faltante | | valor faltante |  |  
