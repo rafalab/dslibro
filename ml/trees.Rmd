@@ -10,7 +10,7 @@ Describimos cómo métodos como LDA y QDA no deben usarse con muchos predictores
 
 Una manera útil de entender la maldición de la dimensionalidad es considerar cuán grande tenemos que hacer un  _span_/vecindario/ventana para incluir un porcentaje dado de los datos. Recuerden que con vecindarios más grandes, nuestros métodos pierden flexibilidad.
 
-Por ejemplo, supongamos que tenemos un predictor continuo con puntos igualmente espaciados en el intervalo [0,1] y queremos crear ventanas que incluyen 1/10 de datos. Entonces es fácil ver que nuestras ventanas tienen que ser de tamaño 0.1:
+Por ejemplo, supongan que tenemos un predictor continuo con puntos igualmente espaciados en el intervalo [0,1] y queremos crear ventanas que incluyen 1/10 de datos. Entonces es fácil ver que nuestras ventanas tienen que ser de tamaño 0.1:
 
 ```{r curse-of-dim, echo=FALSE, out.width="50%", fig.height=1.5}
 rafalib::mypar()
@@ -45,7 +45,7 @@ points(x[25],y[25], cex = 0.5, pch=4)
 ```
 
 Usando la misma lógica, si queremos incluir el 10% de los datos en un espacio tridimensional, entonces el lado de cada cubo es $\sqrt[3]{.10} \approx 0.464$.
-En general, para incluir el 10% de los datos en un caso con $p$ dimensiones, necesitamos un intervalo con cada lado del tamaño $\sqrt[p]{.10}$ del total. Esta proporción se acerca a 1 rápidamente, y si la proporción es 1, significa que incluimos todos los datos y ya no estamos suavizando.
+En general, para incluir el 10% de los datos en un caso con $p$ dimensiones, necesitamos un intervalo con cada lado del tamaño $\sqrt[p]{.10}$ del total. Esta proporción se acerca a 1 rápidamente y, si la proporción es 1, significa que incluimos todos los datos y ya no estamos suavizando.
 
 ```{r curse-of-dim-4, message=FALSE, message=FALSE}
 library(tidyverse)
@@ -113,7 +113,7 @@ olive %>%
 ```
 
 En la Sección \@ref(predictor-space), definimos espacios predictores. El espacio predictor aquí consiste en puntos de ocho dimensiones con valores entre 0 y 100. En el gráfico anterior, mostramos el espacio definido por los dos predictores _eicosenoic_ y _linoleic_ y, a simple vista,
-podemos construir una regla de predicción que divida el espacio del predictor para que cada partición contenga solo resultados de una categoría. Esto a su vez se puede utilizar para definir un algoritmo con una precisión perfecta. Específicamente, definimos la siguiente regla de decisión. Si el _eicosenoic_ es mayor que 0.065, predecimos el sur de Italia. Si no, entonces si _linoleic_ es más grande que $10.535$, predecimos Cerdeña, y si es más bajo, predecimos el norte de Italia. Podemos dibujar este árbol de decisión así:
+podemos construir una regla de predicción que divida el espacio del predictor para que cada partición contenga solo resultados de una categoría. Esto a su vez se puede utilizar para definir un algoritmo con una exactitud perfecta. Específicamente, definimos la siguiente regla de decisión. Si el _eicosenoic_ es mayor que 0.065, predecimos el sur de Italia. Si no, entonces si _linoleic_ es más grande que $10.535$, predecimos Cerdeña, y si es más bajo, predecimos el norte de Italia. Podemos dibujar este árbol de decisión así:
 
 ```{r olive-tree, echo=FALSE, warning=FALSE, message=FALSE, fig.height=4.5, out.width="50%"}
 library(caret)
@@ -190,7 +190,7 @@ plot(fit, margin = 0.1)
 text(fit, cex = 0.75)
 ```
 
-La primera división se realiza el día 39.5. Una de esas regiones se divide en el día 86.5. Las dos nuevas particiones que resultan se dividen en los días 49.5 y 117.5, respectivamente, y así sucesivamente. Terminamos con 8 particiones. El estimado final $\hat{f}(x)$ se ve así:
+La primera división se realiza el día 39.5. Una de esas regiones se divide en el día 86.5. Las dos nuevas particiones que resultan se dividen en los días 49.5 y 117.5, respectivamente, y así sucesivamente. Terminamos con 8 particiones. El estimador final $\hat{f}(x)$ se ve así:
 
 ```{r polls-2008-tree-fit}
 polls_2008 %>%
@@ -353,7 +353,7 @@ Entonces, ¿cómo obtenemos diferentes árboles de decisión de un solo set de e
 
 2\. Una gran cantidad de atributos es típico en los desafíos de _machine learning_. A menudo, muchos atributos pueden ser informativos, pero incluirlos todos en el modelo puede resultar en un sobreajuste. La segunda forma en que los bosques aleatorios inducen aleatoriedad es seleccionando al azar los atributos que se incluirán en la construcción de cada árbol. Se selecciona un subconjunto aleatorio diferente para cada árbol. Esto reduce la correlación entre los árboles en el bosque, mejorando así la exactitud de la predicción.
 
-Para ilustrar cómo los primeros pasos pueden dar como resultado estimados más uniformes, demostraremos ajustando un bosque aleatorio a los datos de las encuestas de 2008. Utilizaremos la función `randomForest` en el paquete __randomForest__:
+Para ilustrar cómo los primeros pasos pueden dar como resultado estimadores más uniformes, demostraremos ajustando un bosque aleatorio a los datos de las encuestas de 2008. Utilizaremos la función `randomForest` en el paquete __randomForest__:
 
 ```{r polls-2008-rf, message=FALSE, warning=FALSE}
 library(randomForest)
@@ -374,7 +374,7 @@ plot(fit)
 
 Podemos ver que en este caso, la exactitud mejora a medida que agregamos más árboles hasta unos 30 árboles donde la exactitud se estabiliza.
 
-El estimado resultante para este bosque aleatorio puede verse así:
+El estimador resultante para este bosque aleatorio puede verse así:
 
 ```{r polls-2008-rf-fit}
 polls_2008 %>%
@@ -384,7 +384,7 @@ polls_2008 %>%
   geom_line(aes(day, y_hat), col="red")
 ```
 
-Observen que el estimado del bosque aleatorio es mucho más uniforme que lo que logramos con el árbol de regresión en la sección anterior. Esto es posible porque el promedio de muchas funciones de escalón puede ser suave. Podemos ver esto examinando visualmente cómo cambia el estimado a medida que agregamos más árboles. En el siguiente gráfico, pueden ver cada una de las muestras de _bootstrap_ para varios valores de $b$ y para cada una vemos el árbol que se ajusta en gris, los árboles anteriores que se ajustaron en gris más claro y el resultado de tomar el promedio de todos los árboles estimados hasta ese punto.
+Observen que el estimador del bosque aleatorio es mucho más uniforme que lo que logramos con el árbol de regresión en la sección anterior. Esto es posible porque el promedio de muchas funciones de escalón puede ser suave. Podemos ver esto examinando visualmente cómo cambia el estimador a medida que agregamos más árboles. En el siguiente gráfico, pueden ver cada una de las muestras de _bootstrap_ para varios valores de $b$ y para cada una vemos el árbol que se ajusta en gris, los árboles anteriores que se ajustaron en gris más claro y el resultado de tomar el promedio de todos los árboles estimadores hasta ese punto.
 
 ```{r rf-animation, echo=FALSE, out.width="100%"}
 library(rafalib)
@@ -495,7 +495,7 @@ p2 <- plot_cond_prob(predict(train_rf, newdata = mnist_27$true_p, type = "prob")
 grid.arrange(p2, p1, nrow=1)
 ```
 
-La visualización del estimado muestra que, aunque obtenemos una alta exactitud, parece que podemos mejorar al hacer que el estimado sea más uniforme. Esto podría lograrse cambiando el parámetro que controla el número mínimo de puntos de datos en los nodos del árbol. Mientras más grande sea este mínimo, más suave será el estimado final. Podemos entrenar los parámetros del bosque aleatorio. A continuación, utilizamos el paquete __caret__ para optimizar el tamaño mínimo del nodo. Debido a que este no es uno de los parámetros que el paquete __caret__ optimiza por defecto, escribiremos nuestro propio código:
+La visualización del estimado muestra que, aunque obtenemos una alta exactitud, parece que podemos mejorar al hacer que el estimador sea más uniforme. Esto podría lograrse cambiando el parámetro que controla el número mínimo de puntos de datos en los nodos del árbol. Mientras más grande sea este mínimo, más suave será el estimador final. Podemos entrenar los parámetros del bosque aleatorio. A continuación, utilizamos el paquete __caret__ para optimizar el tamaño mínimo del nodo. Debido a que este no es uno de los parámetros que el paquete __caret__ optimiza por defecto, escribiremos nuestro propio código:
 
 ```{r acc-versus-nodesize, cache=TRUE}
 nodesize <- seq(1, 51, 10)
@@ -517,7 +517,7 @@ confusionMatrix(predict(train_rf_2, mnist_27$test),
                 mnist_27$test$y)$overall["Accuracy"]
 ```
 
-El modelo seleccionado mejora la exactitud y provee un estimado más uniforme.
+El modelo seleccionado mejora la exactitud y provee un estimador más uniforme.
 
 ```{r cond-prob-final-rf, echo=FALSE, out.width="100%"}
 p1 <- plot_cond_prob() + ggtitle("True conditional probability")
@@ -562,9 +562,9 @@ Utilice `rpart` para ajustar un árbol de regresión y guarde el resultado en `f
 5\. Use la función `plot` para ver si el bosque aleatorio ha convergido o si necesitamos más árboles.
 
 
-6\. Parece que los valores predeterminados para el bosque aleatorio dan como resultado un estimado demasiado flexible (no uniforme). Vuelva a ejecutar el bosque aleatorio pero esta vez con `nodesize` fijado en 50 y `maxnodes` fijado en 25. Rehaga el gráfico.
+6\. Parece que los valores predeterminados para el bosque aleatorio dan como resultado un estimador demasiado flexible (no uniforme). Vuelva a ejecutar el bosque aleatorio pero esta vez con `nodesize` fijado en 50 y `maxnodes` fijado en 25. Rehaga el gráfico.
 
-7\. Vemos que esto produce resultados más suaves. Usemos la función `train` para ayudarnos a elegir estos valores. Del manual __caret__^[https://topepo.github.io/caret/available-models.html] vemos que no podemos ajustar el parámetro `maxnodes`  ni el argumento `nodesize` con la función `randomForest`, así que usaremos el paquete __Rborist__ y ajustaremos el argumento `minNode`. Utilice la función  `train` para probar valores `minNode <- seq(5, 250, 25)`. Vea qué valor minimiza el RMSE estimado.
+7\. Vemos que esto produce resultados más suaves. Usemos la función `train` para ayudarnos a elegir estos valores. Del manual __caret__^[https://topepo.github.io/caret/available-models.html] vemos que no podemos ajustar el parámetro `maxnodes`  ni el argumento `nodesize` con la función `randomForest`, así que usaremos el paquete __Rborist__ y ajustaremos el argumento `minNode`. Utilice la función  `train` para probar valores `minNode <- seq(5, 250, 25)`. Vea qué valor minimiza el estimador RMSE.
 
 
 8\. Haga un diagrama de dispersión junto con la predicción del modelo mejor ajustado.

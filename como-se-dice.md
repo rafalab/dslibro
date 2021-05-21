@@ -34,6 +34,7 @@
 | coerce (verb)| forzar una conversión |R coerced the data into characters  | forzar | convertir |
 | commands | comandos | type in the command | comando (singular) o comandos (plural) | comandos |
 | command | tecla _command_ | hit the command key |command o cmd | tecla de comando |
+| complexity parameter (cp) | parámetro de complejidad o cp |  |  |
 | confounding | confusión | |  |
 | __D__ | | | | |
 | dashboard | tablero |un _dashboard_  |  |
@@ -89,6 +90,7 @@
 | __L__ | | | | |
 | least squares | mínimos cuadrados|  |  |
 | least squares estimates (LSE) | estimadores de mínimos cuadrados o LSE|  |  |
+| linear discriminant analysis (LDA) | análisis discriminante lineal o LDA |  |  |
 | log odds ratio | logaritmo de riesgo relativo |  |  |
 | log transformation | transformación logarítmica | |
 transformación logarítmica   |  |
@@ -140,7 +142,8 @@ transformación logarítmica   |  |
 | precision | precisión |  |  |  |
 | prediction bias | sesgo de predicción |  |  |  |
 | __Q__ | | | | |
-| Q-Q plot | gráfico q-q  | |  |
+| Q-Q plot | gráfico Q-Q  | |  |
+|quadratic discriminant analysis_ (QDA)| análisis discriminante cuadrático o QDA | |  |
 | query | consulta | | consulta |  |
 | quote (verb) | entrecomillar  | we need to quote strings |entrecomillar |  |
 | __R__ | | | | |
