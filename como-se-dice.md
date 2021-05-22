@@ -31,6 +31,8 @@
 | character strings | cadenas de caracteres | vector of character strings | secuencia de caracteres | cadenas de caracteres | 
 | cheat sheet | hoja de referencia |  |  |
 | click (verb) | clic, hacer clic  |  | clic |  |
+| clusters | grupos |  |  |
+| clustering | agrupamiento |  |  |
 | coerce (verb)| forzar una conversión |R coerced the data into characters  | forzar | convertir |
 | coercion | conversión forzada |  |  |
 | commands | comandos | type in the command | comando (singular) o comandos (plural) | comandos |
@@ -69,6 +71,7 @@
 |generalized linear models (GLM)| modelos lineales generalizados o GLM | | | |
 | __H__ | | | | |
 | harmonic average | media armónica | | | |
+| heatmap | mapa de calor | | | |
 | __I__ | | | | |
 | image plot | mapa de matriz| | | | 
 | indentation | indentación | | indentar | indentación |
@@ -169,6 +172,7 @@ transformación logarítmica   |  |
 | scaling | ajuste |  |  |  |
 | scatterplot | diagrama de dispersión | | diagrama de dispersión, diagrama de puntos | diagrama de dispersión |
 | script | _script_ | write an R script | script | script, archivo de procesamiento por lotes (en MSDOS, Unix/Linux, etc.) |
+| singular value decomposition (SVD) | descomposición de valores singulares o SVD  |  |  |
 | smooth | suave | smooth densities | densidades suaves  |  |
 | smoothing | suavización |  |  |
 | span | span  |  |  |
