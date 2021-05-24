@@ -56,7 +56,7 @@ dat <- Teams %>% filter(yearID %in% 1961:2001) %>%
 
 y luego hacemos un diagrama de dispersión para cada estrato:
 
-```{r runs-vs-bb-by-hr-strata, out.width="80%", fig.height=5}
+```{r runs-vs-bb-by-hr-strata, out.width="80%", fig.height=5, warning=FALSE, message=FALSE}
 dat %>%
   ggplot(aes(BB_per_game, R_per_game)) +
   geom_point(alpha = 0.5) +
@@ -76,7 +76,7 @@ Las pendientes se reducen, pero no son 0, lo que indica que las BB son útiles p
 
 Aunque nuestra comprensión de la aplicación nos dice que los HR causan BB pero no al revés, aún podemos verificar si la estratificación por BB hace que el efecto de HR disminuya. Para hacer esto, usamos el mismo código, excepto que intercambiamos HR y BB para obtener este gráfico:
 
-```{r runs-vs-hr-by-bb-strata, out.width="100%",echo=FALSE}
+```{r runs-vs-hr-by-bb-strata, out.width="100%",echo=FALSE, warning=FALSE, message=FALSE}
 dat <- Teams %>% filter(yearID %in% 1961:2001) %>%
   mutate(BB_strata = round(BB/G,1),
          HR_per_game = HR/G,
@@ -291,7 +291,7 @@ Cuando graficamos $\hat{Y}$ versus $x$, vemos la línea de regresión.
 
 Tengan en cuenta que la predicción $\hat{Y}$ también es una variable aleatoria y la teoría matemática nos dice cuáles son los errores estándar. Si suponemos que los errores son normales o tienen un tamaño de muestra lo suficientemente grande, además podemos usar la teoría para construir intervalos de confianza. De hecho, la capa `geom_smooth(method = "lm")` de __ggplot2__ que anteriormente usamos grafica $\hat{Y}$ y lo rodea por intervalos de confianza:
 
-```{r father-son-regression}
+```{r father-son-regression, warning=FALSE, message=FALSE}
 galton_heights %>% ggplot(aes(son, father)) +
   geom_point() +
   geom_smooth(method = "lm")
@@ -595,12 +595,12 @@ Para hacer que la tasa de equipo por juego sea comparable a la tasa de jugador p
 ```{r}
 pa_per_game <- Batting %>% filter(yearID == 2002) %>%
   group_by(teamID) %>%
-  summarize(pa_per_game = sum(AB+BB)/max(G)) %>%
+  summarize(pa_per_game = sum(AB+BB) / max(G)) %>%
   pull(pa_per_game) %>%
   mean
 ```
 
-Calculamos las tasas de turnos al bate para jugadores disponibles en 2002 con datos de 1997-2001. Para evitar pequeños artefactos de muestra, filtramos jugadores con menos de 200 turnos al bate por año. Aquí está el cálculo completo en una línea:
+Calculamos las tasas de turnos al bate para jugadores disponibles en 2002 con datos de 1997-2001.  Para evitar pequeños artefactos de muestra, filtramos jugadores con menos de 200 turnos al bate por año. Aquí está el cálculo completo en una línea:
 
 ```{r}
 players <- Batting %>% filter(yearID %in% 1997:2001) %>%
@@ -616,14 +616,15 @@ players <- Batting %>% filter(yearID %in% 1997:2001) %>%
             PA = sum(PA)) %>%
   filter(PA >= 1000) %>%
   select(-G) %>%
-  mutate(R_hat = predict(fit, newdata = .))
+  mutate(R_hat = predict(fit, newdata = .) / 9)
 ```
 
-Las carreras que predecimos para cada jugador calculadas aquí se pueden interpretar como el número de carreras que predecimos que un equipo anotará si todos los bateadores son exactamente como ese jugador. La distribución demuestra que existe una gran variabilidad entre los jugadores:
+Como el modelo fue ajustado a data de equipos, dividimos la predicción entre 9 (el número de jugadores que batean) para que represente las carreras que predecimos cada jugador producirá por juego. La distribución demuestra que existe una gran variabilidad entre los jugadores:
 
 ```{r r-hat-hist}
-qplot(R_hat, data = players, binwidth = 0.5, color = I("black"))
+qplot(R_hat, data = players, binwidth = 0.05, color = I("black"))
 ```
+
 
 ### Añadiendo información sobre salario y posición 
 
@@ -699,7 +700,7 @@ geom_point() +
 scale_x_log10()
 ```
 -->
-Podemos buscar buenas ofertas mirando a los jugadores que producen muchas más carreras que otros con salarios similares. Podemos usar esta tabla para decidir qué jugadores escoger y mantener nuestro salario total por debajo de los 40 millones de dólares con los que tuvo que trabajar Billy Beane. Esto se puede hacer usando lo que los científicos de la computación llaman programación lineal. Esto no es algo que enseñamos, pero aquí están los jugadores seleccionados con este acercamiento:
+
 
 ```{r, message=FALSE, warning=FALSE, echo=FALSE}
 library(reshape2)
@@ -717,39 +718,46 @@ lp_solution <- lp("max", players$R_hat,
 our_team <- players %>%
   filter(lp_solution$solution == 1) %>%
   arrange(desc(R_hat))
-tmp <- our_team %>% select(nameFirst, nameLast, POS, salary, R_hat)
-if(knitr::is_html_output()){
-  knitr::kable(tmp, "html") %>%
-    kableExtra::kable_styling(bootstrap_options = "striped", full_width = FALSE)
-} else{
-  knitr::kable(tmp, "latex", booktabs = TRUE) %>%
-    kableExtra::kable_styling(font_size = 8)
-}
+tmp <- our_team %>% select(nameFirst, nameLast, POS, salary, R_hat) %>%
+  mutate(R_hat=round(R_hat,1)) %>%
+  mutate(salary = prettyNum(salary, big.mark = ","))
 
-```
-
-Vemos que todos estos jugadores tienen BB por encima del promedio y la mayoría tienen tasas de HR por encima del promedio, mientras que lo mismo no es cierto para sencillos. Aquí incluimos una tabla con estadísticas estandarizadas para todos los jugadores, de modo que, por ejemplo, los bateadores de HR por encima del promedio tienen valores superiores a 0.
-
-```{r, echo=FALSE}
-my_scale <- function(x) (x - median(x))/mad(x)
-tmp <- players %>% mutate(BB = my_scale(BB),
+my_scale <- function(x) round((x - median(x))/mad(x),1)
+tmp2 <- players %>% mutate(BB = my_scale(BB),
                           singles = my_scale(singles),
                           doubles = my_scale(doubles),
                           triples = my_scale(triples),
                           HR = my_scale(HR),
-                          AVG = my_scale(AVG),
-                          R_hat = my_scale(R_hat)) %>%
+                          AVG = my_scale(AVG)) %>%
   filter(playerID %in% our_team$playerID) %>%
-  select(nameLast, BB, singles, doubles, triples, HR, AVG, R_hat) %>%
-  arrange(desc(R_hat))
+  select(nameLast, BB, singles, doubles, triples, HR, AVG)
+tmp <- left_join(tmp, tmp2, by = "nameLast") 
+```
+
+Podemos buscar buenas ofertas mirando a los jugadores que producen muchas más carreras que otros con salarios similares. Podemos usar esta tabla para decidir qué jugadores escoger y mantener nuestro salario total por debajo de los 40 millones de dólares con los que tuvo que trabajar Billy Beane. Esto se puede hacer usando lo que los científicos de la computación llaman programación lineal. Esto no es algo que enseñamos, pero en la siguiente tabla mostramos los jugadores seleccionados con este acercamiento, la posición que juegan, su salario y las carreras que predecimos producirían. Vemos que, en promedio, nuestro equipo produciría `r sum(tmp$R_hat)` carreras por juego! En la tabla también mostramos estadísticas estandarizadas usando todos los jugadores, de modo que, por ejemplo, los bateadores de HR por encima del promedio tienen valores superiores a 0. Vemos que todos estos jugadores tienen BB por encima del promedio y la mayoría tienen tasas de HR por encima del promedio, mientras que lo mismo no es cierto para sencillos:
+
+```{r, message=FALSE, warning=FALSE, echo=FALSE}
 if(knitr::is_html_output()){
   knitr::kable(tmp, "html") %>%
     kableExtra::kable_styling(bootstrap_options = "striped", full_width = FALSE)
 } else{
   knitr::kable(tmp, "latex", booktabs = TRUE) %>%
-    kableExtra::kable_styling(font_size = 8)
+    kableExtra::kable_styling(font_size = 8, latex_options = "hold_position")
 }
 ```
+
+
+<!--
+```{r, echo=FALSE}
+if(knitr::is_html_output()){
+  knitr::kable(tmp, "html") %>%
+    kableExtra::kable_styling(bootstrap_options = "striped", full_width = FALSE)
+} else{
+  knitr::kable(tmp, "latex", booktabs = TRUE) %>%
+    kableExtra::kable_styling(font_size = 8, latex_options = "hold_position")
+}
+```
+-->
 
 ## La falacia de la regresión
 
@@ -814,7 +822,7 @@ if(knitr::is_html_output()){
                               full_width = FALSE)
 } else{
   knitr::kable(tmp, "latex", booktabs = TRUE) %>%
-    kableExtra::kable_styling(font_size = 8)
+    kableExtra::kable_styling(font_size = 8, latex_options = "hold_position")
 }
 ```
 
@@ -849,7 +857,7 @@ if(knitr::is_html_output()){
     kableExtra::kable_styling(bootstrap_options = "striped", full_width = FALSE)
 } else{
   knitr::kable(tmp, "latex", booktabs = TRUE) %>%
-    kableExtra::kable_styling(font_size = 8)
+    kableExtra::kable_styling(font_size = 8, latex_options = "hold_position")
 }
 ```
 
@@ -862,7 +870,7 @@ if(knitr::is_html_output()){
     kableExtra::kable_styling(bootstrap_options = "striped", full_width = FALSE)
 } else{
   knitr::kable(tmp, "latex", booktabs = TRUE) %>%
-    kableExtra::kable_styling(font_size = 8)
+    kableExtra::kable_styling(font_size = 8, latex_options = "hold_position")
 }
 ```
 
