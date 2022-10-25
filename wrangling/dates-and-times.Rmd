@@ -12,7 +12,7 @@ Por esta razón, R define un tipo de datos solo para fechas y horas. Vimos un ej
 library(tidyverse)
 library(dslabs)
 data("polls_us_election_2016")
-polls_us_election_2016$startdate %>% head
+polls_us_election_2016$startdate |> head()
 ```
 
 Estas parecen cadenas, pero no lo son:
@@ -24,19 +24,19 @@ class(polls_us_election_2016$startdate)
 Miren lo que sucede cuando los convertimos en números:
 
 ```{r}
-as.numeric(polls_us_election_2016$startdate) %>% head
+as.numeric(polls_us_election_2016$startdate) |> head()
 ```
 
 Los convierte en días desde la época Unix. La función `as.Date` puede convertir un carácter en una fecha. Entonces, para ver que la época Unix es el día 0, podemos escribir:
 
 ```{r}
-as.Date("1970-01-01") %>% as.numeric
+as.Date("1970-01-01") |> as.numeric()
 ```
 
 Funciones que grafican, como las de __ggplot2__, conocen el formato de fecha. Esto significa que, por ejemplo, un diagrama de dispersión puede usar la representación numérica para decidir la posición del punto, pero incluir la cadena en las etiquetas:
 
 ```{r rawpolls-vs-time}
-polls_us_election_2016 %>% filter(pollster == "Ipsos" & state == "U.S.") %>%
+polls_us_election_2016 |> filter(pollster == "Ipsos" & state == "U.S.") |>
   ggplot(aes(startdate, rawpoll_trump)) +
   geom_line()
 ```
@@ -55,7 +55,7 @@ Tomaremos una muestra aleatoria de fechas para mostrar algunas de las cosas úti
 
 ```{r}
 set.seed(2002)
-dates <- sample(polls_us_election_2016$startdate, 10) %>% sort
+dates <- sample(polls_us_election_2016$startdate, 10) |> sort()
 dates
 ```
 
@@ -125,9 +125,9 @@ Pueden ver todas las zonas horarias disponibles con la función `OlsonNames()`.
 También podemos extraer horas, minutos y segundos:
 
 ```{r}
-now() %>% hour()
-now() %>% minute()
-now() %>% second()
+now() |> hour()
+now() |> minute()
+now() |> second()
 ```
 
 El paquete también incluye una función para convertir cadenas en horas del día, así como funciones que convierten objetos que representan horas del día, que además incluyen las fechas:
@@ -157,11 +157,11 @@ make_date(1980:1989)
 Otra función muy útil es `round_date`. Se puede utilizar para redondear las fechas al año, trimestre, mes, semana, día, hora, minutos o segundos más cercanos. Entonces, si queremos agrupar todas las encuestas por semana del año, podemos hacer lo siguiente:
 
 ```{r poll-margin-versus-week}
-polls_us_election_2016 %>%
-  mutate(week = round_date(startdate, "week")) %>%
-  group_by(week) %>%
-  summarize(margin = mean(rawpoll_clinton - rawpoll_trump)) %>%
-  qplot(week, margin, data = .)
+polls_us_election_2016 |>
+  mutate(week = round_date(startdate, "week")) |>
+  group_by(week) |>
+  summarize(margin = mean(rawpoll_clinton - rawpoll_trump)) |>
+  qplot(week, margin, data = _)
 ```
 
 
@@ -189,19 +189,19 @@ dat <- map_df(str_split(pdf_text(fn), "\n"), function(s){
   n <- str_count(s, "\\d+")
   out <- c(1:header_index, which(n == 1), 
            which(n >= 28), tail_index:length(s))
-  s[-out] %>%  str_remove_all("[^\\d\\s]") %>% str_trim() %>%
-    str_split_fixed("\\s+", n = 6) %>% .[,1:5] %>% as_tibble() %>% 
-    setNames(c("day", header)) %>%
-    mutate(month = month, day = as.numeric(day)) %>%
-    pivot_longer(-c(day, month), names_to = "year", values_to = "deaths") %>%
+  s[-out] |>  str_remove_all("[^\\d\\s]") |> str_trim() |>
+    str_split_fixed("\\s+", n = 6) |> .[,1:5] |> as_tibble() |> 
+    setNames(c("day", header)) |>
+    mutate(month = month, day = as.numeric(day)) |>
+    pivot_longer(-c(day, month), names_to = "year", values_to = "deaths") |>
     mutate(deaths = as.numeric(deaths))
-}) %>%
+}) |>
   mutate(month = recode(month, 
                         "JAN" = 1, "FEB" = 2, "MAR" = 3, 
                         "APR" = 4, "MAY" = 5, "JUN" = 6, 
                         "JUL" = 7, "AGO" = 8, "SEP" = 9, 
-                        "OCT" = 10, "NOV" = 11, "DEC" = 12)) %>%
-  mutate(date = make_date(year, month, day)) %>%
+                        "OCT" = 10, "NOV" = 11, "DEC" = 12)) |>
+  mutate(date = make_date(year, month, day)) |>
   filter(date <= "2018-05-01")
 ```
 

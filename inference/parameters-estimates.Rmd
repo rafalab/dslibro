@@ -20,23 +20,24 @@ Real Clear Politics^[http://www.realclearpolitics.com] es un ejemplo de un agreg
 
 ```{r, echo=FALSE, message=FALSE, warning=FALSE}
 #knitr::include_graphics(file.path(img_path,"rcp-polls.png"))
-url <- "https://www.realclearpolitics.com/epolls/2016/president/us/general_election_trump_vs_clinton-5491.html"
+url <- "https://web.archive.org/web/20161108012231/https://www.realclearpolitics.com/epolls/2016/president/us/general_election_trump_vs_clinton-5491.html"
 library(rvest)
-tab <- read_html(url) %>% html_node("table") %>% html_table()
-tab <- tab %>% mutate(Poll = stringr::str_remove(Poll, "\\/.*")) %>%
+tab <- read_html(url) |> html_elements("table")
+tab <- tab[[1]] |> html_table() |> 
+  mutate(Poll = stringr::str_remove(Poll, "\\/.*")) |>
   mutate(Poll = case_when(
     Poll == "BloombergBloomberg" ~ "Bloomberg",
     Poll == "FOX NewsFOX News" ~ "FOX News",
-    Poll == "MonmouthMonmouth" ~ "Monmouth",
+    Poll == "MonmouthMonmouth"  ~ "Monmouth",  
     Poll == "CBS NewsCBS News" ~ "CBS News",
     TRUE ~ Poll))
-names(tab) <- stringr::str_remove_all(names(tab), "\\s(.*)")
+names(tab) <- stringr::str_remove_all(names(tab), "\\s(.*)")    
 if(knitr::is_html_output()){
-  knitr::kable(tab, "html") %>%
+  knitr::kable(tab, "html") |>
     kableExtra::kable_styling(bootstrap_options = "striped", full_width = FALSE)
 } else{
-  knitr::kable(tab, "latex", booktabs = TRUE) %>%
-    kableExtra::kable_styling(font_size = 8, latex_options = "hold_position")
+  knitr::kable(tab, "latex", booktabs = TRUE) |>
+    kableExtra::kable_styling(font_size = 8)
 }
 ```
 
@@ -149,7 +150,7 @@ Un problema es que no sabemos $p$, por lo que no podemos calcular el error está
 ```{r standard-error-versus-sample-size, echo=FALSE, message=FALSE, warning=FALSE}
 p <- 0.51
 N <- 10^seq(1,5, len=100)
-data.frame(N=N, SE = sqrt(p*(1-p)/N)) %>% ggplot(aes(N, SE)) + geom_line() + scale_x_continuous(breaks = c(10,100,1000,10000), trans = "log10")
+data.frame(N=N, SE = sqrt(p*(1-p)/N)) |> ggplot(aes(N, SE)) + geom_line() + scale_x_continuous(breaks = c(10,100,1000,10000), trans = "log10")
 ```
 
 Del gráfico vemos que necesitaríamos una encuesta de más de 10,000 personas para obtener un error estándar tan bajo. Raras veces vemos encuestas de este tamaño debido en parte a los costos. De la tabla  de Real Clear Politics, aprendemos que los tamaños de muestra en las encuestas de opinión oscilan entre 500-3,500 personas. Para un tamaño de muestra de 1,000 y $p=0.51$, el error estándar es:

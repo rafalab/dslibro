@@ -35,8 +35,8 @@ Las funciones que usamos para unir (_join_ en inglés), descritas a continuació
 Las funciones para unir del paquete __dplyr__ aseguran que las tablas se combinen de tal forma que las filas equivalentes estén juntas. Si conocen SQL, verán que el acercamiento y la sintaxis son muy similares. La idea general es que uno necesita identificar una o más columnas que servirán para emparejar las dos tablas. Entonces se devuelve una nueva tabla con la información combinada. Observen lo que sucede si unimos las dos tablas anteriores por estado usando `left_join` (eliminaremos la columna `others` y renombraremos `electoral_votes` para que las tablas quepen en la página):
 
 ```{r}
-tab <- left_join(murders, results_us_election_2016, by = "state") %>%
-  select(-others) %>% rename(ev = electoral_votes)
+tab <- left_join(murders, results_us_election_2016, by = "state") |>
+  select(-others) |> rename(ev = electoral_votes)
 head(tab)
 ```
 
@@ -44,7 +44,7 @@ Los datos se han unido exitosamente y ahora podemos, por ejemplo, hacer un diagr
 
 ```{r ev-vs-population, message=FALSE, warning=FALSE}
 library(ggrepel)
-tab %>% ggplot(aes(population/10^6, ev, label = abb)) +
+tab |> ggplot(aes(population/10^6, ev, label = abb)) +
   geom_point() +
   geom_text_repel() +
   scale_x_continuous(trans = "log2") +
@@ -58,12 +58,12 @@ Vemos que la relación es casi lineal con aproximadamente dos votos electorales 
 En la práctica, no siempre ocurre que cada fila de una tabla tiene una fila correspondiente en la otra. Por esta razón, tenemos varias versiones de _join_. Para ilustrar este reto, tomaremos subconjuntos de las tablas anteriores. Creamos las tablas `tab1` y `tab2` para que tengan algunos estados en común pero no todos:
 
 ```{r}
-tab_1 <- slice(murders, 1:6) %>% select(state, population)
+tab_1 <- slice(murders, 1:6) |> select(state, population)
 tab_1
-tab_2 <- results_us_election_2016 %>%
+tab_2 <- results_us_election_2016 |>
   filter(state%in%c("Alabama", "Alaska", "Arizona",
-                    "California", "Connecticut", "Delaware")) %>%
-  select(state, electoral_votes) %>% rename(ev = electoral_votes)
+                    "California", "Connecticut", "Delaware")) |>
+  select(state, electoral_votes) |> rename(ev = electoral_votes)
 tab_2
 ```
 
@@ -81,7 +81,7 @@ left_join(tab_1, tab_2, by = "state")
 Tengan en cuenta que `NA`s se agregan a los dos estados que no aparecen en `tab_2`. Además, observen que esta función, así como todas las otras _joins_, pueden recibir los primeros argumentos a través del _pipe_:
 
 ```{r, eval=FALSE}
-tab_1 %>% left_join(tab_2, by = "state")
+tab_1 |> left_join(tab_2, by = "state")
 ```
 
 
@@ -90,7 +90,7 @@ tab_1 %>% left_join(tab_2, by = "state")
 Si en lugar de una tabla con las mismas filas que la primera tabla, queremos una con las mismas filas que la segunda tabla, podemos usar `right_join`:
 
 ```{r}
-tab_1 %>% right_join(tab_2, by = "state")
+tab_1 |> right_join(tab_2, by = "state")
 ```
 
 Ahora los `NA`s están en la columna de `tab_1`.
@@ -268,18 +268,18 @@ El _data frame_ `Batting` contiene las estadísticas ofensivas de todos los juga
 ```{r, eval=FALSE}
 library(Lahman)
 
-top <- Batting %>%
-  filter(yearID == 2016) %>%
-  arrange(desc(HR)) %>%
+top <- Batting |>
+  filter(yearID == 2016) |>
+  arrange(desc(HR)) |>
   slice(1:10)
 
-top %>% as_tibble()
+top |> as_tibble()
 ```
 
 ¿Pero quiénes son estos jugadores? Vemos una identificación, pero no los nombres. Los nombres de los jugadores están en esta tabla:
 
 ```{r, eval=FALSE}
-Master %>% as_tibble()
+Master |> as_tibble()
 ```
 
 Podemos ver los nombres de las columnas `nameFirst` y `nameLast`. Utilice la función `left_join` para crear una tabla de los mejores bateadores de cuadrangulares. La tabla debe tener `playerID`, nombre, apellido y número de cuandrangulares (HR). Reescriba el objeto `top` con esta nueva tabla.
@@ -294,10 +294,10 @@ Podemos ver los nombres de las columnas `nameFirst` y `nameLast`. Utilice la fun
 
 
 ```{r, eval=FALSE}
-co2_wide <- data.frame(matrix(co2, ncol = 12, byrow = TRUE)) %>%
-  setNames(1:12) %>%
-  mutate(year = 1959:1997) %>%
-  pivot_longer(-year, names_to = "month", values_to = "co2") %>%
+co2_wide <- data.frame(matrix(co2, ncol = 12, byrow = TRUE)) |>
+  setNames(1:12) |>
+  mutate(year = 1959:1997) |>
+  pivot_longer(-year, names_to = "month", values_to = "co2") |>
   mutate(month = as.numeric(month))
 ```
 

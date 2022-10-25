@@ -21,7 +21,7 @@ data("movielens")
 Podemos ver que esta tabla está en formato _tidy_ con miles de filas:
 
 ```{r}
-movielens %>% as_tibble()
+movielens |> as_tibble()
 ```
 
 Cada fila representa una calificación dada por un usuario a una película.
@@ -30,7 +30,7 @@ Podemos ver la cantidad de usuarios únicos que dan calificaciones y cuántas pe
 
 
 ```{r}
-movielens %>%
+movielens |>
   summarize(n_users = n_distinct(userId),
             n_movies = n_distinct(movieId))
 ```
@@ -38,24 +38,24 @@ movielens %>%
 Si multiplicamos esos dos números, obtenemos un número mayor de 5 millones. Sin embargo, nuestra tabla de datos tiene aproximadamente 100,000 filas. Esto implica que no todos los usuarios calificaron todas las películas. Por lo tanto, podemos pensar en estos datos como una matriz muy grande, con usuarios en las filas y películas en las columnas, con muchas celdas vacías. La función `pivot_longer` nos permite convertirla a este formato, pero si lo intentamos para toda la matriz, colgaremos a R. Mostremos la matriz para seis usuarios y cuatro películas.
 
 ```{r, echo=FALSE}
-keep <- movielens %>%
-  count(movieId) %>%
-  top_n(4, n) %>%
+keep <- movielens |>
+  count(movieId) |>
+  top_n(4, n) |>
   pull(movieId)
 
-tab <- movielens %>%
-  filter(movieId%in%keep) %>%
-  filter(userId %in% c(13:20)) %>%
-  select(userId, title, rating) %>%
+tab <- movielens |>
+  filter(movieId%in%keep) |>
+  filter(userId %in% c(13:20)) |>
+  select(userId, title, rating) |>
   mutate(title = str_remove(title, ", The"),
-         title = str_remove(title, ":.*")) %>%
+         title = str_remove(title, ":.*")) |>
   pivot_wider(names_from="title", values_from="rating")
 
 if(knitr::is_html_output()){
-  knitr::kable(tab, "html") %>%
+  knitr::kable(tab, "html") |>
     kableExtra::kable_styling(bootstrap_options = "striped", full_width = FALSE)
 } else{
-  knitr::kable(tab, "latex", booktabs = TRUE) %>%
+  knitr::kable(tab, "latex", booktabs = TRUE) |>
     kableExtra::kable_styling(font_size = 8)
 }
 ```
@@ -65,12 +65,15 @@ Pueden pensar en la tarea de un sistema de recomendación como completar los `NA
 ```{r sparsity-of-movie-recs, echo=FALSE, fig.width=3, fig.height=3, out.width="40%"}
 users <- sample(unique(movielens$userId), 100)
 rafalib::mypar()
-movielens %>% filter(userId %in% users) %>%
-  select(userId, movieId, rating) %>%
-  mutate(rating = 1) %>%
-  spread(movieId, rating) %>% select(sample(ncol(.), 100)) %>%
-  as.matrix() %>% t(.) %>%
-  image(1:100, 1:100,. , xlab="Movies", ylab="Users")
+movielens |> 
+  filter(userId %in% users) |> 
+  select(userId, movieId, rating) |>
+  mutate(rating = 1) |>
+  pivot_wider(names_from = movieId, values_from = rating) |> 
+  (\(mat) mat[, sample(ncol(mat), 100)])() |>
+  as.matrix() |> 
+  t() |>
+  image(1:100, 1:100, z = _ , xlab="Movies", ylab="Users")
 ```
 
 Este reto de _machine learning_ es más complicado de lo que hemos estudiado hasta ahora porque cada resultado $Y$ tiene un set diferente de predictores. Para ver esto, tengan en cuenta que si estamos prediciendo la calificación de la película $i$ por usuario $u$, en principio, todas las otras clasificaciones relacionadas con la película $i$ y por el usuario $u$ pueden usarse como predictores, pero diferentes usuarios califican diferentes películas y diferentes números de películas. Además, podemos usar información de otras películas que hemos determinado que son parecidas a la película $i$ o de usuarios que se consideran similares al usuario $u$. Básicamente, toda la matriz se puede utilizar como predictores para cada celda.
@@ -80,15 +83,15 @@ Veamos algunas de las propiedades generales de los datos para entender mejor los
 Lo primero que notamos es que algunas películas se evalúan más que otras. A continuación se muestra la distribución. Esto no debería sorprendernos dado que hay películas de gran éxito vistas por millones y películas artísticas e independientes vistas por pocos. Nuestra segunda observación es que algunos usuarios son más activos que otros en la calificación de películas:
 
 ```{r movie-id-and-user-hists, echo=FALSE, fig.width=6, fig.height=3}
-p1 <- movielens %>%
-  count(movieId) %>%
+p1 <- movielens |>
+  count(movieId) |>
   ggplot(aes(n)) +
   geom_histogram(bins = 30, color = "black") +
   scale_x_log10() +
   ggtitle("Movies")
 
-p2 <- movielens %>%
-  count(userId) %>%
+p2 <- movielens |>
+  count(userId) |>
   ggplot(aes(n)) +
   geom_histogram(bins = 30, color = "black") +
   scale_x_log10() +
@@ -113,8 +116,8 @@ test_set <- movielens[test_index,]
 Para asegurarnos de que no incluimos usuarios y películas en el set de evaluación que no aparecen en el set de entrenamiento, eliminamos estas entradas usando la función `semi_join`:
 
 ```{r}
-test_set <- test_set %>%
-  semi_join(train_set, by = "movieId") %>%
+test_set <- test_set |>
+  semi_join(train_set, by = "movieId") |>
   semi_join(train_set, by = "userId")
 ```
 
@@ -197,8 +200,8 @@ Como hay miles de $b_i$, a medida que cada película obtiene una, la función `l
 
 ```{r}
 mu <- mean(train_set$rating)
-movie_avgs <- train_set %>%
-  group_by(movieId) %>%
+movie_avgs <- train_set |>
+  group_by(movieId) |>
   summarize(b_i = mean(rating - mu))
 ```
 
@@ -213,8 +216,8 @@ Recuerden $\hat{\mu}=3.5$, entonces una $b_i = 1.5$ implica una calificación pe
 Veamos cuánto mejora nuestra predicción cuando usamos $\hat{y}_{u,i} = \hat{\mu} + \hat{b}_i$:
 
 ```{r}
-predicted_ratings <- mu + test_set %>%
-  left_join(movie_avgs, by='movieId') %>%
+predicted_ratings <- mu + test_set |>
+  left_join(movie_avgs, by='movieId') |>
   pull(b_i)
 RMSE(predicted_ratings, test_set$rating)
 ```
@@ -233,10 +236,10 @@ Ya observamos una mejora. ¿Pero podemos mejorar más?
 Calculemos la calificación promedio para el usuario $u$ para aquellos que han calificado 100 o más películas:
 
 ```{r user-effect-hist}
-train_set %>%
-  group_by(userId) %>%
-  filter(n()>=100) %>%
-  summarize(b_u = mean(rating)) %>%
+train_set |>
+  group_by(userId) |>
+  filter(n()>=100) |>
+  summarize(b_u = mean(rating)) |>
   ggplot(aes(b_u)) +
   geom_histogram(bins = 30, color = "black")
 ```
@@ -258,19 +261,19 @@ lm(rating ~ as.factor(movieId) + as.factor(userId))
 pero, por las razones descritas anteriormente, no lo haremos. En cambio, calcularemos una aproximación calculando $\hat{\mu}$ y $\hat{b}_i$ y estimando $\hat{b}_u$ como el promedio de $y_{u,i} - \hat{\mu} - \hat{b}_i$:
 
 ```{r}
-user_avgs <- train_set %>%
-  left_join(movie_avgs, by='movieId') %>%
-  group_by(userId) %>%
+user_avgs <- train_set |>
+  left_join(movie_avgs, by='movieId') |>
+  group_by(userId) |>
   summarize(b_u = mean(rating - mu - b_i))
 ```
 
 Ahora podemos construir predictores y ver cuánto mejora el RMSE:
 
 ```{r}
-predicted_ratings <- test_set %>%
-  left_join(movie_avgs, by='movieId') %>%
-  left_join(user_avgs, by='userId') %>%
-  mutate(pred = mu + b_i + b_u) %>%
+predicted_ratings <- test_set |>
+  left_join(movie_avgs, by='movieId') |>
+  left_join(user_avgs, by='userId') |>
+  mutate(pred = mu + b_i + b_u) |>
   pull(pred)
 RMSE(predicted_ratings, test_set$rating)
 ```
@@ -346,55 +349,55 @@ A pesar de la gran variación de película a película, nuestra mejora en RMSE f
 
 
 ```{r}
-test_set %>%
-  left_join(movie_avgs, by='movieId') %>%
-  mutate(residual = rating - (mu + b_i)) %>%
-  arrange(desc(abs(residual))) %>%
-  slice(1:10) %>%
+test_set |>
+  left_join(movie_avgs, by='movieId') |>
+  mutate(residual = rating - (mu + b_i)) |>
+  arrange(desc(abs(residual))) |>
+  slice(1:10) |>
   pull(title)
 ```
 
 Todas estas parecen ser películas desconocidas. Para muchas de ellas, predecimos calificaciones altas. Echemos un vistazo a las 10 peores y 10 mejores películas basadas en $\hat{b}_i$. Primero, vamos a crear una base de datos que conecta `movieId` al título de la película:
 
 ```{r}
-movie_titles <- movielens %>%
-  select(movieId, title) %>%
+movie_titles <- movielens |>
+  select(movieId, title) |>
   distinct()
 ```
 
 Aquí están las 10 mejores películas según nuestro estimador:
 
 ```{r}
-movie_avgs %>% left_join(movie_titles, by="movieId") %>%
-  arrange(desc(b_i)) %>%
-  slice(1:10) %>%
+movie_avgs |> left_join(movie_titles, by="movieId") |>
+  arrange(desc(b_i)) |>
+  slice(1:10) |>
   pull(title)
 ```
 
 Y aquí están las 10 peores:
 
 ```{r}
-movie_avgs %>% left_join(movie_titles, by="movieId") %>%
-  arrange(b_i) %>%
-  slice(1:10) %>%
+movie_avgs |> left_join(movie_titles, by="movieId") |>
+  arrange(b_i) |>
+  slice(1:10) |>
   pull(title)
 ```
 
 Todas parecen ser bastante desconocidas. Veamos con qué frecuencia se califican.
 
 ```{r}
-train_set %>% count(movieId) %>%
-  left_join(movie_avgs, by="movieId") %>%
-  left_join(movie_titles, by="movieId") %>%
-  arrange(desc(b_i)) %>%
-  slice(1:10) %>%
+train_set |> count(movieId) |>
+  left_join(movie_avgs, by="movieId") |>
+  left_join(movie_titles, by="movieId") |>
+  arrange(desc(b_i)) |>
+  slice(1:10) |>
   pull(n)
 
-train_set %>% count(movieId) %>%
-  left_join(movie_avgs) %>%
-  left_join(movie_titles, by="movieId") %>%
-  arrange(b_i) %>%
-  slice(1:10) %>%
+train_set |> count(movieId) |>
+  left_join(movie_avgs) |>
+  left_join(movie_titles, by="movieId") |>
+  arrange(b_i) |>
+  slice(1:10) |>
   pull(n)
 ```
 
@@ -431,8 +434,8 @@ Calculemos estos estimadores regularizados de $b_i$ utilizando $\lambda=3$. Más
 ```{r}
 lambda <- 3
 mu <- mean(train_set$rating)
-movie_reg_avgs <- train_set %>%
-  group_by(movieId) %>%
+movie_reg_avgs <- train_set |>
+  group_by(movieId) |>
   summarize(b_i = sum(rating - mu)/(n()+lambda), n_i = n())
 ```
 
@@ -441,7 +444,7 @@ Para ver cómo se reducen los estimadores, hagamos un gráfico de los estimadore
 ```{r regularization-shrinkage}
 tibble(original = movie_avgs$b_i,
        regularlized = movie_reg_avgs$b_i,
-       n = movie_reg_avgs$n_i) %>%
+       n = movie_reg_avgs$n_i) |>
   ggplot(aes(original, regularlized, size=sqrt(n))) +
   geom_point(shape=1, alpha=0.5)
 ```
@@ -449,34 +452,34 @@ tibble(original = movie_avgs$b_i,
 Ahora, echemos un vistazo a las 10 mejores películas según los estimadores penalizados $\hat{b}_i(\lambda)$:
 
 ```{r}
-train_set %>%
-  count(movieId) %>%
-  left_join(movie_reg_avgs, by = "movieId") %>%
-  left_join(movie_titles, by = "movieId") %>%
-  arrange(desc(b_i)) %>%
-  slice(1:10) %>%
+train_set |>
+  count(movieId) |>
+  left_join(movie_reg_avgs, by = "movieId") |>
+  left_join(movie_titles, by = "movieId") |>
+  arrange(desc(b_i)) |>
+  slice(1:10) |>
   pull(title)
 ```
 
 ¡Esto tiene mucho más sentido! Estas películas son más populares y tienen más calificaciones. Aquí están las 10 peores películas:
 
 ```{r}
-train_set %>%
-  count(movieId) %>%
-  left_join(movie_reg_avgs, by = "movieId") %>%
-  left_join(movie_titles, by="movieId") %>%
-  arrange(b_i) %>%
-  select(title, b_i, n) %>%
-  slice(1:10) %>%
+train_set |>
+  count(movieId) |>
+  left_join(movie_reg_avgs, by = "movieId") |>
+  left_join(movie_titles, by="movieId") |>
+  arrange(b_i) |>
+  select(title, b_i, n) |>
+  slice(1:10) |>
   pull(title)
 ```
 
 ¿Mejoramos nuestros resultados?
 
 ```{r}
-predicted_ratings <- test_set %>%
-  left_join(movie_reg_avgs, by = "movieId") %>%
-  mutate(pred = mu + b_i) %>%
+predicted_ratings <- test_set |>
+  left_join(movie_reg_avgs, by = "movieId") |>
+  mutate(pred = mu + b_i) |>
   pull(pred)
 RMSE(predicted_ratings, test_set$rating)
 ```
@@ -499,15 +502,15 @@ Noten que $\lambda$ es un parámetro de ajuste. Podemos usar validación cruzada
 lambdas <- seq(0, 10, 0.25)
 
 mu <- mean(train_set$rating)
-just_the_sum <- train_set %>%
-  group_by(movieId) %>%
+just_the_sum <- train_set |>
+  group_by(movieId) |>
   summarize(s = sum(rating - mu), n_i = n())
 
 rmses <- sapply(lambdas, function(l){
-  predicted_ratings <- test_set %>%
-    left_join(just_the_sum, by='movieId') %>%
-    mutate(b_i = s/(n_i+l)) %>%
-    mutate(pred = mu + b_i) %>%
+  predicted_ratings <- test_set |>
+    left_join(just_the_sum, by='movieId') |>
+    mutate(b_i = s/(n_i+l)) |>
+    mutate(pred = mu + b_i) |>
     pull(pred)
   return(RMSE(predicted_ratings, test_set$rating))
 })
@@ -533,20 +536,20 @@ rmses <- sapply(lambdas, function(l){
   
   mu <- mean(train_set$rating)
   
-  b_i <- train_set %>%
-    group_by(movieId) %>%
+  b_i <- train_set |>
+    group_by(movieId) |>
     summarize(b_i = sum(rating - mu)/(n()+l))
   
-  b_u <- train_set %>%
-    left_join(b_i, by="movieId") %>%
-    group_by(userId) %>%
+  b_u <- train_set |>
+    left_join(b_i, by="movieId") |>
+    group_by(userId) |>
     summarize(b_u = sum(rating - b_i - mu)/(n()+l))
   
   predicted_ratings <-
-    test_set %>%
-    left_join(b_i, by = "movieId") %>%
-    left_join(b_u, by = "userId") %>%
-    mutate(pred = mu + b_i + b_u) %>%
+    test_set |>
+    left_join(b_i, by = "movieId") |>
+    left_join(b_u, by = "userId") |>
+    mutate(pred = mu + b_i + b_u) |>
     pull(pred)
   
   return(RMSE(predicted_ratings, test_set$rating))
@@ -569,10 +572,10 @@ rmse_results <- bind_rows(
   tibble(method="Regularized Movie + User Effect Model",
          RMSE = min(rmses)))
 if(knitr::is_html_output()){
-  knitr::kable(rmse_results, "html") %>%
+  knitr::kable(rmse_results, "html") |>
     kableExtra::kable_styling(bootstrap_options = "striped", full_width = FALSE)
 } else{
-  knitr::kable(rmse_results, "latex", booktabs = TRUE) %>%
+  knitr::kable(rmse_results, "latex", booktabs = TRUE) |>
     kableExtra::kable_styling(font_size = 8)
 }
 ```
@@ -601,7 +604,7 @@ schools <- data.frame(id = paste("PS",1:100),
 Podemos ver que las 10 mejores escuelas son:
 
 ```{r, eval=FALSE}
-schools %>% top_n(10, quality) %>% arrange(desc(quality))
+schools |> top_n(10, quality) |> arrange(desc(quality))
 ```
 
 Ahora hagamos que los estudiantes en la escuela tomen un examen. Existe una variabilidad aleatoria en la toma de exámenes, por lo que simularemos las puntuaciones de los exámenes distribuidos normalmente con el promedio determinado por la calidad de la escuela y las desviaciones estándar de 30 puntos porcentuales:
@@ -611,7 +614,7 @@ scores <- sapply(1:nrow(schools), function(i){
   scores <- rnorm(schools$size[i], schools$quality[i], 30)
   scores
 })
-schools <- schools %>% mutate(score = sapply(scores, mean))
+schools <- schools |> mutate(score = sapply(scores, mean))
 ```
 
 
@@ -664,15 +667,15 @@ $$
 Para ver esto, convertiremos los datos en una matriz para que cada usuario obtenga una fila, cada película obtenga una columna y $y_{u,i}$ sea la entrada en fila $u$ y columna $i$. Con fines ilustrativos, solo consideraremos un pequeño subconjunto de películas con muchas calificaciones y usuarios que han calificado muchas películas. También incluímos _Scent of a Woman_ (`movieId == 3252`) porque la usamos para un ejemplo específico:
 
 ```{r}
-train_small <- movielens %>%
-  group_by(movieId) %>%
-  filter(n() >= 50 | movieId == 3252) %>% ungroup() %>%
-  group_by(userId) %>%
-  filter(n() >= 50) %>% ungroup()
+train_small <- movielens |>
+  group_by(movieId) |>
+  filter(n() >= 50 | movieId == 3252) |> ungroup() |>
+  group_by(userId) |>
+  filter(n() >= 50) |> ungroup()
 
-y <- train_small %>% 
-  select(userId, movieId, rating) %>%
-  pivot_wider(names_from = "movieId", values_from = "rating") %>%
+y <- train_small |> 
+  select(userId, movieId, rating) |>
+  pivot_wider(names_from = "movieId", values_from = "rating") |>
   as.matrix()
 ```
 
@@ -682,8 +685,8 @@ Agregamos nombres de fila y columna:
 rownames(y)<- y[,1]
 y <- y[,-1]
 
-movie_titles <- movielens %>%
-  select(movieId, title) %>%
+movie_titles <- movielens |>
+  select(movieId, title) |>
   distinct()
 
 colnames(y) <- with(movie_titles, title[match(colnames(y), movieId)])
@@ -894,7 +897,7 @@ pcs <- data.frame(pca$rotation, name = str_trunc(colnames(y), 30),
 
 highlight <- filter(pcs, PC1 < -0.1 | PC1 > 0.1 | PC2 < -0.075 | PC2 > 0.1)
 
-pcs %>% ggplot(aes(PC1, PC2)) + geom_point() +
+pcs |> ggplot(aes(PC1, PC2)) + geom_point() +
   geom_text_repel(aes(PC1, PC2, label=name),
                   data = highlight, size = 2)
 ```
@@ -902,25 +905,25 @@ pcs %>% ggplot(aes(PC1, PC2)) + geom_point() +
 Con solo mirar los 10 primeros en cada dirección, vemos un patrón significativo. El primer PC muestra la diferencia entre las películas aclamadas por la crítica en un lado:
 
 ```{r, echo=FALSE}
-pcs %>% select(name, PC1) %>% arrange(PC1) %>% slice(1:10) %>% pull(name)
+pcs |> select(name, PC1) |> arrange(PC1) |> slice(1:10) |> pull(name)
 ```
 
 y los éxitos de taquilla de Hollywood en otro:
 
 ```{r, echo=FALSE}
-pcs %>% select(name, PC1) %>% arrange(desc(PC1)) %>% slice(1:10) %>% pull(name)
+pcs |> select(name, PC1) |> arrange(desc(PC1)) |> slice(1:10) |> pull(name)
 ```
 
 Mientras que el segundo PC parece ir de películas artísticas e independientes:
 
 ```{r, echo=FALSE}
-pcs %>% select(name, PC2) %>% arrange(PC2) %>% slice(1:10) %>% pull(name)
+pcs |> select(name, PC2) |> arrange(PC2) |> slice(1:10) |> pull(name)
 ```
 
 hacia favoritas de los _nerds_:
 
 ```{r, echo=FALSE}
-pcs %>% select(name, PC2) %>% arrange(desc(PC2)) %>% slice(1:10) %>% pull(name)
+pcs |> select(name, PC2) |> arrange(desc(PC2)) |> slice(1:10) |> pull(name)
 ```
 
 Ajustar un modelo que incorpora estos estimadores es complicado. Para aquellos interesados en implementar un enfoque que incorpore estas ideas, recomendamos el paquete __recommenderlab__. Los detalles están más allá del alcance de este libro.

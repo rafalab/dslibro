@@ -22,14 +22,16 @@ Como motivación para este capítulo, fingiremos que es 2002 y trataremos de con
 library(tidyverse)
 library(rvest)
 url <- "http://www.stevetheump.com/Payrolls.htm"
-h <- read_html(url)
-i <- h %>% html_nodes(".style3") %>% html_text() %>% stringr::str_which("2002")
-h %>% html_nodes("table") %>% .[[i]] %>% html_table(header = TRUE) %>%
-  mutate(Payroll = parse_number(Payroll)/10^6) %>%
-  mutate(Team = reorder(Team, Payroll)) %>%
+h <- read_html(url) 
+i <- h |> html_nodes(".style3") |> html_text() |> stringr::str_which("2002")
+h |> html_nodes("table") |> 
+  (\(x) x[[i]])() |> 
+  html_table(header = TRUE) |>  
+  mutate(Payroll = parse_number(Payroll)/10^6) |>
+  mutate(Team = reorder(Team, Payroll)) |>
   ggplot(aes(Team, Payroll)) +
   geom_bar(stat = "identity") +
-  ylab("Payroll in Millions") +
+  ylab("Payroll in Millions") + 
   coord_flip()
 ```
 
@@ -96,8 +98,8 @@ Comencemos con una obvia: HR. ¿Los equipos que tienen más cuadrangulares anota
 ```{r runs-vs-hrs, message=FALSE, warning=FALSE}
 library(Lahman)
 
-Teams %>% filter(yearID %in% 1961:2001) %>%
-  mutate(HR_per_game = HR/ G, R_per_game = R/ G) %>%
+Teams |> filter(yearID %in% 1961:2001) |>
+  mutate(HR_per_game = HR/ G, R_per_game = R/ G) |>
   ggplot(aes(HR_per_game, R_per_game)) +
   geom_point(alpha = 0.5)
 ```
@@ -105,8 +107,8 @@ Teams %>% filter(yearID %in% 1961:2001) %>%
 El gráfico muestra una fuerte asociación: los equipos con más HR tienden a anotar más carreras. Ahora examinemos la relación entre bases robadas y carreras:
 
 ```{r runs-vs-sb}
-Teams %>% filter(yearID %in% 1961:2001) %>%
-  mutate(SB_per_game = SB/ G, R_per_game = R/ G) %>%
+Teams |> filter(yearID %in% 1961:2001) |>
+  mutate(SB_per_game = SB/ G, R_per_game = R/ G) |>
   ggplot(aes(SB_per_game, R_per_game)) +
   geom_point(alpha = 0.5)
 ```
@@ -114,8 +116,8 @@ Teams %>% filter(yearID %in% 1961:2001) %>%
 Aquí la relación no es tan clara. Finalmente, examinemos la relación entre BB y carreras:
 
 ```{r runs-vs-bb}
-Teams %>% filter(yearID %in% 1961:2001) %>%
-  mutate(BB_per_game = BB/G, R_per_game = R/G) %>%
+Teams |> filter(yearID %in% 1961:2001) |>
+  mutate(BB_per_game = BB/G, R_per_game = R/G) |>
   ggplot(aes(BB_per_game, R_per_game)) +
   geom_point(alpha = 0.5)
 ```
@@ -125,8 +127,8 @@ Aquí nuevamente vemos una asociación clara. Pero, ¿esto significa que aumenta
 De hecho, parece que los BB y HR también están asociados:
 
 ```{r bb-vs-hrs}
-Teams %>% filter(yearID %in% 1961:2001 ) %>%
-  mutate(HR_per_game = HR/G, BB_per_game = BB/G) %>%
+Teams |> filter(yearID %in% 1961:2001 ) |>
+  mutate(HR_per_game = HR/G, BB_per_game = BB/G) |>
   ggplot(aes(HR_per_game, BB_per_game)) +
   geom_point(alpha = 0.5)
 ```
@@ -142,8 +144,8 @@ La regresión lineal nos ayudará a analizar todo esto y cuantificar las asociac
 
 ```{r hr-runs-bivariate}
 library(Lahman)
-p <- Teams %>% filter(yearID %in% 1961:2001 ) %>%
-  mutate(HR_per_game = HR/G, R_per_game = R/G) %>%
+p <- Teams |> filter(yearID %in% 1961:2001 ) |>
+  mutate(HR_per_game = HR/G, R_per_game = R/G) |>
   ggplot(aes(HR_per_game, R_per_game)) +
   geom_point(alpha = 0.5)
 p
@@ -153,10 +155,10 @@ p
 Los gráficos Q-Q confirman que la aproximación normal es útil aquí:
 
 ```{r hr-by-runs-qq}
-Teams %>% filter(yearID %in% 1961:2001 ) %>%
+Teams |> filter(yearID %in% 1961:2001 ) |>
   mutate(z_HR = round((HR - mean(HR))/sd(HR)),
-         R_per_game = R/G) %>%
-  filter(z_HR %in% -2:3) %>%
+         R_per_game = R/G) |>
+  filter(z_HR %in% -2:3) |>
   ggplot() +
   stat_qq(aes(sample=R_per_game)) +
   facet_wrap(~z_HR)
@@ -165,9 +167,9 @@ Teams %>% filter(yearID %in% 1961:2001 ) %>%
 Ahora estamos listos para usar la regresión lineal para predecir el número de carreras que anotará un equipo si sabemos cuántos cuadrangulares logrará el equipo. Lo único que necesitamos hacer es calcular los cinco resúmenes estadísticos:
 
 ```{r}
-summary_stats <- Teams %>%
-  filter(yearID %in% 1961:2001 ) %>%
-  mutate(HR_per_game = HR/G, R_per_game = R/G) %>%
+summary_stats <- Teams |>
+  filter(yearID %in% 1961:2001 ) |>
+  mutate(HR_per_game = HR/G, R_per_game = R/G) |>
   summarize(avg_HR = mean(HR_per_game),
             s_HR = sd(HR_per_game),
             avg_R = mean(R_per_game),
@@ -179,7 +181,7 @@ summary_stats
 y usar las fórmulas dadas arriba para crear las líneas de regresión:
 
 ```{r hr-versus-runs-regression}
-reg_line <- summary_stats %>% summarize(slope = r*s_R/s_HR,
+reg_line <- summary_stats |> summarize(slope = r*s_R/s_HR,
                                         intercept = avg_R - slope*avg_HR)
 
 p + geom_abline(intercept = reg_line$intercept, slope = reg_line$slope)

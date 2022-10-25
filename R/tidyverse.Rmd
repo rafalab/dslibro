@@ -27,8 +27,8 @@ Para ver cómo se puede proveer la misma información en diferentes formatos, co
 ```{r, echo=FALSE}
 library(dslabs)
 data("gapminder")
-tidy_data <- gapminder %>%
-  filter(country %in% c("South Korea", "Germany") & !is.na(fertility)) %>%
+tidy_data <- gapminder |>
+  filter(country %in% c("South Korea", "Germany") & !is.na(fertility)) |>
   select(country, year, fertility)
 head(tidy_data, 6)
 ```
@@ -40,7 +40,7 @@ Este set de datos _tidy_ ofrece tasas de fertilidad para dos países a lo largo 
 path <- system.file("extdata", package="dslabs")
 filename <- file.path(path, "fertility-two-countries-example.csv")
 wide_data <- read_csv(filename)
-select(wide_data, country, `1960`:`1962`) %>% as.data.frame
+select(wide_data, country, `1960`:`1962`) |> as.data.frame()
 ```
 
 Se provee la misma información, pero hay dos diferencias importantes en el formato: 1) cada fila incluye varias observaciones y 2) una de las variables, año, se almacena en el encabezado. Para que los paquetes del _tidyverse_ se utilicen de manera óptima, le tenemos que cambiar la forma a los datos para que estén en formato _tidy_, que aprenderán a hacer en la sección "_Wrangling_ de datos" del libro. Hasta entonces, utilizaremos ejemplos de sets de datos que ya están en formato _tidy_.
@@ -157,7 +157,7 @@ Use la función `mutate` para añadir una columna de asesinatos llamada `rate` c
 3\. Con __dplyr__, podemos usar `select` para mostrar solo ciertas columnas. Por ejemplo, con este código solo mostraríamos los estados y los tamaños de población:
 
 ```{r, eval=FALSE}
-select(murders, state, population) %>% head()
+select(murders, state, population) |> head()
 ```
 
 Utilice `select` para mostrar los nombres de los estados y las abreviaturas en `murders`. No redefina `murders`, solo muestre los resultados.
@@ -200,9 +200,9 @@ filter(murders, population < 5000000 & region == "Northeast")
 
 Asegúrese que `murders` ha sido definido con `rate` y `rank` y todavía tiene todos los estados. Cree una tabla llamada `my_states` que contiene filas para los estados que satisfacen ambas condiciones: está localizado en el noreste u oeste y la tasa de asesinatos es inferior a 1. Use `select` para mostrar solo el nombre del estado, la tasa y el rango.
 
-## El _pipe_: `%>%`
+## El _pipe_: `|>`
 
-Con __dplyr__, podemos realizar una serie de operaciones, por ejemplo `select` y entonces `filter`, enviando los resultados de una función a otra usando lo que se llama el _pipe operator_: `%>%`. Algunos detalles se incluyen a continuación.
+Con __dplyr__, podemos realizar una serie de operaciones, por ejemplo `select` y entonces `filter`, enviando los resultados de una función a otra usando lo que se llama el _pipe operator_: `|>`. Algunos detalles se incluyen a continuación.
 
 Escribimos el código anterior para mostrar tres variables (estado, región, tasa) para los estados que tienen tasas de asesinatos por debajo de 0.71. Para hacer esto, definimos el objeto intermedio `new_table`. En __dplyr__, podemos escribir código que se parece más a una descripción de lo que queremos hacer sin objetos intermedios:
 
@@ -211,10 +211,10 @@ $$ \mbox {original data }
 \rightarrow \mbox { filter } $$
 
 
-Para tal operación, podemos usar el _pipe_ `%>%`. El código se ve así:
+Para tal operación, podemos usar el _pipe_ `|>`. El código se ve así:
 
 ```{r}
-murders %>% select(state, region, rate) %>% filter(rate <= 0.71)
+murders |> select(state, region, rate) |> filter(rate <= 0.71)
 ```
 
 Esta línea de código es equivalente a las dos líneas de código anteriores. ¿Qué está pasando aquí?
@@ -222,25 +222,25 @@ Esta línea de código es equivalente a las dos líneas de código anteriores. �
 En general, el _pipe_ envía el resultado que se encuentra en el lado izquierdo del _pipe_ para ser el primer argumento de la función en el lado derecho del _pipe_. Aquí vemos un ejemplo sencillo:
 
 ```{r}
-16 %>% sqrt()
+16 |> sqrt()
 ```
 Podemos continuar canalizando (_piping_ en inglés) valores a lo largo de:
 
 ```{r}
-16 %>% sqrt() %>% log2()
+16 |> sqrt() |> log2()
 ```
 La declaración anterior es equivalente a `log2(sqrt(16))`.
 
 Recuerden que el _pipe_ envía valores al primer argumento, por lo que podemos definir otros argumentos como si el primer argumento ya estuviera definido:
 
 ```{r}
-16 %>% sqrt() %>% log(base = 2)
+16 |> sqrt() |> log(base = 2)
 ```
 
 Por lo tanto, al usar el _pipe_ con _data frames_ y __dplyr__, ya no necesitamos especificar el primer argumento requerido puesto que las funciones __dplyr__ que hemos descrito toman todos los datos como el primer argumento. En el código que escribimos:
 
 ```{r, eval=FALSE}
-murders %>% select(state, region, rate) %>% filter(rate <= 0.71)
+murders |> select(state, region, rate) |> filter(rate <= 0.71)
 ```
 `murders` es el primer argumento de la función `select` y el nuevo _data frame_ (anteriormente `new_table`) es el primer argumento de la función `filter`.
 
@@ -248,7 +248,7 @@ Tengan en cuenta que el _pipe_ funciona bien con las funciones donde el primer a
 
 ## Ejercicios
 
-1\. El _pipe_ `%>%` se puede usar para realizar operaciones secuencialmente sin tener que definir objetos intermedios. Comience redefiniendo _murders_ para incluir la tasa y el rango.
+1\. El _pipe_ `|>` se puede usar para realizar operaciones secuencialmente sin tener que definir objetos intermedios. Comience redefiniendo _murders_ para incluir la tasa y el rango.
 
 ```{r, eval=FALSE}
 murders <- mutate(murders, rate = total/ population * 100000,
@@ -263,24 +263,24 @@ my_states <- filter(murders, region %in% c("Northeast", "West") &
 select(my_states, state, rate, rank)
 ```
 
-El _pipe_ `%>%` nos permite realizar ambas operaciones secuencialmente sin tener que definir una variable intermedia `my_states`. Por lo tanto, podríamos haber mutado y seleccionado en la misma línea de esta manera:
+El _pipe_ `|>` nos permite realizar ambas operaciones secuencialmente sin tener que definir una variable intermedia `my_states`. Por lo tanto, podríamos haber mutado y seleccionado en la misma línea de esta manera:
 
 ```{r, eval=FALSE}
 mutate(murders, rate = total/ population * 100000,
-       rank = rank(-rate)) %>%
+       rank = rank(-rate)) |>
   select(state, rate, rank)
 ```
 
-Note que `select` ya no tiene un _data frame_ como primer argumento. Se supone que el primer argumento sea el resultado de la operación realizada justo antes de `%>%`.
+Note que `select` ya no tiene un _data frame_ como primer argumento. Se supone que el primer argumento sea el resultado de la operación realizada justo antes de `|>`.
 
-Repita el ejercicio anterior, pero ahora, en lugar de crear un nuevo objeto, muestre el resultado y solo incluya las columnas de estado, velocidad y rango. Use un _pipe_ `%>%` para hacer esto en una sola línea.
+Repita el ejercicio anterior, pero ahora, en lugar de crear un nuevo objeto, muestre el resultado y solo incluya las columnas de estado, velocidad y rango. Use un _pipe_ `|>` para hacer esto en una sola línea.
 
-2\. Reinicie `murders` a la tabla original usando `data(murders)`. Use un _pipe_  para crear un nuevo _data frame_ llamado `my_states` que considera solo los estados del noreste u oeste que tienen una tasa de asesinatos inferior a 1 y contiene solo las columnas de estado, tasa y rango. El _pipe_ también debe tener cuatro componentes separados por tres `%>%`. El código debería verse algo similar a lo siguiente:
+2\. Reinicie `murders` a la tabla original usando `data(murders)`. Use un _pipe_  para crear un nuevo _data frame_ llamado `my_states` que considera solo los estados del noreste u oeste que tienen una tasa de asesinatos inferior a 1 y contiene solo las columnas de estado, tasa y rango. El _pipe_ también debe tener cuatro componentes separados por tres `|>`. El código debería verse algo similar a lo siguiente:
 
 ```{r, eval=FALSE}
-my_states <- murders %>%
-  mutate SOMETHING %>%
-  filter SOMETHING %>%
+my_states <- murders |>
+  mutate SOMETHING |>
+  filter SOMETHING |>
   select SOMETHING
 ```
 
@@ -305,8 +305,8 @@ data(heights)
 El siguiente código calcula el promedio y la desviación estándar para las hembras:
 
 ```{r}
-s <- heights %>%
-  filter(sex == "Female") %>%
+s <- heights |>
+  filter(sex == "Female") |>
   summarize(average = mean(height), standard_deviation = sd(height))
 s
 ```
@@ -325,7 +325,7 @@ Igual que con la mayoría de las otras funciones de __dplyr__, `summarize` conoc
 Para otro ejemplo de cómo podemos usar la función `summarize`, calculemos la tasa promedio de asesinatos en Estados Unidos. Recuerden que nuestra tabla de datos incluye los asesinatos totales y el tamaño de la población para cada estado y ya hemos usado __dplyr__ para añadir una columna de índice de asesinatos:
 
 ```{r}
-murders <- murders %>% mutate(rate = total/population*100000)
+murders <- murders |> mutate(rate = total/population*100000)
 ```
 
 Recuerden que la tasa de asesinatos en EE. UU. **no** es el promedio de las tasas de asesinatos estatales:
@@ -337,7 +337,7 @@ summarize(murders, mean(rate))
 Esto se debe a que en el cálculo anterior, los estados pequeños tienen el mismo peso que los grandes. La tasa de asesinatos de Estados Unidos es el número total de asesinatos en Estados Unidos dividido por la población total. Entonces el cálculo correcto es:
 
 ```{r}
-us_murder_rate <- murders %>%
+us_murder_rate <- murders |>
   summarize(rate = sum(total)/ sum(population) * 100000)
 us_murder_rate
 ```
@@ -350,8 +350,8 @@ Supongan que queremos tres resúmenes de una variable, como por ejemplo la media
 
 
 ```{r}
-heights %>% 
-  filter(sex == "Female") %>%
+heights |> 
+  filter(sex == "Female") |>
   summarize(median = median(height), minimum = min(height), 
             maximum = max(height))
 ```
@@ -359,8 +359,8 @@ heights %>%
 Pero podemos obtener estos tres valores con una sola línea de código usando la función `quantile`: `quantile(x, c(0.5, 0, 1))` devuelve la mediana (percentil 50), el mínimo (percentil 0), y el máximo (percentil 100). Podemos usar la función con `summarize` así:
 
 ```{r}
-heights %>% 
-  filter(sex == "Female") %>%
+heights |> 
+  filter(sex == "Female") |>
   summarize(median_min_max = quantile(height, c(0.5, 0, 1)))
 ```
 
@@ -372,8 +372,8 @@ median_min_max <- function(x){
   qs <- quantile(x, c(0.5, 0, 1))
   data.frame(median = qs[1], minimum = qs[2], maximum = qs[3])
 }
-heights %>% 
-  filter(sex == "Female") %>%
+heights |> 
+  filter(sex == "Female") |>
   summarize(median_min_max(height))
 ```
 
@@ -387,14 +387,14 @@ Una operación común en la exploración de datos es dividir primero los datos e
 Si escribimos esto:
 
 ```{r}
-heights %>% group_by(sex)
+heights |> group_by(sex)
 ```
 
 El resultado no se ve muy diferente de `heights`, excepto que vemos `Groups: sex [2]` cuando imprimimos el objeto. Aunque no es inmediatamente obvio por su apariencia, esto ahora es un _data frame_ especial llamado un _grouped data frame_ y las funciones de __dplyr__, en particular `summarize`, se comportarán de manera diferente cuando actúan sobre este objeto. Conceptualmente, pueden pensar en esta tabla como muchas tablas, con las mismas columnas pero no necesariamente el mismo número de filas, apiladas juntas en un objeto. Cuando resumimos los datos después de la agrupación, esto es lo que sucede:
 
 ```{r}
-heights %>%
-  group_by(sex) %>%
+heights |>
+  group_by(sex) |>
   summarize(average = mean(height), standard_deviation = sd(height))
 ```
 
@@ -403,8 +403,8 @@ La función `summarize` aplica el resumen a cada grupo por separado.
 Para ver otro ejemplo, calculemos la mediana, el mínimo y máximo de la tasa  de asesinatos en las cuatro regiones del país usando la función `median_min_max` definida anteriormente:
 
 ```{r}
-murders %>%
-  group_by(region) %>%
+murders |>
+  group_by(region) |>
   summarize(median_min_max(rate))
 ```
 
@@ -422,7 +422,7 @@ ya que, como la mayoría de las funciones de __dplyr__, `summarize` siempre devu
 Esto podría ser problemático si queremos usar este resultado con funciones que requieren un valor numérico. Aquí mostramos un truco útil para acceder a los valores almacenados en los datos cuando usamos _pipes_: cuando un objeto de datos se canaliza (_is piped_ en inglés), ese objeto y sus columnas se pueden acceder usando la función `pull`. Para entender lo que queremos decir, miren esta línea de código:
 
 ```{r}
-us_murder_rate %>% pull(rate)
+us_murder_rate |> pull(rate)
 ```
 
 Esto devuelve el valor en la columna `rate` de `us_murder_rate` haciéndolo equivalente a `us_murder_rate$rate`.
@@ -430,8 +430,8 @@ Esto devuelve el valor en la columna `rate` de `us_murder_rate` haciéndolo equi
 Para obtener un número de la tabla de datos original con una línea de código, podemos escribir:
 
 ```{r}
-us_murder_rate <- murders %>%
-  summarize(rate = sum(total)/ sum(population) * 100000) %>%
+us_murder_rate <- murders |>
+  summarize(rate = sum(total)/ sum(population) * 100000) |>
   pull(rate)
 
 us_murder_rate
@@ -448,23 +448,23 @@ class(us_murder_rate)
 Al examinar un set de datos, a menudo es conveniente ordenar, numérica o alfabéticamente, basado en una o más de las columnas de la tabla. Conocemos las funciones `order` y `sort`, pero para ordenar tablas enteras, la función `arrange` de __dplyr__ es útil. Por ejemplo, aquí ordenamos los estados según el tamaño de la población:
 
 ```{r}
-murders %>%
-  arrange(population) %>%
+murders |>
+  arrange(population) |>
   head()
 ```
 
 Con `arrange` podemos decidir cuál columna usar para ordenar. Para ver los estados por tasa de asesinatos, desde menor a mayor, organizamos por el `rate` :
 
 ```{r}
-murders %>%
-  arrange(rate) %>%
+murders |>
+  arrange(rate) |>
   head()
 ```
 
 Tengan en cuenta que el comportamiento por defecto es ordenar en orden ascendente. En __dplyr__, la función `desc` transforma un vector para que esté en orden descendente. Para ordenar la tabla en orden descendente, podemos escribir:
 
 ```{r, eval=FALSE}
-murders %>%
+murders |>
   arrange(desc(rate))
 ```
 
@@ -473,8 +473,8 @@ murders %>%
 Si estamos ordenando una columna cuando hay empates, podemos usar una segunda columna para romper el empate. Del mismo modo, se puede usar una tercera columna para romper empates entre la primera y la segunda, y así sucesivamente. Aquí ordenamos por `region` y entonces, dentro de la región, ordenamos por tasa de asesinatos:
 
 ```{r}
-murders %>%
-  arrange(region, rate) %>%
+murders |>
+  arrange(region, rate) |>
   head()
 ```
 
@@ -484,7 +484,7 @@ murders %>%
 En el código anterior, usamos la función `head` para evitar que la página se llene con todo el set de datos. Si queremos ver una mayor proporción, podemos usar la función `top_n`. Esta función toma un _data frame_ como primer argumento, el número de filas para mostrar en el segundo y la variable para filtrar en el tercero. Aquí hay un ejemplo de cómo ver las 5 filas superiores:
 
 ```{r}
-murders %>% top_n(5, rate)
+murders |> top_n(5, rate)
 ```
 
 Tengan en cuenta que las filas no están ordenadas por `rate`, solo filtradas. Si queremos ordenar, necesitamos usar `arrange`. Recuerden que si el tercer argumento se deja en blanco, `top_n` filtra por la última columna.
@@ -543,13 +543,13 @@ Sugerencia: use `filter` y `summarize` y use el argumento `na.rm = TRUE` al calc
 Los datos _tidy_ deben almacenarse en _data frames_. Discutimos el _data frame_ en la Sección \@ref(data-frames) y hemos estado usando el _data frame_ `murders` en todo el libro. En la sección \@ref(group-by), presentamos la función `group_by`, que permite estratificar los datos antes de calcular las estadísticas de resumen. Pero, ¿dónde se almacena la información del grupo en el _data frame_?
 
 ```{r}
-murders %>% group_by(region)
+murders |> group_by(region)
 ```
 
 Observen que no hay columnas con esta información. Pero si miran el _output_ anterior, verán la línea `A tibble` seguida por unas dimensiones. Podemos aprender la clase del objeto devuelto usando:
 
 ```{r}
-murders %>% group_by(region) %>% class()
+murders |> group_by(region) |> class()
 ```
 
 El `tbl` es un tipo especial de _data frame_. Las funciones `group_by` y `summarize` siempre devuelven este tipo de _data frame_. La función `group_by` devuelve un tipo especial de `tbl`, el `grouped_df`. Discutiremos esto más adelante. Por coherencia, los verbos de manipulación __dplyr__ ( `select`, `filter`, `mutate` y `arrange`) preservan la clase del _input_: si reciben un _data frame_ regular, devuelven un _data frame_ regular, mientras que si reciben un _tibble_, devuelven un _tibble_. Pero los _tibbles_ son el formato preferido por el _tidyverse_ y, como resultado, las funciones _tidyverse_ que producen un _data frame_ desde cero devuelven un _tibble_. Por ejemplo, en el Capítulo \@ref(importing-data), veremos que las funciones del _tidyverse_ que se usan para importar datos crean _tibbles_.
@@ -630,13 +630,13 @@ grades <- data.frame(names = c("John", "Juan", "Jean", "Yao"),
 Para convertir un _data frame_ normal en un _tibble_, pueden usar la función `as_tibble`.
 
 ```{r}
-as_tibble(grades) %>% class()
+as_tibble(grades) |> class()
 ```
 
 
 ## El operador punto
 
-Una de las ventajas de utilizar el _pipe_ `%>%` es que no tenemos que seguir nombrando nuevos objetos mientras manipulamos el _data frame_. Recuerden que si queremos calcular la tasa de asesinatos promedio para los estados del sur, en lugar de escribir:
+Una de las ventajas de utilizar el _pipe_ `|>` es que no tenemos que seguir nombrando nuevos objetos mientras manipulamos el _data frame_. Recuerden que si queremos calcular la tasa de asesinatos promedio para los estados del sur, en lugar de escribir:
 
 ```{r}
 tab_1 <- filter(murders, region == "South")
@@ -648,9 +648,9 @@ median(rates)
 podemos evitar definir nuevos objetos intermedios escribiendo:
 
 ```{r}
-filter(murders, region == "South") %>%
-  mutate(rate = total/ population * 10^5) %>%
-  summarize(median = median(rate)) %>%
+filter(murders, region == "South") |>
+  mutate(rate = total/ population * 10^5) |>
+  summarize(median = median(rate)) |>
   pull(median)
 ```
 
@@ -659,9 +659,9 @@ Podemos hacer esto porque cada una de estas funciones toma un _data frame_ como 
 Por ejemplo, para acceder al vector de velocidad sin la función `pull`, podríamos usar:
 
 ```{r}
-rates <-filter(murders, region == "South") %>%
-  mutate(rate = total/ population * 10^5) %>%
-  .$rate
+rates <-filter(murders, region == "South") |>
+  mutate(rate = total/ population * 10^5) |>
+  pull(rate)
 median(rates)
 ```
 
@@ -735,13 +735,13 @@ case_when(x < 0 ~ "Negative",
 Un uso común de esta función es definir unas variables categóricas basadas en variables existentes. Por ejemplo, supongan que queremos comparar las tasas de asesinatos en cuatro grupos de estados: _New England_, _West Coast_, _South_ y _Other_. Para cada estado, primero preguntamos si está en _New England_. Si la respuesta es no, entonces preguntamos si está en el _West Coast_, y si no, preguntamos si está en el _South_ y, si no, entonces asignamos ninguna de las anteriores (_Other_). Aquí vemos como usamos `case_when` para hacer esto:
 
 ```{r}
-murders %>%
+murders |>
   mutate(group = case_when(
     abb %in% c("ME", "NH", "VT", "MA", "RI", "CT") ~ "New England",
     abb %in% c("WA", "OR", "CA") ~ "West Coast",
     region == "South" ~ "South",
-    TRUE ~ "Other")) %>%
-  group_by(group) %>%
+    TRUE ~ "Other")) |>
+  group_by(group) |>
   summarize(rate = sum(total)/ sum(population) * 10^5)
 ```
 
@@ -778,6 +778,6 @@ d. `murders` no está en formato _tidy_ y se almacena en un _data frame_.
 exp(mean(log(murders$population)))
 ```
 
-Escríbalo usando el _pipe_ para que cada función se llame sin argumentos. Use el operador punto para acceder a la población. Sugerencia: el código debe comenzar con `murders %>%`.
+Escríbalo usando el _pipe_ para que cada función se llame sin argumentos. Use el operador punto para acceder a la población. Sugerencia: el código debe comenzar con `murders |>`.
 
 5\. Utilice el `map_df` para crear un _data frame_ con tres columnas que se denominan `n`, `s_n` y `s_n_2`. La primera columna debe contener los números del 1 al 100. La segunda y la tercera columna deben contener la suma del 1 al 100 $n$ con $n$ representando el número de fila.

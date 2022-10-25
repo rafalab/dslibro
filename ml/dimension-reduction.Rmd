@@ -350,14 +350,14 @@ Si imprimen `iris$Species`, verán que los datos están ordenados por especie.
 Calculemos la distancia entre cada observación. Pueden ver claramente las tres especies con una especie muy diferente de las otras dos:
 
 ```{r, eval=FALSE}
-x <- iris[,1:4] %>% as.matrix()
+x <- iris[,1:4] |> as.matrix()
 d <- dist(x)
 image(as.matrix(d), col = rev(RColorBrewer::brewer.pal(9, "RdBu")))
 ```
 
 ```{r iris-distances, fig.width = 4, fig.height = 4, out.width="50%", echo=FALSE}
 rafalib::mypar()
-x <- iris[,1:4] %>% as.matrix()
+x <- iris[,1:4] |> as.matrix()
 d <- dist(x)
 image(as.matrix(d), col = rev(RColorBrewer::brewer.pal(9, "RdBu")))
 ```
@@ -390,7 +390,7 @@ Podemos ver esto mejor al graficar los dos primeros PCs con color representando 
 
 
 ```{r iris-pca}
-data.frame(pca$x[,1:2], Species=iris$Species) %>%
+data.frame(pca$x[,1:2], Species=iris$Species) |>
   ggplot(aes(PC1,PC2, fill = Species))+
   geom_point(cex=3, pch=21) +
   coord_fixed(ratio = 1)
@@ -440,8 +440,8 @@ Y con solo mirar las dos primeras PCs vemos información sobre la clase. Aquí h
 
 ```{r mnist-pca-1-2-scatter}
 data.frame(PC1 = pca$x[,1], PC2 = pca$x[,2],
-           label=factor(mnist$train$label)) %>%
-  sample_n(2000) %>%
+           label=factor(mnist$train$label)) |>
+  sample_n(2000) |>
   ggplot(aes(PC1, PC2, fill=label))+
   geom_point(cex=3, pch=21)
 ```
@@ -451,13 +451,13 @@ También podemos ver las combinaciones lineales en la cuadrícula para tener una
 ```{r mnist-pca-1-4, echo = FALSE, out.width="100%", fig.width=6, fig.height=1.75}
 library(RColorBrewer)
 tmp <- lapply( c(1:4,781:784), function(i){
-  expand.grid(Row=1:28, Column=1:28) %>%
+  expand.grid(Row=1:28, Column=1:28) |>
     mutate(id=i, label=paste0("PC",i),
            value = pca$rotation[,i])
 })
 tmp <- Reduce(rbind, tmp)
 
-tmp %>% filter(id<5) %>%
+tmp |> filter(id<5) |>
   ggplot(aes(Row, Column, fill=value)) +
   geom_raster() +
   scale_y_reverse() +
@@ -468,7 +468,7 @@ tmp %>% filter(id<5) %>%
 Los PCs de menor varianza parecen estar relacionadas a la variabilidad irrelevante en las esquinas:
 
 ```{r mnist-pca-last,, echo = FALSE, out.width="100%", fig.width=6, fig.height=1.75}
-tmp %>% filter(id>5) %>%
+tmp |> filter(id>5) |>
   ggplot(aes(Row, Column, fill=value)) +
   geom_raster() +
   scale_y_reverse() +

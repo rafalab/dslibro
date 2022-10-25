@@ -11,7 +11,7 @@ Empecemos cargando los datos y mostrando un gráfico de los predictores con resu
 library(tidyverse)
 library(dslabs)
 data("mnist_27")
-mnist_27$test%>% ggplot(aes(x_1, x_2, color = y)) + geom_point()
+mnist_27$test|> ggplot(aes(x_1, x_2, color = y)) + geom_point()
 ```
 
 Utilizaremos estos datos para estimar la función de probabilidad condicional:
@@ -48,9 +48,9 @@ confusionMatrix(y_hat_knn, mnist_27$test$y)$overall["Accuracy"]
 
 En la Sección \@ref(two-or-seven), utilizamos la regresión lineal para generar un estimador.
 ```{r}
-fit_lm <- mnist_27$train %>%
-  mutate(y = ifelse(y == 7, 1, 0)) %>%
-  lm(y ~ x_1 + x_2, data = .)
+fit_lm <- mnist_27$train |>
+  mutate(y = ifelse(y == 7, 1, 0)) |>
+  lm(y ~ x_1 + x_2, data = _)
 p_hat_lm <- predict(fit_lm, mnist_27$test)
 y_hat_lm <- factor(ifelse(p_hat_lm > 0.5, 7, 2))
 confusionMatrix(y_hat_lm, mnist_27$test$y)$overall["Accuracy"]
@@ -66,7 +66,7 @@ plot_cond_prob <- function(p_hat=NULL){
   if(!is.null(p_hat)){
     tmp <- mutate(tmp, p=p_hat)
   }
-  tmp %>% ggplot(aes(x_1, x_2, z=p, fill=p)) +
+  tmp |> ggplot(aes(x_1, x_2, z=p, fill=p)) +
     geom_raster(show.legend = FALSE) +
     scale_fill_gradientn(colors=c("#F8766D","white","#00BFC4")) +
     stat_contour(breaks=c(0.5),color="black")
@@ -116,8 +116,9 @@ confusionMatrix(y_hat_knn_1, mnist_27$test$y)$overall["Accuracy"]
 
 Podemos ver el problema de sobreajuste en estos gráficos.
 ```{r knn-1-overfit, echo=FALSE, out.width="100%"}
-p1 <- mnist_27$true_p %>%
-  mutate(knn = predict(knn_fit_1, newdata = .)[,2]) %>%
+tmp <- mnist_27$true_p
+tmp$knn <- predict(knn_fit_1, newdata =  mnist_27$true_p)[,2]
+p1 <- tmp |>
   ggplot() +
   geom_point(data = mnist_27$train, aes(x_1, x_2, color= y),
              pch=21, show.legend = FALSE) +
@@ -125,10 +126,9 @@ p1 <- mnist_27$true_p %>%
   stat_contour(aes(x_1, x_2, z = knn), breaks=c(0.5), color="black") +
   ggtitle("Train set")
 
-p2 <- mnist_27$true_p %>%
-  mutate(knn = predict(knn_fit_1, newdata = .)[,2]) %>%
+p2 <- tmp |>
   ggplot() +
-  geom_point(data = mnist_27$test, aes(x_1, x_2, color= y),
+  geom_point(data = mnist_27$test, aes(x_1, x_2, color= y), 
              pch=21, show.legend = FALSE) +
   scale_fill_gradientn(colors=c("#F8766D","white","#00BFC4")) +
   stat_contour(aes(x_1, x_2, z = knn), breaks=c(0.5), color="black") +
@@ -197,9 +197,9 @@ accuracy <- map_df(ks, function(k){
 Tengan en cuenta que estimamos la exactitud utilizando tanto el set de entrenamiento como el set de evaluación. Ahora podemos graficar las estimadores de exactitud para cada valor de $k$:
 
 ```{r accuracy-vs-k-knn, echo=FALSE}
-accuracy %>% mutate(k = ks) %>%
-  gather(set, accuracy, -k) %>%
-  mutate(set = factor(set, levels = c("train", "test"))) %>%
+accuracy |> mutate(k = ks) |>
+  gather(set, accuracy, -k) |>
+  mutate(set = factor(set, levels = c("train", "test"))) |>
   ggplot(aes(k, accuracy, color = set)) +
   geom_line() +
   geom_point()
@@ -361,7 +361,7 @@ n <- 1000
 p <- 10000
 x <- matrix(rnorm(n * p), n, p)
 colnames(x) <- paste("x", 1:ncol(x), sep = "_")
-y <- rbinom(n, 1, 0.5) %>% factor()
+y <- rbinom(n, 1, 0.5) |> factor()
 
 x_subset <- x[ ,sample(p, 100)]
 ```

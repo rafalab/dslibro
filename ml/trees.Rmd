@@ -94,7 +94,7 @@ ggplot(fit)
 Vemos que usando solo un vecino, podemos predecir relativamente bien. Sin embargo, un poco de exploración de datos revela que deberíamos poder hacerlo aún mejor. Por ejemplo, si observamos la distribución de cada predictor estratificado por región, vemos que el _eicosenoic_ solo está presente en el sur de Italia y que el _linoleic_ separa el norte de Italia de Cerdeña.
 
 ```{r olive-eda, fig.height=3, fig.width=6, echo=FALSE}
-olive %>% gather(fatty_acid, percentage, -region) %>%
+olive |> gather(fatty_acid, percentage, -region) |>
   ggplot(aes(region, percentage, fill = region)) +
   geom_boxplot() +
   facet_wrap(~fatty_acid, scales = "free", ncol = 4) +
@@ -104,7 +104,7 @@ olive %>% gather(fatty_acid, percentage, -region) %>%
 ¡Esto implica que deberíamos ser capaces de construir un algoritmo que prediga perfectamente! Podemos ver esto claramente al graficar los valores para _eicosenoic_ y _linoleic_.
 
 ```{r olive-two-predictors, echo=FALSE}
-olive %>%
+olive |>
   ggplot(aes(eicosenoic, linoleic, color = region)) +
   geom_point() +
   geom_vline(xintercept = 0.065, lty = 2) +
@@ -193,8 +193,8 @@ text(fit, cex = 0.75)
 La primera división se realiza el día 39.5. Una de esas regiones se divide en el día 86.5. Las dos nuevas particiones que resultan se dividen en los días 49.5 y 117.5, respectivamente, y así sucesivamente. Terminamos con 8 particiones. El estimador final $\hat{f}(x)$ se ve así:
 
 ```{r polls-2008-tree-fit}
-polls_2008 %>%
-  mutate(y_hat = predict(fit)) %>%
+polls_2008 |>
+  mutate(y_hat = predict(fit)) |>
   ggplot() +
   geom_point(aes(day, margin)) +
   geom_step(aes(day, y_hat), col="red")
@@ -211,8 +211,8 @@ Como se esperaba, si establecemos `cp = 0` y `minsplit = 2`, nuestra predicción
 ```{r polls-2008-tree-over-fit}
 fit <- rpart(margin ~ ., data = polls_2008,
              control = rpart.control(cp = 0, minsplit = 2))
-polls_2008 %>%
-  mutate(y_hat = predict(fit)) %>%
+polls_2008 |>
+  mutate(y_hat = predict(fit)) |>
   ggplot() +
   geom_point(aes(day, margin)) +
   geom_step(aes(day, y_hat), col="red")
@@ -248,8 +248,8 @@ text(train_rpart$finalModel, cex = 0.75)
 Y debido a que solo tenemos un predictor, podemos graficar $\hat{f}(x)$:
 
 ```{r polls-2008-final-fit}
-polls_2008 %>%
-  mutate(y_hat = predict(train_rpart)) %>%
+polls_2008 |>
+  mutate(y_hat = predict(train_rpart)) |>
   ggplot() +
   geom_point(aes(day, margin)) +
   geom_step(aes(day, y_hat), col="red")
@@ -297,7 +297,7 @@ plot_cond_prob <- function(p_hat=NULL){
   if(!is.null(p_hat)){
     tmp <- mutate(tmp, p=p_hat)
   }
-  tmp %>% ggplot(aes(x_1, x_2, z=p, fill=p)) +
+  tmp |> ggplot(aes(x_1, x_2, z=p, fill=p)) +
     geom_raster(show.legend = FALSE) +
     scale_fill_gradientn(colors=c("#F8766D","white","#00BFC4")) +
     stat_contour(breaks=c(0.5),color="black")
@@ -377,8 +377,8 @@ Podemos ver que en este caso, la exactitud mejora a medida que agregamos más á
 El estimador resultante para este bosque aleatorio puede verse así:
 
 ```{r polls-2008-rf-fit}
-polls_2008 %>%
-  mutate(y_hat = predict(fit, newdata = polls_2008)) %>%
+polls_2008 |>
+  mutate(y_hat = predict(fit, newdata = polls_2008)) |>
   ggplot() +
   geom_point(aes(day, margin)) +
   geom_line(aes(day, y_hat), col="red")
@@ -594,8 +594,8 @@ Utilice `rpart` para ajustar un árbol de regresión y guarde el resultado en `f
 ```{r, eval=FALSE}
 ind <- !(fit_rpart$finalModel$frame$var == "<leaf>")
 tree_terms <-
-  fit_rpart$finalModel$frame$var[ind] %>%
-  unique() %>%
+  fit_rpart$finalModel$frame$var[ind] |>
+  unique() |>
   as.character()
 tree_terms
 ```

@@ -16,12 +16,12 @@ library(HistData)
 data("GaltonFamilies")
 
 set.seed(1983)
-galton_heights <- GaltonFamilies %>%
-  filter(gender == "male") %>%
-  group_by(family) %>%
-  sample_n(1) %>%
-  ungroup() %>%
-  select(father, childHeight) %>%
+galton_heights <- GaltonFamilies |>
+  filter(gender == "male") |>
+  group_by(family) |>
+  sample_n(1) |>
+  ungroup() |>
+  select(father, childHeight) |>
   rename(son = childHeight)
 ```
 
@@ -30,14 +30,14 @@ En los ejercicios, veremos otras relaciones, incluyendo la de madres e hijas.
 Supongan que nos piden que resumamos los datos de padre e hijo. Dado que ambas distribuciones están bien aproximadas por la distribución normal, podríamos usar los dos promedios y las dos desviaciones estándar como resúmenes:
 
 ```{r, message=FALSE, warning=FALSE}
-galton_heights %>%
+galton_heights |>
   summarize(mean(father), sd(father), mean(son), sd(son))
 ```
 
 Sin embargo, este resumen no describe una característica importante de los datos: la tendencia de que entre más alto es el padre, más alto es el hijo.
 
 ```{r scatterplot, fig.height = 3, fig.width = 3, out.width="40%"}
-galton_heights %>% ggplot(aes(father, son)) +
+galton_heights |> ggplot(aes(father, son)) +
   geom_point(alpha = 0.5)
 ```
 
@@ -73,7 +73,7 @@ Una derivación similar, pero con $x$ y su opuesto exacto, prueba que la correla
 Para otros pares, la correlación está entre -1 y 1. La correlación entre las alturas de padre e hijo es de aproximadamente 0.5:
 
 ```{r}
-galton_heights %>% summarize(r = cor(father, son)) %>% pull(r)
+galton_heights |> summarize(r = cor(father, son)) |> pull(r)
 ```
 
 Para ver cómo se ven los datos para diferentes valores de $\rho$, aquí tenemos seis ejemplos de pares con correlaciones que van desde -0.9 a 0.99:
@@ -85,7 +85,7 @@ sim_data <- lapply(cors,function(r) MASS::mvrnorm(n,c(0,0), matrix(c(1,r,r,1),2,
 sim_data <- Reduce(rbind, sim_data)
 sim_data <- cbind( rep(cors, each=n), sim_data)
 colnames(sim_data) <- c("r","x","y")
-as.data.frame(sim_data) %>%
+as.data.frame(sim_data) |>
   ggplot(aes(x,y)) +
   facet_wrap(~r) +
   geom_point(alpha = 0.5) +
@@ -103,8 +103,8 @@ En la mayoría de las aplicaciones de ciencia de datos, observamos datos que inc
 A modo de ilustración, supongan que los `r nrow(galton_heights)` pares de padres e hijos es toda nuestra población. Un genetista menos afortunado solo puede permitirse mediciones de una muestra aleatoria de 25 pares. La correlación de la muestra se puede calcular con:
 
 ```{r}
-R <- sample_n(galton_heights, 25, replace = TRUE) %>%
-  summarize(r = cor(father, son)) %>% pull(r)
+R <- sample_n(galton_heights, 25, replace = TRUE) |>
+  summarize(r = cor(father, son)) |> pull(r)
 ```
 
 `R` es una variable aleatoria. Podemos ejecutar una simulación Monte Carlo para ver su distribución:
@@ -113,8 +113,8 @@ R <- sample_n(galton_heights, 25, replace = TRUE) %>%
 B <- 1000
 N <- 25
 R <- replicate(B, {
-  sample_n(galton_heights, N, replace = TRUE) %>%
-    summarize(r=cor(father, son)) %>%
+  sample_n(galton_heights, N, replace = TRUE) |>
+    summarize(r=cor(father, son)) |>
     pull(r)
 })
 qplot(R, geom = "histogram", binwidth = 0.05, color = I("black"))
@@ -151,10 +151,10 @@ Si aumentan $N$, verán que la distribución converge a la normalidad.
 La correlación no siempre es un buen resumen de la relación entre dos variables. Los siguientes cuatro sets de datos artificiales, conocidos como el cuarteto de Anscombe, ilustran este punto. Todos estos pares tienen una correlación de 0.82:
 
 ```{r ascombe-quartet,echo=FALSE, warning=FALSE, message=FALSE}
-anscombe %>% mutate(row = seq_len(n())) %>%
-  gather(name, value, -row) %>%
-  separate(name, c("axis", "group"), sep=1) %>%
-  spread(axis, value) %>% select(-row) %>%
+anscombe |> mutate(row = seq_len(n())) |>
+  gather(name, value, -row) |>
+  separate(name, c("axis", "group"), sep=1) |>
+  spread(axis, value) |> select(-row) |>
   ggplot(aes(x,y)) +
   facet_wrap(~group) +
   geom_smooth(method="lm", fill=NA, fullrange=TRUE) +
@@ -199,9 +199,9 @@ sum(galton_heights$father == 72.5)
 Una forma práctica de mejorar estos estimadores de los valores esperados condicionales es definir estratos con valores similares de $x$. En nuestro ejemplo, podemos redondear las alturas del padre a la pulgada más cercana y suponer que todas son 72 pulgadas. Si hacemos esto, terminamos con la siguiente predicción para el hijo de un padre que mide 72 pulgadas:
 
 ```{r}
-conditional_avg <- galton_heights %>%
-  filter(round(father) == 72) %>%
-  summarize(avg = mean(son)) %>%
+conditional_avg <- galton_heights |>
+  filter(round(father) == 72) |>
+  summarize(avg = mean(son)) |>
   pull(avg)
 conditional_avg
 ```
@@ -213,7 +213,7 @@ Noten que un padre que mide 72 pulgadas es más alto que el promedio, específic
 Si queremos hacer una predicción de cualquier altura, no solo 72 pulgadas, podríamos aplicar el mismo enfoque a cada estrato. La estratificación seguida por diagramas de caja nos permite ver la distribución de cada grupo:
 
 ```{r boxplot-1, fig.height = 3, fig.width = 3, out.width="40%"}
-galton_heights %>% mutate(father_strata = factor(round(father))) %>%
+galton_heights |> mutate(father_strata = factor(round(father))) |>
   ggplot(aes(father_strata, son)) +
   geom_boxplot() +
   geom_point()
@@ -222,10 +222,10 @@ galton_heights %>% mutate(father_strata = factor(round(father))) %>%
 No es sorprendente que los centros de los grupos estén aumentando con la altura. Además, estos centros parecen seguir una relación lineal. A continuación graficamos los promedios de cada grupo. Si tomamos en cuenta que estos promedios son variables aleatorias con errores estándar, los datos son consistentes con estos puntos siguiendo una línea recta:
 
 ```{r conditional-averages-follow-line, echo=FALSE, fig.height = 3, fig.width = 3, out.width="40%"}
-galton_heights %>%
-  mutate(father = round(father)) %>%
-  group_by(father) %>%
-  summarize(son_conditional_avg = mean(son)) %>%
+galton_heights |>
+  mutate(father = round(father)) |>
+  group_by(father) |>
+  summarize(son_conditional_avg = mean(son)) |>
   ggplot(aes(father, son_conditional_avg)) +
   geom_point()
 ```
@@ -264,7 +264,7 @@ s_x <- sd(galton_heights$father)
 s_y <- sd(galton_heights$son)
 r <- cor(galton_heights$father, galton_heights$son)
 
-galton_heights %>%
+galton_heights |>
   ggplot(aes(father, son)) +
   geom_point(alpha = 0.5) +
   geom_abline(slope = r * s_y/s_x, intercept = mu_y - r * s_y/s_x * mu_x)
@@ -273,7 +273,7 @@ galton_heights %>%
 La fórmula de regresión implica que si primero estandarizamos las variables, es decir, restamos el promedio y dividimos por la desviación estándar, entonces la línea de regresión tiene un intercepto 0 y una pendiente igual a la correlación $\rho$. Pueden hacer el mismo gráfico, pero usando unidades estándar así:
 
 ```{r regression-line-standard-units, fig.height = 3, fig.width = 3, out.width="40%", eval=FALSE}
-galton_heights %>%
+galton_heights |>
   ggplot(aes(scale(father), scale(son))) +
   geom_point(alpha = 0.5) +
   geom_abline(intercept = 0, slope = r)
@@ -296,8 +296,8 @@ N <- 50
 set.seed(1983)
 conditional_avg <- replicate(B, {
   dat <- sample_n(galton_heights, N)
-  dat %>% filter(round(father) == 72) %>%
-    summarize(avg = mean(son)) %>%
+  dat |> filter(round(father) == 72) |>
+    summarize(avg = mean(son)) |>
     pull(avg)
 })
 
@@ -347,7 +347,7 @@ sim_data <- lapply(cors,function(r) MASS::mvrnorm(n,c(0,0), matrix(c(1,r,r,1),2,
 sim_data <- Reduce(rbind, sim_data)
 sim_data <- cbind( rep(cors, each=n), sim_data)
 colnames(sim_data) <- c("r","x","y")
-as.data.frame(sim_data) %>% ggplot(aes(x,y)) +facet_wrap(~r) + geom_point() +geom_vline(xintercept = 0,lty=2) + geom_hline(yintercept = 0,lty=2)
+as.data.frame(sim_data) |> ggplot(aes(x,y)) +facet_wrap(~r) + geom_point() +geom_vline(xintercept = 0,lty=2) + geom_hline(yintercept = 0,lty=2)
 ```
 -->
 
@@ -356,9 +356,9 @@ Una forma más técnica de definir la distribución normal de dos variables es l
 Si creemos que los datos de altura están bien aproximados por la distribución normal de dos variables, entonces deberíamos ver que la aproximación normal aplica a cada estrato. Aquí estratificamos las alturas de los hijos por las alturas estandarizadas de los padres y vemos que el supuesto parece ser válido:
 
 ```{r qqnorm-of-strata}
-galton_heights %>%
-  mutate(z_father = round((father - mean(father))/ sd(father))) %>%
-  filter(z_father %in% -2:2) %>%
+galton_heights |>
+  mutate(z_father = round((father - mean(father))/ sd(father))) |>
+  filter(z_father %in% -2:2) |>
   ggplot() +
   stat_qq(aes(sample = son)) +
   facet_wrap( ~ z_father)
@@ -430,7 +430,7 @@ Entonces obtenemos $\mbox{E}(X \mid Y=y) =`r round(b_2, 1)` + `r round(m_2, 2)`y
 Aquí tenemos un gráfico que muestra las dos líneas de regresión. La azul predice las alturas de los hijos según las alturas de los padres y la roja predice las alturas de los padres según las alturas de los hijos:
 
 ```{r two-regression-lines, fig.height = 3, fig.width = 3, out.width="40%"}
-galton_heights %>%
+galton_heights |>
   ggplot(aes(father, son)) +
   geom_point(alpha = 0.5) +
   geom_abline(intercept = b_1, slope = m_1, col = "blue") +

@@ -13,7 +13,7 @@ En los dos ejemplos que hemos utilizado en esta parte del libro, la agrupación 
 library(tidyverse)
 library(dslabs)
 data("mnist_27")
-mnist_27$train %>% qplot(x_1, x_2, data = .)
+mnist_27$train |> qplot(x_1, x_2, data = _)
 ```
 
 Sin embargo, hay aplicaciones en las que el aprendizaje no supervisado puede ser una técnica poderosa, en particular como una herramienta exploratoria.
@@ -24,22 +24,22 @@ Construiremos un ejemplo sencillo basado en clasificaciones de películas. Aquí
 
 ```{r}
 data("movielens")
-top <- movielens %>%
-  group_by(movieId) %>%
-  summarize(n=n(), title = first(title)) %>%
-  top_n(50, n) %>%
+top <- movielens |>
+  group_by(movieId) |>
+  summarize(n=n(), title = first(title)) |>
+  top_n(50, n) |>
   pull(movieId)
 
-x <- movielens %>%
-  filter(movieId %in% top) %>%
-  group_by(userId) %>%
-  filter(n() >= 25) %>%
-  ungroup() %>%
-  select(title, userId, rating) %>%
+x <- movielens |>
+  filter(movieId %in% top) |>
+  group_by(userId) |>
+  filter(n() >= 25) |>
+  ungroup() |>
+  select(title, userId, rating) |>
   spread(userId, rating)
 
-row_names <- str_remove(x$title, ": Episode") %>% str_trunc(20)
-x <- x[,-1] %>% as.matrix()
+row_names <- str_remove(x$title, ": Episode") |> str_trunc(20)
+x <- x[,-1] |> as.matrix()
 x <- sweep(x, 2, colMeans(x, na.rm = TRUE))
 x <- sweep(x, 1, rowMeans(x, na.rm = TRUE))
 rownames(x) <- row_names
@@ -93,7 +93,7 @@ names(groups)[groups==9]
 Podemos cambiar el tamaño del grupo haciendo `k` más grande o `h` más pequeño. También podemos explorar los datos para ver si hay grupos de evaluadores de películas.
 
 ```{r}
-h_2 <- dist(t(x)) %>% hclust()
+h_2 <- dist(t(x)) |> hclust()
 ```
 
 <!--

@@ -17,8 +17,8 @@ La evidencia principal de esta conclusión se reduce a una comparación de los p
 library(tidyverse)
 library(dslabs)
 data("research_funding_rates")
-research_funding_rates %>% select(discipline, applications_total,
-                                  success_rates_total) %>% head()
+research_funding_rates |> select(discipline, applications_total,
+                                  success_rates_total) |> head()
 ```
 
 Tenemos estos valores para cada género:
@@ -29,9 +29,9 @@ names(research_funding_rates)
 Podemos calcular el total de los que tuvieron éxito y el total de los que no lo tuvieron de la siguiente manera:
 
 ```{r}
-totals <- research_funding_rates %>%
-  select(-discipline) %>%
-  summarize_all(sum) %>%
+totals <- research_funding_rates |>
+  select(-discipline) |>
+  summarize_all(sum) |>
   summarize(yes_men = awards_men,
             no_men = applications_men - awards_men,
             yes_women = awards_women,
@@ -41,7 +41,7 @@ totals <- research_funding_rates %>%
 Entonces vemos que un mayor porcentaje de hombres que mujeres recibieron premios:
 
 ```{r}
-totals %>% summarize(percent_men = yes_men/(yes_men+no_men),
+totals |> summarize(percent_men = yes_men/(yes_men+no_men),
                      percent_women = yes_women/(yes_women+no_women))
 ```
 
@@ -89,17 +89,17 @@ En cierto sentido, nuestro ejemplo de tasas de financiamiento es parecido al de 
 Imaginen que tenemos `r prettyNum(totals, ,big.mark=",")` solicitantes, algunos son hombres y otros son mujeres y algunos reciben financiamiento, mientras que otros no. Vimos que las tasas de éxito para hombres y mujeres eran:
 
 ```{r}
-totals %>% summarize(percent_men = yes_men/(yes_men+no_men),
+totals |> summarize(percent_men = yes_men/(yes_men+no_men),
                      percent_women = yes_women/(yes_women+no_women))
 ```
 
 respectivamente. ¿Volveríamos a ver esto si asignamos fondos al azar usando como tasa la tasa general?
 
 ```{r}
-rate <- totals %>%
+rate <- totals |>
   summarize(percent_total =
               (yes_men + yes_women)/
-              (yes_men + no_men +yes_women + no_women)) %>%
+              (yes_men + no_men +yes_women + no_women)) |>
   pull(percent_total)
 rate
 ```
@@ -124,7 +124,7 @@ data.frame(awarded = c("no", "yes"),
 Podemos ver que más hombres y menos mujeres de lo esperado recibieron fondos. Sin embargo, bajo la hipótesis nula, estas observaciones son variables aleatorias. La prueba de chi-cuadrado nos dice cuán probable es ver una desviación así de grande o más grande. Esta prueba utiliza un resultado asintótico, similar al CLT, relacionado con las sumas de resultados binarios independientes. La función `chisq.test` de R toma una tabla 2x2 y devuelve los resultados de la prueba:
 
 ```{r}
-chisq_test <- two_by_two %>% select(-awarded) %>% chisq.test()
+chisq_test <- two_by_two |> select(-awarded) |> chisq.test()
 ```
 
 Vemos que el valor-p es 0.0509:
@@ -171,10 +171,10 @@ mat <- cbind(c(" a "," c "), c(" b "," d "))
 colnames(mat) <- c("Men","Women")
 rownames(mat) <- c("Awarded", "Not Awarded")
 if(knitr::is_html_output()){
-  knitr::kable(mat, "html", align = "c") %>%
+  knitr::kable(mat, "html", align = "c") |>
     kableExtra::kable_styling(bootstrap_options = "striped", full_width = FALSE)
 } else{
-  knitr::kable(mat, "latex", booktabs = TRUE, align = "c") %>%
+  knitr::kable(mat, "latex", booktabs = TRUE, align = "c") |>
     kableExtra::kable_styling(font_size = 8, latex_options = "hold_position")
 }
 ```
@@ -203,8 +203,8 @@ Exponenciando estos dos números podemos construir un intervalo de confianza del
 Usando R, podemos calcular este intervalo de confianza de la siguiente manera:
 ```{r}
 log_or <- log(odds_men/ odds_women)
-se <- two_by_two %>% select(-awarded) %>%
-  summarize(se = sqrt(sum(1/men) + sum(1/women))) %>%
+se <- two_by_two |> select(-awarded) |>
+  summarize(se = sqrt(sum(1/men) + sum(1/women))) |>
   pull(se)
 ci <- log_or + c(-1,1) * qnorm(0.975) * se
 ```
@@ -235,9 +235,10 @@ Como se mencionó anteriormente, informar solo valores-p no es una forma apropia
 Tengan en cuenta que la relación entre el riesgo relativo y el valor-p no es una correspondencia uno-a-uno. La relacion depende del tamaño de la muestra. Por lo tanto, un valor-p muy pequeño no necesariamente significa un riesgo relativo muy grande. Observen lo que sucede con el valor-p si multiplicamos nuestra tabla 2x2 por 10, lo cual no cambia el riesgo relativo:
 
 ```{r}
-two_by_two %>% select(-awarded) %>%
-  mutate(men = men*10, women = women*10) %>%
-  chisq.test() %>% .$p.value
+two_by_two_x_10 <- two_by_two |> 
+  select(-awarded) |>
+  mutate(men = men*10, women = women*10) 
+chisq.test(two_by_two_x_10)$p.value
 ```
 
 ## Ejercicios

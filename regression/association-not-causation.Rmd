@@ -15,7 +15,7 @@ the_title <- paste("Correlation =",
                    round(with(divorce_margarine,
                               cor(margarine_consumption_per_capita, divorce_rate_maine)),2))
 data(divorce_margarine)
-divorce_margarine %>%
+divorce_margarine |>
   ggplot(aes(margarine_consumption_per_capita, divorce_rate_maine)) +
   geom_point(cex=3) +
   geom_smooth(method = "lm") +
@@ -45,9 +45,9 @@ La primera columna denota grupo. Creamos `r cat(prettyNum(g, big.mark=",",scient
 A continuación, calculamos la correlación entre $X$ e $Y$ para cada grupo y miramos el máximo:
 
 ```{r}
-res <- sim_data %>%
-  group_by(group) %>%
-  summarize(r = cor(x, y)) %>%
+res <- sim_data |>
+  group_by(group) |>
+  summarize(r = cor(x, y)) |>
   arrange(desc(r))
 res
 ```
@@ -55,7 +55,7 @@ res
 Vemos una correlación máxima de `r max (res $r)` y, si solo graficamos los datos del grupo con esta correlación, vemos un gráfico convincente que $X$ e $Y$ sí están correlacionados:
 
 ```{r dredging, warning=FALSE, message=FALSE}
-sim_data %>% filter(group == res$group[which.max(res$r)]) %>%
+sim_data |> filter(group == res$group[which.max(res$r)]) |>
   ggplot(aes(x, y)) +
   geom_point() +
   geom_smooth(method = "lm")
@@ -64,7 +64,7 @@ sim_data %>% filter(group == res$group[which.max(res$r)]) %>%
 Recuerden que el resumen de correlación es una variable aleatoria. Aquí tenemos la distribución generada por la simulación Monte Carlo:
 
 ```{r null-corr-hist}
-res %>% ggplot(aes(x=r)) + geom_histogram(binwidth = 0.1, color = "black")
+res |> ggplot(aes(x=r)) + geom_histogram(binwidth = 0.1, color = "black")
 ```
 
 Es un hecho matemático que si observamos `r cat(prettyNum(g, big.mark=",",scientific=FALSE))` correlaciones aleatorias que se esperan que sean 0, pero tienen un error estándar de `r sd(res$r)`, la más grande estará cerca de 1.
@@ -73,9 +73,9 @@ Si realizamos una regresión en este grupo e interpretamos el valor-p, afirmarí
 
 ```{r, message=FALSE, warning=FALSE}
 library(broom)
-sim_data %>%
-  filter(group == res$group[which.max(res$r)]) %>%
-  summarize(tidy(lm(y ~ x))) %>%
+sim_data |>
+  filter(group == res$group[which.max(res$r)]) |>
+  summarize(tidy(lm(y ~ x))) |>
   filter(term == "x")
 ```
 
@@ -153,10 +153,10 @@ a los datos de altura de padre e hijo, con $X_i$ la altura del padre e $y_i$ la 
 ```{r}
 library(HistData)
 data("GaltonFamilies")
-GaltonFamilies %>%
-  filter(childNum == 1 & gender == "male") %>%
-  select(father, childHeight) %>%
-  rename(son = childHeight) %>%
+GaltonFamilies |>
+  filter(childNum == 1 & gender == "male") |>
+  select(father, childHeight) |>
+  rename(son = childHeight) |>
   summarize(tidy(lm(father ~ son)))
 ```
 
@@ -178,7 +178,7 @@ Los datos de admisión de seis concentraciones de U.C. Berkeley, de 1973, mostra
 
 ```{r}
 data(admissions)
-admissions %>% group_by(gender) %>%
+admissions |> group_by(gender) |>
 summarize(percentage =
 round(sum(admitted*applicants)/sum(applicants),1))
 ```
@@ -187,18 +187,19 @@ ejecutar una prueba estadística, que rechaza claramente la hipótesis de que el
 
 ```{r}
 data(admissions)
-admissions %>% group_by(gender) %>%
-  summarize(total_admitted = round(sum(admitted/ 100 * applicants)),
-            not_admitted = sum(applicants) - sum(total_admitted)) %>%
-  select(-gender) %>%
-  summarize(tidy(chisq.test(.))) %>% .$p.value
+two_by_two <- admissions |> group_by(gender) |> 
+  summarize(total_admitted = round(sum(admitted / 100 * applicants)), 
+            not_admitted = sum(applicants) - sum(total_admitted)) |>
+  select(-gender) 
+  
+chisq.test(two_by_two)$p.value
 ```
 
 Pero una inspección más cuidadosa muestra un resultado paradójico. Aquí están los porcentajes de admisión por concentración :
 
 ```{r}
-admissions %>% select(major, gender, admitted) %>%
-  pivot_wider(names_from = "gender", values_from = "admitted") %>%
+admissions |> select(major, gender, admitted) |>
+  pivot_wider(names_from = "gender", values_from = "admitted") |>
   mutate(women_minus_men = women - men)
 ```
 
@@ -211,11 +212,11 @@ Así que definamos tres variables: $X$ es 1 para hombres y 0 para mujeres, $Y$ e
 Una forma de ver esto es graficar el porcentaje total admitido a una concentración versus el porcentaje de mujeres que componen los solicitantes:
 
 ```{r uc-berkeley-majors}
-admissions %>%
-  group_by(major) %>%
+admissions |>
+  group_by(major) |>
   summarize(major_selectivity = sum(admitted * applicants)/sum(applicants),
             percent_women_applicants = sum(applicants * (gender=="women"))/
-              sum(applicants) * 100) %>%
+              sum(applicants) * 100) |>
   ggplot(aes(major_selectivity, percent_women_applicants, label = major)) +
   geom_text()
 ```
@@ -228,10 +229,10 @@ Parece haber asociación. El gráfico sugiere que las mujeres eran mucho más pr
 El siguiente gráfico muestra el número de solicitantes que fueron admitidos y los que no fueron según sexo:
 
 ```{r confounding, echo=FALSE}
-admissions %>%
-  mutate(yes = round(admitted/100*applicants), no = applicants - yes) %>%
-  select(-applicants, -admitted) %>%
-  gather(admission, number_of_students, -c("major", "gender")) %>%
+admissions |>
+  mutate(yes = round(admitted/100*applicants), no = applicants - yes) |>
+  select(-applicants, -admitted) |>
+  gather(admission, number_of_students, -c("major", "gender")) |>
   ggplot(aes(gender, number_of_students, fill = admission)) +
   geom_bar(stat = "identity", position = "stack") +
   facet_wrap(. ~ major)
@@ -239,8 +240,8 @@ admissions %>%
 
 <!--
 ```{r confounding-2}
-admissions %>%
-mutate(percent_admitted = admitted * applicants/sum(applicants)) %>%
+admissions |>
+mutate(percent_admitted = admitted * applicants/sum(applicants)) |>
 ggplot(aes(gender, y = percent_admitted, fill = major)) +
 geom_bar(stat = "identity", position = "stack")
 ```
@@ -253,7 +254,7 @@ También desglosamos las aceptaciones por concentración. Este gráfico nos perm
 En este gráfico, podemos ver que si condicionamos o estratificamos por concentración, controlamos el factor de confusión y este efecto desaparece:
 
 ```{r admission-by-major}
-admissions %>%
+admissions |>
   ggplot(aes(major, admitted, col = gender, size = applicants)) +
   geom_point()
 ```
@@ -263,7 +264,7 @@ Ahora vemos que concentración por concentración, no hay mucha diferencia. El t
 Si promediamos la diferencia por concentración, encontramos que el porcentaje es 3.5% más alto para las mujeres.
 
 ```{r}
-admissions %>% group_by(gender) %>% summarize(average = mean(admitted))
+admissions |> group_by(gender) |> summarize(average = mean(admitted))
 ```
 
 
@@ -285,11 +286,11 @@ dat <- lapply(means, function(mu){
   res
 })
 
-dat <- do.call(rbind, dat) %>%
-  as_tibble() %>%
+dat <- do.call(rbind, dat) |>
+  as_tibble() |>
   mutate(z = as.character(rep(seq_along(means), each = N)))
 
-dat %>% ggplot(aes(x, y)) + geom_point(alpha = .5) +
+dat |> ggplot(aes(x, y)) + geom_point(alpha = .5) +
   ggtitle(paste("Correlation = ", round(cor(dat$x, dat$y), 2)))
 ```
 
@@ -297,13 +298,13 @@ Pueden ver que $X$ e $Y$ están correlacionados negativamente. Sin embargo, una 
 
 
 ```{r simpsons-paradox-explained, echo=FALSE}
-means <- do.call(rbind, means) %>%
-  as_tibble() %>%
+means <- do.call(rbind, means) |>
+  as_tibble() |>
   mutate(z = as.character(seq_along(means)))
 
-corrs <- dat %>% group_by(z) %>% summarize(cor = cor(x, y)) %>% pull(cor)
+corrs <- dat |> group_by(z) |> summarize(cor = cor(x, y)) |> pull(cor)
 
-dat %>% ggplot(aes(x, y, color = z)) +
+dat |> ggplot(aes(x, y, color = z)) +
   geom_point(show.legend = FALSE, alpha = 0.5) +
   ggtitle(paste("Correlations =", paste(signif(corrs,2), collapse=" "))) +
   annotate("text", x = means$x, y = means$y, label = paste("z =", means$z), cex = 5)

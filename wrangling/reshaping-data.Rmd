@@ -33,7 +33,7 @@ new_tidy_data <- pivot_longer(wide_data, `1960`:`2015`,
 También podemos usar el _pipe_ de esta manera:
 
 ```{r}
-new_tidy_data <- wide_data %>% 
+new_tidy_data <- wide_data |> 
   pivot_longer(`1960`:`2015`, names_to = "year", values_to = "fertility")
 ```
 
@@ -46,7 +46,7 @@ head(new_tidy_data)
 y que cada año resultó en dos filas ya que tenemos dos países y la columna de los países no se recopiló. Una forma un poco más rápida de escribir este código es especificar qué columna **no** se recopilará, en lugar de todas las columnas que se recopilarán:
 
 ```{r}
-new_tidy_data <- wide_data %>%
+new_tidy_data <- wide_data |>
   pivot_longer(-country, names_to = "year", values_to = "fertility")
 ```
 
@@ -54,8 +54,8 @@ El objeto `new_tidy_data` se parece al original `tidy_data` que definimos de est
 
 ```{r}
 data("gapminder")
-tidy_data <- gapminder %>%
-  filter(country %in% c("South Korea", "Germany") & !is.na(fertility)) %>%
+tidy_data <- gapminder |>
+  filter(country %in% c("South Korea", "Germany") & !is.na(fertility)) |>
   select(country, year, fertility)
 ```
 
@@ -69,8 +69,8 @@ class(new_tidy_data$year)
 La función `pivot_longer` supone que los nombres de columna son caracteres. Así que necesitamos un poco más de _wrangling_ antes de poder graficar. Necesitamos convertir la columna con los años en números. La función `pivot_longer` incluye el argumento `convert` para este propósito:
 
 ```{r}
-new_tidy_data <- wide_data %>%
-  pivot_longer(-country, names_to = "year", values_to = "fertility") %>%
+new_tidy_data <- wide_data |>
+  pivot_longer(-country, names_to = "year", values_to = "fertility") |>
   mutate(year = as.integer(year))
 ```
 
@@ -79,7 +79,7 @@ Tengan en cuenta que también podríamos haber utilizado `mutate` y `as.numeric`
 Ahora que los datos están _tidy_, podemos usar este código relativamente sencillo de __ggplot2__:
 
 ```{r fertility-year-check, eval=FALSE}
-new_tidy_data %>% ggplot(aes(year, fertility, color = country)) + 
+new_tidy_data |> ggplot(aes(year, fertility, color = country)) + 
   geom_point()
 ```
 
@@ -88,7 +88,7 @@ new_tidy_data %>% ggplot(aes(year, fertility, color = country)) +
 Como veremos en ejemplos posteriores, a veces es útil convertir datos _tidy_ en datos anchos para fines de _wrangling_ de datos. A menudo usamos esto como un paso intermedio para convertir los datos en formato _tidy_. La función `pivot_wider` es básicamente la inversa de `pivot_longer`. El primer argumento es para los datos, pero como estamos usando el _pipe_, no lo mostramos. El argumento `names_from` le dice a `pivot_longer` qué variable usar como nombre de columna. El argumento `names_to` especifica qué variable usar para completar las celdas:
 
 ```{r}
-new_wide_data <- new_tidy_data %>% 
+new_wide_data <- new_tidy_data |> 
   pivot_wider(names_from = year, values_from = fertility)
 select(new_wide_data, country, `1960`:`1967`)
 ```
@@ -125,7 +125,7 @@ Primero, tengan en cuenta que los datos están en formato ancho. Además, observ
 Podemos comenzar el _wrangling_ de datos con la función `pivot_longer`, pero ya no deberíamos usar el nombre de la columna `year` para la nueva columna, dado que también contiene el tipo de variable. La nombraremos `name`, el valor predeterminado, por ahora:
 
 ```{r}
-dat <- raw_dat %>% pivot_longer(-country)
+dat <- raw_dat |> pivot_longer(-country)
 head(dat)
 ```
 
@@ -138,33 +138,33 @@ dat$name[1:5]
 Codificar múltiples variables en el nombre de una columna es un problema tan común que el paquete __readr__ incluye una función para separar estas columnas en dos o más. Aparte de los datos, la función `separate` toma tres argumentos: el nombre de la columna que se separará, los nombres que se utilizarán para las nuevas columnas y el carácter que separa las variables. Entonces, un primer intento de hacer esto es:
 
 ```{r, eval=FALSE}
-dat %>% separate(name, c("year", "name"), "_")
+dat |> separate(name, c("year", "name"), "_")
 ```
 
 `separate` supone por defecto que`_` es el separador y, por eso, no tenemos que incluirlo en el código:
 
 ```{r}
-dat %>% separate(name, c("year", "name"))
+dat |> separate(name, c("year", "name"))
 ```
 
 La función separa los valores, pero nos encontramos con un nuevo problema. Recibimos la advertencia `Too many values at 112 locations:` y la variable `life_expectancy` se corta a `life`. Esto es porque el `_` se usa para separar `life` y `expectancy`, no solo el año y el nombre de la variable. Podríamos añadir una tercera columna para guardar esto y dejar que la función `separate` sepa cual columna _llenar_ con los valores faltantes, `NA`, cuando no hay un tercer valor. Aquí le decimos que llene la columna de la derecha:
 
 ```{r}
 var_names <- c("year", "first_variable_name", "second_variable_name")
-dat %>% separate(name, var_names, fill = "right")
+dat |> separate(name, var_names, fill = "right")
 ```
 
 Sin embargo, si leemos el archivo de ayuda de `separate`, encontramos que un mejor enfoque es fusionar las dos últimas variables cuando hay una separación adicional:
 
 ```{r}
-dat %>% separate(name, c("year", "name"), extra = "merge")
+dat |> separate(name, c("year", "name"), extra = "merge")
 ```
 
 Esto logra la separación que queríamos. Sin embargo, aún no hemos terminado. Necesitamos crear una columna para cada variable. Como aprendimos, la función `pivot_wider` hace eso:
 
 ```{r}
-dat %>%
-  separate(name, c("year", "name"), extra = "merge") %>%
+dat |>
+  separate(name, c("year", "name"), extra = "merge") |>
   pivot_wider()
 ```
 
@@ -176,17 +176,17 @@ A veces es útil hacer el inverso de `separate`, es decir, unir dos columnas en 
 
 ```{r}
 var_names <- c("year", "first_variable_name", "second_variable_name")
-dat %>%
+dat |>
   separate(name, var_names, fill = "right")
 ```
 
 Podemos lograr el mismo resultado final uniendo las segunda y tercera columnas, luego esparciendo las columnas usando `pivot_wider` y renombrando `fertility_NA` a `fertility`:
 
 ```{r}
-dat %>%
-  separate(name, var_names, fill = "right") %>%
-  unite(name, first_variable_name, second_variable_name) %>%
-  pivot_wider() %>%
+dat |>
+  separate(name, var_names, fill = "right") |>
+  unite(name, first_variable_name, second_variable_name) |>
+  pivot_wider() |>
   rename(fertility = fertility_NA)
 ```
 
@@ -196,8 +196,8 @@ dat %>%
 1\. Ejecute el siguiente comando para definir el objeto `co2_wide`:
 
 ```{r, eval=FALSE}
-co2_wide <- data.frame(matrix(co2, ncol = 12, byrow = TRUE)) %>%
-  setNames(1:12) %>%
+co2_wide <- data.frame(matrix(co2, ncol = 12, byrow = TRUE)) |>
+  setNames(1:12) |>
   mutate(year = as.character(1959:1997))
 ```
 
@@ -207,7 +207,7 @@ Utilice la función `pivot_longer` para _wrangle_ esto en un set de datos _tidy_
 2\. Grafique CO2 versus mes con una curva diferente para cada año usando este código:
 
 ```{r, eval=FALSE}
-co2_tidy %>% ggplot(aes(month, co2, color = year)) + geom_line()
+co2_tidy |> ggplot(aes(month, co2, color = year)) + geom_line()
 ```
 
 Si no se realiza el gráfico esperado, probablemente es porque `co2_tidy$month` no es numérico:
@@ -232,7 +232,7 @@ d. Las medidas de CO2 no tienen una tendencia estacional.
 
 ```{r, eval=FALSE}
 load(admissions)
-dat <- admissions %>% select(-applicants)
+dat <- admissions |> select(-applicants)
 ```
 
 Si pensamos en una observación como una concentración, y que cada observación tiene dos variables (porcentaje de hombres admitidos y porcentaje de mujeres admitidas), entonces esto no es _tidy_. Utilice la función `pivot_wider` para _wrangle_ en la forma _tidy_ que queremos: una fila para cada concentración.

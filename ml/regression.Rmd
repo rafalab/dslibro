@@ -18,12 +18,12 @@ La regresión lineal puede considerarse un algoritmo de _machine learning_. En l
 library(HistData)
 
 set.seed(1983)
-galton_heights <- GaltonFamilies %>%
-  filter(gender == "male") %>%
-  group_by(family) %>%
-  sample_n(1) %>%
-  ungroup() %>%
-  select(father, childHeight) %>%
+galton_heights <- GaltonFamilies |>
+  filter(gender == "male") |>
+  group_by(family) |>
+  sample_n(1) |>
+  ungroup() |>
+  select(father, childHeight) |>
   rename(son = childHeight)
 ```
 
@@ -33,8 +33,8 @@ Supongan que tienen la tarea de construir un algoritmo de _machine learning_ que
 y <- galton_heights$son
 test_index <- createDataPartition(y, times = 1, p = 0.5, list = FALSE)
 
-train_set <- galton_heights %>% slice(-test_index)
-test_set <- galton_heights %>% slice(test_index)
+train_set <- galton_heights |> slice(-test_index)
+test_set <- galton_heights |> slice(test_index)
 ```
 
 En este caso, si solo estuviéramos ignorando la altura del padre y adivinando la altura del hijo, adivinaríamos la altura promedio de los hijos.
@@ -108,8 +108,8 @@ Hay muchas otras versiones de `predict` y muchos algoritmos de _machine learning
 ```{r, eval=FALSE}
 n <- 100
 Sigma <- 9*matrix(c(1.0, 0.5, 0.5, 1.0), 2, 2)
-dat <- MASS::mvrnorm(n = 100, c(69, 69), Sigma) %>%
-  data.frame() %>% setNames(c("x", "y"))
+dat <- MASS::mvrnorm(n = 100, c(69, 69), Sigma) |>
+  data.frame() |> setNames(c("x", "y"))
 ```
 
 Use el paquete __caret__ para dividirlo en un set de evaluación y uno de entrenamiento del mismo tamaño. Entrene un modelo lineal e indique el RMSE. Repita este ejercicio 100 veces y haga un histograma de los RMSE e indique el promedio y la desviación estándar.  Sugerencia: adapte el código mostrado anteriormente como demostramos aquí.
@@ -117,8 +117,8 @@ Use el paquete __caret__ para dividirlo en un set de evaluación y uno de entren
 ```{r, eval=FALSE}
 y <- dat$y
 test_index <- createDataPartition(y, times = 1, p = 0.5, list = FALSE)
-train_set <- dat %>% slice(-test_index)
-test_set <- dat %>% slice(test_index)
+train_set <- dat |> slice(-test_index)
+test_set <- dat |> slice(test_index)
 fit <- lm(y ~ x, data = train_set)
 y_hat <- fit$coef[1] + fit$coef[2]*test_set$x
 mean((y_hat - test_set$y)^2)
@@ -144,8 +144,8 @@ d. El RMSE no es una variable aleatoria.
 ```{r, eval=FALSE}
 n <- 100
 Sigma <- 9*matrix(c(1, 0.95, 0.95, 1), 2, 2)
-dat <- MASS::mvrnorm(n = 100, c(69, 69), Sigma) %>%
-  data.frame() %>% setNames(c("x", "y"))
+dat <- MASS::mvrnorm(n = 100, c(69, 69), Sigma) |>
+  data.frame() |> setNames(c("x", "y"))
 ```
 
 Repita el ejercicio y observe lo que le sucede al RMSE ahora.
@@ -164,8 +164,8 @@ d. Ambos son ejemplos de regresión, por lo que el RMSE tiene que ser el mismo.
 ```{r, eval=FALSE}
 n <- 1000
 Sigma <- matrix(c(1, 3/4, 3/4, 3/4, 1, 0, 3/4, 0, 1), 3, 3)
-dat <- MASS::mvrnorm(n = 100, c(0, 0, 0), Sigma) %>%
-  data.frame() %>% setNames(c("y", "x_1", "x_2"))
+dat <- MASS::mvrnorm(n = 100, c(0, 0, 0), Sigma) |>
+  data.frame() |> setNames(c("y", "x_1", "x_2"))
 ```
 
 Tenga en cuenta que `y` está correlacionado con ambos `x_1` y `x_2`, pero los dos predictores son independientes entre sí.
@@ -181,8 +181,8 @@ Use el paquete __caret__ para dividir en un set de evaluación y un set de entre
 ```{r, eval=FALSE}
 n <- 1000
 Sigma <- matrix(c(1.0, 0.75, 0.75, 0.75, 1.0, 0.95, 0.75, 0.95, 1.0), 3, 3)
-dat <- MASS::mvrnorm(n = 100, c(0, 0, 0), Sigma) %>%
-  data.frame() %>% setNames(c("y", "x_1", "x_2"))
+dat <- MASS::mvrnorm(n = 100, c(0, 0, 0), Sigma) |>
+  data.frame() |> setNames(c("y", "x_1", "x_2"))
 ```
 
 Use el paquete __caret__ para dividir en un set de evaluación y uno de entrenamiento del mismo tamaño. Compare el RMSE al usar solo `x_1`, sólo `x_2` y ambos `x_1` y `x_2`. Entrene un modelo lineal e indique el RMSE.
@@ -219,19 +219,19 @@ $$
 Como ejemplo, ofrecemos una predicción para un estudiante que mide 66 pulgadas de alto. ¿Cuál es la probabilidad condicional de ser mujer si mide 66 pulgadas de alto? En nuestro set de datos, podemos estimar esto redondeando a la pulgada más cercana y calculando:
 
 ```{r}
-train_set %>%
-  filter(round(height) == 66) %>%
+train_set |>
+  filter(round(height) == 66) |>
   summarize(y_hat = mean(sex=="Female"))
 ```
 
 Para construir un algoritmo de predicción, queremos estimar la proporción de la población femenina para cualquier altura dada $X=x$, que escribimos como la probabilidad condicional descrita anteriormente: $\mbox{Pr}( Y = 1 | X=x)$. Veamos cómo se ve esto para varios valores de $x$ (eliminaremos estratos de $x$ con pocos puntos de datos):
 
 ```{r height-and-sex-conditional-probabilities}
-heights %>%
-  mutate(x = round(height)) %>%
-  group_by(x) %>%
-  filter(n() >= 10) %>%
-  summarize(prop = mean(sex == "Female")) %>%
+heights |>
+  mutate(x = round(height)) |>
+  group_by(x) |>
+  filter(n() >= 10) |>
+  summarize(prop = mean(sex == "Female")) |>
   ggplot(aes(x, prop)) +
   geom_point()
 ```
@@ -245,8 +245,8 @@ Noten: como $p_0(x) = 1 - p_1(x)$, solo estimaremos $p_1(x)$ y eliminaremos el �
 Si convertimos los factores a 0s y 1s, podemos estimar $\beta_0$ y $\beta_1$ usando mínimos cuadrados.
 
 ```{r}
-lm_fit <- mutate(train_set, y = as.numeric(sex == "Female")) %>%
-  lm(y ~ height, data = .)
+lm_fit <- mutate(train_set, y = as.numeric(sex == "Female")) |>
+  lm(y ~ height, data = _)
 ```
 
 
@@ -260,7 +260,7 @@ Para formar una predicción, definimos una _regla de decisión_: predecir mujer 
 
 ```{r}
 p_hat <- predict(lm_fit, test_set)
-y_hat <- ifelse(p_hat > 0.5, "Female", "Male") %>% factor()
+y_hat <- ifelse(p_hat > 0.5, "Female", "Male") |> factor()
 confusionMatrix(y_hat, test_set$sex)$overall[["Accuracy"]]
 ```
 
@@ -271,11 +271,11 @@ Vemos que este método funciona mucho mejor que adivinar.
 La función $\beta_0 + \beta_1 x$ puede tomar cualquier valor, incluyendo negativos y valores mayores que 1. De hecho, el estimador $\hat{p}(x)$ calculado en la sección de regresión lineal se vuelve negativo.
 
 ```{r regression-prediction}
-heights %>%
-  mutate(x = round(height)) %>%
-  group_by(x) %>%
-  filter(n() >= 10) %>%
-  summarize(prop = mean(sex == "Female")) %>%
+heights |>
+  mutate(x = round(height)) |>
+  group_by(x) |>
+  filter(n() >= 10) |>
+  summarize(prop = mean(sex == "Female")) |>
   ggplot(aes(x, prop)) +
   geom_point() +
   geom_abline(intercept = lm_fit$coef[1], slope = lm_fit$coef[2])
@@ -314,9 +314,9 @@ Con este modelo, ya no podemos usar mínimos cuadrados. En su lugar, calculamos 
 En R, podemos ajustar el modelo de regresión logística con la función `glm`: modelos lineales generalizados. Esta función puede ajustar varios modelos, no solo regresión logística, por lo cual tenemos que especificar el modelo que queremos a través del argumento `family`:
 
 ```{r}
-glm_fit <- train_set %>%
-  mutate(y = as.numeric(sex == "Female")) %>%
-  glm(y ~ height, data = ., family = "binomial")
+glm_fit <- train_set |>
+  mutate(y = as.numeric(sex == "Female")) |>
+  glm(y ~ height, data = _, family = "binomial")
 ```
 
 Podemos obtener predicciones usando la función `predict`:
@@ -330,14 +330,14 @@ Cuando usamos `predict` con un objeto `glm`, tenemos que especificar que queremo
 Este modelo se ajusta a los datos un poco mejor que la línea:
 
 ```{r conditional-prob-glm-fit, echo=FALSE }
-tmp <- heights %>%
-  mutate(x = round(height)) %>%
-  group_by(x) %>%
-  filter(n() >= 10) %>%
+tmp <- heights |>
+  mutate(x = round(height)) |>
+  group_by(x) |>
+  filter(n() >= 10) |>
   summarize(prop = mean(sex == "Female"))
-logistic_curve <- data.frame(x = seq(min(tmp$x), max(tmp$x))) %>%
+logistic_curve <- data.frame(x = seq(min(tmp$x), max(tmp$x))) |>
   mutate(p_hat = plogis(glm_fit$coef[1] + glm_fit$coef[2]*x))
-tmp %>%
+tmp |>
   ggplot(aes(x, prop)) +
   geom_point() +
   geom_line(data = logistic_curve,
@@ -347,17 +347,17 @@ tmp %>%
 Como tenemos un estimador $\hat{p}(x)$, podemos obtener predicciones:
 
 ```{r}
-y_hat_logit <- ifelse(p_hat_logit > 0.5, "Female", "Male") %>% factor
+y_hat_logit <- ifelse(p_hat_logit > 0.5, "Female", "Male") |> factor()
 confusionMatrix(y_hat_logit, test_set$sex)$overall[["Accuracy"]]
 ```
 
 Las predicciones resultantes son similares. Esto se debe a que los dos estimadores de $p(x)$ mayores que 1/2 en aproximadamente la misma región de x:
 
 ```{r glm-prediction, echo=FALSE}
-data.frame(x = seq(min(tmp$x), max(tmp$x))) %>%
+data.frame(x = seq(min(tmp$x), max(tmp$x))) |>
   mutate(logistic = plogis(glm_fit$coef[1] + glm_fit$coef[2]*x),
-         regression = lm_fit$coef[1] + lm_fit$coef[2]*x) %>%
-  gather(method, p_x, -x) %>%
+         regression = lm_fit$coef[1] + lm_fit$coef[2]*x) |>
+  gather(method, p_x, -x) |>
   ggplot(aes(x, p_x, color = method)) +
   geom_line() +
   geom_hline(yintercept = 0.5, lty = 5)
@@ -401,7 +401,7 @@ plot_cond_prob <- function(p_hat=NULL){
   if(!is.null(p_hat)){
     tmp <- mutate(tmp, p=p_hat)
   }
-  tmp %>% ggplot(aes(x_1, x_2, z=p, fill=p)) +
+  tmp |> ggplot(aes(x_1, x_2, z=p, fill=p)) +
     geom_raster(show.legend = FALSE) +
     scale_fill_gradientn(colors=c("#F8766D","white","#00BFC4")) +
     stat_contour(breaks=c(0.5),color="black")
@@ -410,7 +410,7 @@ plot_cond_prob <- function(p_hat=NULL){
 
 ```{r logistic-p-hat}
 p_hat <- predict(fit_glm, newdata = mnist_27$true_p, type = "response")
-mnist_27$true_p %>% mutate(p_hat = p_hat) %>%
+mnist_27$true_p |> mutate(p_hat = p_hat) |>
   ggplot(aes(x_1, x_2, z=p_hat, fill=p_hat)) +
   geom_raster() +
   scale_fill_gradientn(colors=c("#F8766D","white","#00BFC4")) +
@@ -440,9 +440,9 @@ make_data <- function(n = 1000, p = 0.5,
   f_1 <- rnorm(n, mu_1, sigma_1)
   x <- ifelse(y == 1, f_1, f_0)
   test_index <- createDataPartition(y, times = 1, p = 0.5, list = FALSE)
-  list(train = data.frame(x = x, y = as.factor(y)) %>%
+  list(train = data.frame(x = x, y = as.factor(y)) |>
          slice(-test_index),
-       test = data.frame(x = x, y = as.factor(y)) %>%
+       test = data.frame(x = x, y = as.factor(y)) |>
          slice(test_index))
 }
 dat <- make_data()
@@ -451,7 +451,7 @@ dat <- make_data()
 Noten que hemos definido una variable `x` que es predictiva de un resultado binario `y`.
 
 ```{r, eval=FALSE}
-dat$train %>% ggplot(aes(x, color = y)) + geom_density()
+dat$train |> ggplot(aes(x, color = y)) + geom_density()
 ```
 
 Compare la exactitud de la regresión lineal y la regresión logística.
