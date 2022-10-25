@@ -33,11 +33,11 @@ data(murders)
 library(ggthemes)
 library(ggrepel)
 
-r <- murders %>%
-  summarize(pop=sum(population), tot=sum(total)) %>%
-  mutate(rate = tot/pop*10^6) %>% pull(rate)
+r <- murders |>
+  summarize(pop=sum(population), tot=sum(total)) |>
+  mutate(rate = tot/pop*10^6) |> pull(rate)
 
-murders %>% ggplot(aes(x = population/10^6, y = total, label = abb)) +
+murders |> ggplot(aes(x = population/10^6, y = total, label = abb)) +
   geom_abline(intercept = log10(r), lty=2, col="darkgrey") +
   geom_point(aes(color=region), size = 3) +
   geom_text_repel() +
@@ -90,7 +90,7 @@ ggplot(data = murders)
 También podemos _pipe_ los datos como primer argumento. Entonces, esta línea de código es equivalente a la anterior:
 
 ```{r ggplot-example-2}
-murders %>% ggplot()
+murders |> ggplot()
 ```
 
 El código crea un gráfico, en este caso una pizarra en blanco ya que no se ha definido la geometría. La única opción de estilo que vemos es un fondo gris.
@@ -113,7 +113,7 @@ p
 
 En `ggplot2` creamos gráficos agregando _capas_ (_layers_ en inglés). Las capas pueden definir geometrías, calcular estadísticas de resumen, definir qué escalas (_scales_ en inglés) usar o incluso cambiar estilos. Para añadir capas, usamos el símbolo `+`. En general, una línea de código se verá así:
 
->> DATOS%>% `ggplot()` + CAPA 1 + CAPA 2 + ... + CAPA N
+>> DATOS|> `ggplot()` + CAPA 1 + CAPA 2 + ... + CAPA N
 
 Usualmente, la primera capa que agregamos define la geometría. Queremos hacer un diagrama de dispersión. ¿Qué geometría debemos utilizar?
 
@@ -156,7 +156,7 @@ y, como se esperaba, vemos que se requieren al menos dos argumentos: `x` e `y`.
 Los __mapeos estéticos__ (_aesthetic mappings_ en inglés) describen cómo las propiedades de los datos se conectan con las características del gráfico, como la distancia a lo largo de un eje, el tamaño o el color. La función `aes` conecta los datos con lo que vemos en el gráfico mediante la definición de asignaciones estéticas y, por eso, será una de las funciones que más utilizarán al graficar. El resultado de la función `aes` a menudo se utiliza como argumento de una función de geometría. Este ejemplo produce un diagrama de dispersión de asesinatos totales versus población en millones:
 
 ```{r, eval = FALSE}
-murders %>% ggplot() +
+murders |> ggplot() +
   geom_point(aes(x = population/10^6, y = total))
 ```
 
@@ -232,7 +232,7 @@ args(ggplot)
 Si definimos un mapeo en `ggplot`, todas las geometrías que se agregan como capas se asignarán por defecto a este mapeo. Redefinimos `p`:
 
 ```{r}
-p <- murders %>% ggplot(aes(population/10^6, total, label = abb))
+p <- murders |> ggplot(aes(population/10^6, total, label = abb))
 ```
 
 y entonces podemos simplemente escribir el siguiente código para producir el gráfico anterior:
@@ -299,7 +299,7 @@ p + geom_point(size = 3) +
 Podemos cambiar el color de los puntos usando el argumento `col` en la función `geom_point`. Para facilitar la demostración de características nuevas, redefiniremos `p` para ser todo excepto la capa de puntos:
 
 ```{r}
-p <- murders %>% ggplot(aes(population/10^6, total, label = abb)) +
+p <- murders |> ggplot(aes(population/10^6, total, label = abb)) +
   geom_text(nudge_x = 0.05) +
   scale_x_log10() +
   scale_y_log10() +
@@ -333,8 +333,8 @@ A menudo queremos añadir formas o anotaciones a las figuras que no se derivan d
 Aquí queremos añadir una línea que represente la tasa promedio de asesinatos en todo el país. Una vez que determinemos la tasa por millón a ser $r$, esta línea se define por la fórmula: $y = r x$, con $y$ y $x$ nuestros ejes: asesinatos totales y población en millones, respectivamente. En la escala logarítmica, esta línea se convierte en: $\log(y) = \log(r) + \log(x)$. Entonces, en nuestro gráfico, es una línea con pendiente 1 e intercepto $\log(r)$. Para calcular este valor, utilizamos nuestros conocimientos de __dplyr__:
 
 ```{r}
-r <- murders %>%
-  summarize(rate = sum(total)/ sum(population) * 10^6) %>%
+r <- murders |>
+  summarize(rate = sum(total)/ sum(population) * 10^6) |>
   pull(rate)
 ```
 
@@ -393,11 +393,11 @@ Ahora que hemos terminado las pruebas, podemos escribir un código que produzca 
 library(ggthemes)
 library(ggrepel)
 
-r <- murders %>%
-  summarize(rate = sum(total)/ sum(population) * 10^6) %>%
+r <- murders |>
+  summarize(rate = sum(total)/ sum(population) * 10^6) |>
   pull(rate)
 
-murders %>% ggplot(aes(population/10^6, total, label = abb)) +
+murders |> ggplot(aes(population/10^6, total, label = abb)) +
   geom_abline(intercept = log10(r), lty = 2, color = "darkgrey") +
   geom_point(aes(col=region), size = 3) +
   geom_text_repel() +
@@ -430,7 +430,7 @@ y <- murders$total
 y queremos hacer un diagrama de dispersión con __ggplot2__, tendríamos que escribir algo como:
 
 ```{r, eval=FALSE}
-data.frame(x = x, y = y) %>%
+data.frame(x = x, y = y) |>
   ggplot(aes(x, y)) +
   geom_point()
 ```
@@ -482,7 +482,7 @@ p <- ggplot(murders)
 y también podemos usar el _pipe_:
 
 ```{r, eval = FALSE}
-p <- murders %>% ggplot()
+p <- murders |> ggplot()
 ```
 
 ¿Cuál es la clase del objeto `p`?
@@ -496,7 +496,7 @@ c. Un diagrama de dispersión.
 d. Un histograma.
 
 
-3\. Usando el _pipe_ `%>%`, cree un objeto `p` pero esta vez asociado con el set de datos `heights` en lugar del set de datos `murders`.
+3\. Usando el _pipe_ `|>`, cree un objeto `p` pero esta vez asociado con el set de datos `heights` en lugar del set de datos `murders`.
 
 
 
@@ -513,7 +513,7 @@ d. `murders` y `size`
 6\. Para crear el diagrama de dispersión, agregamos una capa con `geom_point`. Los mapeos estéticos requieren que definamos las variables del eje-x y del eje-y, respectivamente. Entonces el código se ve así:
 
 ```{r, eval=FALSE}
-murders %>% ggplot(aes(x = , y = )) +
+murders |> ggplot(aes(x = , y = )) +
   geom_point()
 ```
 
@@ -523,7 +523,7 @@ excepto que tenemos que definir las dos variables `x` e `y`. Llene el espacio co
 7\. Recuerde que si no usamos nombres de argumentos, podemos obtener el mismo gráfico si ingresamos los nombres de las variables en el orden correcto de esta manera:
 
 ```{r, eval=FALSE}
-murders %>% ggplot(aes(population, total)) +
+murders |> ggplot(aes(population, total)) +
   geom_point()
 ```
 
@@ -533,7 +533,7 @@ Vuelva a hacer el gráfico pero ahora con total en el eje-x y población en el e
 8\. Si en lugar de puntos queremos añadir texto, podemos usar las geometrías `geom_text()` o `geom_label()`. El siguiente código:
 
 ```{r, eval=FALSE}
-murders %>% ggplot(aes(population, total)) + geom_label()
+murders |> ggplot(aes(population, total)) + geom_label()
 ```
 
 nos dará el mensaje de error: `Error: geom_label requires the following missing aesthetics: label`
@@ -573,7 +573,7 @@ d. Como queremos que todos los colores sean azules, no necesitamos asignar color
 14\. Ahora vamos a cambiar el eje-x a una escala logarítmica para tomar en cuenta el hecho de que la distribución de la población es asimétrica. Comencemos definiendo un objeto `p` guardando el gráfico que hemos hecho hasta ahora:
 
 ```{r, eval=FALSE}
-p <- murders %>%
+p <- murders |>
   ggplot(aes(population, total, label = abb, color = region)) +
   geom_label()
 ```

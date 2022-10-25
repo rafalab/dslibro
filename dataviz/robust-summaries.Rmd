@@ -186,14 +186,14 @@ data("reported_heights")
 La altura es un vector de caracteres, por lo que creamos una nueva columna con la versión numérica:
 
 ```{r}
-reported_heights <- reported_heights %>%
+reported_heights <- reported_heights |>
   mutate(original_heights = height, height = as.numeric(height))
 ```
 
 Tengan en cuenta que recibimos una advertencia sobre los NAs. Esto se debe a que algunas de las alturas autoreportadas no eran números. Podemos ver por qué obtenemos estos NAs:
 
 ```{r, warning=FALSE}
-reported_heights %>% filter(is.na(height)) %>% head()
+reported_heights |> filter(is.na(height)) |> head()
 ```
 
 Algunos estudiantes indicaron sus alturas usando pies y pulgadas en lugar de solo pulgadas. Otros usaron centímetros y otros solo estaban "trolleando". Por ahora eliminaremos estas entradas:
@@ -206,8 +206,8 @@ reported_heights <- filter(reported_heights, !is.na(height))
 Si calculamos el promedio y la desviación estándar, observamos que obtenemos resultados extraños. El promedio y la desviación estándar son diferentes de la mediana y del MAD:
 
 ```{r}
-reported_heights %>%
-  group_by(sex) %>%
+reported_heights |>
+  group_by(sex) |>
   summarize(average = mean(height), sd = sd(height),
             median = median(height), MAD = mad(height))
 ```
@@ -215,7 +215,7 @@ reported_heights %>%
 Esto sugiere que tenemos valores atípicos, lo que se confirma creando un diagrama de caja:
 
 ```{r height-outlier-ggplot, echo=FALSE}
-reported_heights %>%
+reported_heights |>
   ggplot(aes(sex, height)) +
   geom_boxplot()
 ```
@@ -223,7 +223,7 @@ reported_heights %>%
 Vemos algunos valores bastante extremos. Para ver cuáles son estos valores, podemos rápidamente mirar los valores más grandes utilizando la función `arrange`:
 
 ```{r}
-reported_heights %>% arrange(desc(height)) %>% top_n(10, height)
+reported_heights |> arrange(desc(height)) |> top_n(10, height)
 ```
 
 Las primeras siete entradas parecen errores extraños. Sin embargo, las siguientes entradas parecen haber sido ingresadas en centímetros en lugar de pulgadas. Dado que 184cm es equivalente a seis pies de altura, sospechamos que 184 realmente significa 72 pulgadas.
@@ -234,10 +234,10 @@ Podemos revisar todas las respuestas sin sentido examinando los datos que Tukey 
 whisker <- 3*IQR(reported_heights$height)
 max_height <- quantile(reported_heights$height, .75) + whisker
 min_height <- quantile(reported_heights$height, .25) - whisker
-reported_heights %>%
-  filter(!between(height, min_height, max_height)) %>%
-  select(original_heights) %>%
-  head(n=10) %>% pull(original_heights)
+reported_heights |>
+  filter(!between(height, min_height, max_height)) |>
+  select(original_heights) |>
+  head(n=10) |> pull(original_heights)
 ```
 
 Al revisar estas alturas cuidadosamente, vemos dos errores comunes: entradas en centímetros, que resultan ser demasiado grandes, y entradas del tipo `x.y` con `x` e `y` representando pies y pulgadas respectivamente, que resultan ser demasiado pequeñas. Algunos de los valores aún más pequeños, como 1.6, podrían ser entradas en metros.

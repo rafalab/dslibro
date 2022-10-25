@@ -44,10 +44,10 @@ prop.table(table(heights$sex))
 Esta _tabla de frecuencia_ de dos categorías es la forma más sencilla de una distribución. Realmente no necesitamos visualizarla ya que un número describe todo lo que necesitamos saber: `r round(mean(heights$sex=="Female")*100)`% son mujeres y el resto son hombres. Cuando hay más categorías, un diagrama de barras sencillo describe la distribución. Aquí hay un ejemplo con las regiones estatales de EE. UU.:
 
 ```{r state-region-distribution, echo=FALSE}
-murders %>% group_by(region) %>%
-  summarize(n = n()) %>%
+murders |> group_by(region) |>
+  summarize(n = n()) |>
   mutate(Proportion = n/sum(n),
-         region = reorder(region, Proportion)) %>%
+         region = reorder(region, Proportion)) |>
   ggplot(aes(x=region, y=Proportion, fill=region)) +
   geom_bar(stat = "identity", show.legend = FALSE) +
   xlab("")
@@ -67,7 +67,7 @@ Aquí vemos un gráfico de $F$ para los datos de altura masculina:
 
 ```{r ecdf, echo=FALSE}
 ds_theme_set()
-heights %>% filter(sex=="Male") %>% ggplot(aes(height)) +
+heights |> filter(sex=="Male") |> ggplot(aes(height)) +
   stat_ecdf() +
   ylab("F(a)") + xlab("a")
 ```
@@ -85,8 +85,8 @@ Aunque el concepto de CDF se discute ampliamente en los libros de texto de estad
 La forma más sencilla de hacer un histograma es dividir el _span_ de nuestros datos en _compartimientos_ (_bins_ en inglés) no superpuestos del mismo tamaño. Entonces para cada compartimiento, contamos el número de valores que se encuentran en ese intervalo. El histograma grafica estos conteos como barras con la base de la barra definida por los intervalos. A continuación tenemos el histograma para los datos de altura que dividen el rango de valores en intervalos de una pulgada: $[49.5, 50.5], [51.5,52.5],(53.5,54.5],...,(82.5,83.5]$.
 
 ```{r height-histogram, echo=FALSE}
-heights %>%
-  filter(sex=="Male") %>%
+heights |>
+  filter(sex=="Male") |>
   ggplot(aes(height)) +
   geom_histogram(binwidth = 1, color = "black")
 ```
@@ -104,8 +104,8 @@ Discutimos cómo codificar histogramas en la Sección \@ref(other-geometries).
 Los gráficos de densidad suave son estéticamente más atractivos que los histogramas. A continuación vemos un gráfico de densidad suave para nuestros datos de altura:
 
 ```{r example-of-smoothed-density, echo=FALSE}
-heights %>%
-  filter(sex=="Male") %>%
+heights |>
+  filter(sex=="Male") |>
   ggplot(aes(height)) +
   geom_density(alpha = .2, fill= "#00BFC4", color = 0) +
   geom_line(stat='density')
@@ -123,15 +123,15 @@ Sin embargo, podemos hacer una suposición que quizás nos ayude a aproximarla. 
 ```{r simulated-data-histogram-1, echo=FALSE}
 set.seed(1988)
 x <- data.frame(height = c(rnorm(1000000,69,3), rnorm(1000000,65,3)))
-x %>% ggplot(aes(height)) + geom_histogram(binwidth = 1, color = "black")
+x |> ggplot(aes(height)) + geom_histogram(binwidth = 1, color = "black")
 ```
 
 Entre más pequeños hacemos los compartimientos, más suave se vuelve el histograma. Aquí están los histogramas con ancho de compartimiento de 1, 0.5 y 0.1:
 
 ```{r simulated-data-histogram-2, fig.width=9, fig.height=3, out.width = "100%",echo=FALSE, message=FALSE}
-p1 <- x %>% ggplot(aes(height)) + geom_histogram(binwidth = 1, color = "black") + ggtitle("binwidth=1")
-p2 <- x %>% ggplot(aes(height)) + geom_histogram(binwidth = 0.5, color="black") + ggtitle("binwidth=0.5")
-p3 <- x %>% ggplot(aes(height)) + geom_histogram(binwidth = 0.1) + ggtitle("binwidth=0.1")
+p1 <- x |> ggplot(aes(height)) + geom_histogram(binwidth = 1, color = "black") + ggtitle("binwidth=1")
+p2 <- x |> ggplot(aes(height)) + geom_histogram(binwidth = 0.5, color="black") + ggtitle("binwidth=0.5")
+p3 <- x |> ggplot(aes(height)) + geom_histogram(binwidth = 0.1) + ggtitle("binwidth=0.1")
 library(gridExtra)
 grid.arrange(p1, p2, p3, nrow = 1)
 ```
@@ -139,7 +139,7 @@ grid.arrange(p1, p2, p3, nrow = 1)
 La densidad suave es básicamente la curva que atraviesa la parte superior de las barras del histograma cuando los compartimientos son muy, muy pequeños. Para que la curva no dependa del tamaño hipotético de la lista hipotética, calculamos la curva usando frecuencias en lugar de conteos:
 
 ```{r, simulated-density-1, echo=FALSE}
-x %>% ggplot(aes(height)) +
+x |> ggplot(aes(height)) +
   geom_histogram(aes(y=..density..), binwidth = 0.1, color = I("black")) +
   geom_line(stat='density')
 ```
@@ -149,8 +149,8 @@ Ahora, de vuelta a la realidad. No tenemos millones de medidas. En cambio, tenem
 Por lo tanto, hacemos un histograma utilizando tamaños de compartimiento apropiados para nuestros datos y frecuencias de cómputo en lugar de conteos. Además, dibujamos una curva suave que pasa por la parte superior de las barras del histograma. Los siguientes gráficos muestran los pasos que conducen a una densidad suave:
 
 ```{r smooth-density-2, echo=FALSE, out.width = "100%"}
-hist1 <- heights %>%
-  filter(sex=="Male") %>%
+hist1 <- heights |>
+  filter(sex=="Male") |>
   ggplot(aes(height)) +
   geom_histogram(aes(y=..density..), binwidth = 1, color="black")
 hist2 <- hist1 +
@@ -160,8 +160,8 @@ hist3 <- hist1 +
 hist4 <- ggplot() + geom_point(data = ggplot_build(hist2)$data[[1]], aes(x,y), col = "blue") +
   xlab("height") + ylab("density")
 hist5 <- hist4 + geom_line(data = ggplot_build(hist2)$data[[2]], aes(x,y))
-hist6 <- heights %>%
-  filter(sex=="Male") %>%
+hist6 <- heights |>
+  filter(sex=="Male") |>
   ggplot(aes(height)) +
   geom_density(alpha = 0.2, fill="#00BFC4", col = 0) +
   geom_line(stat='density') +
@@ -174,13 +174,13 @@ Sin embargo, recuerden que _suave_ (_smooth_ en inglés) es un término relativo
 
 
 ```{r densities-different-smoothness, echo = FALSE, out.width = "100%", fig.width = 6, fig.height = 3}
-p1 <- heights %>%
-  filter(sex=="Male")%>% ggplot(aes(height)) +
+p1 <- heights |>
+  filter(sex=="Male")|> ggplot(aes(height)) +
   geom_histogram(aes(y=..density..), binwidth = 1, alpha = 0.5) +
   geom_line(stat='density', adjust = 0.5)
 
-p2 <- heights %>%
-  filter(sex=="Male") %>% ggplot(aes(height)) +
+p2 <- heights |>
+  filter(sex=="Male") |> ggplot(aes(height)) +
   geom_histogram(aes(y=..density..), binwidth = 1, alpha = 0.5) +
   geom_line(stat='density', adjust = 2)
 
@@ -197,7 +197,7 @@ Tengan en cuenta que interpretar el eje-y de un gráfico de densidad suave no es
 ```{r area-under-curve, echo=FALSE}
 d <- with(heights, density(height[sex=="Male"]))
 tmp <- data.frame(height=d$x, density=d$y)
-tmp %>% ggplot(aes(height,density)) + geom_line() +
+tmp |> ggplot(aes(height,density)) + geom_line() +
   geom_area(aes(x=height,y=density), data = filter(tmp, between(height, 65, 68)), alpha=0.2, fill="#00BFC4")
 ```
 
@@ -208,8 +208,8 @@ lo que significa que aproximadamente `r noquote(paste0(round(mean(dplyr::between
 Al comprender esto, estamos listos para usar la densidad suave como resumen. Para este set de datos, nos sentimos bastante cómodos suponiendo suavidad y, por ende, compartiendo esta figura estéticamente agradable con ET, que puede usarla para comprender nuestros datos de alturas masculinas:
 
 ```{r example-of-smoothed-density-2, echo=FALSE}
-heights %>%
-  filter(sex=="Male") %>%
+heights |>
+  filter(sex=="Male") |>
   ggplot(aes(height)) +
   geom_density(alpha=.2, fill= "#00BFC4", color = 0) +
   geom_line(stat='density')
@@ -221,7 +221,7 @@ heights %>%
 Como nota final, señalamos que una ventaja de las densidades suaves sobre los histogramas para fines de visualización es que las densidades facilitan la comparación de dos distribuciones. Esto se debe en gran parte a que los bordes irregulares del histograma añaden desorden. Aquí hay un ejemplo que compara las alturas masculinas y las femeninas:
 
 ```{r two-densities-one-plot, echo=FALSE}
-heights %>%
+heights |>
   ggplot(aes(height, fill=sex)) +
   geom_density(alpha = 0.2, color = 0) +
   geom_line(stat='density')
@@ -239,10 +239,10 @@ Con el argumento correcto, `ggplot` automáticamente sombrea la región de inter
 library(dslabs)
 ds_theme_set()
 data(murders)
-murders %>% group_by(region) %>%
-  summarize(n = n()) %>%
+murders |> group_by(region) |>
+  summarize(n = n()) |>
   mutate(Proportion = n/sum(n),
-         region = reorder(region, Proportion)) %>%
+         region = reorder(region, Proportion)) |>
   ggplot(aes(x=region, y=Proportion, fill=region)) +
   geom_bar(stat = "identity", show.legend = FALSE) +
   xlab("")
@@ -262,7 +262,7 @@ d. Los colores, no la altura de las barras, describen la distribución.
 
 
 ```{r ecdf-exercise, echo=FALSE}
-heights %>% filter(sex == "Male") %>% ggplot(aes(height)) +
+heights |> filter(sex == "Male") |> ggplot(aes(height)) +
   stat_ecdf() +
   ylab("F(a)") + xlab("a")
 ```
@@ -285,7 +285,7 @@ d. 74 pulgadas
 5\. Aquí hay un eCDF de las tasas de asesinatos en todos los estados:
 
 ```{r ecdf-exercise-2, echo=FALSE}
-murders %>% mutate(murder_rate = total/population * 10^5) %>%
+murders |> mutate(murder_rate = total/population * 10^5) |>
   ggplot(aes(murder_rate)) +
   stat_ecdf() +
   ylab("F(a)") + xlab("a")
@@ -311,8 +311,8 @@ d. Con la excepción de 4 estados, las tasas de asesinatos son inferiores a 5 po
 7\. A continuación mostramos el histograma de alturas masculinas de nuestro set de datos `heights`:
 
 ```{r height-histogram-exercise, echo=FALSE}
-heights %>%
-  filter(sex == "Male") %>%
+heights |>
+  filter(sex == "Male") |>
   ggplot(aes(height)) +
   geom_histogram(binwidth = 1, color = "black")
 ```
@@ -334,7 +334,7 @@ d. 50%
 9\. Según el siguiente gráfico de densidad, ¿aproximadamente qué proporción de estados de EE. UU. tiene poblaciones con más de 10 millones de personas?
 
 ```{r density-exercise, echo=FALSE}
-murders %>% ggplot(aes(x=population/10^6)) +
+murders |> ggplot(aes(x=population/10^6)) +
   geom_density(fill = "grey") +
   scale_x_log10() +
   xlab("Population in millions")
@@ -349,11 +349,11 @@ d. 0.55
 
 ```{r density-exercise-2, echo=FALSE, warning=FALSE, message=FALSE}
 library(gridExtra)
-p1 <- murders %>% ggplot(aes(x=population/10^6)) +
+p1 <- murders |> ggplot(aes(x=population/10^6)) +
   geom_density(fill = "grey", bw = 5) + xlab("Population in millions") + ggtitle("1")
-p2 <- murders %>% ggplot(aes(x=population/10^6)) +
+p2 <- murders |> ggplot(aes(x=population/10^6)) +
   geom_density(fill = "grey", bw = .05) + scale_x_log10() + xlab("Population in millions") + ggtitle("2")
-p3 <- murders %>% ggplot(aes(x=population/10^6)) +
+p3 <- murders |> ggplot(aes(x=population/10^6)) +
   geom_density(fill = "grey", bw = 1) + scale_x_log10() + xlab("Population in millions") + ggtitle("3")
 grid.arrange(p1,p2,p3,ncol=2)
 ```
@@ -382,8 +382,8 @@ La distribución es simétrica, centrada en el promedio, y la mayoría de los va
 
 ```{r normal-distribution-density, echo=FALSE}
 mu <- 0; s <- 1
-norm_dist <- data.frame(x=seq(-4,4,len=50)*s+mu) %>% mutate(density=dnorm(x,mu,s))
-norm_dist %>% ggplot(aes(x,density)) + geom_line()
+norm_dist <- data.frame(x=seq(-4,4,len=50)*s+mu) |> mutate(density=dnorm(x,mu,s))
+norm_dist |> ggplot(aes(x,density)) + geom_line()
 ```
 
 El hecho de que la distribución está definida por solo dos parámetros implica que si la distribución de un set de datos se puede aproximar con una distribución normal, toda la información necesaria para describir la distribución se puede codificar en solo dos números: el promedio y la desviación estándar. Ahora vamos a definir estos valores para una lista arbitraria de números.
@@ -417,10 +417,10 @@ c(average = m, sd = s)
 A continuación tenemos un gráfico de la densidad suave de nuestras alturas de estudiantes en azul y la distribución normal con media = `r round(m,1)` y SD = `r round(s,1)` trazado como una línea negra:
 
 ```{r data-and-normal-densities, echo=FALSE}
-norm_dist <- data.frame(x = seq(-4, 4, len=50)*s + m) %>%
+norm_dist <- data.frame(x = seq(-4, 4, len=50)*s + m) |>
   mutate(density = dnorm(x, m, s))
 
-heights %>% filter(sex == "Male") %>% ggplot(aes(height)) +
+heights |> filter(sex == "Male") |> ggplot(aes(height)) +
   geom_density(fill="#0099FF") +
   geom_line(aes(x, density), data = norm_dist, lwd=1.5)
 ```
@@ -517,7 +517,7 @@ qplot(theoretical_quantiles, sample_quantiles) + geom_abline()
 El código anterior se incluye para ayudar a describir los gráficos Q-Q. Sin embargo, en la práctica es más fácil usar el código **ggplot2** descrito en la Sección \@ref(other-geometries):
 
 ```{r, eval=FALSE}
-heights %>% filter(sex == "Male") %>%
+heights |> filter(sex == "Male") |>
   ggplot(aes(sample = scale(height))) +
   geom_qq() +
   geom_abline()
@@ -542,10 +542,10 @@ Para presentar los diagramas de caja (_boxplots_ en inglés), volveremos a los d
 
 ```{r hist-qqplot-non-normal-data, out.width = "100%", fig.width = 6, fig.height = 3, echo=FALSE}
 data(murders)
-murders <- murders %>% mutate(rate = total/population*100000)
+murders <- murders |> mutate(rate = total/population*100000)
 library(gridExtra)
-p1 <- murders %>% ggplot(aes(x=rate)) + geom_histogram(binwidth = 1) + ggtitle("Histogram")
-p2 <- murders %>% ggplot(aes(sample=rate)) +
+p1 <- murders |> ggplot(aes(x=rate)) + geom_histogram(binwidth = 1) + ggtitle("Histogram")
+p2 <- murders |> ggplot(aes(sample=rate)) +
   geom_qq(dparams=summarize(murders, mean=mean(rate), sd=sd(rate))) +
   geom_abline() + ggtitle("QQ-plot")
 grid.arrange(p1, p2, ncol = 2)
@@ -559,7 +559,7 @@ Aquí Tukey ofreció algunos consejos. Primero, recomendó proveer un resumen de
 
 
 ```{r first-boxplot, echo=FALSE}
-murders %>% ggplot(aes("",rate)) + geom_boxplot() +
+murders |> ggplot(aes("",rate)) + geom_boxplot() +
   coord_cartesian(xlim = c(0, 2)) + xlab("")
 ```
 
@@ -582,7 +582,7 @@ Usando el histograma, los gráficos de densidad y los gráficos Q-Q, nos hemos c
 Aprendimos que los diagramas de caja son útiles cuando queremos comparar rápidamente dos o más distribuciones. Aquí vemos las alturas para varones y hembras:
 
 ```{r female-male-boxplots, echo=FALSE}
-heights %>% ggplot(aes(x=sex, y=height, fill=sex)) +
+heights |> ggplot(aes(x=sex, y=height, fill=sex)) +
   geom_boxplot()
 ```
 
@@ -590,10 +590,10 @@ El diagrama inmediatamente demuestra que los varones son, en promedio, más alto
 
 
 ```{r histogram-qqplot-female-heights, echo=FALSE, out.width="100%", fig.width = 6, fig.height = 3}
-p1 <- heights %>% filter(sex == "Female") %>%
+p1 <- heights |> filter(sex == "Female") |>
   ggplot(aes(height)) +
   geom_density(fill="#F8766D")
-p2 <- heights %>% filter(sex == "Female") %>%
+p2 <- heights |> filter(sex == "Female") |>
   ggplot(aes(sample=scale(height))) +
   geom_qq() + geom_abline() + ylab("Standard Units")
 grid.arrange(p1, p2, ncol=2)
@@ -605,8 +605,8 @@ Sin embargo, releemos la cita de Tukey y nos damos cuenta de que hemos notado lo
 
 Con respecto a los cinco valores más pequeños, noten que estos valores son:
 ```{r}
-heights %>% filter(sex == "Female") %>%
-  top_n(5, desc(height)) %>%
+heights |> filter(sex == "Female") |>
+  top_n(5, desc(height)) |>
   pull(height)
 ```
 
@@ -637,8 +637,8 @@ library(tidyverse)
 library(dslabs)
 ds_theme_set()
 data(gapminder)
-tab <- gapminder %>% filter(year == 2010) %>% group_by(continent) %>% select(continent, population)
-tab %>% ggplot(aes(x=continent, y=population/10^6)) +
+tab <- gapminder |> filter(year == 2010) |> group_by(continent) |> select(continent, population)
+tab |> ggplot(aes(x=continent, y=population/10^6)) +
   geom_boxplot() +
   scale_y_continuous(trans = "log10", breaks = c(1,10,100,1000)) + ylab("Population in millions")
 ```
@@ -698,15 +698,15 @@ En el Capitulo \@ref(ggplot2), presentamos el paquete __ggplot2__ para la visual
 Para generar un diagrama de barras (_barplots_ en inglés), podemos usar la geometría `geom_bar`. Por defecto, R cuenta los casos en cada categoría y dibuja una barra. Aquí vemos el diagrama de barras para las regiones de Estados Unidos.
 
 ```{r barplot-geom}
-murders %>% ggplot(aes(region)) + geom_bar()
+murders |> ggplot(aes(region)) + geom_bar()
 ```
 
 A menudo ya tenemos una tabla con una distribución que queremos presentar como diagrama de barras. Aquí tenemos un ejemplo de tal tabla:
 
 ```{r}
 data(murders)
-tab <- murders %>%
-  count(region) %>%
+tab <- murders |>
+  count(region) |>
   mutate(proportion = n/sum(n))
 tab
 ```
@@ -714,7 +714,7 @@ tab
 Ya no queremos que `geom_bar` cuente, sino que simplemente grafique una barra a la altura proporcionada por la variable `proportion`. Para esto necesitamos proveer `x` (las categorías) e `y` (los valores) y usar la opción `stat="identity"`.
 
 ```{r region-freq-barplot}
-tab %>% ggplot(aes(region, proportion)) + geom_bar(stat = "identity")
+tab |> ggplot(aes(region, proportion)) + geom_bar(stat = "identity")
 ```
 
 ### Histogramas
@@ -723,8 +723,8 @@ Para generar histogramas, utilizamos `geom_histogram`. Al revisar la página de 
 El código se ve así:
 
 ```{r, eval=FALSE}
-heights %>%
-  filter(sex == "Female") %>%
+heights |>
+  filter(sex == "Female") |>
   ggplot(aes(height)) +
   geom_histogram()
 ```
@@ -737,8 +737,8 @@ Si ejecutamos el código anterior, nos da un mensaje:
 Anteriormente utilizamos un tamaño de compartimiento de 1 pulgada, por lo que el código se ve así:
 
 ```{r, eval=FALSE}
-heights %>%
-  filter(sex == "Female") %>%
+heights |>
+  filter(sex == "Female") |>
   ggplot(aes(height)) +
   geom_histogram(binwidth = 1)
 ```
@@ -746,8 +746,8 @@ heights %>%
 Finalmente, si por razones estéticas queremos añadir color, usamos los argumentos descritos en la página de ayuda. También añadimos etiquetas y un título:
 
 ```{r height-histogram-geom}
-heights %>%
-  filter(sex == "Female") %>%
+heights |>
+  filter(sex == "Female") |>
   ggplot(aes(height)) +
   geom_histogram(binwidth = 1, fill = "blue", col = "black") +
   xlab("Female heights in inches") +
@@ -759,8 +759,8 @@ heights %>%
 Para crear una densidad suave, usamos `geom_density`. Para hacer un gráfico de densidad suave con los datos que anteriormente visualizamos como un histograma, podemos usar este código:
 
 ```{r, eval=FALSE}
-heights %>%
-  filter(sex == "Female") %>%
+heights |>
+  filter(sex == "Female") |>
   ggplot(aes(height)) +
   geom_density()
 ```
@@ -768,8 +768,8 @@ heights %>%
 Para rellenar con color, podemos usar el argumento `fill`.
 
 ```{r ggplot-density}
-heights %>%
-  filter(sex == "Female") %>%
+heights |>
+  filter(sex == "Female") |>
   ggplot(aes(height)) +
   geom_density(fill="blue")
 ```
@@ -777,7 +777,7 @@ heights %>%
 Para cambiar la suavidad de la densidad, utilizamos el argumento `adjust` para multiplicar el valor por defecto por ese `adjust`. Por ejemplo, si queremos que el parámetro de suavizado sea el doble de grande, usamos:
 
 ```{r eval = FALSE}
-heights %>%
+heights |>
   filter(sex == "Female") +
   geom_density(fill="blue", adjust = 2)
 ```
@@ -787,7 +787,7 @@ heights %>%
 La geometría para crear diagramas de caja es `geom_boxplot`. Como ya hemos discutido, los diagramas de caja son útiles para comparar distribuciones. Por ejemplo, a continuación vemos las alturas mostradas anteriormente para las mujeres, pero aquí en comparación con los hombres. Para esta geometría, necesitamos los argumentos `x` como las categorías y los argumentos `y` como los valores:
 
 ```{r female-male-boxplots-geom, echo=FALSE}
-heights %>% ggplot(aes(sex, height)) +
+heights |> ggplot(aes(sex, height)) +
   geom_boxplot()
 ```
 
@@ -796,7 +796,7 @@ heights %>% ggplot(aes(sex, height)) +
 Para gráficos Q-Q, usamos la geometría `geom_qq`. De la página de ayuda, aprendemos que necesitamos especificar el `sample` (aprenderemos sobre _samples_ en un capítulo posterior). Aquí tenemos el gráfico Q-Q para alturas de varones:
 
 ```{r ggplot-qq}
-heights %>% filter(sex=="Male") %>%
+heights |> filter(sex=="Male") |>
   ggplot(aes(sample = height)) +
   geom_qq()
 ```
@@ -804,10 +804,10 @@ heights %>% filter(sex=="Male") %>%
 Por defecto, la variable muestral se compara con una distribución normal con un promedio de 0 y una desviación estándar de 1. Para cambiar esto, utilizamos el argumento `dparams` según la página de ayuda. Para añadir una línea de identidad, simplemente asignen otra capa. Para líneas rectas, usamos la función `geom_abline`. La línea por defecto es la línea de identidad (pendiente = 1, intercepto = 0).
 
 ```{r ggplot-qq-dparams, eval=FALSE}
-params <- heights %>% filter(sex=="Male") %>%
+params <- heights |> filter(sex=="Male") |>
   summarize(mean = mean(height), sd = sd(height))
 
-heights %>% filter(sex=="Male") %>%
+heights |> filter(sex=="Male") |>
   ggplot(aes(sample = height)) +
   geom_qq(dparams = params) +
   geom_abline()
@@ -816,8 +816,8 @@ heights %>% filter(sex=="Male") %>%
 Otra opción aquí es escalar los datos primero y luego hacer un gráfico Q-Q contra la distribución normal estándar.
 
 ```{r ggplot-qq-standard-units, eval=FALSE}
-heights %>%
-  filter(sex=="Male") %>%
+heights |>
+  filter(sex=="Male") |>
   ggplot(aes(sample = scale(height))) +
   geom_qq() +
   geom_abline()
@@ -828,21 +828,21 @@ heights %>%
 No hemos tenido que usar imágenes para los conceptos descritos en este capítulo, pero los usaremos en la Sección \@ref(vaccines), así que presentamos las dos geometrías utilizadas para crear imágenes: __geom_tile__ y __geom_raster__. Se comportan de manera similar; para ver cómo difieren, consulten la página de ayuda. Para crear una imagen en __ggplot2__, necesitamos un _data frame_ con las coordenadas x e y, así como los valores asociados con cada uno de estos. Aquí tenemos un _data frame_:
 
 ```{r}
-x <- expand.grid(x = 1:12, y = 1:10) %>%
+x <- expand.grid(x = 1:12, y = 1:10) |>
   mutate(z = 1:120)
 ```
 
 Tengan en cuenta que esta es la versión _tidy_ de una matriz, `matrix(1:120, 12, 10)`. Para graficar la imagen, usamos el siguiente código:
 
 ```{r, eval=FALSE}
-x %>% ggplot(aes(x, y, fill = z)) +
+x |> ggplot(aes(x, y, fill = z)) +
   geom_raster()
 ```
 
 Con estas imágenes, a menudo querrán cambiar la escala de color. Esto se puede hacer a través de la capa `scale_fill_gradientn`.
 
 ```{r ggplot2-image-new-colors}
-x %>% ggplot(aes(x, y, fill = z)) +
+x |> ggplot(aes(x, y, fill = z)) +
   geom_raster() +
   scale_fill_gradientn(colors = terrain.colors(10))
 ```
@@ -856,8 +856,8 @@ En la Sección \@ref(qplot), presentamos `qplot` como una función útil cuando 
 Supongan que tenemos las alturas femeninas en un objeto `x`:
 
 ```{r}
-x <- heights %>%
-  filter(sex=="Male") %>%
+x <- heights |>
+  filter(sex=="Male") |>
   pull(height)
 ```
 
@@ -879,13 +879,13 @@ qplot(sample = scale(x)) + geom_abline()
 Si proveemos un factor y un vector numérico, obtenemos un gráfico como el que vemos abajo. Tengan en cuenta que en el código estamos utilizando el argumento `data`. Como el _data frame_ no es el primer argumento en `qplot`, tenemos que usar el operador de punto.
 
 ```{r qplot-example-3, eval=FALSE}
-heights %>% qplot(sex, height, data = .)
+heights |> qplot(sex, height, data = .)
 ```
 
 También podemos seleccionar una geometría específica mediante el uso del argumento `geom`. Entonces, para convertir el diagrama anterior en un diagrama de caja, usamos el siguiente código:
 
 ```{r qplot-example-4, eval=FALSE}
-heights %>% qplot(sex, height, data = ., geom = "boxplot")
+heights |> qplot(sex, height, data = ., geom = "boxplot")
 ```
 
 También podemos usar el  argumento `geom` para generar un gráfico de densidad en lugar de un histograma:
@@ -936,7 +936,7 @@ Utilice el argumento `binwidth` para cambiar el histograma creado en el ejercici
 
 
 ```{r, eval=FALSE}
-heights %>%
+heights |>
   ggplot(aes(height, fill = sex)) +
   geom_density()
 ```

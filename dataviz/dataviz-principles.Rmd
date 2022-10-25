@@ -26,7 +26,7 @@ Comenzamos describiendo algunos principios para codificar datos. Hay varios acer
 ```{r, echo=FALSE}
 browsers <- data.frame(Browser = rep(c("Opera","Safari","Firefox","IE","Chrome"),2),
                        Year = rep(c(2000, 2015), each = 5),
-                       Percentage = c(3,21,23,28,26, 2,22,21,27,29)) %>%
+                       Percentage = c(3,21,23,28,26, 2,22,21,27,29)) |>
   mutate(Browser = reorder(Browser, Percentage))
 ```
 
@@ -36,7 +36,7 @@ Para ilustrar cómo se comparan algunas de estas estrategias, supongan que quere
 
 ```{r piechart, echo=FALSE}
 library(ggthemes)
-p1 <- browsers %>% ggplot(aes(x = "", y = Percentage, fill = Browser)) +
+p1 <- browsers |> ggplot(aes(x = "", y = Percentage, fill = Browser)) +
   geom_bar(width = 1, stat = "identity", col = "black") + coord_polar(theta = "y") +
   theme_excel() + xlab("") + ylab("") +
   theme(axis.text=element_blank(),
@@ -50,7 +50,7 @@ p1
 Aquí estamos representando cantidades con áreas y ángulos, ya que tanto el ángulo como el área de cada sección del gráfico son proporcionales a la cantidad que representa el sector. Esto resulta ser una opción subóptima dado que, como lo demuestran los estudios de percepción, los humanos no son buenos para cuantificar ángulos con precisión y son aún peores cuando el área es la única señal visual disponible. El gráfico de anillo es un ejemplo de un gráfico que usa solo área:
 
 ```{r donutchart, echo=FALSE}
-browsers %>% ggplot(aes(x = 2, y = Percentage, fill = Browser)) +
+browsers |> ggplot(aes(x = 2, y = Percentage, fill = Browser)) +
   geom_bar(width = 1, stat = "identity", col = "black") +
   scale_x_continuous(limits=c(0.5,2.5)) + coord_polar(theta = "y") +
   theme_excel() + xlab("") + ylab("") +
@@ -70,11 +70,11 @@ En este caso, simplemente mostrar los números no solo es más claro, sino que t
 
 ```{r, echo=FALSE}
 if(knitr::is_html_output()){
-  browsers %>% spread(Year, Percentage) %>% knitr::kable("html") %>%
+  browsers |> spread(Year, Percentage) |> knitr::kable("html") |>
     kableExtra::kable_styling(bootstrap_options = "striped", full_width = FALSE)
 } else{
-  browsers %>% spread(Year, Percentage) %>%
-    knitr::kable("latex", booktabs = TRUE) %>%
+  browsers |> spread(Year, Percentage) |>
+    knitr::kable("latex", booktabs = TRUE) |>
     kableExtra::kable_styling(font_size = 8, latex_options = "hold_position")
 }
 ```
@@ -82,7 +82,7 @@ if(knitr::is_html_output()){
 La forma preferida de graficar estas cantidades es usar la longitud y la posición como señales visuales, ya que los humanos son mucho mejores juzgando medidas lineales. El diagrama de barras usa este enfoque al usar barras de longitud proporcionales a las cantidades de interés. Al añadir líneas horizontales a valores estratégicamente elegidos, en este caso en cada múltiplo de 10, aliviamos la carga visual de cuantificar a través de la posición de la parte superior de las barras. Comparen y contrasten la información que podemos extraer de los siguientes dos pares de gráficos.
 
 ```{r two-barplots, echo=FALSE, out.width="100%", fig.width = 6, fig.height = 5}
-p2 <-browsers %>%
+p2 <-browsers |>
   ggplot(aes(Browser, Percentage)) +
   geom_bar(stat = "identity", width=0.5) +
   ylab("Percent using the Browser") +
@@ -99,7 +99,7 @@ library(scales)
 browsers <- filter(browsers, Year == 2015)
 at <- with(browsers, 100 - cumsum(c(0,Percentage[-length(Percentage)])) - 0.5*Percentage)
 label <- percent(browsers$Percentage/100)
-browsers %>% ggplot(aes(x = "", y = Percentage, fill = Browser)) +
+browsers |> ggplot(aes(x = "", y = Percentage, fill = Browser)) +
   geom_bar(width = 1, stat = "identity", col = "black") + coord_polar(theta = "y") +
   theme_excel() + xlab("") + ylab("") + ggtitle("2015") +
   theme(axis.text=element_blank(),
@@ -127,7 +127,7 @@ knitr::include_graphics(file.path(img_path, "class2_8.jpg"))
 En el gráfico anterior, las detenciones parecen haber casi triplicado cuando, de hecho, solo han aumentado aproximadamente un 16%. Comenzar el gráfico en 0 ilustra esto claramente:
 
 ```{r barplot-from-zero-1, echo=FALSE}
-data.frame(Year = as.character(c(2011, 2012, 2013)),Southwest_Border_Apprehensions = c(165244,170223,192298)) %>%
+data.frame(Year = as.character(c(2011, 2012, 2013)),Southwest_Border_Apprehensions = c(165244,170223,192298)) |>
   ggplot(aes(Year, Southwest_Border_Apprehensions )) +
   geom_bar(stat = "identity", fill = "yellow", col = "black", width = 0.65)
 ```
@@ -143,8 +143,8 @@ knitr::include_graphics(file.path(img_path, "Bush-cuts.png"))
 Este gráfico hace que un aumento del 13% parezca cinco veces más grande. Aquí tenemos el gráfico apropiado:
 
 ```{r barplot-from-zero-2, echo=FALSE}
-data.frame(date = c("Now", "Jan 1, 2013"), tax_rate = c(35, 39.6)) %>%
-  mutate(date = reorder(date, tax_rate)) %>%
+data.frame(date = c("Now", "Jan 1, 2013"), tax_rate = c(35, 39.6)) |>
+  mutate(date = reorder(date, tax_rate)) |>
   ggplot(aes(date, tax_rate)) +
   ylab("") + xlab("") +
   geom_bar(stat = "identity", fill = "yellow", col = "black", width = 0.5) +
@@ -165,7 +165,7 @@ Aquí está el gráfico apropiado:
 
 ```{r barplot-from-zero-3, echo=FALSE}
 data.frame(Candidate = factor(c("Maduro", "Capriles"), levels = c("Maduro", "Capriles")),
-           Percent = c(50.66, 49.07)) %>%
+           Percent = c(50.66, 49.07)) |>
   ggplot(aes(Candidate, Percent, fill = Candidate)) +
   geom_bar(stat = "identity", width = 0.65, show.legend = FALSE)
 ```
@@ -173,7 +173,7 @@ data.frame(Candidate = factor(c("Maduro", "Capriles"), levels = c("Maduro", "Cap
 Cuando se usa posición en lugar de longitud, no es necesario incluir 0. Este es  el caso en particular cuando queremos comparar las diferencias entre los grupos en relación con la variabilidad dentro de un grupo. Aquí tenemos un ejemplo ilustrativo que muestra la esperanza de vida promedio de cada país estratificada por continente en 2012:
 
 ```{r points-plot-not-from-zero, echo=FALSE, out.width="100%", fig.width = 6, fig.height = 3}
-p1 <- gapminder %>% filter(year == 2012) %>%
+p1 <- gapminder |> filter(year == 2012) |>
   ggplot(aes(continent, life_expectancy)) +
   geom_point()
 p2 <- p1 +
@@ -201,9 +201,9 @@ Si juzgamos por el área de los círculos, Estados Unidos parece tener una econo
 gdp <- c(14.6, 5.7, 5.3, 3.3, 2.5)
 gdp_data <- data.frame(Country = rep(c("United States", "China", "Japan", "Germany", "France"),2),
                        y = factor(rep(c("Radius","Area"),each=5), levels = c("Radius", "Area")),
-                       GDP= c(gdp^2/min(gdp^2), gdp/min(gdp))) %>%
+                       GDP= c(gdp^2/min(gdp^2), gdp/min(gdp))) |>
   mutate(Country = reorder(Country, GDP))
-gdp_data %>%
+gdp_data |>
   ggplot(aes(Country, y, size = GDP)) +
   geom_point(show.legend = FALSE, color = "blue") +
   scale_size(range = c(2,25)) +
@@ -213,8 +213,8 @@ gdp_data %>%
 No sorprende entonces que por defecto __ggplot2__ use el área en lugar del radio. Sin embargo, en este caso, realmente no deberíamos usar el área, ya que podemos usar la posición y la longitud:
 
 ```{r barplot-better-than-area, out.width="50%", echo=FALSE}
-gdp_data %>%
-  filter(y == "Area") %>%
+gdp_data |>
+  filter(y == "Area") |>
   ggplot(aes(Country, GDP)) +
   geom_bar(stat = "identity", width = 0.5) +
   ylab("GDP in trillions of US dollars")
@@ -229,15 +229,15 @@ Anteriormente aprendimos a usar la función `reorder`, que nos ayuda a lograr es
 
 ```{r do-not-order-alphabetically, fig.height = 5, echo=FALSE}
 data(murders)
-p1 <- murders %>% mutate(murder_rate = total/ population * 100000) %>%
+p1 <- murders |> mutate(murder_rate = total/ population * 100000) |>
   ggplot(aes(state, murder_rate)) +
   geom_bar(stat="identity") +
   coord_flip() +
   theme(axis.text.y = element_text(size = 8)) +
   xlab("")
 
-p2 <- murders %>% mutate(murder_rate = total/ population * 100000) %>%
-  mutate(state = reorder(state, murder_rate)) %>%
+p2 <- murders |> mutate(murder_rate = total/ population * 100000) |>
+  mutate(state = reorder(state, murder_rate)) |>
   ggplot(aes(state, murder_rate)) +
   geom_bar(stat="identity") +
   coord_flip() +
@@ -251,8 +251,8 @@ Podemos hacer el segundo gráfico así:
 
 ```{r, eval=FALSE}
 data(murders)
-murders %>% mutate(murder_rate = total/ population * 100000) %>%
-  mutate(state = reorder(state, murder_rate)) %>%
+murders |> mutate(murder_rate = total/ population * 100000) |>
+  mutate(state = reorder(state, murder_rate)) |>
   ggplot(aes(state, murder_rate)) +
   geom_bar(stat="identity") +
   coord_flip() +
@@ -264,19 +264,19 @@ La función `reorder` también nos permite reordenar grupos. Anteriormente vimos
 
 ```{r reorder-boxplot-example, out.width="100%", echo=FALSE}
 past_year <- 1970
-p1 <- gapminder %>%
-  mutate(dollars_per_day = gdp/population/365) %>%
-  filter(year == past_year & !is.na(gdp)) %>%
+p1 <- gapminder |>
+  mutate(dollars_per_day = gdp/population/365) |>
+  filter(year == past_year & !is.na(gdp)) |>
   ggplot(aes(region, dollars_per_day)) +
   geom_boxplot() +
   geom_point() +
   theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
   xlab("")
 
-p2 <- gapminder %>%
-  mutate(dollars_per_day = gdp/population/365) %>%
-  filter(year == past_year & !is.na(gdp)) %>%
-  mutate(region = reorder(region, dollars_per_day, FUN = median)) %>%
+p2 <- gapminder |>
+  mutate(dollars_per_day = gdp/population/365) |>
+  filter(year == past_year & !is.na(gdp)) |>
+  mutate(region = reorder(region, dollars_per_day, FUN = median)) |>
   ggplot(aes(region, dollars_per_day)) +
   geom_boxplot() +
   geom_point() +
@@ -296,9 +296,9 @@ Para motivar nuestro primer principio, "mostrar los datos", volvemos a nuestro e
 
 ```{r show-data-1, echo=FALSE, fig.height=6}
 data("heights")
-p1 <- heights %>%
-  group_by(sex) %>%
-  summarize(average = mean(height), se=sd(height)/sqrt(n())) %>%
+p1 <- heights |>
+  group_by(sex) |>
+  summarize(average = mean(height), se=sd(height)/sqrt(n())) |>
   ggplot(aes(sex, average)) +
   theme_excel() +
   geom_errorbar(aes(ymin = average - 2*se, ymax = average+2*se), width = 0.25) +
@@ -312,7 +312,7 @@ El promedio de cada grupo está representado por la parte superior de cada barra
 Esto nos lleva a nuestro primer principio: mostrar los datos. Este código sencillo de __ggplot2__ ya genera un gráfico más informativo que el diagrama de barras al simplemente mostrar todos los puntos de datos:
 
 ```{r show-data-2}
-heights %>%
+heights |>
   ggplot(aes(sex, height)) +
   geom_point()
 ```
@@ -322,7 +322,7 @@ El gráfico anterior nos da una idea del rango de los datos. Sin embargo, este g
 El primero es agregar _jitter_, que añade un pequeño desplazamiento aleatorio a cada punto. En este caso, agregar _jitter_ horizontal no cambia la interpretación, ya que las alturas de los puntos no cambian, pero minimizamos el número de puntos que se superponen y, por lo tanto, tenemos una mejor idea visual de cómo se distribuyen los datos. Una segunda mejora proviene del uso de _alpha blending_, que hace que los puntos sean algo transparentes. Entre más puntos se superponen, más oscuro será el gráfico, que también nos ayuda tener una idea de cómo se distribuyen los puntos. Aquí está el mismo gráfico con _jitter_ y _alpha blending_:
 
 ```{r show-points-with-jitter}
-heights %>%
+heights |>
   ggplot(aes(sex, height)) +
   geom_jitter(width = 0.1, alpha = 0.2)
 ```
@@ -336,7 +336,7 @@ Ahora comenzamos a sentir que, en promedio, los varones son más altos que las h
 Como hay tantos puntos, es más efectivo mostrar distribuciones que puntos individuales. Por lo tanto, mostramos histogramas para cada grupo:
 
 ```{r common-axes-histograms-wrong, echo=FALSE}
-heights %>%
+heights |>
   ggplot(aes(height, ..density..)) +
   geom_histogram(binwidth = 1, color="black") +
   facet_grid(.~sex, scales = "free_x")
@@ -345,7 +345,7 @@ heights %>%
 Sin embargo, mirando el gráfico arriba, no es inmediatamente obvio que los varones son, en promedio, más altos que las hembras. Tenemos que mirar cuidadosamente para notar que el eje-x tiene un rango más alto de valores en el histograma masculino. Un principio importante aquí es **mantener los ejes iguales** cuando se comparan datos en dos gráficos. A continuación, vemos cómo la comparación se vuelve más fácil:
 
 ```{r common-axes-histograms-right, echo=FALSE}
-heights %>%
+heights |>
   ggplot(aes(height, ..density..)) +
   geom_histogram(binwidth = 1, color="black") +
   facet_grid(.~sex)
@@ -356,7 +356,7 @@ heights %>%
 En estos histogramas, la señal visual relacionada con las disminuciones o los aumentos de altura son los cambios hacia la izquierda o hacia la derecha, respectivamente: los cambios horizontales. Alinear los gráficos verticalmente nos ayuda a ver este cambio cuando los ejes son fijos:
 
 ```{r common-axes-histograms-right-2, echo = FALSE}
-p2 <- heights %>%
+p2 <- heights |>
   ggplot(aes(height, ..density..)) +
   geom_histogram(binwidth = 1, color="black") +
   facet_grid(sex~.)
@@ -364,7 +364,7 @@ p2
 ```
 
 ```{r, eval = FALSE}
-heights %>%
+heights |>
   ggplot(aes(height, ..density..)) +
   geom_histogram(binwidth = 1, color="black") +
   facet_grid(sex~.)
@@ -375,7 +375,7 @@ El gráfico anterior hace que sea mucho más fácil notar que los varones son, e
 Si queremos obtener el resumen compacto que ofrecen los diagramas de caja, tenemos que alinearlos horizontalmente ya que, por defecto, los diagramas de caja se mueven hacia arriba y hacia abajo según los cambios de altura. Siguiendo nuestro principio de "mostrar los datos", superponemos todos los puntos de datos:
 
 ```{r boxplot-with-points-with-jitter, echo=FALSE}
-p3 <- heights %>%
+p3 <- heights |>
   ggplot(aes(sex, height)) +
   geom_boxplot(coef=3) +
   geom_jitter(width = 0.1, alpha = 0.2) +
@@ -384,7 +384,7 @@ p3
 ```
 
 ```{r, eval=FALSE}
-heights %>%
+heights |>
   ggplot(aes(sex, height)) +
   geom_boxplot(coef=3) +
   geom_jitter(width = 0.1, alpha = 0.2) +
@@ -407,11 +407,11 @@ La combinación de un diagrama de barras elegido incorrectamente y no usar una t
 
 ```{r no-transformations-wrong-use-of-barplot, echo=FALSE}
 data(gapminder)
-p1 <- gapminder %>%
-  filter(year == 2015) %>%
-  group_by(continent) %>%
-  summarize(population = mean(population)) %>%
-  mutate(continent = reorder(continent, population)) %>%
+p1 <- gapminder |>
+  filter(year == 2015) |>
+  group_by(continent) |>
+  summarize(population = mean(population)) |>
+  mutate(continent = reorder(continent, population)) |>
   ggplot(aes(continent, population/10^6)) +
   geom_bar(stat = "identity", width=0.5, fill="blue") +
   theme_excel() +
@@ -423,8 +423,8 @@ p1
 Mirando el gráfico anterior, uno concluiría que los países de Asia son mucho más poblados que los de otros continentes. Siguiendo el principio de "mostrar los datos", notamos rápidamente que esto se debe a dos países muy grandes, que suponemos son India y China:
 
 ```{r no-transformation, echo=FALSE}
-p2 <- gapminder %>% filter(year == 2015) %>%
-  mutate(continent = reorder(continent, population, median)) %>%
+p2 <- gapminder |> filter(year == 2015) |>
+  mutate(continent = reorder(continent, population, median)) |>
   ggplot(aes(continent, population/10^6)) +
   ylab("Population in Millions") +
   xlab("Continent")
@@ -451,10 +451,10 @@ Otras transformaciones que deben considerar son la transformación logística (`
 Para cada continente, comparemos los ingresos en 1970 versus 2010. Al comparar los datos de ingresos entre regiones entre 1970 y 2010, hicimos un gráfico similar al siguiente, pero esta vez investigamos continentes en lugar de regiones.
 
 ```{r boxplots-not-adjacent, echo=FALSE}
-gapminder %>%
-  filter(year %in% c(1970, 2010) & !is.na(gdp)) %>%
-  mutate(dollars_per_day = gdp/population/365) %>%
-  mutate(labels = paste(year, continent)) %>%
+gapminder |>
+  filter(year %in% c(1970, 2010) & !is.na(gdp)) |>
+  mutate(dollars_per_day = gdp/population/365) |>
+  mutate(labels = paste(year, continent)) |>
   ggplot(aes(labels, dollars_per_day)) +
   geom_boxplot() +
   theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
@@ -466,10 +466,10 @@ gapminder %>%
 El comportamiento por defecto de __ggplot2__ es ordenar las etiquetas alfabéticamente para que las etiquetas con 1970 aparezcan antes que las etiquetas con 2010. Esto dificulta las comparaciones porque la distribución de un continente en 1970 está visualmente lejos de su distribución en 2010. Es mucho más fácil hacer la comparación entre 1970 y 2010 para cada continente cuando los diagramas de caja para ese continente están uno al lado del otro:
 
 ```{r boxplot-adjacent-comps, echo=FALSE}
-gapminder %>%
-  filter(year %in% c(1970, 2010) & !is.na(gdp)) %>%
-  mutate(dollars_per_day = gdp/population/365) %>%
-  mutate(labels = paste(continent, year)) %>%
+gapminder |>
+  filter(year %in% c(1970, 2010) & !is.na(gdp)) |>
+  mutate(dollars_per_day = gdp/population/365) |>
+  mutate(labels = paste(continent, year)) |>
   ggplot(aes(labels, dollars_per_day)) +
   geom_boxplot() +
   theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
@@ -483,9 +483,9 @@ La comparación se hace aún más fácil si usamos color para denotar las dos co
 
 
 ```{r boxplot-adjacent-comps-with-color, echo=FALSE}
-gapminder %>%
-  filter(year %in% c(1970, 2010) & !is.na(gdp)) %>%
-  mutate(dollars_per_day = gdp/population/365, year = factor(year)) %>%
+gapminder |>
+  filter(year %in% c(1970, 2010) & !is.na(gdp)) |>
+  mutate(dollars_per_day = gdp/population/365, year = factor(year)) |>
   ggplot(aes(continent, dollars_per_day, fill = year)) +
   geom_boxplot() +
   theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
@@ -510,7 +510,7 @@ color_blind_friendly_cols <-
   c("#999999", "#E69F00", "#56B4E9", "#009E73",
     "#F0E442", "#0072B2", "#D55E00", "#CC79A7")
 
-p1 <- data.frame(x=1:8, y=rep(1,8), col = as.character(1:8)) %>%
+p1 <- data.frame(x=1:8, y=rep(1,8), col = as.character(1:8)) |>
   ggplot(aes(x, y, color = col)) +
   geom_point(size=8, show.legend = FALSE) +
   theme(axis.title.x=element_blank(),
@@ -541,17 +541,17 @@ No hay geometría para los _slope charts_ en __ggplot2__, pero podemos construir
 west <- c("Western Europe","Northern Europe","Southern Europe",
           "Northern America","Australia and New Zealand")
 
-dat <- gapminder %>%
+dat <- gapminder |>
   filter(year%in% c(2010, 2015) & region %in% west &
            !is.na(life_expectancy) & population > 10^7)
 
-dat %>%
+dat |>
   mutate(location = ifelse(year == 2010, 1, 2),
          location = ifelse(year == 2015 &
                              country %in% c("United Kingdom", "Portugal"),
                            location+0.22, location),
-         hjust = ifelse(year == 2010, 1, 0)) %>%
-  mutate(year = as.factor(year)) %>%
+         hjust = ifelse(year == 2010, 1, 0)) |>
+  mutate(year = as.factor(year)) |>
   ggplot(aes(year, life_expectancy, group = country)) +
   geom_line(aes(color = country), show.legend = FALSE) +
   geom_text(aes(x = location, label = country, hjust = hjust),
@@ -567,14 +567,14 @@ library(ggrepel)
 west <- c("Western Europe","Northern Europe","Southern Europe",
           "Northern America","Australia and New Zealand")
 
-dat <- gapminder %>%
+dat <- gapminder |>
   filter(year%in% c(2010, 2015) & region %in% west &
            !is.na(life_expectancy) & population > 10^7)
 
-dat %>%
-  mutate(year = paste0("life_expectancy_", year)) %>%
-  select(country, year, life_expectancy) %>%
-  spread(year, life_expectancy) %>%
+dat |>
+  mutate(year = paste0("life_expectancy_", year)) |>
+  select(country, year, life_expectancy) |>
+  spread(year, life_expectancy) |>
   ggplot(aes(x=life_expectancy_2010,y=life_expectancy_2015, label = country)) +
   geom_point() + geom_text_repel() +
   scale_x_continuous(limits=c(78.5, 83)) +
@@ -592,12 +592,12 @@ Como estamos interesados principalmente en la diferencia, tiene sentido dedicarl
 
 ```{r, bland-altman}
 library(ggrepel)
-dat %>% 
-  mutate(year = paste0("life_expectancy_", year)) %>%
-  select(country, year, life_expectancy) %>% 
-  pivot_wider(names_from = "year", values_from="life_expectancy") %>% 
+dat |> 
+  mutate(year = paste0("life_expectancy_", year)) |>
+  select(country, year, life_expectancy) |> 
+  pivot_wider(names_from = "year", values_from="life_expectancy") |> 
   mutate(average = (life_expectancy_2015 + life_expectancy_2010)/2,
-         difference = life_expectancy_2015 - life_expectancy_2010) %>%
+         difference = life_expectancy_2015 - life_expectancy_2010) |>
   ggplot(aes(average, difference, label = country)) + 
   geom_point() +
   geom_text_repel() +
@@ -615,7 +615,7 @@ Un diagrama de dispersión anterior mostró la relación entre la supervivencia 
 ```{r encoding-third-variable, echo=FALSE}
 present_year <- 2010
 
-dat <- gapminder %>%
+dat <- gapminder |>
   mutate(region = case_when(
     region %in% west ~ "The West",
     region %in% "Northern Africa" ~ "Northern Africa",
@@ -624,11 +624,11 @@ dat <- gapminder %>%
     region %in% c("Central America", "South America", "Caribbean") ~ "Latin America",
     continent == "Africa" & region != "Northern Africa" ~ "Sub-Saharan Africa",
     region %in% c("Melanesia", "Micronesia", "Polynesia") ~ "Pacific Islands"),
-    dollars_per_day = gdp/ population/ 365) %>%
-  filter(year %in% present_year & !is.na(gdp) & !is.na(infant_mortality) & !is.na(region) ) %>%
+    dollars_per_day = gdp/ population/ 365) |>
+  filter(year %in% present_year & !is.na(gdp) & !is.na(infant_mortality) & !is.na(region) ) |>
   mutate(OPEC = ifelse(country%in%opec, "Yes", "No"))
 
-dat %>%
+dat |>
   ggplot(aes(dollars_per_day, 1 - infant_mortality/1000,
              col = region, size = population/10^6,
              pch = OPEC)) +
@@ -707,8 +707,8 @@ url <- "https://github.com/kbroman/Talk_Graphs/raw/master/R/fig8dat.csv"
 dat <- read.csv(url)
 
 ##Now make alternative plot
-dat %>% gather(drug, survival, -log.dose) %>%
-  mutate(drug = gsub("Drug.","",drug)) %>%
+dat |> gather(drug, survival, -log.dose) |>
+  mutate(drug = gsub("Drug.","",drug)) |>
   ggplot(aes(log.dose, survival, color = drug)) +
   geom_line()
 ```
@@ -733,18 +733,18 @@ Por defecto, el software estadístico como R devuelve muchos dígitos significat
 data(us_contagious_diseases)
 tmp <- options()$digits
 options(digits=7)
-dat <- us_contagious_diseases %>%
+dat <- us_contagious_diseases |>
   filter(year %in% seq(1940, 1980, 10) & state == "California" &
-           disease %in% c("Measles", "Pertussis", "Polio")) %>%
-  mutate(rate = count/ population * 10000) %>%
-  mutate(state = reorder(state, rate)) %>%
-  select(state, year, disease, rate) %>%
+           disease %in% c("Measles", "Pertussis", "Polio")) |>
+  mutate(rate = count/ population * 10000) |>
+  mutate(state = reorder(state, rate)) |>
+  select(state, year, disease, rate) |>
   spread(disease, rate)
 if(knitr::is_html_output()){
-  knitr::kable(dat, "html") %>%
+  knitr::kable(dat, "html") |>
     kableExtra::kable_styling(bootstrap_options = "striped", full_width = FALSE)
 } else{
-  knitr::kable(dat, "latex", booktabs = TRUE) %>%
+  knitr::kable(dat, "latex", booktabs = TRUE) |>
     kableExtra::kable_styling(font_size = 8, latex_options = "hold_position")
 }
 options(digits=tmp)
@@ -753,13 +753,13 @@ options(digits=tmp)
 Estamos reportando precisión de hasta 0.00001 casos por 10,000, un valor muy pequeño en el contexto de los cambios que ocurren a través del tiempo. En este caso, dos cifras significativas son más que suficientes y claramente indican que las tasas están disminuyendo:
 
 ```{r, echo = FALSE}
-dat <- dat %>%
+dat <- dat |>
   mutate_at(c("Measles", "Pertussis", "Polio"), ~round(., digits=1))
 if(knitr::is_html_output()){
-  knitr::kable(dat, "html") %>%
+  knitr::kable(dat, "html") |>
     kableExtra::kable_styling(bootstrap_options = "striped", full_width = FALSE)
 } else{
-  knitr::kable(dat, "latex", booktabs = TRUE) %>%
+  knitr::kable(dat, "latex", booktabs = TRUE) |>
     kableExtra::kable_styling(font_size=8, latex_options = "hold_position")
 }
 ```
@@ -770,19 +770,19 @@ Para cambiar el número de dígitos significativos o redondear números usamos `
 Otro principio relacionado con la visualización de tablas es colocar los valores que se comparan en columnas en lugar de filas. Observen que nuestra tabla anterior es más fácil de leer que esta:
 
 ```{r, echo=FALSE}
-dat <- us_contagious_diseases %>%
+dat <- us_contagious_diseases |>
   filter(year %in% seq(1940, 1980, 10) & state == "California" &
-           disease %in% c("Measles", "Pertussis", "Polio")) %>%
-  mutate(rate = count/ population * 10000) %>%
-  mutate(state = reorder(state, rate)) %>%
-  select(state, year, disease, rate) %>%
-  spread(year, rate) %>%
+           disease %in% c("Measles", "Pertussis", "Polio")) |>
+  mutate(rate = count/ population * 10000) |>
+  mutate(state = reorder(state, rate)) |>
+  select(state, year, disease, rate) |>
+  spread(year, rate) |>
   mutate_if(is.numeric, round, digits=1)
 if(knitr::is_html_output()){
-  knitr::kable(dat, "html") %>%
+  knitr::kable(dat, "html") |>
     kableExtra::kable_styling(bootstrap_options = "striped", full_width = FALSE)
 } else{
-  knitr::kable(dat, "latex", booktabs = TRUE) %>%
+  knitr::kable(dat, "latex", booktabs = TRUE) |>
     kableExtra::kable_styling(font_size = 8, latex_options = "hold_position")
 }
 ```
@@ -816,7 +816,7 @@ d. Nunca. Los diagramas de barras y las tablas siempre son mejores.
 ```{r baplot-not-from-zero-exercises, echo=FALSE, message=FALSE}
 library(tidyverse)
 ds_theme_set()
-data.frame(candidate=c("Clinton","Trump"), electoral_votes = c(232, 306)) %>%
+data.frame(candidate=c("Clinton","Trump"), electoral_votes = c(232, 306)) |>
   ggplot(aes(candidate, electoral_votes)) +
   geom_bar(stat = "identity", width=0.5, color =1, fill = c("Blue","Red")) +
   coord_cartesian(ylim=c(200,310)) +
@@ -835,18 +835,18 @@ d. Los porcentajes deben mostrarse como un gráfico circular.
 
 ```{r measels-exercise, fig.height = 5, echo=FALSE}
 library(gridExtra)
-p1 <- us_contagious_diseases %>%
-  filter(year == 1928 & disease=="Measles" & count>0 & !is.na(population)) %>%
-  mutate(rate = count/ population * 10000 * 52/ weeks_reporting) %>%
+p1 <- us_contagious_diseases |>
+  filter(year == 1928 & disease=="Measles" & count>0 & !is.na(population)) |>
+  mutate(rate = count/ population * 10000 * 52/ weeks_reporting) |>
   ggplot(aes(state, rate)) +
   geom_bar(stat="identity") +
   coord_flip() +
   xlab("")
 
-p2 <- us_contagious_diseases %>%
-  filter(year == 1928 & disease=="Measles" & count>0 & !is.na(population)) %>%
-  mutate(rate = count/ population * 10000*52/ weeks_reporting) %>%
-  mutate(state = reorder(state, rate)) %>%
+p2 <- us_contagious_diseases |>
+  filter(year == 1928 & disease=="Measles" & count>0 & !is.na(population)) |>
+  mutate(rate = count/ population * 10000*52/ weeks_reporting) |>
+  mutate(state = reorder(state, rate)) |>
   ggplot(aes(state, rate)) +
   geom_bar(stat="identity") +
   coord_flip() +
@@ -864,8 +864,8 @@ d. Ambos gráficos deben ser un gráfico circular.
 4\. Para hacer el gráfico de la izquierda, tenemos que reordenar los niveles de las variables de los estados.
 
 ```{r}
-dat <- us_contagious_diseases %>%
-  filter(year == 1967 & disease=="Measles" & !is.na(population)) %>%
+dat <- us_contagious_diseases |>
+  filter(year == 1967 & disease=="Measles" & !is.na(population)) |>
   mutate(rate = count/ population * 10000 * 52/ weeks_reporting)
 ```
 
@@ -873,7 +873,7 @@ dat <- us_contagious_diseases %>%
 Recuerde lo que sucede cuando hacemos un diagrama de barras:
 
 ```{r barplot-plot-exercise-example, fig.height = 5}
-dat %>% ggplot(aes(state, rate)) +
+dat |> ggplot(aes(state, rate)) +
   geom_bar(stat="identity") +
   coord_flip()
 ```
@@ -897,10 +897,10 @@ Redefina el objeto `state` para que los niveles se reordenen. Imprima el nuevo o
 ```{r us-murders-barplot}
 library(dslabs)
 data("murders")
-murders %>% mutate(rate = total/population*100000) %>%
-  group_by(region) %>%
-  summarize(avg = mean(rate)) %>%
-  mutate(region = factor(region)) %>%
+murders |> mutate(rate = total/population*100000) |>
+  group_by(region) |>
+  summarize(avg = mean(rate)) |>
+  mutate(region = factor(region)) |>
   ggplot(aes(region, avg)) +
   geom_bar(stat="identity") +
   ylab("Murder Rate Average")
@@ -919,7 +919,7 @@ d. El noreste tiene el promedio más bajo.
 
 ```{r, eval = FALSE}
 data("murders")
-murders %>% mutate(rate = total/population*100000)
+murders |> mutate(rate = total/population*100000)
 ```
 
 por región, mostrando todos los puntos y ordenando las regiones por su tasa mediana.

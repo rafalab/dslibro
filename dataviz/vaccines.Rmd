@@ -23,16 +23,16 @@ Creamos un objeto temporero `dat` que almacena solo los datos de sarampión, inc
 
 ```{r}
 the_disease <- "Measles"
-dat <- us_contagious_diseases %>%
-filter(!state%in%c("Hawaii","Alaska") & disease == the_disease) %>%
-mutate(rate = count/ population * 10000 * 52/ weeks_reporting) %>%
+dat <- us_contagious_diseases |>
+filter(!state%in%c("Hawaii","Alaska") & disease == the_disease) |>
+mutate(rate = count/ population * 10000 * 52/ weeks_reporting) |>
 mutate(state = reorder(state, rate))
 ```
 
 Ahora podemos graficar fácilmente las tasas de enfermedad por año. Aquí están los datos de sarampión de California:
 
 ```{r california-measles-time-series}
-dat %>% filter(state == "California" & !is.na(rate)) %>%
+dat |> filter(state == "California" & !is.na(rate)) |>
 ggplot(aes(year, rate)) +
 geom_line() +
 ylab("Cases per 10,000") +
@@ -48,7 +48,7 @@ En nuestro ejemplo queremos usar una paleta secuencial ya que no hay un centro s
 Usamos la geometría `geom_tile` para tejar la región con colores que representan las tasas de enfermedad. Usamos una transformación de raíz cuadrada para evitar que los conteos particularmente altos dominen el gráfico. Observen que los valores faltantes se muestran en gris. Además, noten que tan pronto una enfermedad fue prácticamente erradicada, algunos estados dejaron de informar casos por completo. Es por esa razón que vemos tanto gris después de 1980.
 
 ```{r vaccines-plot, out.width="100%", fig.height=5}
-dat %>% ggplot(aes(year, state, fill = rate)) +
+dat |> ggplot(aes(year, state, fill = rate)) +
 geom_tile(color = "grey50") +
 scale_x_continuous(expand=c(0,0)) +
 scale_fill_gradientn(colors = brewer.pal(9, "Reds"), trans = "sqrt") +
@@ -64,16 +64,16 @@ ylab("") + xlab("")
 Este gráfico ofrece evidencia preponderante a favor de la contribución de las vacunas. Sin embargo, una limitación es que usa el color para representar la cantidad, que, como explicamos anteriormente, dificulta saber exactamente cuán altos llegan los valores. La posición y la longitud son mejores señales. Si estamos dispuestos a perder información de estado, podemos hacer una versión del gráfico que muestre los valores con posición. También podemos mostrar el promedio de EE. UU., que calculamos así:
 
 ```{r}
-avg <- us_contagious_diseases %>%
-filter(disease==the_disease) %>% group_by(year) %>%
+avg <- us_contagious_diseases |>
+filter(disease==the_disease) |> group_by(year) |>
 summarize(us_rate = sum(count, na.rm = TRUE)/
 sum(population, na.rm = TRUE) * 10000)
 ```
 
 Ahora para hacer el gráfico simplemente usamos la geometría `geom_line`:
 ```{r time-series-vaccines-plot}
-dat %>%
-filter(!is.na(rate)) %>%
+dat |>
+filter(!is.na(rate)) |>
 ggplot() +
 geom_line(aes(year, rate, group = state), color = "grey50",
 show.legend = FALSE, alpha = 0.2, size = 1) +
