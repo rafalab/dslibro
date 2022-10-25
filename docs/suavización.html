@@ -6,11 +6,10 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <title>Capítulo 28 Suavización | Introducción a la ciencia de datos</title>
   <meta name="description" content="Este libro presenta conceptos y destrezas que les ayudarán abordar los retos de situaciones actuales del análisis de datos. Cubre conceptos de probabilidad, inferencia estadística, regresión lineal y machine learning. Además, les permitirá desarrollar destrezas como la programación R, el wrangling de datos con dplyr, la visualización de datos con ggplot2, la organización de archivos con Shell de UNIX / Linux, el control de versiones con GitHub y la preparación de documentos reproducibles con R markdown." />
-  <meta name="generator" content="bookdown 0.22 and GitBook 2.6.7" />
+  <meta name="generator" content="bookdown 0.27 and GitBook 2.6.7" />
 
   <meta property="og:title" content="Capítulo 28 Suavización | Introducción a la ciencia de datos" />
   <meta property="og:type" content="book" />
-  
   
   <meta property="og:description" content="Este libro presenta conceptos y destrezas que les ayudarán abordar los retos de situaciones actuales del análisis de datos. Cubre conceptos de probabilidad, inferencia estadística, regresión lineal y machine learning. Además, les permitirá desarrollar destrezas como la programación R, el wrangling de datos con dplyr, la visualización de datos con ggplot2, la organización de archivos con Shell de UNIX / Linux, el control de versiones con GitHub y la preparación de documentos reproducibles con R markdown." />
   
@@ -24,7 +23,7 @@
 <meta name="author" content="Rafael A. Irizarry" />
 
 
-<meta name="date" content="2021-07-03" />
+<meta name="date" content="2022-10-25" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -33,8 +32,8 @@
   
 <link rel="prev" href="introducción-a-machine-learning.html"/>
 <link rel="next" href="cross-validation.html"/>
-<script src="libs/header-attrs-2.9/header-attrs.js"></script>
-<script src="libs/jquery-2.2.3/jquery.min.js"></script>
+<script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
 <link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
 <link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
@@ -50,9 +49,9 @@
 
 
 
-
-<link href="libs/anchor-sections-1.0.1/anchor-sections.css" rel="stylesheet" />
-<script src="libs/anchor-sections-1.0.1/anchor-sections.js"></script>
+<link href="libs/anchor-sections-1.1.0/anchor-sections.css" rel="stylesheet" />
+<link href="libs/anchor-sections-1.1.0/anchor-sections-hash.css" rel="stylesheet" />
+<script src="libs/anchor-sections-1.1.0/anchor-sections.js"></script>
 <script src="libs/kePrint-0.0.1/kePrint.js"></script>
 <link href="libs/lightable-0.0.1/lightable.css" rel="stylesheet" />
 
@@ -254,7 +253,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="4.3.3" data-path="tidyverse.html"><a href="tidyverse.html#cómo-seleccionar-columnas-con-select"><i class="fa fa-check"></i><b>4.3.3</b> Cómo seleccionar columnas con <code>select</code></a></li>
 </ul></li>
 <li class="chapter" data-level="4.4" data-path="tidyverse.html"><a href="tidyverse.html#ejercicios-9"><i class="fa fa-check"></i><b>4.4</b> Ejercicios</a></li>
-<li class="chapter" data-level="4.5" data-path="tidyverse.html"><a href="tidyverse.html#el-pipe"><i class="fa fa-check"></i><b>4.5</b> El <em>pipe</em>: <code>%&gt;%</code></a></li>
+<li class="chapter" data-level="4.5" data-path="tidyverse.html"><a href="tidyverse.html#el-pipe"><i class="fa fa-check"></i><b>4.5</b> El <em>pipe</em>: <code>|&gt;</code></a></li>
 <li class="chapter" data-level="4.6" data-path="tidyverse.html"><a href="tidyverse.html#ejercicios-10"><i class="fa fa-check"></i><b>4.6</b> Ejercicios</a></li>
 <li class="chapter" data-level="4.7" data-path="tidyverse.html"><a href="tidyverse.html#cómo-resumir-datos"><i class="fa fa-check"></i><b>4.7</b> Cómo resumir datos</a>
 <ul>
@@ -1025,17 +1024,17 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
           <div class="page-inner">
 
             <section class="normal" id="section-">
-<div id="suavización" class="section level1" number="28">
-<h1><span class="header-section-number">Capítulo 28</span> Suavización</h1>
+<div id="suavización" class="section level1 hasAnchor" number="28">
+<h1><span class="header-section-number">Capítulo 28</span> Suavización<a href="suavización.html#suavización" class="anchor-section" aria-label="Anchor link to header"></a></h1>
 <p>Antes de continuar aprendiendo sobre algoritmos de <em>machine learning</em>, presentamos el importante concepto de <em>suavización</em> (<em>smoothing</em> en inglés). La suavización es una técnica muy poderosa comúnmente usada en el análisis de datos. Otros nombres dados a esta técnica son <em>ajustamiento de curvas</em> y <em>filtro de paso bajo</em> (<em>curve fitting</em> y <em>low pass filtering</em> en inglés). La suavización está diseñada para detectar tendencias en presencia de datos ruidosos cuando se desconoce la forma real de la tendencia. El nombre <em>suavización</em> proviene del hecho de que para lograr esta hazaña, suponemos que la tendencia es <em>suave</em>, como una superficie lisa. En cambio, el ruido (<em>noise</em> en inglés), o la desviación de la tendencia, es impredeciblemente ondulante:</p>
 <p><img src="libro_files/figure-html/signal-plus-noise-example-1.png" width="70%" style="display: block; margin: auto;" /></p>
 <p>Parte de lo que explicamos en esta sección son los supuestos que nos permiten extraer la tendencia del ruido.</p>
 <p>Para entender por qué cubrimos este tema, recuerden que los conceptos detrás de las técnicas de suavización son extremadamente útiles en <em>machine learning</em> porque las expectativas/probabilidades condicionales que necesitamos estimar pueden considerarse como tendencias de formas desconocidas afectadas por incertidumbre.</p>
 <p>Para explicar estos conceptos, nos enfocaremos primero en un problema con un solo predictor. Específicamente, tratamos de estimar la tendencia temporal en el margen de la encuesta de votación popular de 2008 en Estados Unidos (la diferencia entre Obama y McCain).</p>
-<div class="sourceCode" id="cb1010"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1010-1"><a href="suavización.html#cb1010-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
-<span id="cb1010-2"><a href="suavización.html#cb1010-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dslabs)</span>
-<span id="cb1010-3"><a href="suavización.html#cb1010-3" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(<span class="st">&quot;polls_2008&quot;</span>)</span>
-<span id="cb1010-4"><a href="suavización.html#cb1010-4" aria-hidden="true" tabindex="-1"></a><span class="fu">qplot</span>(day, margin, <span class="at">data =</span> polls_2008)</span></code></pre></div>
+<div class="sourceCode" id="cb1011"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1011-1"><a href="suavización.html#cb1011-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb1011-2"><a href="suavización.html#cb1011-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dslabs)</span>
+<span id="cb1011-3"><a href="suavización.html#cb1011-3" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(<span class="st">&quot;polls_2008&quot;</span>)</span>
+<span id="cb1011-4"><a href="suavización.html#cb1011-4" aria-hidden="true" tabindex="-1"></a><span class="fu">qplot</span>(day, margin, <span class="at">data =</span> polls_2008)</span></code></pre></div>
 <p><img src="libro_files/figure-html/polls-2008-data-1.png" width="70%" style="display: block; margin: auto;" /></p>
 <p>Para los fines de este ejemplo, no lo piensen como un problema de pronóstico. En cambio, simplemente estamos interesados en entender la forma de la tendencia <em>después</em> de que terminen las elecciones.</p>
 <p>Suponemos que para cualquier día <span class="math inline">\(x\)</span>, hay una verdadera preferencia entre el electorado <span class="math inline">\(f(x)\)</span>, pero debido a la incertidumbre introducida por el sondeo, cada punto de datos viene con un error <span class="math inline">\(\varepsilon\)</span>. Un modelo matemático para el margen de encuesta observado <span class="math inline">\(Y_i\)</span> es:</p>
@@ -1045,8 +1044,8 @@ Y_i = f(x_i) + \varepsilon_i
 <p>Para pensar en esto como un problema de <em>machine learning</em>, recuerden que queremos predecir <span class="math inline">\(Y\)</span> dado un día <span class="math inline">\(x\)</span>. Si supiéramos la expectativa condicional <span class="math inline">\(f(x) = \mbox{E}(Y \mid X=x)\)</span>, la usaríamos. Pero como no conocemos esta expectativa condicional, tenemos que estimarla. Usemos la regresión, ya que es el único método que hemos aprendido hasta ahora.</p>
 <p><img src="libro_files/figure-html/linear-regression-not-flexible-1.png" width="70%" style="display: block; margin: auto;" /></p>
 <p>La línea que vemos no parece describir muy bien la tendencia. Por ejemplo, el 4 de septiembre (día -62), se celebró la Convención Republicana y los datos sugieren que este evento le dio a John McCain un impulso en las encuestas. Sin embargo, la línea de regresión no captura esta tendencia potencial. Para ver más claramente la <em>falta de ajuste</em>, observamos que los puntos por encima de la línea ajustada (azul) y los de abajo (rojo) no se distribuyen uniformemente entre los días. Por lo tanto, necesitamos un enfoque alternativo más flexible.</p>
-<div id="suavización-de-compartimientos" class="section level2" number="28.1">
-<h2><span class="header-section-number">28.1</span> Suavización de compartimientos</h2>
+<div id="suavización-de-compartimientos" class="section level2 hasAnchor" number="28.1">
+<h2><span class="header-section-number">28.1</span> Suavización de compartimientos<a href="suavización.html#suavización-de-compartimientos" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>La idea general de la suavización es agrupar los puntos de datos en estratos en los que el valor de <span class="math inline">\(f(x)\)</span> se puede suponer que es constante. Podemos hacer esta suposición porque pensamos que <span class="math inline">\(f(x)\)</span> cambia lentamente y, como resultado, <span class="math inline">\(f(x)\)</span> es casi constante en pequeñas ventanas de tiempo. Un ejemplo de esta idea para los datos <code>poll_2008</code> es suponer que la opinión pública se mantuvo aproximadamente igual en el plazo de una semana. Con este supuesto, tenemos varios puntos de datos con el mismo valor esperado.</p>
 <p>Si fijamos un día para estar en el centro de nuestra semana, llámelo <span class="math inline">\(x_0\)</span>, entonces para cualquier otro día <span class="math inline">\(x\)</span> tal que <span class="math inline">\(|x - x_0| \leq 3.5\)</span>, suponemos que <span class="math inline">\(f(x)\)</span> es una constante <span class="math inline">\(f(x) = \mu\)</span>. Esta suposición implica que:
 <span class="math display">\[
@@ -1062,18 +1061,18 @@ E[Y_i | X_i = x_i ] \approx \mu \mbox{ if } |x_i - x_0| \leq 3.5
 <p>Al calcular esta media para cada punto, formamos un estimador de la curva subyacente <span class="math inline">\(f(x)\)</span>. A continuación, mostramos el procedimiento que ocurre a medida que avanzamos de -155 a 0. En cada valor de <span class="math inline">\(x_0\)</span>, mantenemos el estimador <span class="math inline">\(\hat{f}(x_0)\)</span> y continuamos al siguiente punto:</p>
 <p><img src="ml/img/binsmoother-animation.gif" width="70%" style="display: block; margin: auto;" /></p>
 <p>El código final y el estimador resultante se ven así:</p>
-<div class="sourceCode" id="cb1011"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1011-1"><a href="suavización.html#cb1011-1" aria-hidden="true" tabindex="-1"></a>span <span class="ot">&lt;-</span> <span class="dv">7</span></span>
-<span id="cb1011-2"><a href="suavización.html#cb1011-2" aria-hidden="true" tabindex="-1"></a>fit <span class="ot">&lt;-</span> <span class="fu">with</span>(polls_2008,</span>
-<span id="cb1011-3"><a href="suavización.html#cb1011-3" aria-hidden="true" tabindex="-1"></a>            <span class="fu">ksmooth</span>(day, margin, <span class="at">kernel =</span> <span class="st">&quot;box&quot;</span>, <span class="at">bandwidth =</span> span))</span>
-<span id="cb1011-4"><a href="suavización.html#cb1011-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1011-5"><a href="suavización.html#cb1011-5" aria-hidden="true" tabindex="-1"></a>polls_2008 <span class="sc">%&gt;%</span> <span class="fu">mutate</span>(<span class="at">smooth =</span> fit<span class="sc">$</span>y) <span class="sc">%&gt;%</span></span>
-<span id="cb1011-6"><a href="suavización.html#cb1011-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(day, margin)) <span class="sc">+</span></span>
-<span id="cb1011-7"><a href="suavización.html#cb1011-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">size =</span> <span class="dv">3</span>, <span class="at">alpha =</span> .<span class="dv">5</span>, <span class="at">color =</span> <span class="st">&quot;grey&quot;</span>) <span class="sc">+</span></span>
-<span id="cb1011-8"><a href="suavización.html#cb1011-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="fu">aes</span>(day, smooth), <span class="at">color=</span><span class="st">&quot;red&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb1012"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1012-1"><a href="suavización.html#cb1012-1" aria-hidden="true" tabindex="-1"></a>span <span class="ot">&lt;-</span> <span class="dv">7</span></span>
+<span id="cb1012-2"><a href="suavización.html#cb1012-2" aria-hidden="true" tabindex="-1"></a>fit <span class="ot">&lt;-</span> <span class="fu">with</span>(polls_2008,</span>
+<span id="cb1012-3"><a href="suavización.html#cb1012-3" aria-hidden="true" tabindex="-1"></a>            <span class="fu">ksmooth</span>(day, margin, <span class="at">kernel =</span> <span class="st">&quot;box&quot;</span>, <span class="at">bandwidth =</span> span))</span>
+<span id="cb1012-4"><a href="suavización.html#cb1012-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1012-5"><a href="suavización.html#cb1012-5" aria-hidden="true" tabindex="-1"></a>polls_2008 <span class="sc">|&gt;</span> <span class="fu">mutate</span>(<span class="at">smooth =</span> fit<span class="sc">$</span>y) <span class="sc">|&gt;</span></span>
+<span id="cb1012-6"><a href="suavización.html#cb1012-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(day, margin)) <span class="sc">+</span></span>
+<span id="cb1012-7"><a href="suavización.html#cb1012-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">size =</span> <span class="dv">3</span>, <span class="at">alpha =</span> .<span class="dv">5</span>, <span class="at">color =</span> <span class="st">&quot;grey&quot;</span>) <span class="sc">+</span></span>
+<span id="cb1012-8"><a href="suavización.html#cb1012-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="fu">aes</span>(day, smooth), <span class="at">color=</span><span class="st">&quot;red&quot;</span>)</span></code></pre></div>
 <p><img src="libro_files/figure-html/binsmoother-final-1.png" width="70%" style="display: block; margin: auto;" /></p>
 </div>
-<div id="kernels" class="section level2" number="28.2">
-<h2><span class="header-section-number">28.2</span> Kernels</h2>
+<div id="kernels" class="section level2 hasAnchor" number="28.2">
+<h2><span class="header-section-number">28.2</span> Kernels<a href="suavización.html#kernels" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>El resultado final de la suavización de compartimientos es bastante ondulante. Una de las razones es que cada vez que la ventana se mueve, cambian dos puntos. Podemos atenuar esto algo tomando promedios ponderados que le dan al punto central más peso que a los puntos lejanos, con los dos puntos en los bordes recibiendo muy poco peso.</p>
 <p>Pueden pensar en el enfoque de suavización de compartimiento como un promedio ponderado:</p>
 <p><span class="math display">\[
@@ -1087,20 +1086,20 @@ Con esta animación, vemos que los puntos en el borde obtienen menos peso (el ta
 <img src="ml/img/kernel-animation.gif" width="70%" style="display: block; margin: auto;" />
 -->
 <p>El código final y el gráfico resultante para el <em>kernel</em> normal se ven así:</p>
-<div class="sourceCode" id="cb1012"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1012-1"><a href="suavización.html#cb1012-1" aria-hidden="true" tabindex="-1"></a>span <span class="ot">&lt;-</span> <span class="dv">7</span></span>
-<span id="cb1012-2"><a href="suavización.html#cb1012-2" aria-hidden="true" tabindex="-1"></a>fit <span class="ot">&lt;-</span> <span class="fu">with</span>(polls_2008,</span>
-<span id="cb1012-3"><a href="suavización.html#cb1012-3" aria-hidden="true" tabindex="-1"></a>            <span class="fu">ksmooth</span>(day, margin, <span class="at">kernel =</span> <span class="st">&quot;normal&quot;</span>, <span class="at">bandwidth =</span> span))</span>
-<span id="cb1012-4"><a href="suavización.html#cb1012-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1012-5"><a href="suavización.html#cb1012-5" aria-hidden="true" tabindex="-1"></a>polls_2008 <span class="sc">%&gt;%</span> <span class="fu">mutate</span>(<span class="at">smooth =</span> fit<span class="sc">$</span>y) <span class="sc">%&gt;%</span></span>
-<span id="cb1012-6"><a href="suavización.html#cb1012-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(day, margin)) <span class="sc">+</span></span>
-<span id="cb1012-7"><a href="suavización.html#cb1012-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">size =</span> <span class="dv">3</span>, <span class="at">alpha =</span> .<span class="dv">5</span>, <span class="at">color =</span> <span class="st">&quot;grey&quot;</span>) <span class="sc">+</span></span>
-<span id="cb1012-8"><a href="suavización.html#cb1012-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="fu">aes</span>(day, smooth), <span class="at">color=</span><span class="st">&quot;red&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb1013"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1013-1"><a href="suavización.html#cb1013-1" aria-hidden="true" tabindex="-1"></a>span <span class="ot">&lt;-</span> <span class="dv">7</span></span>
+<span id="cb1013-2"><a href="suavización.html#cb1013-2" aria-hidden="true" tabindex="-1"></a>fit <span class="ot">&lt;-</span> <span class="fu">with</span>(polls_2008,</span>
+<span id="cb1013-3"><a href="suavización.html#cb1013-3" aria-hidden="true" tabindex="-1"></a>            <span class="fu">ksmooth</span>(day, margin, <span class="at">kernel =</span> <span class="st">&quot;normal&quot;</span>, <span class="at">bandwidth =</span> span))</span>
+<span id="cb1013-4"><a href="suavización.html#cb1013-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1013-5"><a href="suavización.html#cb1013-5" aria-hidden="true" tabindex="-1"></a>polls_2008 <span class="sc">|&gt;</span> <span class="fu">mutate</span>(<span class="at">smooth =</span> fit<span class="sc">$</span>y) <span class="sc">|&gt;</span></span>
+<span id="cb1013-6"><a href="suavización.html#cb1013-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(day, margin)) <span class="sc">+</span></span>
+<span id="cb1013-7"><a href="suavización.html#cb1013-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">size =</span> <span class="dv">3</span>, <span class="at">alpha =</span> .<span class="dv">5</span>, <span class="at">color =</span> <span class="st">&quot;grey&quot;</span>) <span class="sc">+</span></span>
+<span id="cb1013-8"><a href="suavización.html#cb1013-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="fu">aes</span>(day, smooth), <span class="at">color=</span><span class="st">&quot;red&quot;</span>)</span></code></pre></div>
 <p><img src="libro_files/figure-html/final-ksmooth-normal-kernel-1.png" width="70%" style="display: block; margin: auto;" /></p>
 <p>Observen que el estimador final ahora se ve más suave.</p>
 <p>Hay varias funciones en R que implementan suavizadores de compartimientos. Un ejemplo es <code>ksmooth</code>, que mostramos arriba. En la práctica, sin embargo, generalmente preferimos métodos que usan modelos ligeramente más complejos que ajustar una constante. El resultado final arriba, por ejemplo, todavía es algo ondulante en partes que no esperamos que sea (entre -125 y -75, por ejemplo). Métodos como <code>loess</code>, que explicamos a continuación, mejoran esto.</p>
 </div>
-<div id="regresión-ponderada-local-loess" class="section level2" number="28.3">
-<h2><span class="header-section-number">28.3</span> Regresión ponderada local (loess)</h2>
+<div id="regresión-ponderada-local-loess" class="section level2 hasAnchor" number="28.3">
+<h2><span class="header-section-number">28.3</span> Regresión ponderada local (loess)<a href="suavización.html#regresión-ponderada-local-loess" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>Una limitación del enfoque de suavización de compartimientos que acabamos de describir es que necesitamos ventanas pequeñas para que se cumpla el supuesto de que la función es aproximadamente constante. Como resultado, terminamos con un pequeño número de puntos de datos para promediar y obtener estimaciones imprecisas <span class="math inline">\(\hat{f}(x)\)</span>. Aquí describimos cómo la <em>regresión ponderada local</em> (loess o <em>local weighted regression</em> en inglés) nos permite considerar tamaños de ventana más grandes. Para hacer esto, usaremos un resultado matemático, conocido como el teorema de Taylor, que dice que si examinamos muy de cerca cualquier función suave <span class="math inline">\(f(x)\)</span>, parecerá una línea. Para ver por qué esto tiene sentido, consideren los bordes curvos que hacen los jardineros con palas rectas:</p>
 <p><img src="ml/img/garden.png" width="70%" style="display: block; margin: auto;" /></p>
 <p>(“Downing Street garden path edge”<a href="#fn107" class="footnote-ref" id="fnref107"><sup>107</sup></a> del usuario de Flckr Número 10<a href="#fn108" class="footnote-ref" id="fnref108"><sup>108</sup></a>. Licencia CC-BY 2.0<a href="#fn109" class="footnote-ref" id="fnref109"><sup>109</sup></a>.)</p>
@@ -1113,15 +1112,15 @@ E[Y_i | X_i = x_i ] = \beta_0 + \beta_1 (x_i-x_0) \mbox{ if } |x_i - x_0| \leq 2
 <p>El valor ajustado en <span class="math inline">\(x_0\)</span> se convierte en nuestro estimador <span class="math inline">\(\hat{f}(x_0)\)</span>. A continuación, mostramos el procedimiento que ocurre mientras cambiamos de -155 a 0.</p>
 <p><img src="ml/img/loess-animation.gif" width="70%" style="display: block; margin: auto;" /></p>
 <p>El resultado final es un ajuste más suave que ese producido por la suavización de compartimiento porque utilizamos tamaños de muestra más grandes para estimar nuestros parámetros locales:</p>
-<div class="sourceCode" id="cb1013"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1013-1"><a href="suavización.html#cb1013-1" aria-hidden="true" tabindex="-1"></a>total_days <span class="ot">&lt;-</span> <span class="fu">diff</span>(<span class="fu">range</span>(polls_2008<span class="sc">$</span>day))</span>
-<span id="cb1013-2"><a href="suavización.html#cb1013-2" aria-hidden="true" tabindex="-1"></a>span <span class="ot">&lt;-</span> <span class="dv">21</span><span class="sc">/</span>total_days</span>
-<span id="cb1013-3"><a href="suavización.html#cb1013-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1013-4"><a href="suavización.html#cb1013-4" aria-hidden="true" tabindex="-1"></a>fit <span class="ot">&lt;-</span> <span class="fu">loess</span>(margin <span class="sc">~</span> day, <span class="at">degree=</span><span class="dv">1</span>, <span class="at">span =</span> span, <span class="at">data=</span>polls_2008)</span>
-<span id="cb1013-5"><a href="suavización.html#cb1013-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1013-6"><a href="suavización.html#cb1013-6" aria-hidden="true" tabindex="-1"></a>polls_2008 <span class="sc">%&gt;%</span> <span class="fu">mutate</span>(<span class="at">smooth =</span> fit<span class="sc">$</span>fitted) <span class="sc">%&gt;%</span></span>
-<span id="cb1013-7"><a href="suavización.html#cb1013-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(day, margin)) <span class="sc">+</span></span>
-<span id="cb1013-8"><a href="suavización.html#cb1013-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">size =</span> <span class="dv">3</span>, <span class="at">alpha =</span> .<span class="dv">5</span>, <span class="at">color =</span> <span class="st">&quot;grey&quot;</span>) <span class="sc">+</span></span>
-<span id="cb1013-9"><a href="suavización.html#cb1013-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="fu">aes</span>(day, smooth), <span class="at">color=</span><span class="st">&quot;red&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb1014"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1014-1"><a href="suavización.html#cb1014-1" aria-hidden="true" tabindex="-1"></a>total_days <span class="ot">&lt;-</span> <span class="fu">diff</span>(<span class="fu">range</span>(polls_2008<span class="sc">$</span>day))</span>
+<span id="cb1014-2"><a href="suavización.html#cb1014-2" aria-hidden="true" tabindex="-1"></a>span <span class="ot">&lt;-</span> <span class="dv">21</span><span class="sc">/</span>total_days</span>
+<span id="cb1014-3"><a href="suavización.html#cb1014-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1014-4"><a href="suavización.html#cb1014-4" aria-hidden="true" tabindex="-1"></a>fit <span class="ot">&lt;-</span> <span class="fu">loess</span>(margin <span class="sc">~</span> day, <span class="at">degree=</span><span class="dv">1</span>, <span class="at">span =</span> span, <span class="at">data=</span>polls_2008)</span>
+<span id="cb1014-5"><a href="suavización.html#cb1014-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1014-6"><a href="suavización.html#cb1014-6" aria-hidden="true" tabindex="-1"></a>polls_2008 <span class="sc">|&gt;</span> <span class="fu">mutate</span>(<span class="at">smooth =</span> fit<span class="sc">$</span>fitted) <span class="sc">|&gt;</span></span>
+<span id="cb1014-7"><a href="suavización.html#cb1014-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(day, margin)) <span class="sc">+</span></span>
+<span id="cb1014-8"><a href="suavización.html#cb1014-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">size =</span> <span class="dv">3</span>, <span class="at">alpha =</span> .<span class="dv">5</span>, <span class="at">color =</span> <span class="st">&quot;grey&quot;</span>) <span class="sc">+</span></span>
+<span id="cb1014-9"><a href="suavización.html#cb1014-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="fu">aes</span>(day, smooth), <span class="at">color=</span><span class="st">&quot;red&quot;</span>)</span></code></pre></div>
 <p><img src="libro_files/figure-html/final-loess-1.png" width="70%" style="display: block; margin: auto;" /></p>
 <p>Podemos ver cómo diferentes tamaños de ventanas, <em>spans</em>, conducen a diferentes estimadores:</p>
 <p><img src="ml/img/loess-multi-span-animation.gif" width="70%" style="display: block; margin: auto;" /></p>
@@ -1144,96 +1143,96 @@ w_0(x_i) = W\left(\frac{x_i - x_0}{h}\right)
 <p>Este <em>kernel</em> difiere del <em>kernel</em> gaussiano en que más puntos obtienen valores más cercanos al máximo:</p>
 <p><img src="libro_files/figure-html/triweight-kernel-1.png" width="80%" style="display: block; margin: auto;" /></p>
 <p>3. <code>loess</code> tiene la opción de ajustar el modelo local <em>robustamente</em>. Se implementa un algoritmo iterativo en el que, después de ajustar un modelo en una iteración, se detectan valores atípicos y se ponderan hacia abajo para la siguiente iteración. Para usar esta opción, usamos el argumento <code>family="symmetric"</code>.</p>
-<div id="ajustando-con-parábolas" class="section level3" number="28.3.1">
-<h3><span class="header-section-number">28.3.1</span> Ajustando con parábolas</h3>
+<div id="ajustando-con-parábolas" class="section level3 hasAnchor" number="28.3.1">
+<h3><span class="header-section-number">28.3.1</span> Ajustando con parábolas<a href="suavización.html#ajustando-con-parábolas" class="anchor-section" aria-label="Anchor link to header"></a></h3>
 <p>El teorema de Taylor también nos dice que si miramos cualquier función matemática lo suficientemente cerca, parece una parábola. El teorema además establece que no tienen que mirar tan de cerca cuando se aproxima con parábolas como cuando se aproxima con líneas. Esto significa que podemos hacer que nuestras ventanas sean aún más grandes y ajustar parábolas en lugar de líneas.</p>
 <p><span class="math display">\[
 E[Y_i | X_i = x_i ] = \beta_0 + \beta_1 (x_i-x_0) + \beta_2 (x_i-x_0)^2 \mbox{ if } |x_i - x_0| \leq h
 \]</span></p>
 <p>Este es el procedimiento por defecto de la función <code>loess</code>. Es posible que hayan notado que cuando mostramos el código para usar loess, configuramos <code>degree = 1</code>. Esto le dice a loess que se ajuste a polinomios de grado 1, un nombre elegante para líneas. Si leen la página de ayuda para loess, verán que, para el argumento <code>degree</code>, el valor predeterminado es 2. Por defecto, loess se ajusta a parábolas, no a líneas. Aquí hay una comparación de las líneas de ajuste (guiones rojos) y las parábolas de ajuste (naranja sólido):</p>
-<div class="sourceCode" id="cb1014"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1014-1"><a href="suavización.html#cb1014-1" aria-hidden="true" tabindex="-1"></a>total_days <span class="ot">&lt;-</span> <span class="fu">diff</span>(<span class="fu">range</span>(polls_2008<span class="sc">$</span>day))</span>
-<span id="cb1014-2"><a href="suavización.html#cb1014-2" aria-hidden="true" tabindex="-1"></a>span <span class="ot">&lt;-</span> <span class="dv">28</span><span class="sc">/</span>total_days</span>
-<span id="cb1014-3"><a href="suavización.html#cb1014-3" aria-hidden="true" tabindex="-1"></a>fit_1 <span class="ot">&lt;-</span> <span class="fu">loess</span>(margin <span class="sc">~</span> day, <span class="at">degree=</span><span class="dv">1</span>, <span class="at">span =</span> span, <span class="at">data=</span>polls_2008)</span>
-<span id="cb1014-4"><a href="suavización.html#cb1014-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1014-5"><a href="suavización.html#cb1014-5" aria-hidden="true" tabindex="-1"></a>fit_2 <span class="ot">&lt;-</span> <span class="fu">loess</span>(margin <span class="sc">~</span> day, <span class="at">span =</span> span, <span class="at">data=</span>polls_2008)</span>
-<span id="cb1014-6"><a href="suavización.html#cb1014-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1014-7"><a href="suavización.html#cb1014-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1014-8"><a href="suavización.html#cb1014-8" aria-hidden="true" tabindex="-1"></a>polls_2008 <span class="sc">%&gt;%</span> <span class="fu">mutate</span>(<span class="at">smooth_1 =</span> fit_1<span class="sc">$</span>fitted, <span class="at">smooth_2 =</span> fit_2<span class="sc">$</span>fitted) <span class="sc">%&gt;%</span></span>
-<span id="cb1014-9"><a href="suavización.html#cb1014-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(day, margin)) <span class="sc">+</span></span>
-<span id="cb1014-10"><a href="suavización.html#cb1014-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">size =</span> <span class="dv">3</span>, <span class="at">alpha =</span> .<span class="dv">5</span>, <span class="at">color =</span> <span class="st">&quot;grey&quot;</span>) <span class="sc">+</span></span>
-<span id="cb1014-11"><a href="suavización.html#cb1014-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="fu">aes</span>(day, smooth_1), <span class="at">color=</span><span class="st">&quot;red&quot;</span>, <span class="at">lty =</span> <span class="dv">2</span>) <span class="sc">+</span></span>
-<span id="cb1014-12"><a href="suavización.html#cb1014-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="fu">aes</span>(day, smooth_2), <span class="at">color=</span><span class="st">&quot;orange&quot;</span>, <span class="at">lty =</span> <span class="dv">1</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb1015"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1015-1"><a href="suavización.html#cb1015-1" aria-hidden="true" tabindex="-1"></a>total_days <span class="ot">&lt;-</span> <span class="fu">diff</span>(<span class="fu">range</span>(polls_2008<span class="sc">$</span>day))</span>
+<span id="cb1015-2"><a href="suavización.html#cb1015-2" aria-hidden="true" tabindex="-1"></a>span <span class="ot">&lt;-</span> <span class="dv">28</span><span class="sc">/</span>total_days</span>
+<span id="cb1015-3"><a href="suavización.html#cb1015-3" aria-hidden="true" tabindex="-1"></a>fit_1 <span class="ot">&lt;-</span> <span class="fu">loess</span>(margin <span class="sc">~</span> day, <span class="at">degree=</span><span class="dv">1</span>, <span class="at">span =</span> span, <span class="at">data=</span>polls_2008)</span>
+<span id="cb1015-4"><a href="suavización.html#cb1015-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1015-5"><a href="suavización.html#cb1015-5" aria-hidden="true" tabindex="-1"></a>fit_2 <span class="ot">&lt;-</span> <span class="fu">loess</span>(margin <span class="sc">~</span> day, <span class="at">span =</span> span, <span class="at">data=</span>polls_2008)</span>
+<span id="cb1015-6"><a href="suavización.html#cb1015-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1015-7"><a href="suavización.html#cb1015-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1015-8"><a href="suavización.html#cb1015-8" aria-hidden="true" tabindex="-1"></a>polls_2008 <span class="sc">|&gt;</span> <span class="fu">mutate</span>(<span class="at">smooth_1 =</span> fit_1<span class="sc">$</span>fitted, <span class="at">smooth_2 =</span> fit_2<span class="sc">$</span>fitted) <span class="sc">|&gt;</span></span>
+<span id="cb1015-9"><a href="suavización.html#cb1015-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(day, margin)) <span class="sc">+</span></span>
+<span id="cb1015-10"><a href="suavización.html#cb1015-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">size =</span> <span class="dv">3</span>, <span class="at">alpha =</span> .<span class="dv">5</span>, <span class="at">color =</span> <span class="st">&quot;grey&quot;</span>) <span class="sc">+</span></span>
+<span id="cb1015-11"><a href="suavización.html#cb1015-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="fu">aes</span>(day, smooth_1), <span class="at">color=</span><span class="st">&quot;red&quot;</span>, <span class="at">lty =</span> <span class="dv">2</span>) <span class="sc">+</span></span>
+<span id="cb1015-12"><a href="suavización.html#cb1015-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="fu">aes</span>(day, smooth_2), <span class="at">color=</span><span class="st">&quot;orange&quot;</span>, <span class="at">lty =</span> <span class="dv">1</span>)</span></code></pre></div>
 <p><img src="libro_files/figure-html/polls-2008-parabola-line-loess-1.png" width="70%" style="display: block; margin: auto;" /></p>
 <p><code>degree = 2</code> nos da resultados más ondulantes. Por eso, preferimos <code>degree = 1</code> ya que es menos propenso a este tipo de ruido.</p>
 </div>
-<div id="cuidado-con-los-parámetros-de-suavización-predeterminados" class="section level3" number="28.3.2">
-<h3><span class="header-section-number">28.3.2</span> Cuidado con los parámetros de suavización predeterminados</h3>
+<div id="cuidado-con-los-parámetros-de-suavización-predeterminados" class="section level3 hasAnchor" number="28.3.2">
+<h3><span class="header-section-number">28.3.2</span> Cuidado con los parámetros de suavización predeterminados<a href="suavización.html#cuidado-con-los-parámetros-de-suavización-predeterminados" class="anchor-section" aria-label="Anchor link to header"></a></h3>
 <p><strong>ggplot2</strong> utiliza loess en su función <code>geom_smooth</code>:</p>
-<div class="sourceCode" id="cb1015"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1015-1"><a href="suavización.html#cb1015-1" aria-hidden="true" tabindex="-1"></a>polls_2008 <span class="sc">%&gt;%</span> <span class="fu">ggplot</span>(<span class="fu">aes</span>(day, margin)) <span class="sc">+</span></span>
-<span id="cb1015-2"><a href="suavización.html#cb1015-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>() <span class="sc">+</span></span>
-<span id="cb1015-3"><a href="suavización.html#cb1015-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_smooth</span>()</span></code></pre></div>
+<div class="sourceCode" id="cb1016"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1016-1"><a href="suavización.html#cb1016-1" aria-hidden="true" tabindex="-1"></a>polls_2008 <span class="sc">|&gt;</span> <span class="fu">ggplot</span>(<span class="fu">aes</span>(day, margin)) <span class="sc">+</span></span>
+<span id="cb1016-2"><a href="suavización.html#cb1016-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>() <span class="sc">+</span></span>
+<span id="cb1016-3"><a href="suavización.html#cb1016-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_smooth</span>()</span></code></pre></div>
 <p><img src="libro_files/figure-html/ggplot-loess-default-1.png" width="70%" style="display: block; margin: auto;" /></p>
 <p>Pero tengan cuidado con los parámetros predeterminados ya que rara vez son óptimos. Afortunadamente, pueden cambiarlos fácilmente:</p>
-<div class="sourceCode" id="cb1016"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1016-1"><a href="suavización.html#cb1016-1" aria-hidden="true" tabindex="-1"></a>polls_2008 <span class="sc">%&gt;%</span> <span class="fu">ggplot</span>(<span class="fu">aes</span>(day, margin)) <span class="sc">+</span></span>
-<span id="cb1016-2"><a href="suavización.html#cb1016-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>() <span class="sc">+</span></span>
-<span id="cb1016-3"><a href="suavización.html#cb1016-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_smooth</span>(<span class="at">method =</span> <span class="st">&quot;loess&quot;</span>, <span class="at">span =</span> <span class="fl">0.15</span>, <span class="at">method.args =</span> <span class="fu">list</span>(<span class="at">degree=</span><span class="dv">1</span>))</span></code></pre></div>
+<div class="sourceCode" id="cb1017"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1017-1"><a href="suavización.html#cb1017-1" aria-hidden="true" tabindex="-1"></a>polls_2008 <span class="sc">|&gt;</span> <span class="fu">ggplot</span>(<span class="fu">aes</span>(day, margin)) <span class="sc">+</span></span>
+<span id="cb1017-2"><a href="suavización.html#cb1017-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>() <span class="sc">+</span></span>
+<span id="cb1017-3"><a href="suavización.html#cb1017-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_smooth</span>(<span class="at">method =</span> <span class="st">&quot;loess&quot;</span>, <span class="at">span =</span> <span class="fl">0.15</span>, <span class="at">method.args =</span> <span class="fu">list</span>(<span class="at">degree=</span><span class="dv">1</span>))</span></code></pre></div>
 <p><img src="libro_files/figure-html/ggplot-loess-degree-1-1.png" width="70%" style="display: block; margin: auto;" /></p>
 </div>
 </div>
-<div id="smoothing-ml-connection" class="section level2" number="28.4">
-<h2><span class="header-section-number">28.4</span> Conectando la suavización al <em>machine learning</em></h2>
+<div id="smoothing-ml-connection" class="section level2 hasAnchor" number="28.4">
+<h2><span class="header-section-number">28.4</span> Conectando la suavización al <em>machine learning</em><a href="suavización.html#smoothing-ml-connection" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>Para ver cómo la suavización se relaciona con el <em>machine learning</em> usando un ejemplo concreto, consideren nuestro ejemplo introducido en la Sección <a href="introducción-a-machine-learning.html#two-or-seven">27.8</a>. Si definimos el resultado <span class="math inline">\(Y = 1\)</span> para dígitos que son siete e <span class="math inline">\(Y=0\)</span> para dígitos que son 2, entonces estamos interesados en estimar la probabilidad condicional:</p>
 <p><span class="math display">\[
 p(x_1, x_2) = \mbox{Pr}(Y=1 \mid X_1=x_1 , X_2 = x_2).
 \]</span>
 con <span class="math inline">\(X_1\)</span> y <span class="math inline">\(X_2\)</span> los dos predictores definidos en la Sección <a href="introducción-a-machine-learning.html#two-or-seven">27.8</a>. En este ejemplo, los 0s y 1s que observamos son “ruidosos” porque para algunas regiones las probabilidades <span class="math inline">\(p(x_1, x_2)\)</span> no están tan cerca de 0 o 1. Por lo tanto, necesitamos estimar <span class="math inline">\(p(x_1, x_2)\)</span>. La suavización es una alternativa para lograr esto. En la Sección <a href="introducción-a-machine-learning.html#two-or-seven">27.8</a>, vimos que la regresión lineal no era lo suficientemente flexible como para capturar la naturaleza no lineal de <span class="math inline">\(p(x_1, x_2)\)</span>; los enfoques de suavización, por ende, pueden proveer una mejora. En el siguiente capítulo, describimos un algoritmo popular de <em>machine learning</em>, <em>k vecinos más cercanos</em>, que se basa en la suavización por compartimientos.</p>
 </div>
-<div id="ejercicios-47" class="section level2" number="28.5">
-<h2><span class="header-section-number">28.5</span> Ejercicios</h2>
+<div id="ejercicios-47" class="section level2 hasAnchor" number="28.5">
+<h2><span class="header-section-number">28.5</span> Ejercicios<a href="suavización.html#ejercicios-47" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>1. En la parte de <em>wrangling</em> de este libro, utilizamos el siguiente código para obtener recuentos de mortalidad para Puerto Rico para 2015-2018.</p>
-<div class="sourceCode" id="cb1017"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1017-1"><a href="suavización.html#cb1017-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
-<span id="cb1017-2"><a href="suavización.html#cb1017-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(lubridate)</span>
-<span id="cb1017-3"><a href="suavización.html#cb1017-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(purrr)</span>
-<span id="cb1017-4"><a href="suavización.html#cb1017-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(pdftools)</span>
-<span id="cb1017-5"><a href="suavización.html#cb1017-5" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dslabs)</span>
-<span id="cb1017-6"><a href="suavización.html#cb1017-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1017-7"><a href="suavización.html#cb1017-7" aria-hidden="true" tabindex="-1"></a>fn <span class="ot">&lt;-</span> <span class="fu">system.file</span>(<span class="st">&quot;extdata&quot;</span>, <span class="st">&quot;RD-Mortality-Report_2015-18-180531.pdf&quot;</span>,</span>
-<span id="cb1017-8"><a href="suavización.html#cb1017-8" aria-hidden="true" tabindex="-1"></a>                  <span class="at">package=</span><span class="st">&quot;dslabs&quot;</span>)</span>
-<span id="cb1017-9"><a href="suavización.html#cb1017-9" aria-hidden="true" tabindex="-1"></a>dat <span class="ot">&lt;-</span> <span class="fu">map_df</span>(<span class="fu">str_split</span>(<span class="fu">pdf_text</span>(fn), <span class="st">&quot;</span><span class="sc">\n</span><span class="st">&quot;</span>), <span class="cf">function</span>(s){</span>
-<span id="cb1017-10"><a href="suavización.html#cb1017-10" aria-hidden="true" tabindex="-1"></a>  s <span class="ot">&lt;-</span> <span class="fu">str_trim</span>(s)</span>
-<span id="cb1017-11"><a href="suavización.html#cb1017-11" aria-hidden="true" tabindex="-1"></a>  header_index <span class="ot">&lt;-</span> <span class="fu">str_which</span>(s, <span class="st">&quot;2015&quot;</span>)[<span class="dv">1</span>]</span>
-<span id="cb1017-12"><a href="suavización.html#cb1017-12" aria-hidden="true" tabindex="-1"></a>  tmp <span class="ot">&lt;-</span> <span class="fu">str_split</span>(s[header_index], <span class="st">&quot;</span><span class="sc">\\</span><span class="st">s+&quot;</span>, <span class="at">simplify =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb1017-13"><a href="suavización.html#cb1017-13" aria-hidden="true" tabindex="-1"></a>  month <span class="ot">&lt;-</span> tmp[<span class="dv">1</span>]</span>
-<span id="cb1017-14"><a href="suavización.html#cb1017-14" aria-hidden="true" tabindex="-1"></a>  header <span class="ot">&lt;-</span> tmp[<span class="sc">-</span><span class="dv">1</span>]</span>
-<span id="cb1017-15"><a href="suavización.html#cb1017-15" aria-hidden="true" tabindex="-1"></a>  tail_index  <span class="ot">&lt;-</span> <span class="fu">str_which</span>(s, <span class="st">&quot;Total&quot;</span>)</span>
-<span id="cb1017-16"><a href="suavización.html#cb1017-16" aria-hidden="true" tabindex="-1"></a>  n <span class="ot">&lt;-</span> <span class="fu">str_count</span>(s, <span class="st">&quot;</span><span class="sc">\\</span><span class="st">d+&quot;</span>)</span>
-<span id="cb1017-17"><a href="suavización.html#cb1017-17" aria-hidden="true" tabindex="-1"></a>  out <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">1</span><span class="sc">:</span>header_index, <span class="fu">which</span>(n <span class="sc">==</span> <span class="dv">1</span>), </span>
-<span id="cb1017-18"><a href="suavización.html#cb1017-18" aria-hidden="true" tabindex="-1"></a>           <span class="fu">which</span>(n <span class="sc">&gt;=</span> <span class="dv">28</span>), tail_index<span class="sc">:</span><span class="fu">length</span>(s))</span>
-<span id="cb1017-19"><a href="suavización.html#cb1017-19" aria-hidden="true" tabindex="-1"></a>  s[<span class="sc">-</span>out] <span class="sc">%&gt;%</span>  <span class="fu">str_remove_all</span>(<span class="st">&quot;[^</span><span class="sc">\\</span><span class="st">d</span><span class="sc">\\</span><span class="st">s]&quot;</span>) <span class="sc">%&gt;%</span> <span class="fu">str_trim</span>() <span class="sc">%&gt;%</span></span>
-<span id="cb1017-20"><a href="suavización.html#cb1017-20" aria-hidden="true" tabindex="-1"></a>    <span class="fu">str_split_fixed</span>(<span class="st">&quot;</span><span class="sc">\\</span><span class="st">s+&quot;</span>, <span class="at">n =</span> <span class="dv">6</span>) <span class="sc">%&gt;%</span> .[,<span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>] <span class="sc">%&gt;%</span> <span class="fu">as_tibble</span>() <span class="sc">%&gt;%</span> </span>
-<span id="cb1017-21"><a href="suavización.html#cb1017-21" aria-hidden="true" tabindex="-1"></a>    <span class="fu">setNames</span>(<span class="fu">c</span>(<span class="st">&quot;day&quot;</span>, header)) <span class="sc">%&gt;%</span></span>
-<span id="cb1017-22"><a href="suavización.html#cb1017-22" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">month =</span> month, <span class="at">day =</span> <span class="fu">as.numeric</span>(day)) <span class="sc">%&gt;%</span></span>
-<span id="cb1017-23"><a href="suavización.html#cb1017-23" aria-hidden="true" tabindex="-1"></a>    <span class="fu">pivot_longer</span>(<span class="sc">-</span><span class="fu">c</span>(day, month), <span class="at">names_to =</span> <span class="st">&quot;year&quot;</span>, <span class="at">values_to =</span> <span class="st">&quot;deaths&quot;</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb1017-24"><a href="suavización.html#cb1017-24" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">deaths =</span> <span class="fu">as.numeric</span>(deaths))</span>
-<span id="cb1017-25"><a href="suavización.html#cb1017-25" aria-hidden="true" tabindex="-1"></a>}) <span class="sc">%&gt;%</span></span>
-<span id="cb1017-26"><a href="suavización.html#cb1017-26" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">month =</span> <span class="fu">recode</span>(month, </span>
-<span id="cb1017-27"><a href="suavización.html#cb1017-27" aria-hidden="true" tabindex="-1"></a>                        <span class="st">&quot;JAN&quot;</span> <span class="ot">=</span> <span class="dv">1</span>, <span class="st">&quot;FEB&quot;</span> <span class="ot">=</span> <span class="dv">2</span>, <span class="st">&quot;MAR&quot;</span> <span class="ot">=</span> <span class="dv">3</span>, </span>
-<span id="cb1017-28"><a href="suavización.html#cb1017-28" aria-hidden="true" tabindex="-1"></a>                        <span class="st">&quot;APR&quot;</span> <span class="ot">=</span> <span class="dv">4</span>, <span class="st">&quot;MAY&quot;</span> <span class="ot">=</span> <span class="dv">5</span>, <span class="st">&quot;JUN&quot;</span> <span class="ot">=</span> <span class="dv">6</span>, </span>
-<span id="cb1017-29"><a href="suavización.html#cb1017-29" aria-hidden="true" tabindex="-1"></a>                        <span class="st">&quot;JUL&quot;</span> <span class="ot">=</span> <span class="dv">7</span>, <span class="st">&quot;AGO&quot;</span> <span class="ot">=</span> <span class="dv">8</span>, <span class="st">&quot;SEP&quot;</span> <span class="ot">=</span> <span class="dv">9</span>, </span>
-<span id="cb1017-30"><a href="suavización.html#cb1017-30" aria-hidden="true" tabindex="-1"></a>                        <span class="st">&quot;OCT&quot;</span> <span class="ot">=</span> <span class="dv">10</span>, <span class="st">&quot;NOV&quot;</span> <span class="ot">=</span> <span class="dv">11</span>, <span class="st">&quot;DEC&quot;</span> <span class="ot">=</span> <span class="dv">12</span>)) <span class="sc">%&gt;%</span></span>
-<span id="cb1017-31"><a href="suavización.html#cb1017-31" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">date =</span> <span class="fu">make_date</span>(year, month, day)) <span class="sc">%&gt;%</span></span>
-<span id="cb1017-32"><a href="suavización.html#cb1017-32" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(date <span class="sc">&lt;=</span> <span class="st">&quot;2018-05-01&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb1018"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1018-1"><a href="suavización.html#cb1018-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb1018-2"><a href="suavización.html#cb1018-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(lubridate)</span>
+<span id="cb1018-3"><a href="suavización.html#cb1018-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(purrr)</span>
+<span id="cb1018-4"><a href="suavización.html#cb1018-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(pdftools)</span>
+<span id="cb1018-5"><a href="suavización.html#cb1018-5" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dslabs)</span>
+<span id="cb1018-6"><a href="suavización.html#cb1018-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1018-7"><a href="suavización.html#cb1018-7" aria-hidden="true" tabindex="-1"></a>fn <span class="ot">&lt;-</span> <span class="fu">system.file</span>(<span class="st">&quot;extdata&quot;</span>, <span class="st">&quot;RD-Mortality-Report_2015-18-180531.pdf&quot;</span>,</span>
+<span id="cb1018-8"><a href="suavización.html#cb1018-8" aria-hidden="true" tabindex="-1"></a>                  <span class="at">package=</span><span class="st">&quot;dslabs&quot;</span>)</span>
+<span id="cb1018-9"><a href="suavización.html#cb1018-9" aria-hidden="true" tabindex="-1"></a>dat <span class="ot">&lt;-</span> <span class="fu">map_df</span>(<span class="fu">str_split</span>(<span class="fu">pdf_text</span>(fn), <span class="st">&quot;</span><span class="sc">\n</span><span class="st">&quot;</span>), <span class="cf">function</span>(s){</span>
+<span id="cb1018-10"><a href="suavización.html#cb1018-10" aria-hidden="true" tabindex="-1"></a>  s <span class="ot">&lt;-</span> <span class="fu">str_trim</span>(s)</span>
+<span id="cb1018-11"><a href="suavización.html#cb1018-11" aria-hidden="true" tabindex="-1"></a>  header_index <span class="ot">&lt;-</span> <span class="fu">str_which</span>(s, <span class="st">&quot;2015&quot;</span>)[<span class="dv">1</span>]</span>
+<span id="cb1018-12"><a href="suavización.html#cb1018-12" aria-hidden="true" tabindex="-1"></a>  tmp <span class="ot">&lt;-</span> <span class="fu">str_split</span>(s[header_index], <span class="st">&quot;</span><span class="sc">\\</span><span class="st">s+&quot;</span>, <span class="at">simplify =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb1018-13"><a href="suavización.html#cb1018-13" aria-hidden="true" tabindex="-1"></a>  month <span class="ot">&lt;-</span> tmp[<span class="dv">1</span>]</span>
+<span id="cb1018-14"><a href="suavización.html#cb1018-14" aria-hidden="true" tabindex="-1"></a>  header <span class="ot">&lt;-</span> tmp[<span class="sc">-</span><span class="dv">1</span>]</span>
+<span id="cb1018-15"><a href="suavización.html#cb1018-15" aria-hidden="true" tabindex="-1"></a>  tail_index  <span class="ot">&lt;-</span> <span class="fu">str_which</span>(s, <span class="st">&quot;Total&quot;</span>)</span>
+<span id="cb1018-16"><a href="suavización.html#cb1018-16" aria-hidden="true" tabindex="-1"></a>  n <span class="ot">&lt;-</span> <span class="fu">str_count</span>(s, <span class="st">&quot;</span><span class="sc">\\</span><span class="st">d+&quot;</span>)</span>
+<span id="cb1018-17"><a href="suavización.html#cb1018-17" aria-hidden="true" tabindex="-1"></a>  out <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">1</span><span class="sc">:</span>header_index, <span class="fu">which</span>(n <span class="sc">==</span> <span class="dv">1</span>), </span>
+<span id="cb1018-18"><a href="suavización.html#cb1018-18" aria-hidden="true" tabindex="-1"></a>           <span class="fu">which</span>(n <span class="sc">&gt;=</span> <span class="dv">28</span>), tail_index<span class="sc">:</span><span class="fu">length</span>(s))</span>
+<span id="cb1018-19"><a href="suavización.html#cb1018-19" aria-hidden="true" tabindex="-1"></a>  s[<span class="sc">-</span>out] <span class="sc">|&gt;</span>  <span class="fu">str_remove_all</span>(<span class="st">&quot;[^</span><span class="sc">\\</span><span class="st">d</span><span class="sc">\\</span><span class="st">s]&quot;</span>) <span class="sc">|&gt;</span> <span class="fu">str_trim</span>() <span class="sc">|&gt;</span></span>
+<span id="cb1018-20"><a href="suavización.html#cb1018-20" aria-hidden="true" tabindex="-1"></a>    <span class="fu">str_split_fixed</span>(<span class="st">&quot;</span><span class="sc">\\</span><span class="st">s+&quot;</span>, <span class="at">n =</span> <span class="dv">6</span>) <span class="sc">|&gt;</span> .[,<span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>] <span class="sc">|&gt;</span> <span class="fu">as_tibble</span>() <span class="sc">|&gt;</span> </span>
+<span id="cb1018-21"><a href="suavización.html#cb1018-21" aria-hidden="true" tabindex="-1"></a>    <span class="fu">setNames</span>(<span class="fu">c</span>(<span class="st">&quot;day&quot;</span>, header)) <span class="sc">|&gt;</span></span>
+<span id="cb1018-22"><a href="suavización.html#cb1018-22" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">month =</span> month, <span class="at">day =</span> <span class="fu">as.numeric</span>(day)) <span class="sc">|&gt;</span></span>
+<span id="cb1018-23"><a href="suavización.html#cb1018-23" aria-hidden="true" tabindex="-1"></a>    <span class="fu">pivot_longer</span>(<span class="sc">-</span><span class="fu">c</span>(day, month), <span class="at">names_to =</span> <span class="st">&quot;year&quot;</span>, <span class="at">values_to =</span> <span class="st">&quot;deaths&quot;</span>) <span class="sc">|&gt;</span></span>
+<span id="cb1018-24"><a href="suavización.html#cb1018-24" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">deaths =</span> <span class="fu">as.numeric</span>(deaths))</span>
+<span id="cb1018-25"><a href="suavización.html#cb1018-25" aria-hidden="true" tabindex="-1"></a>}) <span class="sc">|&gt;</span></span>
+<span id="cb1018-26"><a href="suavización.html#cb1018-26" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">month =</span> <span class="fu">recode</span>(month, </span>
+<span id="cb1018-27"><a href="suavización.html#cb1018-27" aria-hidden="true" tabindex="-1"></a>                        <span class="st">&quot;JAN&quot;</span> <span class="ot">=</span> <span class="dv">1</span>, <span class="st">&quot;FEB&quot;</span> <span class="ot">=</span> <span class="dv">2</span>, <span class="st">&quot;MAR&quot;</span> <span class="ot">=</span> <span class="dv">3</span>, </span>
+<span id="cb1018-28"><a href="suavización.html#cb1018-28" aria-hidden="true" tabindex="-1"></a>                        <span class="st">&quot;APR&quot;</span> <span class="ot">=</span> <span class="dv">4</span>, <span class="st">&quot;MAY&quot;</span> <span class="ot">=</span> <span class="dv">5</span>, <span class="st">&quot;JUN&quot;</span> <span class="ot">=</span> <span class="dv">6</span>, </span>
+<span id="cb1018-29"><a href="suavización.html#cb1018-29" aria-hidden="true" tabindex="-1"></a>                        <span class="st">&quot;JUL&quot;</span> <span class="ot">=</span> <span class="dv">7</span>, <span class="st">&quot;AGO&quot;</span> <span class="ot">=</span> <span class="dv">8</span>, <span class="st">&quot;SEP&quot;</span> <span class="ot">=</span> <span class="dv">9</span>, </span>
+<span id="cb1018-30"><a href="suavización.html#cb1018-30" aria-hidden="true" tabindex="-1"></a>                        <span class="st">&quot;OCT&quot;</span> <span class="ot">=</span> <span class="dv">10</span>, <span class="st">&quot;NOV&quot;</span> <span class="ot">=</span> <span class="dv">11</span>, <span class="st">&quot;DEC&quot;</span> <span class="ot">=</span> <span class="dv">12</span>)) <span class="sc">|&gt;</span></span>
+<span id="cb1018-31"><a href="suavización.html#cb1018-31" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">date =</span> <span class="fu">make_date</span>(year, month, day)) <span class="sc">|&gt;</span></span>
+<span id="cb1018-32"><a href="suavización.html#cb1018-32" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(date <span class="sc">&lt;=</span> <span class="st">&quot;2018-05-01&quot;</span>)</span></code></pre></div>
 <p>Utilice la función <code>loess</code> para obtener un estimador uniforme del número esperado de muertes como función de la fecha. Grafique la función suave que resulta. Use un <em>span</em> de dos meses.</p>
 <p>2. Grafique los estimadores suaves como función del día del año, todas en el mismo gráfico pero con diferentes colores.</p>
 <p>3. Suponga que queremos predecir 2s y 7s en nuestro set de datos <code>mnist_27</code> con solo la segunda covariable. ¿Podemos hacer esto? A primera vista parece que los datos no tienen mucho poder predictivo. De hecho, si ajustamos una regresión logística regular, ¡el coeficiente para <code>x_2</code> no es significativo!</p>
-<div class="sourceCode" id="cb1018"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1018-1"><a href="suavización.html#cb1018-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(broom)</span>
-<span id="cb1018-2"><a href="suavización.html#cb1018-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dslabs)</span>
-<span id="cb1018-3"><a href="suavización.html#cb1018-3" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(<span class="st">&quot;mnist_27&quot;</span>)</span>
-<span id="cb1018-4"><a href="suavización.html#cb1018-4" aria-hidden="true" tabindex="-1"></a>mnist_27<span class="sc">$</span>train <span class="sc">%&gt;%</span></span>
-<span id="cb1018-5"><a href="suavización.html#cb1018-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">glm</span>(y <span class="sc">~</span> x_2, <span class="at">family =</span> <span class="st">&quot;binomial&quot;</span>, <span class="at">data =</span> .) <span class="sc">%&gt;%</span></span>
-<span id="cb1018-6"><a href="suavización.html#cb1018-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tidy</span>()</span></code></pre></div>
+<div class="sourceCode" id="cb1019"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1019-1"><a href="suavización.html#cb1019-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(broom)</span>
+<span id="cb1019-2"><a href="suavización.html#cb1019-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dslabs)</span>
+<span id="cb1019-3"><a href="suavización.html#cb1019-3" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(<span class="st">&quot;mnist_27&quot;</span>)</span>
+<span id="cb1019-4"><a href="suavización.html#cb1019-4" aria-hidden="true" tabindex="-1"></a>mnist_27<span class="sc">$</span>train <span class="sc">|&gt;</span></span>
+<span id="cb1019-5"><a href="suavización.html#cb1019-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">glm</span>(y <span class="sc">~</span> x_2, <span class="at">family =</span> <span class="st">&quot;binomial&quot;</span>, <span class="at">data =</span> _) <span class="sc">|&gt;</span></span>
+<span id="cb1019-6"><a href="suavización.html#cb1019-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tidy</span>()</span></code></pre></div>
 <p>Graficar un diagrama de dispersión aquí no es útil ya que <code>y</code> es binario:</p>
-<div class="sourceCode" id="cb1019"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1019-1"><a href="suavización.html#cb1019-1" aria-hidden="true" tabindex="-1"></a><span class="fu">qplot</span>(x_2, y, <span class="at">data =</span> mnist_27<span class="sc">$</span>train)</span></code></pre></div>
+<div class="sourceCode" id="cb1020"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1020-1"><a href="suavización.html#cb1020-1" aria-hidden="true" tabindex="-1"></a><span class="fu">qplot</span>(x_2, y, <span class="at">data =</span> mnist_27<span class="sc">$</span>train)</span></code></pre></div>
 <p>Ajuste una línea loess a los datos anteriores y grafique los resultados. Observe que hay poder predictivo, excepto que la probabilidad condicional no es lineal.</p>
 
 </div>
@@ -1256,7 +1255,6 @@ con <span class="math inline">\(X_1\)</span> y <span class="math inline">\(X_2\)
     </div>
   </div>
 <script src="libs/gitbook-2.6.7/js/app.min.js"></script>
-<script src="libs/gitbook-2.6.7/js/lunr.js"></script>
 <script src="libs/gitbook-2.6.7/js/clipboard.min.js"></script>
 <script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
 <script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
@@ -1296,6 +1294,10 @@ gitbook.start({
 "text": null
 },
 "download": ["libro.pdf"],
+"search": {
+"engine": "fuse",
+"options": null
+},
 "toc": {
 "collapse": "section"
 }

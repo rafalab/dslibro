@@ -6,11 +6,10 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <title>Capítulo 26 Minería de textos | Introducción a la ciencia de datos</title>
   <meta name="description" content="Este libro presenta conceptos y destrezas que les ayudarán abordar los retos de situaciones actuales del análisis de datos. Cubre conceptos de probabilidad, inferencia estadística, regresión lineal y machine learning. Además, les permitirá desarrollar destrezas como la programación R, el wrangling de datos con dplyr, la visualización de datos con ggplot2, la organización de archivos con Shell de UNIX / Linux, el control de versiones con GitHub y la preparación de documentos reproducibles con R markdown." />
-  <meta name="generator" content="bookdown 0.22 and GitBook 2.6.7" />
+  <meta name="generator" content="bookdown 0.27 and GitBook 2.6.7" />
 
   <meta property="og:title" content="Capítulo 26 Minería de textos | Introducción a la ciencia de datos" />
   <meta property="og:type" content="book" />
-  
   
   <meta property="og:description" content="Este libro presenta conceptos y destrezas que les ayudarán abordar los retos de situaciones actuales del análisis de datos. Cubre conceptos de probabilidad, inferencia estadística, regresión lineal y machine learning. Además, les permitirá desarrollar destrezas como la programación R, el wrangling de datos con dplyr, la visualización de datos con ggplot2, la organización de archivos con Shell de UNIX / Linux, el control de versiones con GitHub y la preparación de documentos reproducibles con R markdown." />
   
@@ -24,7 +23,7 @@
 <meta name="author" content="Rafael A. Irizarry" />
 
 
-<meta name="date" content="2021-07-03" />
+<meta name="date" content="2022-10-25" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -33,8 +32,8 @@
   
 <link rel="prev" href="cómo-leer-y-procesar-fechas-y-horas.html"/>
 <link rel="next" href="introducción-a-machine-learning.html"/>
-<script src="libs/header-attrs-2.9/header-attrs.js"></script>
-<script src="libs/jquery-2.2.3/jquery.min.js"></script>
+<script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
 <link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
 <link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
@@ -50,9 +49,9 @@
 
 
 
-
-<link href="libs/anchor-sections-1.0.1/anchor-sections.css" rel="stylesheet" />
-<script src="libs/anchor-sections-1.0.1/anchor-sections.js"></script>
+<link href="libs/anchor-sections-1.1.0/anchor-sections.css" rel="stylesheet" />
+<link href="libs/anchor-sections-1.1.0/anchor-sections-hash.css" rel="stylesheet" />
+<script src="libs/anchor-sections-1.1.0/anchor-sections.js"></script>
 <script src="libs/kePrint-0.0.1/kePrint.js"></script>
 <link href="libs/lightable-0.0.1/lightable.css" rel="stylesheet" />
 
@@ -254,7 +253,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="4.3.3" data-path="tidyverse.html"><a href="tidyverse.html#cómo-seleccionar-columnas-con-select"><i class="fa fa-check"></i><b>4.3.3</b> Cómo seleccionar columnas con <code>select</code></a></li>
 </ul></li>
 <li class="chapter" data-level="4.4" data-path="tidyverse.html"><a href="tidyverse.html#ejercicios-9"><i class="fa fa-check"></i><b>4.4</b> Ejercicios</a></li>
-<li class="chapter" data-level="4.5" data-path="tidyverse.html"><a href="tidyverse.html#el-pipe"><i class="fa fa-check"></i><b>4.5</b> El <em>pipe</em>: <code>%&gt;%</code></a></li>
+<li class="chapter" data-level="4.5" data-path="tidyverse.html"><a href="tidyverse.html#el-pipe"><i class="fa fa-check"></i><b>4.5</b> El <em>pipe</em>: <code>|&gt;</code></a></li>
 <li class="chapter" data-level="4.6" data-path="tidyverse.html"><a href="tidyverse.html#ejercicios-10"><i class="fa fa-check"></i><b>4.6</b> Ejercicios</a></li>
 <li class="chapter" data-level="4.7" data-path="tidyverse.html"><a href="tidyverse.html#cómo-resumir-datos"><i class="fa fa-check"></i><b>4.7</b> Cómo resumir datos</a>
 <ul>
@@ -1025,391 +1024,391 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
           <div class="page-inner">
 
             <section class="normal" id="section-">
-<div id="minería-de-textos" class="section level1" number="26">
-<h1><span class="header-section-number">Capítulo 26</span> Minería de textos</h1>
+<div id="minería-de-textos" class="section level1 hasAnchor" number="26">
+<h1><span class="header-section-number">Capítulo 26</span> Minería de textos<a href="minería-de-textos.html#minería-de-textos" class="anchor-section" aria-label="Anchor link to header"></a></h1>
 <p>Con la excepción de las etiquetas utilizadas para representar datos categóricos, nos hemos enfocado en los datos numéricos. Pero en muchas aplicaciones, los datos comienzan como texto. Ejemplos bien conocidos son el filtrado de spam, la prevención del delito cibernético, la lucha contra el terrorismo y el análisis de sentimiento (también conocido como minería de opinión). En todos estos casos, los datos sin procesar se componen de texto de forma libre. Nuestra tarea es extraer información de estos datos. En esta sección, aprendemos cómo generar resúmenes numéricos útiles a partir de datos de texto a los que podemos aplicar algunas de las poderosas técnicas de visualización y análisis de datos que hemos aprendido.</p>
-<div id="estudio-de-caso-tuits-de-trump" class="section level2" number="26.1">
-<h2><span class="header-section-number">26.1</span> Estudio de caso: tuits de Trump</h2>
+<div id="estudio-de-caso-tuits-de-trump" class="section level2 hasAnchor" number="26.1">
+<h2><span class="header-section-number">26.1</span> Estudio de caso: tuits de Trump<a href="minería-de-textos.html#estudio-de-caso-tuits-de-trump" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>Durante las elecciones presidenciales estadounidenses de 2016, el candidato Donald J. Trump usó su cuenta de Twitter como una manera de comunicarse con los posibles votantes. El 6 de agosto de 2016, Todd Vaziri tuiteó sobre Trump y declaró que “Cada tweet no hiperbólico es de iPhone (su personal). Cada tweet hiperbólico es de Android (de él)”<a href="#fn102" class="footnote-ref" id="fnref102"><sup>102</sup></a>. El científico de datos David Robinson realizó un análisis para determinar si los datos respaldan esta afirmación<a href="#fn103" class="footnote-ref" id="fnref103"><sup>103</sup></a>. Aquí, revisamos el análisis de David para aprender algunos de los conceptos básicos de la minería de textos. Para obtener más información sobre la minería de textos en R, recomendamos el libro <em>Text Mining with R</em> de Julia Silge y David Robinson<a href="#fn104" class="footnote-ref" id="fnref104"><sup>104</sup></a>.</p>
 <p>Utilizaremos los siguientes paquetes:</p>
-<div class="sourceCode" id="cb935"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb935-1"><a href="minería-de-textos.html#cb935-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
-<span id="cb935-2"><a href="minería-de-textos.html#cb935-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(lubridate)</span>
-<span id="cb935-3"><a href="minería-de-textos.html#cb935-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(scales)</span></code></pre></div>
+<div class="sourceCode" id="cb936"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb936-1"><a href="minería-de-textos.html#cb936-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb936-2"><a href="minería-de-textos.html#cb936-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(lubridate)</span>
+<span id="cb936-3"><a href="minería-de-textos.html#cb936-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(scales)</span></code></pre></div>
 <p>En general, podemos extraer datos directamente de Twitter usando el paquete <strong>rtweet</strong>. Sin embargo, en este caso, un grupo ya ha compilado datos para nosotros y los ha puesto a disposición en: <a href="https://www.thetrumparchive.com">https://www.thetrumparchive.com</a>. Podemos obtener los datos de su API JSON usando un <em>script</em> como este:</p>
-<div class="sourceCode" id="cb936"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb936-1"><a href="minería-de-textos.html#cb936-1" aria-hidden="true" tabindex="-1"></a>url <span class="ot">&lt;-</span> <span class="st">&#39;http://www.trumptwitterarchive.com/data/realdonaldtrump/%s.json&#39;</span></span>
-<span id="cb936-2"><a href="minería-de-textos.html#cb936-2" aria-hidden="true" tabindex="-1"></a>trump_tweets <span class="ot">&lt;-</span> <span class="fu">map</span>(<span class="dv">2009</span><span class="sc">:</span><span class="dv">2017</span>, <span class="sc">~</span><span class="fu">sprintf</span>(url, .x)) <span class="sc">%&gt;%</span></span>
-<span id="cb936-3"><a href="minería-de-textos.html#cb936-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">map_df</span>(jsonlite<span class="sc">::</span>fromJSON, <span class="at">simplifyDataFrame =</span> <span class="cn">TRUE</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb936-4"><a href="minería-de-textos.html#cb936-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="sc">!</span>is_retweet <span class="sc">&amp;</span> <span class="sc">!</span><span class="fu">str_detect</span>(text, <span class="st">&#39;^&quot;&#39;</span>)) <span class="sc">%&gt;%</span></span>
-<span id="cb936-5"><a href="minería-de-textos.html#cb936-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">created_at =</span> <span class="fu">parse_date_time</span>(created_at,</span>
-<span id="cb936-6"><a href="minería-de-textos.html#cb936-6" aria-hidden="true" tabindex="-1"></a>                                      <span class="at">orders =</span> <span class="st">&quot;a b! d! H!:M!:S! z!* Y!&quot;</span>,</span>
-<span id="cb936-7"><a href="minería-de-textos.html#cb936-7" aria-hidden="true" tabindex="-1"></a>                                      <span class="at">tz=</span><span class="st">&quot;EST&quot;</span>))</span></code></pre></div>
+<div class="sourceCode" id="cb937"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb937-1"><a href="minería-de-textos.html#cb937-1" aria-hidden="true" tabindex="-1"></a>url <span class="ot">&lt;-</span> <span class="st">&#39;http://www.trumptwitterarchive.com/data/realdonaldtrump/%s.json&#39;</span></span>
+<span id="cb937-2"><a href="minería-de-textos.html#cb937-2" aria-hidden="true" tabindex="-1"></a>trump_tweets <span class="ot">&lt;-</span> <span class="fu">map</span>(<span class="dv">2009</span><span class="sc">:</span><span class="dv">2017</span>, <span class="sc">~</span><span class="fu">sprintf</span>(url, .x)) <span class="sc">|&gt;</span></span>
+<span id="cb937-3"><a href="minería-de-textos.html#cb937-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">map_df</span>(jsonlite<span class="sc">::</span>fromJSON, <span class="at">simplifyDataFrame =</span> <span class="cn">TRUE</span>) <span class="sc">|&gt;</span></span>
+<span id="cb937-4"><a href="minería-de-textos.html#cb937-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="sc">!</span>is_retweet <span class="sc">&amp;</span> <span class="sc">!</span><span class="fu">str_detect</span>(text, <span class="st">&#39;^&quot;&#39;</span>)) <span class="sc">|&gt;</span></span>
+<span id="cb937-5"><a href="minería-de-textos.html#cb937-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">created_at =</span> <span class="fu">parse_date_time</span>(created_at,</span>
+<span id="cb937-6"><a href="minería-de-textos.html#cb937-6" aria-hidden="true" tabindex="-1"></a>                                      <span class="at">orders =</span> <span class="st">&quot;a b! d! H!:M!:S! z!* Y!&quot;</span>,</span>
+<span id="cb937-7"><a href="minería-de-textos.html#cb937-7" aria-hidden="true" tabindex="-1"></a>                                      <span class="at">tz=</span><span class="st">&quot;EST&quot;</span>))</span></code></pre></div>
 <p>Para facilitar el análisis, incluimos el resultado del código anterior en el paquete <strong>dslabs</strong>:</p>
-<div class="sourceCode" id="cb937"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb937-1"><a href="minería-de-textos.html#cb937-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dslabs)</span>
-<span id="cb937-2"><a href="minería-de-textos.html#cb937-2" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(<span class="st">&quot;trump_tweets&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb938"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb938-1"><a href="minería-de-textos.html#cb938-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dslabs)</span>
+<span id="cb938-2"><a href="minería-de-textos.html#cb938-2" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(<span class="st">&quot;trump_tweets&quot;</span>)</span></code></pre></div>
 <p>Pueden ver el <em>data frame</em> con información sobre los tuits al escribir:</p>
-<div class="sourceCode" id="cb938"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb938-1"><a href="minería-de-textos.html#cb938-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(trump_tweets)</span></code></pre></div>
+<div class="sourceCode" id="cb939"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb939-1"><a href="minería-de-textos.html#cb939-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(trump_tweets)</span></code></pre></div>
 <p>con las siguientes variables incluidas:</p>
-<div class="sourceCode" id="cb939"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb939-1"><a href="minería-de-textos.html#cb939-1" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(trump_tweets)</span>
-<span id="cb939-2"><a href="minería-de-textos.html#cb939-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] &quot;source&quot;                  &quot;id_str&quot;                 </span></span>
-<span id="cb939-3"><a href="minería-de-textos.html#cb939-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [3] &quot;text&quot;                    &quot;created_at&quot;             </span></span>
-<span id="cb939-4"><a href="minería-de-textos.html#cb939-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [5] &quot;retweet_count&quot;           &quot;in_reply_to_user_id_str&quot;</span></span>
-<span id="cb939-5"><a href="minería-de-textos.html#cb939-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [7] &quot;favorite_count&quot;          &quot;is_retweet&quot;</span></span></code></pre></div>
+<div class="sourceCode" id="cb940"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb940-1"><a href="minería-de-textos.html#cb940-1" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(trump_tweets)</span>
+<span id="cb940-2"><a href="minería-de-textos.html#cb940-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] &quot;source&quot;                  &quot;id_str&quot;                 </span></span>
+<span id="cb940-3"><a href="minería-de-textos.html#cb940-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [3] &quot;text&quot;                    &quot;created_at&quot;             </span></span>
+<span id="cb940-4"><a href="minería-de-textos.html#cb940-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [5] &quot;retweet_count&quot;           &quot;in_reply_to_user_id_str&quot;</span></span>
+<span id="cb940-5"><a href="minería-de-textos.html#cb940-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [7] &quot;favorite_count&quot;          &quot;is_retweet&quot;</span></span></code></pre></div>
 <p>El archivo de ayuda <code>?trump_tweets</code> provee detalles sobre lo que representa cada variable. Los tuits están representados por el variable <code>text</code>:</p>
-<div class="sourceCode" id="cb940"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb940-1"><a href="minería-de-textos.html#cb940-1" aria-hidden="true" tabindex="-1"></a>trump_tweets<span class="sc">$</span>text[<span class="dv">16413</span>] <span class="sc">%&gt;%</span> <span class="fu">str_wrap</span>(<span class="at">width =</span> <span class="fu">options</span>()<span class="sc">$</span>width) <span class="sc">%&gt;%</span> cat</span>
-<span id="cb940-2"><a href="minería-de-textos.html#cb940-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Great to be back in Iowa! #TBT with @JerryJrFalwell joining me in</span></span>
-<span id="cb940-3"><a href="minería-de-textos.html#cb940-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Davenport- this past winter. #MAGA https://t.co/A5IF0QHnic</span></span></code></pre></div>
+<div class="sourceCode" id="cb941"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb941-1"><a href="minería-de-textos.html#cb941-1" aria-hidden="true" tabindex="-1"></a>trump_tweets<span class="sc">$</span>text[<span class="dv">16413</span>] <span class="sc">|&gt;</span> <span class="fu">str_wrap</span>(<span class="at">width =</span> <span class="fu">options</span>()<span class="sc">$</span>width) <span class="sc">|&gt;</span> <span class="fu">cat</span>()</span>
+<span id="cb941-2"><a href="minería-de-textos.html#cb941-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Great to be back in Iowa! #TBT with @JerryJrFalwell joining me in</span></span>
+<span id="cb941-3"><a href="minería-de-textos.html#cb941-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Davenport- this past winter. #MAGA https://t.co/A5IF0QHnic</span></span></code></pre></div>
 <p>y la variable <code>source</code> nos dice qué dispositivo se usó para componer y cargar cada tuit:</p>
-<div class="sourceCode" id="cb941"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb941-1"><a href="minería-de-textos.html#cb941-1" aria-hidden="true" tabindex="-1"></a>trump_tweets <span class="sc">%&gt;%</span> <span class="fu">count</span>(source) <span class="sc">%&gt;%</span> <span class="fu">arrange</span>(<span class="fu">desc</span>(n)) <span class="sc">%&gt;%</span> <span class="fu">head</span>(<span class="dv">5</span>)</span>
-<span id="cb941-2"><a href="minería-de-textos.html#cb941-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;                source     n</span></span>
-<span id="cb941-3"><a href="minería-de-textos.html#cb941-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1  Twitter Web Client 10718</span></span>
-<span id="cb941-4"><a href="minería-de-textos.html#cb941-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2 Twitter for Android  4652</span></span>
-<span id="cb941-5"><a href="minería-de-textos.html#cb941-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 3  Twitter for iPhone  3962</span></span>
-<span id="cb941-6"><a href="minería-de-textos.html#cb941-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 4           TweetDeck   468</span></span>
-<span id="cb941-7"><a href="minería-de-textos.html#cb941-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 5     TwitLonger Beta   288</span></span></code></pre></div>
+<div class="sourceCode" id="cb942"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb942-1"><a href="minería-de-textos.html#cb942-1" aria-hidden="true" tabindex="-1"></a>trump_tweets <span class="sc">|&gt;</span> <span class="fu">count</span>(source) <span class="sc">|&gt;</span> <span class="fu">arrange</span>(<span class="fu">desc</span>(n)) <span class="sc">|&gt;</span> <span class="fu">head</span>(<span class="dv">5</span>)</span>
+<span id="cb942-2"><a href="minería-de-textos.html#cb942-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;                source     n</span></span>
+<span id="cb942-3"><a href="minería-de-textos.html#cb942-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1  Twitter Web Client 10718</span></span>
+<span id="cb942-4"><a href="minería-de-textos.html#cb942-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2 Twitter for Android  4652</span></span>
+<span id="cb942-5"><a href="minería-de-textos.html#cb942-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 3  Twitter for iPhone  3962</span></span>
+<span id="cb942-6"><a href="minería-de-textos.html#cb942-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 4           TweetDeck   468</span></span>
+<span id="cb942-7"><a href="minería-de-textos.html#cb942-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 5     TwitLonger Beta   288</span></span></code></pre></div>
 <p>Estamos interesados en lo que sucedió durante la campaña, por lo que para este análisis nos enfocaremos en lo que se tuiteó entre el día en que Trump anunció su campaña y el día de las elecciones. Definimos la siguiente tabla que contiene solo los tuits de ese período de tiempo. Tengan en cuenta que usamos <code>extract</code> para eliminar la parte <code>Twitter for</code> de <code>source</code> y filtrar los <em>retweets</em>.</p>
-<div class="sourceCode" id="cb942"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb942-1"><a href="minería-de-textos.html#cb942-1" aria-hidden="true" tabindex="-1"></a>campaign_tweets <span class="ot">&lt;-</span> trump_tweets <span class="sc">%&gt;%</span></span>
-<span id="cb942-2"><a href="minería-de-textos.html#cb942-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">extract</span>(source, <span class="st">&quot;source&quot;</span>, <span class="st">&quot;Twitter for (.*)&quot;</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb942-3"><a href="minería-de-textos.html#cb942-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(source <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">&quot;Android&quot;</span>, <span class="st">&quot;iPhone&quot;</span>) <span class="sc">&amp;</span></span>
-<span id="cb942-4"><a href="minería-de-textos.html#cb942-4" aria-hidden="true" tabindex="-1"></a>           created_at <span class="sc">&gt;=</span> <span class="fu">ymd</span>(<span class="st">&quot;2015-06-17&quot;</span>) <span class="sc">&amp;</span></span>
-<span id="cb942-5"><a href="minería-de-textos.html#cb942-5" aria-hidden="true" tabindex="-1"></a>           created_at <span class="sc">&lt;</span> <span class="fu">ymd</span>(<span class="st">&quot;2016-11-08&quot;</span>)) <span class="sc">%&gt;%</span></span>
-<span id="cb942-6"><a href="minería-de-textos.html#cb942-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="sc">!</span>is_retweet) <span class="sc">%&gt;%</span></span>
-<span id="cb942-7"><a href="minería-de-textos.html#cb942-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(created_at)  <span class="sc">%&gt;%</span></span>
-<span id="cb942-8"><a href="minería-de-textos.html#cb942-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">as_tibble</span>()</span></code></pre></div>
+<div class="sourceCode" id="cb943"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb943-1"><a href="minería-de-textos.html#cb943-1" aria-hidden="true" tabindex="-1"></a>campaign_tweets <span class="ot">&lt;-</span> trump_tweets <span class="sc">|&gt;</span></span>
+<span id="cb943-2"><a href="minería-de-textos.html#cb943-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">extract</span>(source, <span class="st">&quot;source&quot;</span>, <span class="st">&quot;Twitter for (.*)&quot;</span>) <span class="sc">|&gt;</span></span>
+<span id="cb943-3"><a href="minería-de-textos.html#cb943-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(source <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">&quot;Android&quot;</span>, <span class="st">&quot;iPhone&quot;</span>) <span class="sc">&amp;</span></span>
+<span id="cb943-4"><a href="minería-de-textos.html#cb943-4" aria-hidden="true" tabindex="-1"></a>           created_at <span class="sc">&gt;=</span> <span class="fu">ymd</span>(<span class="st">&quot;2015-06-17&quot;</span>) <span class="sc">&amp;</span></span>
+<span id="cb943-5"><a href="minería-de-textos.html#cb943-5" aria-hidden="true" tabindex="-1"></a>           created_at <span class="sc">&lt;</span> <span class="fu">ymd</span>(<span class="st">&quot;2016-11-08&quot;</span>)) <span class="sc">|&gt;</span></span>
+<span id="cb943-6"><a href="minería-de-textos.html#cb943-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="sc">!</span>is_retweet) <span class="sc">|&gt;</span></span>
+<span id="cb943-7"><a href="minería-de-textos.html#cb943-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(created_at)  <span class="sc">|&gt;</span></span>
+<span id="cb943-8"><a href="minería-de-textos.html#cb943-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">as_tibble</span>()</span></code></pre></div>
 <p>Ahora podemos usar la visualización de datos para explorar la posibilidad de que dos grupos diferentes hayan escrito los mensajes desde estos dispositivos. Para cada tuit, extraeremos la hora en que se publicó (hora de la costa este de EE.UU. o EST por sus siglas en inglés), y luego calcularemos la proporción de tuits tuiteada a cada hora para cada dispositivo:</p>
-<div class="sourceCode" id="cb943"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb943-1"><a href="minería-de-textos.html#cb943-1" aria-hidden="true" tabindex="-1"></a>campaign_tweets <span class="sc">%&gt;%</span></span>
-<span id="cb943-2"><a href="minería-de-textos.html#cb943-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">hour =</span> <span class="fu">hour</span>(<span class="fu">with_tz</span>(created_at, <span class="st">&quot;EST&quot;</span>))) <span class="sc">%&gt;%</span></span>
-<span id="cb943-3"><a href="minería-de-textos.html#cb943-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">count</span>(source, hour) <span class="sc">%&gt;%</span></span>
-<span id="cb943-4"><a href="minería-de-textos.html#cb943-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(source) <span class="sc">%&gt;%</span></span>
-<span id="cb943-5"><a href="minería-de-textos.html#cb943-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">percent =</span> n<span class="sc">/</span> <span class="fu">sum</span>(n)) <span class="sc">%&gt;%</span></span>
-<span id="cb943-6"><a href="minería-de-textos.html#cb943-6" aria-hidden="true" tabindex="-1"></a>  ungroup <span class="sc">%&gt;%</span></span>
-<span id="cb943-7"><a href="minería-de-textos.html#cb943-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(hour, percent, <span class="at">color =</span> source)) <span class="sc">+</span></span>
-<span id="cb943-8"><a href="minería-de-textos.html#cb943-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>() <span class="sc">+</span></span>
-<span id="cb943-9"><a href="minería-de-textos.html#cb943-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>() <span class="sc">+</span></span>
-<span id="cb943-10"><a href="minería-de-textos.html#cb943-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">labels =</span> <span class="fu">percent_format</span>()) <span class="sc">+</span></span>
-<span id="cb943-11"><a href="minería-de-textos.html#cb943-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">&quot;Hour of day (EST)&quot;</span>, <span class="at">y =</span> <span class="st">&quot;% of tweets&quot;</span>, <span class="at">color =</span> <span class="st">&quot;&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb944"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb944-1"><a href="minería-de-textos.html#cb944-1" aria-hidden="true" tabindex="-1"></a>campaign_tweets <span class="sc">|&gt;</span></span>
+<span id="cb944-2"><a href="minería-de-textos.html#cb944-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">hour =</span> <span class="fu">hour</span>(<span class="fu">with_tz</span>(created_at, <span class="st">&quot;EST&quot;</span>))) <span class="sc">|&gt;</span></span>
+<span id="cb944-3"><a href="minería-de-textos.html#cb944-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">count</span>(source, hour) <span class="sc">|&gt;</span></span>
+<span id="cb944-4"><a href="minería-de-textos.html#cb944-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(source) <span class="sc">|&gt;</span></span>
+<span id="cb944-5"><a href="minería-de-textos.html#cb944-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">percent =</span> n<span class="sc">/</span> <span class="fu">sum</span>(n)) <span class="sc">|&gt;</span></span>
+<span id="cb944-6"><a href="minería-de-textos.html#cb944-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ungroup</span>() <span class="sc">|&gt;</span></span>
+<span id="cb944-7"><a href="minería-de-textos.html#cb944-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(hour, percent, <span class="at">color =</span> source)) <span class="sc">+</span></span>
+<span id="cb944-8"><a href="minería-de-textos.html#cb944-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>() <span class="sc">+</span></span>
+<span id="cb944-9"><a href="minería-de-textos.html#cb944-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>() <span class="sc">+</span></span>
+<span id="cb944-10"><a href="minería-de-textos.html#cb944-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">labels =</span> <span class="fu">percent_format</span>()) <span class="sc">+</span></span>
+<span id="cb944-11"><a href="minería-de-textos.html#cb944-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">&quot;Hour of day (EST)&quot;</span>, <span class="at">y =</span> <span class="st">&quot;% of tweets&quot;</span>, <span class="at">color =</span> <span class="st">&quot;&quot;</span>)</span></code></pre></div>
 <p><img src="libro_files/figure-html/tweets-by-time-by-device-1.png" width="70%" style="display: block; margin: auto;" /></p>
 <p>Notamos un gran pico para Android en las primeras horas de la mañana, entre las 6 y las 8 de la mañana. Parece haber una clara diferencia en estos patrones. Por lo tanto, suponemos que dos entidades diferentes están utilizando estos dos dispositivos.</p>
 <p>Ahora estudiaremos cómo difieren los tuits cuando comparamos Android con iPhone. Para hacer esto, utilizaremos el paquete <strong>tidytext</strong>.</p>
 </div>
-<div id="texto-como-datos" class="section level2" number="26.2">
-<h2><span class="header-section-number">26.2</span> Texto como datos</h2>
+<div id="texto-como-datos" class="section level2 hasAnchor" number="26.2">
+<h2><span class="header-section-number">26.2</span> Texto como datos<a href="minería-de-textos.html#texto-como-datos" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>El paquete <strong>tidytext</strong> nos ayuda a convertir texto de forma libre en una tabla ordenada. Tener los datos en este formato facilita enormemente la visualización de datos y el uso de técnicas estadísticas.</p>
-<div class="sourceCode" id="cb944"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb944-1"><a href="minería-de-textos.html#cb944-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidytext)</span></code></pre></div>
+<div class="sourceCode" id="cb945"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb945-1"><a href="minería-de-textos.html#cb945-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidytext)</span></code></pre></div>
 <p>La función principal necesaria para lograr esto es <code>unnest_tokens</code>. Un <em>token</em> se refiere a una unidad que consideramos como un punto de datos. Los <em>tokens</em> más comunes son las palabras, pero también pueden ser caracteres individuales, <em>ngrams</em>, oraciones, líneas o un patrón definido por una expresión regular. Las funciones tomarán un vector de cadenas y extraerán los <em>tokens</em> para que cada uno obtenga una fila en la nueva tabla. Aquí hay un ejemplo sencillo:</p>
-<div class="sourceCode" id="cb945"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb945-1"><a href="minería-de-textos.html#cb945-1" aria-hidden="true" tabindex="-1"></a>poem <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;Roses are red,&quot;</span>, <span class="st">&quot;Violets are blue,&quot;</span>,</span>
-<span id="cb945-2"><a href="minería-de-textos.html#cb945-2" aria-hidden="true" tabindex="-1"></a>          <span class="st">&quot;Sugar is sweet,&quot;</span>, <span class="st">&quot;And so are you.&quot;</span>)</span>
-<span id="cb945-3"><a href="minería-de-textos.html#cb945-3" aria-hidden="true" tabindex="-1"></a>example <span class="ot">&lt;-</span> <span class="fu">tibble</span>(<span class="at">line =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>, <span class="dv">4</span>),</span>
-<span id="cb945-4"><a href="minería-de-textos.html#cb945-4" aria-hidden="true" tabindex="-1"></a>                  <span class="at">text =</span> poem)</span>
-<span id="cb945-5"><a href="minería-de-textos.html#cb945-5" aria-hidden="true" tabindex="-1"></a>example</span>
-<span id="cb945-6"><a href="minería-de-textos.html#cb945-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # A tibble: 4 x 2</span></span>
-<span id="cb945-7"><a href="minería-de-textos.html#cb945-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;    line text             </span></span>
-<span id="cb945-8"><a href="minería-de-textos.html#cb945-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   &lt;dbl&gt; &lt;chr&gt;            </span></span>
-<span id="cb945-9"><a href="minería-de-textos.html#cb945-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1     1 Roses are red,   </span></span>
-<span id="cb945-10"><a href="minería-de-textos.html#cb945-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2     2 Violets are blue,</span></span>
-<span id="cb945-11"><a href="minería-de-textos.html#cb945-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 3     3 Sugar is sweet,  </span></span>
-<span id="cb945-12"><a href="minería-de-textos.html#cb945-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 4     4 And so are you.</span></span>
-<span id="cb945-13"><a href="minería-de-textos.html#cb945-13" aria-hidden="true" tabindex="-1"></a>example <span class="sc">%&gt;%</span> <span class="fu">unnest_tokens</span>(word, text)</span>
-<span id="cb945-14"><a href="minería-de-textos.html#cb945-14" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # A tibble: 13 x 2</span></span>
-<span id="cb945-15"><a href="minería-de-textos.html#cb945-15" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;    line word   </span></span>
-<span id="cb945-16"><a href="minería-de-textos.html#cb945-16" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   &lt;dbl&gt; &lt;chr&gt;  </span></span>
-<span id="cb945-17"><a href="minería-de-textos.html#cb945-17" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1     1 roses  </span></span>
-<span id="cb945-18"><a href="minería-de-textos.html#cb945-18" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2     1 are    </span></span>
-<span id="cb945-19"><a href="minería-de-textos.html#cb945-19" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 3     1 red    </span></span>
-<span id="cb945-20"><a href="minería-de-textos.html#cb945-20" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 4     2 violets</span></span>
-<span id="cb945-21"><a href="minería-de-textos.html#cb945-21" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 5     2 are    </span></span>
-<span id="cb945-22"><a href="minería-de-textos.html#cb945-22" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # … with 8 more rows</span></span></code></pre></div>
+<div class="sourceCode" id="cb946"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb946-1"><a href="minería-de-textos.html#cb946-1" aria-hidden="true" tabindex="-1"></a>poem <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;Roses are red,&quot;</span>, <span class="st">&quot;Violets are blue,&quot;</span>,</span>
+<span id="cb946-2"><a href="minería-de-textos.html#cb946-2" aria-hidden="true" tabindex="-1"></a>          <span class="st">&quot;Sugar is sweet,&quot;</span>, <span class="st">&quot;And so are you.&quot;</span>)</span>
+<span id="cb946-3"><a href="minería-de-textos.html#cb946-3" aria-hidden="true" tabindex="-1"></a>example <span class="ot">&lt;-</span> <span class="fu">tibble</span>(<span class="at">line =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>, <span class="dv">4</span>),</span>
+<span id="cb946-4"><a href="minería-de-textos.html#cb946-4" aria-hidden="true" tabindex="-1"></a>                  <span class="at">text =</span> poem)</span>
+<span id="cb946-5"><a href="minería-de-textos.html#cb946-5" aria-hidden="true" tabindex="-1"></a>example</span>
+<span id="cb946-6"><a href="minería-de-textos.html#cb946-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # A tibble: 4 × 2</span></span>
+<span id="cb946-7"><a href="minería-de-textos.html#cb946-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;    line text             </span></span>
+<span id="cb946-8"><a href="minería-de-textos.html#cb946-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   &lt;dbl&gt; &lt;chr&gt;            </span></span>
+<span id="cb946-9"><a href="minería-de-textos.html#cb946-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1     1 Roses are red,   </span></span>
+<span id="cb946-10"><a href="minería-de-textos.html#cb946-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2     2 Violets are blue,</span></span>
+<span id="cb946-11"><a href="minería-de-textos.html#cb946-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 3     3 Sugar is sweet,  </span></span>
+<span id="cb946-12"><a href="minería-de-textos.html#cb946-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 4     4 And so are you.</span></span>
+<span id="cb946-13"><a href="minería-de-textos.html#cb946-13" aria-hidden="true" tabindex="-1"></a>example <span class="sc">|&gt;</span> <span class="fu">unnest_tokens</span>(word, text)</span>
+<span id="cb946-14"><a href="minería-de-textos.html#cb946-14" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # A tibble: 13 × 2</span></span>
+<span id="cb946-15"><a href="minería-de-textos.html#cb946-15" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;    line word   </span></span>
+<span id="cb946-16"><a href="minería-de-textos.html#cb946-16" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   &lt;dbl&gt; &lt;chr&gt;  </span></span>
+<span id="cb946-17"><a href="minería-de-textos.html#cb946-17" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1     1 roses  </span></span>
+<span id="cb946-18"><a href="minería-de-textos.html#cb946-18" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2     1 are    </span></span>
+<span id="cb946-19"><a href="minería-de-textos.html#cb946-19" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 3     1 red    </span></span>
+<span id="cb946-20"><a href="minería-de-textos.html#cb946-20" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 4     2 violets</span></span>
+<span id="cb946-21"><a href="minería-de-textos.html#cb946-21" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 5     2 are    </span></span>
+<span id="cb946-22"><a href="minería-de-textos.html#cb946-22" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # … with 8 more rows</span></span></code></pre></div>
 <p>Ahora consideremos un ejemplo de los tuits. Miren el tuit número 3008 porque luego nos permitirá ilustrar un par de puntos:</p>
-<div class="sourceCode" id="cb946"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb946-1"><a href="minería-de-textos.html#cb946-1" aria-hidden="true" tabindex="-1"></a>i <span class="ot">&lt;-</span> <span class="dv">3008</span></span>
-<span id="cb946-2"><a href="minería-de-textos.html#cb946-2" aria-hidden="true" tabindex="-1"></a>campaign_tweets<span class="sc">$</span>text[i] <span class="sc">%&gt;%</span> <span class="fu">str_wrap</span>(<span class="at">width =</span> <span class="dv">65</span>) <span class="sc">%&gt;%</span> <span class="fu">cat</span>()</span>
-<span id="cb946-3"><a href="minería-de-textos.html#cb946-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Great to be back in Iowa! #TBT with @JerryJrFalwell joining me in</span></span>
-<span id="cb946-4"><a href="minería-de-textos.html#cb946-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Davenport- this past winter. #MAGA https://t.co/A5IF0QHnic</span></span>
-<span id="cb946-5"><a href="minería-de-textos.html#cb946-5" aria-hidden="true" tabindex="-1"></a>campaign_tweets[i,] <span class="sc">%&gt;%</span></span>
-<span id="cb946-6"><a href="minería-de-textos.html#cb946-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">unnest_tokens</span>(word, text) <span class="sc">%&gt;%</span></span>
-<span id="cb946-7"><a href="minería-de-textos.html#cb946-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pull</span>(word)</span>
-<span id="cb946-8"><a href="minería-de-textos.html#cb946-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  [1] &quot;great&quot;          &quot;to&quot;             &quot;be&quot;             &quot;back&quot;          </span></span>
-<span id="cb946-9"><a href="minería-de-textos.html#cb946-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  [5] &quot;in&quot;             &quot;iowa&quot;           &quot;tbt&quot;            &quot;with&quot;          </span></span>
-<span id="cb946-10"><a href="minería-de-textos.html#cb946-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  [9] &quot;jerryjrfalwell&quot; &quot;joining&quot;        &quot;me&quot;             &quot;in&quot;            </span></span>
-<span id="cb946-11"><a href="minería-de-textos.html#cb946-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [13] &quot;davenport&quot;      &quot;this&quot;           &quot;past&quot;           &quot;winter&quot;        </span></span>
-<span id="cb946-12"><a href="minería-de-textos.html#cb946-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [17] &quot;maga&quot;           &quot;https&quot;          &quot;t.co&quot;           &quot;a5if0qhnic&quot;</span></span></code></pre></div>
+<div class="sourceCode" id="cb947"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb947-1"><a href="minería-de-textos.html#cb947-1" aria-hidden="true" tabindex="-1"></a>i <span class="ot">&lt;-</span> <span class="dv">3008</span></span>
+<span id="cb947-2"><a href="minería-de-textos.html#cb947-2" aria-hidden="true" tabindex="-1"></a>campaign_tweets<span class="sc">$</span>text[i] <span class="sc">|&gt;</span> <span class="fu">str_wrap</span>(<span class="at">width =</span> <span class="dv">65</span>) <span class="sc">|&gt;</span> <span class="fu">cat</span>()</span>
+<span id="cb947-3"><a href="minería-de-textos.html#cb947-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Great to be back in Iowa! #TBT with @JerryJrFalwell joining me in</span></span>
+<span id="cb947-4"><a href="minería-de-textos.html#cb947-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Davenport- this past winter. #MAGA https://t.co/A5IF0QHnic</span></span>
+<span id="cb947-5"><a href="minería-de-textos.html#cb947-5" aria-hidden="true" tabindex="-1"></a>campaign_tweets[i,] <span class="sc">|&gt;</span></span>
+<span id="cb947-6"><a href="minería-de-textos.html#cb947-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">unnest_tokens</span>(word, text) <span class="sc">|&gt;</span></span>
+<span id="cb947-7"><a href="minería-de-textos.html#cb947-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pull</span>(word)</span>
+<span id="cb947-8"><a href="minería-de-textos.html#cb947-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  [1] &quot;great&quot;          &quot;to&quot;             &quot;be&quot;             &quot;back&quot;          </span></span>
+<span id="cb947-9"><a href="minería-de-textos.html#cb947-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  [5] &quot;in&quot;             &quot;iowa&quot;           &quot;tbt&quot;            &quot;with&quot;          </span></span>
+<span id="cb947-10"><a href="minería-de-textos.html#cb947-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  [9] &quot;jerryjrfalwell&quot; &quot;joining&quot;        &quot;me&quot;             &quot;in&quot;            </span></span>
+<span id="cb947-11"><a href="minería-de-textos.html#cb947-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [13] &quot;davenport&quot;      &quot;this&quot;           &quot;past&quot;           &quot;winter&quot;        </span></span>
+<span id="cb947-12"><a href="minería-de-textos.html#cb947-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [17] &quot;maga&quot;           &quot;https&quot;          &quot;t.co&quot;           &quot;a5if0qhnic&quot;</span></span></code></pre></div>
 <p>Noten que la función intenta convertir <em>tokens</em> en palabras. Para hacer esto, sin embargo, elimina los caracteres que son importantes en el contexto de Twitter. Específicamente, la función elimina todos los <code>#</code> y <code>@</code>. Un <em>token</em> en el contexto de Twitter no es lo mismo que en el contexto del inglés hablado o escrito. Por esta razón, en lugar de usar el valor predeterminado, <code>words</code>, usamos el <em>token</em> <code>tweets</code> que incluye patrones que comienzan con <code>@</code> y <code>#</code>:</p>
-<div class="sourceCode" id="cb947"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb947-1"><a href="minería-de-textos.html#cb947-1" aria-hidden="true" tabindex="-1"></a>campaign_tweets[i,] <span class="sc">%&gt;%</span></span>
-<span id="cb947-2"><a href="minería-de-textos.html#cb947-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">unnest_tokens</span>(word, text, <span class="at">token =</span> <span class="st">&quot;tweets&quot;</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb947-3"><a href="minería-de-textos.html#cb947-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pull</span>(word)</span>
-<span id="cb947-4"><a href="minería-de-textos.html#cb947-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  [1] &quot;great&quot;                   &quot;to&quot;                     </span></span>
-<span id="cb947-5"><a href="minería-de-textos.html#cb947-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  [3] &quot;be&quot;                      &quot;back&quot;                   </span></span>
-<span id="cb947-6"><a href="minería-de-textos.html#cb947-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  [5] &quot;in&quot;                      &quot;iowa&quot;                   </span></span>
-<span id="cb947-7"><a href="minería-de-textos.html#cb947-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  [7] &quot;#tbt&quot;                    &quot;with&quot;                   </span></span>
-<span id="cb947-8"><a href="minería-de-textos.html#cb947-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  [9] &quot;@jerryjrfalwell&quot;         &quot;joining&quot;                </span></span>
-<span id="cb947-9"><a href="minería-de-textos.html#cb947-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [11] &quot;me&quot;                      &quot;in&quot;                     </span></span>
-<span id="cb947-10"><a href="minería-de-textos.html#cb947-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [13] &quot;davenport&quot;               &quot;this&quot;                   </span></span>
-<span id="cb947-11"><a href="minería-de-textos.html#cb947-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [15] &quot;past&quot;                    &quot;winter&quot;                 </span></span>
-<span id="cb947-12"><a href="minería-de-textos.html#cb947-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [17] &quot;#maga&quot;                   &quot;https://t.co/a5if0qhnic&quot;</span></span></code></pre></div>
+<div class="sourceCode" id="cb948"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb948-1"><a href="minería-de-textos.html#cb948-1" aria-hidden="true" tabindex="-1"></a>campaign_tweets[i,] <span class="sc">|&gt;</span></span>
+<span id="cb948-2"><a href="minería-de-textos.html#cb948-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">unnest_tokens</span>(word, text, <span class="at">token =</span> <span class="st">&quot;tweets&quot;</span>) <span class="sc">|&gt;</span></span>
+<span id="cb948-3"><a href="minería-de-textos.html#cb948-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pull</span>(word)</span>
+<span id="cb948-4"><a href="minería-de-textos.html#cb948-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  [1] &quot;great&quot;                   &quot;to&quot;                     </span></span>
+<span id="cb948-5"><a href="minería-de-textos.html#cb948-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  [3] &quot;be&quot;                      &quot;back&quot;                   </span></span>
+<span id="cb948-6"><a href="minería-de-textos.html#cb948-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  [5] &quot;in&quot;                      &quot;iowa&quot;                   </span></span>
+<span id="cb948-7"><a href="minería-de-textos.html#cb948-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  [7] &quot;#tbt&quot;                    &quot;with&quot;                   </span></span>
+<span id="cb948-8"><a href="minería-de-textos.html#cb948-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  [9] &quot;@jerryjrfalwell&quot;         &quot;joining&quot;                </span></span>
+<span id="cb948-9"><a href="minería-de-textos.html#cb948-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [11] &quot;me&quot;                      &quot;in&quot;                     </span></span>
+<span id="cb948-10"><a href="minería-de-textos.html#cb948-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [13] &quot;davenport&quot;               &quot;this&quot;                   </span></span>
+<span id="cb948-11"><a href="minería-de-textos.html#cb948-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [15] &quot;past&quot;                    &quot;winter&quot;                 </span></span>
+<span id="cb948-12"><a href="minería-de-textos.html#cb948-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [17] &quot;#maga&quot;                   &quot;https://t.co/a5if0qhnic&quot;</span></span></code></pre></div>
 <p>Otro ajuste menor que queremos hacer es eliminar los enlaces a las imágenes:</p>
-<div class="sourceCode" id="cb948"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb948-1"><a href="minería-de-textos.html#cb948-1" aria-hidden="true" tabindex="-1"></a>links <span class="ot">&lt;-</span> <span class="st">&quot;https://t.co/[A-Za-z</span><span class="sc">\\</span><span class="st">d]+|&amp;amp;&quot;</span></span>
-<span id="cb948-2"><a href="minería-de-textos.html#cb948-2" aria-hidden="true" tabindex="-1"></a>campaign_tweets[i,] <span class="sc">%&gt;%</span></span>
-<span id="cb948-3"><a href="minería-de-textos.html#cb948-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">text =</span> <span class="fu">str_replace_all</span>(text, links, <span class="st">&quot;&quot;</span>)) <span class="sc">%&gt;%</span></span>
-<span id="cb948-4"><a href="minería-de-textos.html#cb948-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">unnest_tokens</span>(word, text, <span class="at">token =</span> <span class="st">&quot;tweets&quot;</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb948-5"><a href="minería-de-textos.html#cb948-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pull</span>(word)</span>
-<span id="cb948-6"><a href="minería-de-textos.html#cb948-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  [1] &quot;great&quot;           &quot;to&quot;              &quot;be&quot;             </span></span>
-<span id="cb948-7"><a href="minería-de-textos.html#cb948-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  [4] &quot;back&quot;            &quot;in&quot;              &quot;iowa&quot;           </span></span>
-<span id="cb948-8"><a href="minería-de-textos.html#cb948-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  [7] &quot;#tbt&quot;            &quot;with&quot;            &quot;@jerryjrfalwell&quot;</span></span>
-<span id="cb948-9"><a href="minería-de-textos.html#cb948-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [10] &quot;joining&quot;         &quot;me&quot;              &quot;in&quot;             </span></span>
-<span id="cb948-10"><a href="minería-de-textos.html#cb948-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [13] &quot;davenport&quot;       &quot;this&quot;            &quot;past&quot;           </span></span>
-<span id="cb948-11"><a href="minería-de-textos.html#cb948-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [16] &quot;winter&quot;          &quot;#maga&quot;</span></span></code></pre></div>
+<div class="sourceCode" id="cb949"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb949-1"><a href="minería-de-textos.html#cb949-1" aria-hidden="true" tabindex="-1"></a>links <span class="ot">&lt;-</span> <span class="st">&quot;https://t.co/[A-Za-z</span><span class="sc">\\</span><span class="st">d]+|&amp;amp;&quot;</span></span>
+<span id="cb949-2"><a href="minería-de-textos.html#cb949-2" aria-hidden="true" tabindex="-1"></a>campaign_tweets[i,] <span class="sc">|&gt;</span></span>
+<span id="cb949-3"><a href="minería-de-textos.html#cb949-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">text =</span> <span class="fu">str_replace_all</span>(text, links, <span class="st">&quot;&quot;</span>)) <span class="sc">|&gt;</span></span>
+<span id="cb949-4"><a href="minería-de-textos.html#cb949-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">unnest_tokens</span>(word, text, <span class="at">token =</span> <span class="st">&quot;tweets&quot;</span>) <span class="sc">|&gt;</span></span>
+<span id="cb949-5"><a href="minería-de-textos.html#cb949-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pull</span>(word)</span>
+<span id="cb949-6"><a href="minería-de-textos.html#cb949-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  [1] &quot;great&quot;           &quot;to&quot;              &quot;be&quot;             </span></span>
+<span id="cb949-7"><a href="minería-de-textos.html#cb949-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  [4] &quot;back&quot;            &quot;in&quot;              &quot;iowa&quot;           </span></span>
+<span id="cb949-8"><a href="minería-de-textos.html#cb949-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  [7] &quot;#tbt&quot;            &quot;with&quot;            &quot;@jerryjrfalwell&quot;</span></span>
+<span id="cb949-9"><a href="minería-de-textos.html#cb949-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [10] &quot;joining&quot;         &quot;me&quot;              &quot;in&quot;             </span></span>
+<span id="cb949-10"><a href="minería-de-textos.html#cb949-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [13] &quot;davenport&quot;       &quot;this&quot;            &quot;past&quot;           </span></span>
+<span id="cb949-11"><a href="minería-de-textos.html#cb949-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [16] &quot;winter&quot;          &quot;#maga&quot;</span></span></code></pre></div>
 <p>Ya estamos listos para extraer las palabras de todos nuestros tuits.</p>
-<div class="sourceCode" id="cb949"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb949-1"><a href="minería-de-textos.html#cb949-1" aria-hidden="true" tabindex="-1"></a>tweet_words <span class="ot">&lt;-</span> campaign_tweets <span class="sc">%&gt;%</span></span>
-<span id="cb949-2"><a href="minería-de-textos.html#cb949-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">text =</span> <span class="fu">str_replace_all</span>(text, links, <span class="st">&quot;&quot;</span>)) <span class="sc">%&gt;%</span></span>
-<span id="cb949-3"><a href="minería-de-textos.html#cb949-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">unnest_tokens</span>(word, text, <span class="at">token =</span> <span class="st">&quot;tweets&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb950"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb950-1"><a href="minería-de-textos.html#cb950-1" aria-hidden="true" tabindex="-1"></a>tweet_words <span class="ot">&lt;-</span> campaign_tweets <span class="sc">|&gt;</span></span>
+<span id="cb950-2"><a href="minería-de-textos.html#cb950-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">text =</span> <span class="fu">str_replace_all</span>(text, links, <span class="st">&quot;&quot;</span>)) <span class="sc">|&gt;</span></span>
+<span id="cb950-3"><a href="minería-de-textos.html#cb950-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">unnest_tokens</span>(word, text, <span class="at">token =</span> <span class="st">&quot;tweets&quot;</span>)</span></code></pre></div>
 <p>Y ahora podemos responder a preguntas como “¿cuáles son las palabras más utilizadas?”:</p>
-<div class="sourceCode" id="cb950"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb950-1"><a href="minería-de-textos.html#cb950-1" aria-hidden="true" tabindex="-1"></a>tweet_words <span class="sc">%&gt;%</span></span>
-<span id="cb950-2"><a href="minería-de-textos.html#cb950-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">count</span>(word) <span class="sc">%&gt;%</span></span>
-<span id="cb950-3"><a href="minería-de-textos.html#cb950-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(<span class="fu">desc</span>(n)) <span class="sc">%&gt;%</span></span>
-<span id="cb950-4"><a href="minería-de-textos.html#cb950-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">slice</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">10</span>)</span>
-<span id="cb950-5"><a href="minería-de-textos.html#cb950-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # A tibble: 10 x 2</span></span>
-<span id="cb950-6"><a href="minería-de-textos.html#cb950-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   word      n</span></span>
-<span id="cb950-7"><a href="minería-de-textos.html#cb950-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   &lt;chr&gt; &lt;int&gt;</span></span>
-<span id="cb950-8"><a href="minería-de-textos.html#cb950-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1 the    2329</span></span>
-<span id="cb950-9"><a href="minería-de-textos.html#cb950-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2 to     1410</span></span>
-<span id="cb950-10"><a href="minería-de-textos.html#cb950-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 3 and    1239</span></span>
-<span id="cb950-11"><a href="minería-de-textos.html#cb950-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 4 in     1185</span></span>
-<span id="cb950-12"><a href="minería-de-textos.html#cb950-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 5 i      1143</span></span>
-<span id="cb950-13"><a href="minería-de-textos.html#cb950-13" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # … with 5 more rows</span></span></code></pre></div>
+<div class="sourceCode" id="cb951"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb951-1"><a href="minería-de-textos.html#cb951-1" aria-hidden="true" tabindex="-1"></a>tweet_words <span class="sc">|&gt;</span></span>
+<span id="cb951-2"><a href="minería-de-textos.html#cb951-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">count</span>(word) <span class="sc">|&gt;</span></span>
+<span id="cb951-3"><a href="minería-de-textos.html#cb951-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(<span class="fu">desc</span>(n)) <span class="sc">|&gt;</span></span>
+<span id="cb951-4"><a href="minería-de-textos.html#cb951-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">slice</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">10</span>)</span>
+<span id="cb951-5"><a href="minería-de-textos.html#cb951-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # A tibble: 10 × 2</span></span>
+<span id="cb951-6"><a href="minería-de-textos.html#cb951-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   word      n</span></span>
+<span id="cb951-7"><a href="minería-de-textos.html#cb951-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   &lt;chr&gt; &lt;int&gt;</span></span>
+<span id="cb951-8"><a href="minería-de-textos.html#cb951-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1 the    2329</span></span>
+<span id="cb951-9"><a href="minería-de-textos.html#cb951-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2 to     1410</span></span>
+<span id="cb951-10"><a href="minería-de-textos.html#cb951-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 3 and    1239</span></span>
+<span id="cb951-11"><a href="minería-de-textos.html#cb951-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 4 in     1185</span></span>
+<span id="cb951-12"><a href="minería-de-textos.html#cb951-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 5 i      1143</span></span>
+<span id="cb951-13"><a href="minería-de-textos.html#cb951-13" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # … with 5 more rows</span></span></code></pre></div>
 <p>No es sorprendente que estas sean las palabras principales. Las palabras principales no son informativas. El paquete <em>tidytext</em> tiene una base de datos de estas palabras de uso común, denominadas palabras <em>stop</em>, en la minería de textos:</p>
-<div class="sourceCode" id="cb951"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb951-1"><a href="minería-de-textos.html#cb951-1" aria-hidden="true" tabindex="-1"></a>stop_words</span>
-<span id="cb951-2"><a href="minería-de-textos.html#cb951-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # A tibble: 1,149 x 2</span></span>
-<span id="cb951-3"><a href="minería-de-textos.html#cb951-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   word  lexicon</span></span>
-<span id="cb951-4"><a href="minería-de-textos.html#cb951-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   &lt;chr&gt; &lt;chr&gt;  </span></span>
-<span id="cb951-5"><a href="minería-de-textos.html#cb951-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1 a     SMART  </span></span>
-<span id="cb951-6"><a href="minería-de-textos.html#cb951-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2 a&#39;s   SMART  </span></span>
-<span id="cb951-7"><a href="minería-de-textos.html#cb951-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 3 able  SMART  </span></span>
-<span id="cb951-8"><a href="minería-de-textos.html#cb951-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 4 about SMART  </span></span>
-<span id="cb951-9"><a href="minería-de-textos.html#cb951-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 5 above SMART  </span></span>
-<span id="cb951-10"><a href="minería-de-textos.html#cb951-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # … with 1,144 more rows</span></span></code></pre></div>
+<div class="sourceCode" id="cb952"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb952-1"><a href="minería-de-textos.html#cb952-1" aria-hidden="true" tabindex="-1"></a>stop_words</span>
+<span id="cb952-2"><a href="minería-de-textos.html#cb952-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # A tibble: 1,149 × 2</span></span>
+<span id="cb952-3"><a href="minería-de-textos.html#cb952-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   word  lexicon</span></span>
+<span id="cb952-4"><a href="minería-de-textos.html#cb952-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   &lt;chr&gt; &lt;chr&gt;  </span></span>
+<span id="cb952-5"><a href="minería-de-textos.html#cb952-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1 a     SMART  </span></span>
+<span id="cb952-6"><a href="minería-de-textos.html#cb952-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2 a&#39;s   SMART  </span></span>
+<span id="cb952-7"><a href="minería-de-textos.html#cb952-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 3 able  SMART  </span></span>
+<span id="cb952-8"><a href="minería-de-textos.html#cb952-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 4 about SMART  </span></span>
+<span id="cb952-9"><a href="minería-de-textos.html#cb952-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 5 above SMART  </span></span>
+<span id="cb952-10"><a href="minería-de-textos.html#cb952-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # … with 1,144 more rows</span></span></code></pre></div>
 <p>Si filtramos las filas que representan las palabras <em>stop</em> con <code>filter(!word %in% stop_words$word)</code>:</p>
-<div class="sourceCode" id="cb952"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb952-1"><a href="minería-de-textos.html#cb952-1" aria-hidden="true" tabindex="-1"></a>tweet_words <span class="ot">&lt;-</span> campaign_tweets <span class="sc">%&gt;%</span></span>
-<span id="cb952-2"><a href="minería-de-textos.html#cb952-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">text =</span> <span class="fu">str_replace_all</span>(text, links, <span class="st">&quot;&quot;</span>)) <span class="sc">%&gt;%</span></span>
-<span id="cb952-3"><a href="minería-de-textos.html#cb952-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">unnest_tokens</span>(word, text, <span class="at">token =</span> <span class="st">&quot;tweets&quot;</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb952-4"><a href="minería-de-textos.html#cb952-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="sc">!</span>word <span class="sc">%in%</span> stop_words<span class="sc">$</span>word )</span></code></pre></div>
+<div class="sourceCode" id="cb953"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb953-1"><a href="minería-de-textos.html#cb953-1" aria-hidden="true" tabindex="-1"></a>tweet_words <span class="ot">&lt;-</span> campaign_tweets <span class="sc">|&gt;</span></span>
+<span id="cb953-2"><a href="minería-de-textos.html#cb953-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">text =</span> <span class="fu">str_replace_all</span>(text, links, <span class="st">&quot;&quot;</span>)) <span class="sc">|&gt;</span></span>
+<span id="cb953-3"><a href="minería-de-textos.html#cb953-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">unnest_tokens</span>(word, text, <span class="at">token =</span> <span class="st">&quot;tweets&quot;</span>) <span class="sc">|&gt;</span></span>
+<span id="cb953-4"><a href="minería-de-textos.html#cb953-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="sc">!</span>word <span class="sc">%in%</span> stop_words<span class="sc">$</span>word )</span></code></pre></div>
 <p>terminamos con un conjunto mucho más informativo de las 10 palabras más tuiteadas:</p>
-<div class="sourceCode" id="cb953"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb953-1"><a href="minería-de-textos.html#cb953-1" aria-hidden="true" tabindex="-1"></a>tweet_words <span class="sc">%&gt;%</span></span>
-<span id="cb953-2"><a href="minería-de-textos.html#cb953-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">count</span>(word) <span class="sc">%&gt;%</span></span>
-<span id="cb953-3"><a href="minería-de-textos.html#cb953-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">top_n</span>(<span class="dv">10</span>, n) <span class="sc">%&gt;%</span></span>
-<span id="cb953-4"><a href="minería-de-textos.html#cb953-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">word =</span> <span class="fu">reorder</span>(word, n)) <span class="sc">%&gt;%</span></span>
-<span id="cb953-5"><a href="minería-de-textos.html#cb953-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(<span class="fu">desc</span>(n))</span>
-<span id="cb953-6"><a href="minería-de-textos.html#cb953-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # A tibble: 10 x 2</span></span>
-<span id="cb953-7"><a href="minería-de-textos.html#cb953-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   word                       n</span></span>
-<span id="cb953-8"><a href="minería-de-textos.html#cb953-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   &lt;fct&gt;                  &lt;int&gt;</span></span>
-<span id="cb953-9"><a href="minería-de-textos.html#cb953-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1 #trump2016               414</span></span>
-<span id="cb953-10"><a href="minería-de-textos.html#cb953-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2 hillary                  405</span></span>
-<span id="cb953-11"><a href="minería-de-textos.html#cb953-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 3 people                   303</span></span>
-<span id="cb953-12"><a href="minería-de-textos.html#cb953-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 4 #makeamericagreatagain   294</span></span>
-<span id="cb953-13"><a href="minería-de-textos.html#cb953-13" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 5 america                  254</span></span>
-<span id="cb953-14"><a href="minería-de-textos.html#cb953-14" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # … with 5 more rows</span></span></code></pre></div>
+<div class="sourceCode" id="cb954"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb954-1"><a href="minería-de-textos.html#cb954-1" aria-hidden="true" tabindex="-1"></a>tweet_words <span class="sc">|&gt;</span></span>
+<span id="cb954-2"><a href="minería-de-textos.html#cb954-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">count</span>(word) <span class="sc">|&gt;</span></span>
+<span id="cb954-3"><a href="minería-de-textos.html#cb954-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">top_n</span>(<span class="dv">10</span>, n) <span class="sc">|&gt;</span></span>
+<span id="cb954-4"><a href="minería-de-textos.html#cb954-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">word =</span> <span class="fu">reorder</span>(word, n)) <span class="sc">|&gt;</span></span>
+<span id="cb954-5"><a href="minería-de-textos.html#cb954-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(<span class="fu">desc</span>(n))</span>
+<span id="cb954-6"><a href="minería-de-textos.html#cb954-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # A tibble: 10 × 2</span></span>
+<span id="cb954-7"><a href="minería-de-textos.html#cb954-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   word                       n</span></span>
+<span id="cb954-8"><a href="minería-de-textos.html#cb954-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   &lt;fct&gt;                  &lt;int&gt;</span></span>
+<span id="cb954-9"><a href="minería-de-textos.html#cb954-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1 #trump2016               414</span></span>
+<span id="cb954-10"><a href="minería-de-textos.html#cb954-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2 hillary                  405</span></span>
+<span id="cb954-11"><a href="minería-de-textos.html#cb954-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 3 people                   303</span></span>
+<span id="cb954-12"><a href="minería-de-textos.html#cb954-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 4 #makeamericagreatagain   294</span></span>
+<span id="cb954-13"><a href="minería-de-textos.html#cb954-13" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 5 america                  254</span></span>
+<span id="cb954-14"><a href="minería-de-textos.html#cb954-14" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # … with 5 more rows</span></span></code></pre></div>
 <p>Una exploración de las palabras resultantes (que no se muestran aquí) revela un par de características no deseadas en nuestros <em>tokens</em>. Primero, algunos de nuestros <em>tokens</em> son solo números (años, por ejemplo). Queremos eliminarlos y podemos encontrarlos usando la expresión regular <code>^\d+$</code>. Segundo, algunos de nuestros <em>tokens</em> provienen de una cita y comienzan con <code>'</code>. Queremos eliminar el <code>'</code> cuando está al comienzo de una palabra, así que simplemente usamos <code>str_replace</code>. Agregamos estas dos líneas al código anterior para generar nuestra tabla final:</p>
-<div class="sourceCode" id="cb954"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb954-1"><a href="minería-de-textos.html#cb954-1" aria-hidden="true" tabindex="-1"></a>tweet_words <span class="ot">&lt;-</span> campaign_tweets <span class="sc">%&gt;%</span></span>
-<span id="cb954-2"><a href="minería-de-textos.html#cb954-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">text =</span> <span class="fu">str_replace_all</span>(text, links, <span class="st">&quot;&quot;</span>)) <span class="sc">%&gt;%</span></span>
-<span id="cb954-3"><a href="minería-de-textos.html#cb954-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">unnest_tokens</span>(word, text, <span class="at">token =</span> <span class="st">&quot;tweets&quot;</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb954-4"><a href="minería-de-textos.html#cb954-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="sc">!</span>word <span class="sc">%in%</span> stop_words<span class="sc">$</span>word <span class="sc">&amp;</span></span>
-<span id="cb954-5"><a href="minería-de-textos.html#cb954-5" aria-hidden="true" tabindex="-1"></a>           <span class="sc">!</span><span class="fu">str_detect</span>(word, <span class="st">&quot;^</span><span class="sc">\\</span><span class="st">d+$&quot;</span>)) <span class="sc">%&gt;%</span></span>
-<span id="cb954-6"><a href="minería-de-textos.html#cb954-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">word =</span> <span class="fu">str_replace</span>(word, <span class="st">&quot;^&#39;&quot;</span>, <span class="st">&quot;&quot;</span>))</span></code></pre></div>
+<div class="sourceCode" id="cb955"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb955-1"><a href="minería-de-textos.html#cb955-1" aria-hidden="true" tabindex="-1"></a>tweet_words <span class="ot">&lt;-</span> campaign_tweets <span class="sc">|&gt;</span></span>
+<span id="cb955-2"><a href="minería-de-textos.html#cb955-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">text =</span> <span class="fu">str_replace_all</span>(text, links, <span class="st">&quot;&quot;</span>)) <span class="sc">|&gt;</span></span>
+<span id="cb955-3"><a href="minería-de-textos.html#cb955-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">unnest_tokens</span>(word, text, <span class="at">token =</span> <span class="st">&quot;tweets&quot;</span>) <span class="sc">|&gt;</span></span>
+<span id="cb955-4"><a href="minería-de-textos.html#cb955-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="sc">!</span>word <span class="sc">%in%</span> stop_words<span class="sc">$</span>word <span class="sc">&amp;</span></span>
+<span id="cb955-5"><a href="minería-de-textos.html#cb955-5" aria-hidden="true" tabindex="-1"></a>           <span class="sc">!</span><span class="fu">str_detect</span>(word, <span class="st">&quot;^</span><span class="sc">\\</span><span class="st">d+$&quot;</span>)) <span class="sc">|&gt;</span></span>
+<span id="cb955-6"><a href="minería-de-textos.html#cb955-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">word =</span> <span class="fu">str_replace</span>(word, <span class="st">&quot;^&#39;&quot;</span>, <span class="st">&quot;&quot;</span>))</span></code></pre></div>
 <p>Ahora que tenemos las palabras en una tabla e información sobre qué dispositivo se usó para componer el tuit, podemos comenzar a explorar qué palabras son más comunes al comparar Android con iPhone.</p>
 <p>Para cada palabra, queremos saber si es más probable que provenga de un tuit de Android o un tuit de iPhone. En la Sección <a href="inference.html#association-tests">15.10</a>, discutimos el <em>riesgo relativo</em> (<em>odds ratio</em> en inglés) como un resumen estadístico útil para cuantificar estas diferencias. Para cada dispositivo y una palabra dada, llamémosla <code>y</code>, calculamos el riesgo relativo. Aquí tendremos muchas proporciones que son 0, así que usamos la corrección 0.5 descrita en la Sección <a href="inference.html#association-tests">15.10</a>.</p>
-<div class="sourceCode" id="cb955"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb955-1"><a href="minería-de-textos.html#cb955-1" aria-hidden="true" tabindex="-1"></a>android_iphone_or <span class="ot">&lt;-</span> tweet_words <span class="sc">%&gt;%</span></span>
-<span id="cb955-2"><a href="minería-de-textos.html#cb955-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">count</span>(word, source) <span class="sc">%&gt;%</span></span>
-<span id="cb955-3"><a href="minería-de-textos.html#cb955-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_wider</span>(<span class="at">names_from =</span> <span class="st">&quot;source&quot;</span>, <span class="at">values_from =</span> <span class="st">&quot;n&quot;</span>, <span class="at">values_fill =</span> <span class="dv">0</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb955-4"><a href="minería-de-textos.html#cb955-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">or =</span> (Android <span class="sc">+</span> <span class="fl">0.5</span>) <span class="sc">/</span> (<span class="fu">sum</span>(Android) <span class="sc">-</span> Android <span class="sc">+</span> <span class="fl">0.5</span>) <span class="sc">/</span> </span>
-<span id="cb955-5"><a href="minería-de-textos.html#cb955-5" aria-hidden="true" tabindex="-1"></a>           ( (iPhone <span class="sc">+</span> <span class="fl">0.5</span>) <span class="sc">/</span> (<span class="fu">sum</span>(iPhone) <span class="sc">-</span> iPhone <span class="sc">+</span> <span class="fl">0.5</span>)))</span></code></pre></div>
+<div class="sourceCode" id="cb956"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb956-1"><a href="minería-de-textos.html#cb956-1" aria-hidden="true" tabindex="-1"></a>android_iphone_or <span class="ot">&lt;-</span> tweet_words <span class="sc">|&gt;</span></span>
+<span id="cb956-2"><a href="minería-de-textos.html#cb956-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">count</span>(word, source) <span class="sc">|&gt;</span></span>
+<span id="cb956-3"><a href="minería-de-textos.html#cb956-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_wider</span>(<span class="at">names_from =</span> <span class="st">&quot;source&quot;</span>, <span class="at">values_from =</span> <span class="st">&quot;n&quot;</span>, <span class="at">values_fill =</span> <span class="dv">0</span>) <span class="sc">|&gt;</span></span>
+<span id="cb956-4"><a href="minería-de-textos.html#cb956-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">or =</span> (Android <span class="sc">+</span> <span class="fl">0.5</span>) <span class="sc">/</span> (<span class="fu">sum</span>(Android) <span class="sc">-</span> Android <span class="sc">+</span> <span class="fl">0.5</span>) <span class="sc">/</span> </span>
+<span id="cb956-5"><a href="minería-de-textos.html#cb956-5" aria-hidden="true" tabindex="-1"></a>           ( (iPhone <span class="sc">+</span> <span class="fl">0.5</span>) <span class="sc">/</span> (<span class="fu">sum</span>(iPhone) <span class="sc">-</span> iPhone <span class="sc">+</span> <span class="fl">0.5</span>)))</span></code></pre></div>
 <p>Aquí están los riesgos relativos más altos para Android:</p>
-<div class="sourceCode" id="cb956"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb956-1"><a href="minería-de-textos.html#cb956-1" aria-hidden="true" tabindex="-1"></a>android_iphone_or <span class="sc">%&gt;%</span> <span class="fu">arrange</span>(<span class="fu">desc</span>(or))</span>
-<span id="cb956-2"><a href="minería-de-textos.html#cb956-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # A tibble: 5,914 x 4</span></span>
-<span id="cb956-3"><a href="minería-de-textos.html#cb956-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   word      Android iPhone    or</span></span>
-<span id="cb956-4"><a href="minería-de-textos.html#cb956-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   &lt;chr&gt;       &lt;int&gt;  &lt;int&gt; &lt;dbl&gt;</span></span>
-<span id="cb956-5"><a href="minería-de-textos.html#cb956-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1 poor           13      0  23.1</span></span>
-<span id="cb956-6"><a href="minería-de-textos.html#cb956-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2 poorly         12      0  21.4</span></span>
-<span id="cb956-7"><a href="minería-de-textos.html#cb956-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 3 turnberry      11      0  19.7</span></span>
-<span id="cb956-8"><a href="minería-de-textos.html#cb956-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 4 @cbsnews       10      0  18.0</span></span>
-<span id="cb956-9"><a href="minería-de-textos.html#cb956-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 5 angry          10      0  18.0</span></span>
-<span id="cb956-10"><a href="minería-de-textos.html#cb956-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # … with 5,909 more rows</span></span></code></pre></div>
-<p>y los más altos para iPhone:</p>
-<div class="sourceCode" id="cb957"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb957-1"><a href="minería-de-textos.html#cb957-1" aria-hidden="true" tabindex="-1"></a>android_iphone_or <span class="sc">%&gt;%</span> <span class="fu">arrange</span>(or)</span>
-<span id="cb957-2"><a href="minería-de-textos.html#cb957-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # A tibble: 5,914 x 4</span></span>
-<span id="cb957-3"><a href="minería-de-textos.html#cb957-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   word                   Android iPhone      or</span></span>
-<span id="cb957-4"><a href="minería-de-textos.html#cb957-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   &lt;chr&gt;                    &lt;int&gt;  &lt;int&gt;   &lt;dbl&gt;</span></span>
-<span id="cb957-5"><a href="minería-de-textos.html#cb957-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1 #makeamericagreatagain       0    294 0.00142</span></span>
-<span id="cb957-6"><a href="minería-de-textos.html#cb957-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2 #americafirst                0     71 0.00595</span></span>
-<span id="cb957-7"><a href="minería-de-textos.html#cb957-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 3 #draintheswamp               0     63 0.00670</span></span>
-<span id="cb957-8"><a href="minería-de-textos.html#cb957-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 4 #trump2016                   3    411 0.00706</span></span>
-<span id="cb957-9"><a href="minería-de-textos.html#cb957-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 5 #votetrump                   0     56 0.00753</span></span>
+<div class="sourceCode" id="cb957"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb957-1"><a href="minería-de-textos.html#cb957-1" aria-hidden="true" tabindex="-1"></a>android_iphone_or <span class="sc">|&gt;</span> <span class="fu">arrange</span>(<span class="fu">desc</span>(or))</span>
+<span id="cb957-2"><a href="minería-de-textos.html#cb957-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # A tibble: 5,914 × 4</span></span>
+<span id="cb957-3"><a href="minería-de-textos.html#cb957-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   word      Android iPhone    or</span></span>
+<span id="cb957-4"><a href="minería-de-textos.html#cb957-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   &lt;chr&gt;       &lt;int&gt;  &lt;int&gt; &lt;dbl&gt;</span></span>
+<span id="cb957-5"><a href="minería-de-textos.html#cb957-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1 poor           13      0  23.1</span></span>
+<span id="cb957-6"><a href="minería-de-textos.html#cb957-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2 poorly         12      0  21.4</span></span>
+<span id="cb957-7"><a href="minería-de-textos.html#cb957-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 3 turnberry      11      0  19.7</span></span>
+<span id="cb957-8"><a href="minería-de-textos.html#cb957-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 4 @cbsnews       10      0  18.0</span></span>
+<span id="cb957-9"><a href="minería-de-textos.html#cb957-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 5 angry          10      0  18.0</span></span>
 <span id="cb957-10"><a href="minería-de-textos.html#cb957-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # … with 5,909 more rows</span></span></code></pre></div>
+<p>y los más altos para iPhone:</p>
+<div class="sourceCode" id="cb958"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb958-1"><a href="minería-de-textos.html#cb958-1" aria-hidden="true" tabindex="-1"></a>android_iphone_or <span class="sc">|&gt;</span> <span class="fu">arrange</span>(or)</span>
+<span id="cb958-2"><a href="minería-de-textos.html#cb958-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # A tibble: 5,914 × 4</span></span>
+<span id="cb958-3"><a href="minería-de-textos.html#cb958-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   word                   Android iPhone      or</span></span>
+<span id="cb958-4"><a href="minería-de-textos.html#cb958-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   &lt;chr&gt;                    &lt;int&gt;  &lt;int&gt;   &lt;dbl&gt;</span></span>
+<span id="cb958-5"><a href="minería-de-textos.html#cb958-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1 #makeamericagreatagain       0    294 0.00142</span></span>
+<span id="cb958-6"><a href="minería-de-textos.html#cb958-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2 #americafirst                0     71 0.00595</span></span>
+<span id="cb958-7"><a href="minería-de-textos.html#cb958-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 3 #draintheswamp               0     63 0.00670</span></span>
+<span id="cb958-8"><a href="minería-de-textos.html#cb958-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 4 #trump2016                   3    411 0.00706</span></span>
+<span id="cb958-9"><a href="minería-de-textos.html#cb958-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 5 #votetrump                   0     56 0.00753</span></span>
+<span id="cb958-10"><a href="minería-de-textos.html#cb958-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # … with 5,909 more rows</span></span></code></pre></div>
 <p>Dado que varias de estas palabras son palabras generales de baja frecuencia, podemos imponer un filtro basado en la frecuencia total así:</p>
-<div class="sourceCode" id="cb958"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb958-1"><a href="minería-de-textos.html#cb958-1" aria-hidden="true" tabindex="-1"></a>android_iphone_or <span class="sc">%&gt;%</span> <span class="fu">filter</span>(Android<span class="sc">+</span>iPhone <span class="sc">&gt;</span> <span class="dv">100</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb958-2"><a href="minería-de-textos.html#cb958-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(<span class="fu">desc</span>(or))</span>
-<span id="cb958-3"><a href="minería-de-textos.html#cb958-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # A tibble: 30 x 4</span></span>
-<span id="cb958-4"><a href="minería-de-textos.html#cb958-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   word        Android iPhone    or</span></span>
-<span id="cb958-5"><a href="minería-de-textos.html#cb958-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   &lt;chr&gt;         &lt;int&gt;  &lt;int&gt; &lt;dbl&gt;</span></span>
-<span id="cb958-6"><a href="minería-de-textos.html#cb958-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1 @cnn             90     17  4.44</span></span>
-<span id="cb958-7"><a href="minería-de-textos.html#cb958-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2 bad             104     26  3.39</span></span>
-<span id="cb958-8"><a href="minería-de-textos.html#cb958-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 3 crooked         156     49  2.72</span></span>
-<span id="cb958-9"><a href="minería-de-textos.html#cb958-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 4 interviewed      76     25  2.57</span></span>
-<span id="cb958-10"><a href="minería-de-textos.html#cb958-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 5 media            76     25  2.57</span></span>
-<span id="cb958-11"><a href="minería-de-textos.html#cb958-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # … with 25 more rows</span></span>
-<span id="cb958-12"><a href="minería-de-textos.html#cb958-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb958-13"><a href="minería-de-textos.html#cb958-13" aria-hidden="true" tabindex="-1"></a>android_iphone_or <span class="sc">%&gt;%</span> <span class="fu">filter</span>(Android<span class="sc">+</span>iPhone <span class="sc">&gt;</span> <span class="dv">100</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb958-14"><a href="minería-de-textos.html#cb958-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(or)</span>
-<span id="cb958-15"><a href="minería-de-textos.html#cb958-15" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # A tibble: 30 x 4</span></span>
-<span id="cb958-16"><a href="minería-de-textos.html#cb958-16" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   word                   Android iPhone      or</span></span>
-<span id="cb958-17"><a href="minería-de-textos.html#cb958-17" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   &lt;chr&gt;                    &lt;int&gt;  &lt;int&gt;   &lt;dbl&gt;</span></span>
-<span id="cb958-18"><a href="minería-de-textos.html#cb958-18" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1 #makeamericagreatagain       0    294 0.00142</span></span>
-<span id="cb958-19"><a href="minería-de-textos.html#cb958-19" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2 #trump2016                   3    411 0.00706</span></span>
-<span id="cb958-20"><a href="minería-de-textos.html#cb958-20" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 3 join                         1    157 0.00805</span></span>
-<span id="cb958-21"><a href="minería-de-textos.html#cb958-21" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 4 tomorrow                    24     99 0.209  </span></span>
-<span id="cb958-22"><a href="minería-de-textos.html#cb958-22" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 5 vote                        46     67 0.588  </span></span>
-<span id="cb958-23"><a href="minería-de-textos.html#cb958-23" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # … with 25 more rows</span></span></code></pre></div>
+<div class="sourceCode" id="cb959"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb959-1"><a href="minería-de-textos.html#cb959-1" aria-hidden="true" tabindex="-1"></a>android_iphone_or <span class="sc">|&gt;</span> <span class="fu">filter</span>(Android<span class="sc">+</span>iPhone <span class="sc">&gt;</span> <span class="dv">100</span>) <span class="sc">|&gt;</span></span>
+<span id="cb959-2"><a href="minería-de-textos.html#cb959-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(<span class="fu">desc</span>(or))</span>
+<span id="cb959-3"><a href="minería-de-textos.html#cb959-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # A tibble: 30 × 4</span></span>
+<span id="cb959-4"><a href="minería-de-textos.html#cb959-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   word        Android iPhone    or</span></span>
+<span id="cb959-5"><a href="minería-de-textos.html#cb959-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   &lt;chr&gt;         &lt;int&gt;  &lt;int&gt; &lt;dbl&gt;</span></span>
+<span id="cb959-6"><a href="minería-de-textos.html#cb959-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1 @cnn             90     17  4.44</span></span>
+<span id="cb959-7"><a href="minería-de-textos.html#cb959-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2 bad             104     26  3.39</span></span>
+<span id="cb959-8"><a href="minería-de-textos.html#cb959-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 3 crooked         156     49  2.72</span></span>
+<span id="cb959-9"><a href="minería-de-textos.html#cb959-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 4 interviewed      76     25  2.57</span></span>
+<span id="cb959-10"><a href="minería-de-textos.html#cb959-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 5 media            76     25  2.57</span></span>
+<span id="cb959-11"><a href="minería-de-textos.html#cb959-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # … with 25 more rows</span></span>
+<span id="cb959-12"><a href="minería-de-textos.html#cb959-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb959-13"><a href="minería-de-textos.html#cb959-13" aria-hidden="true" tabindex="-1"></a>android_iphone_or <span class="sc">|&gt;</span> <span class="fu">filter</span>(Android<span class="sc">+</span>iPhone <span class="sc">&gt;</span> <span class="dv">100</span>) <span class="sc">|&gt;</span></span>
+<span id="cb959-14"><a href="minería-de-textos.html#cb959-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(or)</span>
+<span id="cb959-15"><a href="minería-de-textos.html#cb959-15" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # A tibble: 30 × 4</span></span>
+<span id="cb959-16"><a href="minería-de-textos.html#cb959-16" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   word                   Android iPhone      or</span></span>
+<span id="cb959-17"><a href="minería-de-textos.html#cb959-17" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   &lt;chr&gt;                    &lt;int&gt;  &lt;int&gt;   &lt;dbl&gt;</span></span>
+<span id="cb959-18"><a href="minería-de-textos.html#cb959-18" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1 #makeamericagreatagain       0    294 0.00142</span></span>
+<span id="cb959-19"><a href="minería-de-textos.html#cb959-19" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2 #trump2016                   3    411 0.00706</span></span>
+<span id="cb959-20"><a href="minería-de-textos.html#cb959-20" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 3 join                         1    157 0.00805</span></span>
+<span id="cb959-21"><a href="minería-de-textos.html#cb959-21" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 4 tomorrow                    24     99 0.209  </span></span>
+<span id="cb959-22"><a href="minería-de-textos.html#cb959-22" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 5 vote                        46     67 0.588  </span></span>
+<span id="cb959-23"><a href="minería-de-textos.html#cb959-23" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # … with 25 more rows</span></span></code></pre></div>
 <p>Ya vemos un patrón en los tipos de palabras que se tuitean más desde un dispositivo que desde otro. Sin embargo, no estamos interesados en palabras específicas sino en el tono. La afirmación de Vaziri es que los tuits de Android son más hiperbólicos. Entonces, ¿cómo podemos verificar esto con datos? <em>Hipérbole</em> es un sentimiento difícil de extraer de las palabras, ya que se basa en la interpretación de frases. No obstante, las palabras pueden asociarse con sentimientos más básicos como la ira, el miedo, la alegría y la sorpresa. En la siguiente sección, demostramos el análisis básico de sentimientos.</p>
 </div>
-<div id="análisis-de-sentimiento" class="section level2" number="26.3">
-<h2><span class="header-section-number">26.3</span> Análisis de sentimiento</h2>
-<p>En el análisis de sentimiento, asignamos una palabra a uno o más “sentimientos.” Aunque este enfoque no siempre indentificará sentimientos que dependen del contexto, como el sarcasmo, cuando se realiza en grandes cantidades de palabras, los resúmenes pueden ofrecer información.</p>
+<div id="análisis-de-sentimiento" class="section level2 hasAnchor" number="26.3">
+<h2><span class="header-section-number">26.3</span> Análisis de sentimiento<a href="minería-de-textos.html#análisis-de-sentimiento" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>En el análisis de sentimiento, asignamos una palabra a uno o más “sentimientos”. Aunque este enfoque no siempre indentificará sentimientos que dependen del contexto, como el sarcasmo, cuando se realiza en grandes cantidades de palabras, los resúmenes pueden ofrecer información.</p>
 <p>El primer paso en el análisis de sentimiento es asignar un sentimiento a cada palabra. Como demostramos, el paquete <strong>tidytext</strong> incluye varios mapas o léxicos. También usaremos el paquete <strong>textdata</strong>.</p>
-<div class="sourceCode" id="cb959"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb959-1"><a href="minería-de-textos.html#cb959-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidytext)</span>
-<span id="cb959-2"><a href="minería-de-textos.html#cb959-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(textdata)</span></code></pre></div>
+<div class="sourceCode" id="cb960"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb960-1"><a href="minería-de-textos.html#cb960-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidytext)</span>
+<span id="cb960-2"><a href="minería-de-textos.html#cb960-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(textdata)</span></code></pre></div>
 <p>El léxico <code>bing</code> divide las palabras en sentimientos <code>positive</code> y <code>negative</code>. Podemos ver esto usando la función <code>get_sentiments</code> de <strong>tidytext</strong>:</p>
-<div class="sourceCode" id="cb960"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb960-1"><a href="minería-de-textos.html#cb960-1" aria-hidden="true" tabindex="-1"></a><span class="fu">get_sentiments</span>(<span class="st">&quot;bing&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb961"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb961-1"><a href="minería-de-textos.html#cb961-1" aria-hidden="true" tabindex="-1"></a><span class="fu">get_sentiments</span>(<span class="st">&quot;bing&quot;</span>)</span></code></pre></div>
 <p>El léxico <code>AFINN</code> asigna una puntuación entre -5 y 5, con -5 el más negativo y 5 el más positivo. Tengan en cuenta que este léxico debe descargarse la primera vez que llamen a la función <code>get_sentiment</code>:</p>
-<div class="sourceCode" id="cb961"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb961-1"><a href="minería-de-textos.html#cb961-1" aria-hidden="true" tabindex="-1"></a><span class="fu">get_sentiments</span>(<span class="st">&quot;afinn&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb962"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb962-1"><a href="minería-de-textos.html#cb962-1" aria-hidden="true" tabindex="-1"></a><span class="fu">get_sentiments</span>(<span class="st">&quot;afinn&quot;</span>)</span></code></pre></div>
 <p>Los léxicos <code>loughran</code> y <code>nrc</code> ofrecen varios sentimientos diferentes. Noten que estos también deben descargarse la primera vez que los usen.</p>
-<div class="sourceCode" id="cb962"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb962-1"><a href="minería-de-textos.html#cb962-1" aria-hidden="true" tabindex="-1"></a><span class="fu">get_sentiments</span>(<span class="st">&quot;loughran&quot;</span>) <span class="sc">%&gt;%</span> <span class="fu">count</span>(sentiment)</span>
-<span id="cb962-2"><a href="minería-de-textos.html#cb962-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # A tibble: 6 x 2</span></span>
-<span id="cb962-3"><a href="minería-de-textos.html#cb962-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   sentiment        n</span></span>
-<span id="cb962-4"><a href="minería-de-textos.html#cb962-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   &lt;chr&gt;        &lt;int&gt;</span></span>
-<span id="cb962-5"><a href="minería-de-textos.html#cb962-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1 constraining   184</span></span>
-<span id="cb962-6"><a href="minería-de-textos.html#cb962-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2 litigious      904</span></span>
-<span id="cb962-7"><a href="minería-de-textos.html#cb962-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 3 negative      2355</span></span>
-<span id="cb962-8"><a href="minería-de-textos.html#cb962-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 4 positive       354</span></span>
-<span id="cb962-9"><a href="minería-de-textos.html#cb962-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 5 superfluous     56</span></span>
-<span id="cb962-10"><a href="minería-de-textos.html#cb962-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # … with 1 more row</span></span></code></pre></div>
-<div class="sourceCode" id="cb963"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb963-1"><a href="minería-de-textos.html#cb963-1" aria-hidden="true" tabindex="-1"></a><span class="fu">get_sentiments</span>(<span class="st">&quot;nrc&quot;</span>) <span class="sc">%&gt;%</span> <span class="fu">count</span>(sentiment)</span>
-<span id="cb963-2"><a href="minería-de-textos.html#cb963-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # A tibble: 10 x 2</span></span>
+<div class="sourceCode" id="cb963"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb963-1"><a href="minería-de-textos.html#cb963-1" aria-hidden="true" tabindex="-1"></a><span class="fu">get_sentiments</span>(<span class="st">&quot;loughran&quot;</span>) <span class="sc">|&gt;</span> <span class="fu">count</span>(sentiment)</span>
+<span id="cb963-2"><a href="minería-de-textos.html#cb963-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # A tibble: 6 × 2</span></span>
 <span id="cb963-3"><a href="minería-de-textos.html#cb963-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   sentiment        n</span></span>
 <span id="cb963-4"><a href="minería-de-textos.html#cb963-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   &lt;chr&gt;        &lt;int&gt;</span></span>
-<span id="cb963-5"><a href="minería-de-textos.html#cb963-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1 anger         1247</span></span>
-<span id="cb963-6"><a href="minería-de-textos.html#cb963-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2 anticipation   839</span></span>
-<span id="cb963-7"><a href="minería-de-textos.html#cb963-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 3 disgust       1058</span></span>
-<span id="cb963-8"><a href="minería-de-textos.html#cb963-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 4 fear          1476</span></span>
-<span id="cb963-9"><a href="minería-de-textos.html#cb963-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 5 joy            689</span></span>
-<span id="cb963-10"><a href="minería-de-textos.html#cb963-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # … with 5 more rows</span></span></code></pre></div>
+<span id="cb963-5"><a href="minería-de-textos.html#cb963-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1 constraining   184</span></span>
+<span id="cb963-6"><a href="minería-de-textos.html#cb963-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2 litigious      904</span></span>
+<span id="cb963-7"><a href="minería-de-textos.html#cb963-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 3 negative      2355</span></span>
+<span id="cb963-8"><a href="minería-de-textos.html#cb963-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 4 positive       354</span></span>
+<span id="cb963-9"><a href="minería-de-textos.html#cb963-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 5 superfluous     56</span></span>
+<span id="cb963-10"><a href="minería-de-textos.html#cb963-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # … with 1 more row</span></span></code></pre></div>
+<div class="sourceCode" id="cb964"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb964-1"><a href="minería-de-textos.html#cb964-1" aria-hidden="true" tabindex="-1"></a><span class="fu">get_sentiments</span>(<span class="st">&quot;nrc&quot;</span>) <span class="sc">|&gt;</span> <span class="fu">count</span>(sentiment)</span>
+<span id="cb964-2"><a href="minería-de-textos.html#cb964-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # A tibble: 10 × 2</span></span>
+<span id="cb964-3"><a href="minería-de-textos.html#cb964-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   sentiment        n</span></span>
+<span id="cb964-4"><a href="minería-de-textos.html#cb964-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   &lt;chr&gt;        &lt;int&gt;</span></span>
+<span id="cb964-5"><a href="minería-de-textos.html#cb964-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1 anger         1247</span></span>
+<span id="cb964-6"><a href="minería-de-textos.html#cb964-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2 anticipation   839</span></span>
+<span id="cb964-7"><a href="minería-de-textos.html#cb964-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 3 disgust       1058</span></span>
+<span id="cb964-8"><a href="minería-de-textos.html#cb964-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 4 fear          1476</span></span>
+<span id="cb964-9"><a href="minería-de-textos.html#cb964-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 5 joy            689</span></span>
+<span id="cb964-10"><a href="minería-de-textos.html#cb964-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # … with 5 more rows</span></span></code></pre></div>
 <p>Para nuestro análisis, estamos interesados en explorar los diferentes sentimientos de cada tuit, por lo que utilizaremos el léxico <code>nrc</code>:</p>
-<div class="sourceCode" id="cb964"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb964-1"><a href="minería-de-textos.html#cb964-1" aria-hidden="true" tabindex="-1"></a>nrc <span class="ot">&lt;-</span> <span class="fu">get_sentiments</span>(<span class="st">&quot;nrc&quot;</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb964-2"><a href="minería-de-textos.html#cb964-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(word, sentiment)</span></code></pre></div>
+<div class="sourceCode" id="cb965"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb965-1"><a href="minería-de-textos.html#cb965-1" aria-hidden="true" tabindex="-1"></a>nrc <span class="ot">&lt;-</span> <span class="fu">get_sentiments</span>(<span class="st">&quot;nrc&quot;</span>) <span class="sc">|&gt;</span></span>
+<span id="cb965-2"><a href="minería-de-textos.html#cb965-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(word, sentiment)</span></code></pre></div>
 <p>Podemos combinar las palabras y los sentimientos usando <code>inner_join</code>, que solo mantendrá palabras asociadas con un sentimiento. Aquí tenemos 10 palabras aleatorias extraídas de los tuits:</p>
-<div class="sourceCode" id="cb965"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb965-1"><a href="minería-de-textos.html#cb965-1" aria-hidden="true" tabindex="-1"></a>tweet_words <span class="sc">%&gt;%</span> <span class="fu">inner_join</span>(nrc, <span class="at">by =</span> <span class="st">&quot;word&quot;</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb965-2"><a href="minería-de-textos.html#cb965-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(source, word, sentiment) <span class="sc">%&gt;%</span></span>
-<span id="cb965-3"><a href="minería-de-textos.html#cb965-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">sample_n</span>(<span class="dv">5</span>)</span>
-<span id="cb965-4"><a href="minería-de-textos.html#cb965-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # A tibble: 5 x 3</span></span>
-<span id="cb965-5"><a href="minería-de-textos.html#cb965-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   source  word     sentiment   </span></span>
-<span id="cb965-6"><a href="minería-de-textos.html#cb965-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   &lt;chr&gt;   &lt;chr&gt;    &lt;chr&gt;       </span></span>
-<span id="cb965-7"><a href="minería-de-textos.html#cb965-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1 iPhone  failing  fear        </span></span>
-<span id="cb965-8"><a href="minería-de-textos.html#cb965-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2 Android proud    trust       </span></span>
-<span id="cb965-9"><a href="minería-de-textos.html#cb965-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 3 Android time     anticipation</span></span>
-<span id="cb965-10"><a href="minería-de-textos.html#cb965-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 4 iPhone  horrible disgust     </span></span>
-<span id="cb965-11"><a href="minería-de-textos.html#cb965-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 5 Android failing  anger</span></span></code></pre></div>
+<div class="sourceCode" id="cb966"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb966-1"><a href="minería-de-textos.html#cb966-1" aria-hidden="true" tabindex="-1"></a>tweet_words <span class="sc">|&gt;</span> <span class="fu">inner_join</span>(nrc, <span class="at">by =</span> <span class="st">&quot;word&quot;</span>) <span class="sc">|&gt;</span></span>
+<span id="cb966-2"><a href="minería-de-textos.html#cb966-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(source, word, sentiment) <span class="sc">|&gt;</span></span>
+<span id="cb966-3"><a href="minería-de-textos.html#cb966-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">sample_n</span>(<span class="dv">5</span>)</span>
+<span id="cb966-4"><a href="minería-de-textos.html#cb966-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # A tibble: 5 × 3</span></span>
+<span id="cb966-5"><a href="minería-de-textos.html#cb966-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   source  word     sentiment   </span></span>
+<span id="cb966-6"><a href="minería-de-textos.html#cb966-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   &lt;chr&gt;   &lt;chr&gt;    &lt;chr&gt;       </span></span>
+<span id="cb966-7"><a href="minería-de-textos.html#cb966-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1 iPhone  failing  fear        </span></span>
+<span id="cb966-8"><a href="minería-de-textos.html#cb966-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2 Android proud    trust       </span></span>
+<span id="cb966-9"><a href="minería-de-textos.html#cb966-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 3 Android time     anticipation</span></span>
+<span id="cb966-10"><a href="minería-de-textos.html#cb966-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 4 iPhone  horrible disgust     </span></span>
+<span id="cb966-11"><a href="minería-de-textos.html#cb966-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 5 Android failing  anger</span></span></code></pre></div>
 <p>Ahora estamos listos para realizar un análisis cuantitativo comparando los sentimientos de los tuits publicados desde cada dispositivo. Podríamos realizar un análisis tuit por tuit, asignando un sentimiento a cada tuit. Sin embargo, esto sería un desafío ya que cada tuit tendrá varios sentimientos adjuntos, uno para cada palabra que aparezca en el léxico. Con fines ilustrativos, realizaremos un análisis mucho más sencillo: contaremos y compararemos las frecuencias de cada sentimiento que aparece en cada dispositivo.</p>
-<div class="sourceCode" id="cb966"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb966-1"><a href="minería-de-textos.html#cb966-1" aria-hidden="true" tabindex="-1"></a>sentiment_counts <span class="ot">&lt;-</span> tweet_words <span class="sc">%&gt;%</span></span>
-<span id="cb966-2"><a href="minería-de-textos.html#cb966-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(nrc, <span class="at">by =</span> <span class="st">&quot;word&quot;</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb966-3"><a href="minería-de-textos.html#cb966-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">count</span>(source, sentiment) <span class="sc">%&gt;%</span></span>
-<span id="cb966-4"><a href="minería-de-textos.html#cb966-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_wider</span>(<span class="at">names_from =</span> <span class="st">&quot;source&quot;</span>, <span class="at">values_from =</span> <span class="st">&quot;n&quot;</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb966-5"><a href="minería-de-textos.html#cb966-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">sentiment =</span> <span class="fu">replace_na</span>(sentiment, <span class="at">replace =</span> <span class="st">&quot;none&quot;</span>))</span>
-<span id="cb966-6"><a href="minería-de-textos.html#cb966-6" aria-hidden="true" tabindex="-1"></a>sentiment_counts</span>
-<span id="cb966-7"><a href="minería-de-textos.html#cb966-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # A tibble: 11 x 3</span></span>
-<span id="cb966-8"><a href="minería-de-textos.html#cb966-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   sentiment    Android iPhone</span></span>
-<span id="cb966-9"><a href="minería-de-textos.html#cb966-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   &lt;chr&gt;          &lt;int&gt;  &lt;int&gt;</span></span>
-<span id="cb966-10"><a href="minería-de-textos.html#cb966-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1 anger            958    528</span></span>
-<span id="cb966-11"><a href="minería-de-textos.html#cb966-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2 anticipation     910    715</span></span>
-<span id="cb966-12"><a href="minería-de-textos.html#cb966-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 3 disgust          638    322</span></span>
-<span id="cb966-13"><a href="minería-de-textos.html#cb966-13" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 4 fear             795    486</span></span>
-<span id="cb966-14"><a href="minería-de-textos.html#cb966-14" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 5 joy              688    535</span></span>
-<span id="cb966-15"><a href="minería-de-textos.html#cb966-15" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # … with 6 more rows</span></span></code></pre></div>
+<div class="sourceCode" id="cb967"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb967-1"><a href="minería-de-textos.html#cb967-1" aria-hidden="true" tabindex="-1"></a>sentiment_counts <span class="ot">&lt;-</span> tweet_words <span class="sc">|&gt;</span></span>
+<span id="cb967-2"><a href="minería-de-textos.html#cb967-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(nrc, <span class="at">by =</span> <span class="st">&quot;word&quot;</span>) <span class="sc">|&gt;</span></span>
+<span id="cb967-3"><a href="minería-de-textos.html#cb967-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">count</span>(source, sentiment) <span class="sc">|&gt;</span></span>
+<span id="cb967-4"><a href="minería-de-textos.html#cb967-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_wider</span>(<span class="at">names_from =</span> <span class="st">&quot;source&quot;</span>, <span class="at">values_from =</span> <span class="st">&quot;n&quot;</span>) <span class="sc">|&gt;</span></span>
+<span id="cb967-5"><a href="minería-de-textos.html#cb967-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">sentiment =</span> <span class="fu">replace_na</span>(sentiment, <span class="at">replace =</span> <span class="st">&quot;none&quot;</span>))</span>
+<span id="cb967-6"><a href="minería-de-textos.html#cb967-6" aria-hidden="true" tabindex="-1"></a>sentiment_counts</span>
+<span id="cb967-7"><a href="minería-de-textos.html#cb967-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # A tibble: 11 × 3</span></span>
+<span id="cb967-8"><a href="minería-de-textos.html#cb967-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   sentiment    Android iPhone</span></span>
+<span id="cb967-9"><a href="minería-de-textos.html#cb967-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   &lt;chr&gt;          &lt;int&gt;  &lt;int&gt;</span></span>
+<span id="cb967-10"><a href="minería-de-textos.html#cb967-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1 anger            958    528</span></span>
+<span id="cb967-11"><a href="minería-de-textos.html#cb967-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2 anticipation     910    715</span></span>
+<span id="cb967-12"><a href="minería-de-textos.html#cb967-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 3 disgust          638    322</span></span>
+<span id="cb967-13"><a href="minería-de-textos.html#cb967-13" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 4 fear             795    486</span></span>
+<span id="cb967-14"><a href="minería-de-textos.html#cb967-14" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 5 joy              688    535</span></span>
+<span id="cb967-15"><a href="minería-de-textos.html#cb967-15" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # … with 6 more rows</span></span></code></pre></div>
 <p>Para cada sentimiento, podemos calcular las probabilidades de estar en el dispositivo: proporción de palabras con sentimiento versus proporción de palabras sin. Entonces calculamos el riesgo relativo comparando los dos dispositivos.</p>
-<div class="sourceCode" id="cb967"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb967-1"><a href="minería-de-textos.html#cb967-1" aria-hidden="true" tabindex="-1"></a>sentiment_counts <span class="sc">%&gt;%</span></span>
-<span id="cb967-2"><a href="minería-de-textos.html#cb967-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">Android =</span> Android<span class="sc">/</span> (<span class="fu">sum</span>(Android) <span class="sc">-</span> Android) ,</span>
-<span id="cb967-3"><a href="minería-de-textos.html#cb967-3" aria-hidden="true" tabindex="-1"></a>         <span class="at">iPhone =</span> iPhone<span class="sc">/</span> (<span class="fu">sum</span>(iPhone) <span class="sc">-</span> iPhone),</span>
-<span id="cb967-4"><a href="minería-de-textos.html#cb967-4" aria-hidden="true" tabindex="-1"></a>         <span class="at">or =</span> Android<span class="sc">/</span>iPhone) <span class="sc">%&gt;%</span></span>
-<span id="cb967-5"><a href="minería-de-textos.html#cb967-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(<span class="fu">desc</span>(or))</span>
-<span id="cb967-6"><a href="minería-de-textos.html#cb967-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # A tibble: 11 x 4</span></span>
-<span id="cb967-7"><a href="minería-de-textos.html#cb967-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   sentiment Android iPhone    or</span></span>
-<span id="cb967-8"><a href="minería-de-textos.html#cb967-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   &lt;chr&gt;       &lt;dbl&gt;  &lt;dbl&gt; &lt;dbl&gt;</span></span>
-<span id="cb967-9"><a href="minería-de-textos.html#cb967-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1 disgust    0.0299 0.0186  1.61</span></span>
-<span id="cb967-10"><a href="minería-de-textos.html#cb967-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2 anger      0.0456 0.0309  1.47</span></span>
-<span id="cb967-11"><a href="minería-de-textos.html#cb967-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 3 negative   0.0807 0.0556  1.45</span></span>
-<span id="cb967-12"><a href="minería-de-textos.html#cb967-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 4 sadness    0.0424 0.0301  1.41</span></span>
-<span id="cb967-13"><a href="minería-de-textos.html#cb967-13" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 5 fear       0.0375 0.0284  1.32</span></span>
-<span id="cb967-14"><a href="minería-de-textos.html#cb967-14" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # … with 6 more rows</span></span></code></pre></div>
+<div class="sourceCode" id="cb968"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb968-1"><a href="minería-de-textos.html#cb968-1" aria-hidden="true" tabindex="-1"></a>sentiment_counts <span class="sc">|&gt;</span></span>
+<span id="cb968-2"><a href="minería-de-textos.html#cb968-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">Android =</span> Android<span class="sc">/</span> (<span class="fu">sum</span>(Android) <span class="sc">-</span> Android) ,</span>
+<span id="cb968-3"><a href="minería-de-textos.html#cb968-3" aria-hidden="true" tabindex="-1"></a>         <span class="at">iPhone =</span> iPhone<span class="sc">/</span> (<span class="fu">sum</span>(iPhone) <span class="sc">-</span> iPhone),</span>
+<span id="cb968-4"><a href="minería-de-textos.html#cb968-4" aria-hidden="true" tabindex="-1"></a>         <span class="at">or =</span> Android<span class="sc">/</span>iPhone) <span class="sc">|&gt;</span></span>
+<span id="cb968-5"><a href="minería-de-textos.html#cb968-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(<span class="fu">desc</span>(or))</span>
+<span id="cb968-6"><a href="minería-de-textos.html#cb968-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # A tibble: 11 × 4</span></span>
+<span id="cb968-7"><a href="minería-de-textos.html#cb968-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   sentiment Android iPhone    or</span></span>
+<span id="cb968-8"><a href="minería-de-textos.html#cb968-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   &lt;chr&gt;       &lt;dbl&gt;  &lt;dbl&gt; &lt;dbl&gt;</span></span>
+<span id="cb968-9"><a href="minería-de-textos.html#cb968-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1 disgust    0.0299 0.0186  1.61</span></span>
+<span id="cb968-10"><a href="minería-de-textos.html#cb968-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2 anger      0.0456 0.0309  1.47</span></span>
+<span id="cb968-11"><a href="minería-de-textos.html#cb968-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 3 negative   0.0807 0.0556  1.45</span></span>
+<span id="cb968-12"><a href="minería-de-textos.html#cb968-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 4 sadness    0.0424 0.0301  1.41</span></span>
+<span id="cb968-13"><a href="minería-de-textos.html#cb968-13" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 5 fear       0.0375 0.0284  1.32</span></span>
+<span id="cb968-14"><a href="minería-de-textos.html#cb968-14" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # … with 6 more rows</span></span></code></pre></div>
 <p>Sí vemos algunas diferencias y el orden es particularmente interesante: ¡los tres sentimientos más grandes son el asco, la ira y lo negativo! ¿Pero estas diferencias son solo por casualidad? ¿Cómo se compara esto si solo estamos asignando sentimientos al azar? A fin de responder a esta pregunta, para cada sentimiento podemos calcular un riesgo relativo y un intervalo de confianza, como se definen en la Sección <a href="inference.html#association-tests">15.10</a>. Agregaremos los dos valores que necesitamos para formar una tabla de dos por dos y el riesgo relativo:</p>
-<div class="sourceCode" id="cb968"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb968-1"><a href="minería-de-textos.html#cb968-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(broom)</span>
-<span id="cb968-2"><a href="minería-de-textos.html#cb968-2" aria-hidden="true" tabindex="-1"></a>log_or <span class="ot">&lt;-</span> sentiment_counts <span class="sc">%&gt;%</span></span>
-<span id="cb968-3"><a href="minería-de-textos.html#cb968-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">log_or =</span> <span class="fu">log</span>((Android<span class="sc">/</span> (<span class="fu">sum</span>(Android) <span class="sc">-</span> Android))<span class="sc">/</span></span>
-<span id="cb968-4"><a href="minería-de-textos.html#cb968-4" aria-hidden="true" tabindex="-1"></a>                        (iPhone<span class="sc">/</span> (<span class="fu">sum</span>(iPhone) <span class="sc">-</span> iPhone))),</span>
-<span id="cb968-5"><a href="minería-de-textos.html#cb968-5" aria-hidden="true" tabindex="-1"></a>         <span class="at">se =</span> <span class="fu">sqrt</span>(<span class="dv">1</span><span class="sc">/</span>Android <span class="sc">+</span> <span class="dv">1</span><span class="sc">/</span>(<span class="fu">sum</span>(Android) <span class="sc">-</span> Android) <span class="sc">+</span></span>
-<span id="cb968-6"><a href="minería-de-textos.html#cb968-6" aria-hidden="true" tabindex="-1"></a>                     <span class="dv">1</span><span class="sc">/</span>iPhone <span class="sc">+</span> <span class="dv">1</span><span class="sc">/</span>(<span class="fu">sum</span>(iPhone) <span class="sc">-</span> iPhone)),</span>
-<span id="cb968-7"><a href="minería-de-textos.html#cb968-7" aria-hidden="true" tabindex="-1"></a>         <span class="at">conf.low =</span> log_or <span class="sc">-</span> <span class="fu">qnorm</span>(<span class="fl">0.975</span>)<span class="sc">*</span>se,</span>
-<span id="cb968-8"><a href="minería-de-textos.html#cb968-8" aria-hidden="true" tabindex="-1"></a>         <span class="at">conf.high =</span> log_or <span class="sc">+</span> <span class="fu">qnorm</span>(<span class="fl">0.975</span>)<span class="sc">*</span>se) <span class="sc">%&gt;%</span></span>
-<span id="cb968-9"><a href="minería-de-textos.html#cb968-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(<span class="fu">desc</span>(log_or))</span>
-<span id="cb968-10"><a href="minería-de-textos.html#cb968-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb968-11"><a href="minería-de-textos.html#cb968-11" aria-hidden="true" tabindex="-1"></a>log_or</span>
-<span id="cb968-12"><a href="minería-de-textos.html#cb968-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # A tibble: 11 x 7</span></span>
-<span id="cb968-13"><a href="minería-de-textos.html#cb968-13" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   sentiment Android iPhone log_or     se conf.low conf.high</span></span>
-<span id="cb968-14"><a href="minería-de-textos.html#cb968-14" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   &lt;chr&gt;       &lt;int&gt;  &lt;int&gt;  &lt;dbl&gt;  &lt;dbl&gt;    &lt;dbl&gt;     &lt;dbl&gt;</span></span>
-<span id="cb968-15"><a href="minería-de-textos.html#cb968-15" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1 disgust       638    322  0.474 0.0691    0.338     0.609</span></span>
-<span id="cb968-16"><a href="minería-de-textos.html#cb968-16" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2 anger         958    528  0.389 0.0552    0.281     0.497</span></span>
-<span id="cb968-17"><a href="minería-de-textos.html#cb968-17" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 3 negative     1641    929  0.371 0.0424    0.288     0.454</span></span>
-<span id="cb968-18"><a href="minería-de-textos.html#cb968-18" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 4 sadness       894    515  0.342 0.0563    0.232     0.452</span></span>
-<span id="cb968-19"><a href="minería-de-textos.html#cb968-19" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 5 fear          795    486  0.280 0.0585    0.165     0.394</span></span>
-<span id="cb968-20"><a href="minería-de-textos.html#cb968-20" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # … with 6 more rows</span></span></code></pre></div>
+<div class="sourceCode" id="cb969"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb969-1"><a href="minería-de-textos.html#cb969-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(broom)</span>
+<span id="cb969-2"><a href="minería-de-textos.html#cb969-2" aria-hidden="true" tabindex="-1"></a>log_or <span class="ot">&lt;-</span> sentiment_counts <span class="sc">|&gt;</span></span>
+<span id="cb969-3"><a href="minería-de-textos.html#cb969-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">log_or =</span> <span class="fu">log</span>((Android<span class="sc">/</span> (<span class="fu">sum</span>(Android) <span class="sc">-</span> Android))<span class="sc">/</span></span>
+<span id="cb969-4"><a href="minería-de-textos.html#cb969-4" aria-hidden="true" tabindex="-1"></a>                        (iPhone<span class="sc">/</span> (<span class="fu">sum</span>(iPhone) <span class="sc">-</span> iPhone))),</span>
+<span id="cb969-5"><a href="minería-de-textos.html#cb969-5" aria-hidden="true" tabindex="-1"></a>         <span class="at">se =</span> <span class="fu">sqrt</span>(<span class="dv">1</span><span class="sc">/</span>Android <span class="sc">+</span> <span class="dv">1</span><span class="sc">/</span>(<span class="fu">sum</span>(Android) <span class="sc">-</span> Android) <span class="sc">+</span></span>
+<span id="cb969-6"><a href="minería-de-textos.html#cb969-6" aria-hidden="true" tabindex="-1"></a>                     <span class="dv">1</span><span class="sc">/</span>iPhone <span class="sc">+</span> <span class="dv">1</span><span class="sc">/</span>(<span class="fu">sum</span>(iPhone) <span class="sc">-</span> iPhone)),</span>
+<span id="cb969-7"><a href="minería-de-textos.html#cb969-7" aria-hidden="true" tabindex="-1"></a>         <span class="at">conf.low =</span> log_or <span class="sc">-</span> <span class="fu">qnorm</span>(<span class="fl">0.975</span>)<span class="sc">*</span>se,</span>
+<span id="cb969-8"><a href="minería-de-textos.html#cb969-8" aria-hidden="true" tabindex="-1"></a>         <span class="at">conf.high =</span> log_or <span class="sc">+</span> <span class="fu">qnorm</span>(<span class="fl">0.975</span>)<span class="sc">*</span>se) <span class="sc">|&gt;</span></span>
+<span id="cb969-9"><a href="minería-de-textos.html#cb969-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(<span class="fu">desc</span>(log_or))</span>
+<span id="cb969-10"><a href="minería-de-textos.html#cb969-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb969-11"><a href="minería-de-textos.html#cb969-11" aria-hidden="true" tabindex="-1"></a>log_or</span>
+<span id="cb969-12"><a href="minería-de-textos.html#cb969-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # A tibble: 11 × 7</span></span>
+<span id="cb969-13"><a href="minería-de-textos.html#cb969-13" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   sentiment Android iPhone log_or     se conf.low conf.high</span></span>
+<span id="cb969-14"><a href="minería-de-textos.html#cb969-14" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   &lt;chr&gt;       &lt;int&gt;  &lt;int&gt;  &lt;dbl&gt;  &lt;dbl&gt;    &lt;dbl&gt;     &lt;dbl&gt;</span></span>
+<span id="cb969-15"><a href="minería-de-textos.html#cb969-15" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1 disgust       638    322  0.474 0.0691    0.338     0.609</span></span>
+<span id="cb969-16"><a href="minería-de-textos.html#cb969-16" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2 anger         958    528  0.389 0.0552    0.281     0.497</span></span>
+<span id="cb969-17"><a href="minería-de-textos.html#cb969-17" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 3 negative     1641    929  0.371 0.0424    0.288     0.454</span></span>
+<span id="cb969-18"><a href="minería-de-textos.html#cb969-18" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 4 sadness       894    515  0.342 0.0563    0.232     0.452</span></span>
+<span id="cb969-19"><a href="minería-de-textos.html#cb969-19" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 5 fear          795    486  0.280 0.0585    0.165     0.394</span></span>
+<span id="cb969-20"><a href="minería-de-textos.html#cb969-20" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # … with 6 more rows</span></span></code></pre></div>
 <p>Una visualización gráfica muestra algunos sentimientos que están claramente sobrerrepresentados:</p>
-<div class="sourceCode" id="cb969"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb969-1"><a href="minería-de-textos.html#cb969-1" aria-hidden="true" tabindex="-1"></a>log_or <span class="sc">%&gt;%</span></span>
-<span id="cb969-2"><a href="minería-de-textos.html#cb969-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">sentiment =</span> <span class="fu">reorder</span>(sentiment, log_or)) <span class="sc">%&gt;%</span></span>
-<span id="cb969-3"><a href="minería-de-textos.html#cb969-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> sentiment, <span class="at">ymin =</span> conf.low, <span class="at">ymax =</span> conf.high)) <span class="sc">+</span></span>
-<span id="cb969-4"><a href="minería-de-textos.html#cb969-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_errorbar</span>() <span class="sc">+</span></span>
-<span id="cb969-5"><a href="minería-de-textos.html#cb969-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="fu">aes</span>(sentiment, log_or)) <span class="sc">+</span></span>
-<span id="cb969-6"><a href="minería-de-textos.html#cb969-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ylab</span>(<span class="st">&quot;Log odds ratio for association between Android and sentiment&quot;</span>) <span class="sc">+</span></span>
-<span id="cb969-7"><a href="minería-de-textos.html#cb969-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_flip</span>()</span></code></pre></div>
+<div class="sourceCode" id="cb970"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb970-1"><a href="minería-de-textos.html#cb970-1" aria-hidden="true" tabindex="-1"></a>log_or <span class="sc">|&gt;</span></span>
+<span id="cb970-2"><a href="minería-de-textos.html#cb970-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">sentiment =</span> <span class="fu">reorder</span>(sentiment, log_or)) <span class="sc">|&gt;</span></span>
+<span id="cb970-3"><a href="minería-de-textos.html#cb970-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> sentiment, <span class="at">ymin =</span> conf.low, <span class="at">ymax =</span> conf.high)) <span class="sc">+</span></span>
+<span id="cb970-4"><a href="minería-de-textos.html#cb970-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_errorbar</span>() <span class="sc">+</span></span>
+<span id="cb970-5"><a href="minería-de-textos.html#cb970-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="fu">aes</span>(sentiment, log_or)) <span class="sc">+</span></span>
+<span id="cb970-6"><a href="minería-de-textos.html#cb970-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ylab</span>(<span class="st">&quot;Log odds ratio for association between Android and sentiment&quot;</span>) <span class="sc">+</span></span>
+<span id="cb970-7"><a href="minería-de-textos.html#cb970-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_flip</span>()</span></code></pre></div>
 <p><img src="libro_files/figure-html/tweets-log-odds-ratio-1.png" width="70%" style="display: block; margin: auto;" /></p>
 <p>Vemos que el disgusto, la ira, los sentimientos negativos, la tristeza y el miedo están asociados con el Android de una manera que es difícil de explicar solo por casualidad. Las palabras no asociadas con un sentimiento estaban fuertemente asociadas con el iPhone, que está de acuerdo con la afirmación original sobre los tuits hiperbólicos.</p>
 <p>Si estamos interesados en explorar qué palabras específicas están impulsando estas diferencias, podemos referirnos a nuestro objeto <code>android_iphone_or</code>:</p>
-<div class="sourceCode" id="cb970"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb970-1"><a href="minería-de-textos.html#cb970-1" aria-hidden="true" tabindex="-1"></a>android_iphone_or <span class="sc">%&gt;%</span> <span class="fu">inner_join</span>(nrc) <span class="sc">%&gt;%</span></span>
-<span id="cb970-2"><a href="minería-de-textos.html#cb970-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(sentiment <span class="sc">==</span> <span class="st">&quot;disgust&quot;</span> <span class="sc">&amp;</span> Android <span class="sc">+</span> iPhone <span class="sc">&gt;</span> <span class="dv">10</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb970-3"><a href="minería-de-textos.html#cb970-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(<span class="fu">desc</span>(or))</span>
-<span id="cb970-4"><a href="minería-de-textos.html#cb970-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Joining, by = &quot;word&quot;</span></span>
-<span id="cb970-5"><a href="minería-de-textos.html#cb970-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # A tibble: 20 x 5</span></span>
-<span id="cb970-6"><a href="minería-de-textos.html#cb970-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   word     Android iPhone    or sentiment</span></span>
-<span id="cb970-7"><a href="minería-de-textos.html#cb970-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   &lt;chr&gt;      &lt;int&gt;  &lt;int&gt; &lt;dbl&gt; &lt;chr&gt;    </span></span>
-<span id="cb970-8"><a href="minería-de-textos.html#cb970-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1 mess          13      2  4.62 disgust  </span></span>
-<span id="cb970-9"><a href="minería-de-textos.html#cb970-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2 finally       12      2  4.28 disgust  </span></span>
-<span id="cb970-10"><a href="minería-de-textos.html#cb970-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 3 unfair        12      2  4.28 disgust  </span></span>
-<span id="cb970-11"><a href="minería-de-textos.html#cb970-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 4 bad          104     26  3.39 disgust  </span></span>
-<span id="cb970-12"><a href="minería-de-textos.html#cb970-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 5 terrible      31      8  3.17 disgust  </span></span>
-<span id="cb970-13"><a href="minería-de-textos.html#cb970-13" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # … with 15 more rows</span></span></code></pre></div>
+<div class="sourceCode" id="cb971"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb971-1"><a href="minería-de-textos.html#cb971-1" aria-hidden="true" tabindex="-1"></a>android_iphone_or <span class="sc">|&gt;</span> <span class="fu">inner_join</span>(nrc) <span class="sc">|&gt;</span></span>
+<span id="cb971-2"><a href="minería-de-textos.html#cb971-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(sentiment <span class="sc">==</span> <span class="st">&quot;disgust&quot;</span> <span class="sc">&amp;</span> Android <span class="sc">+</span> iPhone <span class="sc">&gt;</span> <span class="dv">10</span>) <span class="sc">|&gt;</span></span>
+<span id="cb971-3"><a href="minería-de-textos.html#cb971-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(<span class="fu">desc</span>(or))</span>
+<span id="cb971-4"><a href="minería-de-textos.html#cb971-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Joining, by = &quot;word&quot;</span></span>
+<span id="cb971-5"><a href="minería-de-textos.html#cb971-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # A tibble: 20 × 5</span></span>
+<span id="cb971-6"><a href="minería-de-textos.html#cb971-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   word     Android iPhone    or sentiment</span></span>
+<span id="cb971-7"><a href="minería-de-textos.html#cb971-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   &lt;chr&gt;      &lt;int&gt;  &lt;int&gt; &lt;dbl&gt; &lt;chr&gt;    </span></span>
+<span id="cb971-8"><a href="minería-de-textos.html#cb971-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1 mess          13      2  4.62 disgust  </span></span>
+<span id="cb971-9"><a href="minería-de-textos.html#cb971-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2 finally       12      2  4.28 disgust  </span></span>
+<span id="cb971-10"><a href="minería-de-textos.html#cb971-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 3 unfair        12      2  4.28 disgust  </span></span>
+<span id="cb971-11"><a href="minería-de-textos.html#cb971-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 4 bad          104     26  3.39 disgust  </span></span>
+<span id="cb971-12"><a href="minería-de-textos.html#cb971-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 5 terrible      31      8  3.17 disgust  </span></span>
+<span id="cb971-13"><a href="minería-de-textos.html#cb971-13" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # … with 15 more rows</span></span></code></pre></div>
 <p>y hacer un gráfico:</p>
-<div class="sourceCode" id="cb971"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb971-1"><a href="minería-de-textos.html#cb971-1" aria-hidden="true" tabindex="-1"></a>android_iphone_or <span class="sc">%&gt;%</span> <span class="fu">inner_join</span>(nrc, <span class="at">by =</span> <span class="st">&quot;word&quot;</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb971-2"><a href="minería-de-textos.html#cb971-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">sentiment =</span> <span class="fu">factor</span>(sentiment, <span class="at">levels =</span> log_or<span class="sc">$</span>sentiment)) <span class="sc">%&gt;%</span></span>
-<span id="cb971-3"><a href="minería-de-textos.html#cb971-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">log_or =</span> <span class="fu">log</span>(or)) <span class="sc">%&gt;%</span></span>
-<span id="cb971-4"><a href="minería-de-textos.html#cb971-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(Android <span class="sc">+</span> iPhone <span class="sc">&gt;</span> <span class="dv">10</span> <span class="sc">&amp;</span> <span class="fu">abs</span>(log_or)<span class="sc">&gt;</span><span class="dv">1</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb971-5"><a href="minería-de-textos.html#cb971-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">word =</span> <span class="fu">reorder</span>(word, log_or)) <span class="sc">%&gt;%</span></span>
-<span id="cb971-6"><a href="minería-de-textos.html#cb971-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(word, log_or, <span class="at">fill =</span> log_or <span class="sc">&lt;</span> <span class="dv">0</span>)) <span class="sc">+</span></span>
-<span id="cb971-7"><a href="minería-de-textos.html#cb971-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span>sentiment, <span class="at">scales =</span> <span class="st">&quot;free_x&quot;</span>, <span class="at">nrow =</span> <span class="dv">2</span>) <span class="sc">+</span></span>
-<span id="cb971-8"><a href="minería-de-textos.html#cb971-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_bar</span>(<span class="at">stat=</span><span class="st">&quot;identity&quot;</span>, <span class="at">show.legend =</span> <span class="cn">FALSE</span>) <span class="sc">+</span></span>
-<span id="cb971-9"><a href="minería-de-textos.html#cb971-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">axis.text.x =</span> <span class="fu">element_text</span>(<span class="at">angle =</span> <span class="dv">90</span>, <span class="at">hjust =</span> <span class="dv">1</span>))</span></code></pre></div>
+<div class="sourceCode" id="cb972"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb972-1"><a href="minería-de-textos.html#cb972-1" aria-hidden="true" tabindex="-1"></a>android_iphone_or <span class="sc">|&gt;</span> <span class="fu">inner_join</span>(nrc, <span class="at">by =</span> <span class="st">&quot;word&quot;</span>) <span class="sc">|&gt;</span></span>
+<span id="cb972-2"><a href="minería-de-textos.html#cb972-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">sentiment =</span> <span class="fu">factor</span>(sentiment, <span class="at">levels =</span> log_or<span class="sc">$</span>sentiment)) <span class="sc">|&gt;</span></span>
+<span id="cb972-3"><a href="minería-de-textos.html#cb972-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">log_or =</span> <span class="fu">log</span>(or)) <span class="sc">|&gt;</span></span>
+<span id="cb972-4"><a href="minería-de-textos.html#cb972-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(Android <span class="sc">+</span> iPhone <span class="sc">&gt;</span> <span class="dv">10</span> <span class="sc">&amp;</span> <span class="fu">abs</span>(log_or)<span class="sc">&gt;</span><span class="dv">1</span>) <span class="sc">|&gt;</span></span>
+<span id="cb972-5"><a href="minería-de-textos.html#cb972-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">word =</span> <span class="fu">reorder</span>(word, log_or)) <span class="sc">|&gt;</span></span>
+<span id="cb972-6"><a href="minería-de-textos.html#cb972-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(word, log_or, <span class="at">fill =</span> log_or <span class="sc">&lt;</span> <span class="dv">0</span>)) <span class="sc">+</span></span>
+<span id="cb972-7"><a href="minería-de-textos.html#cb972-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span>sentiment, <span class="at">scales =</span> <span class="st">&quot;free_x&quot;</span>, <span class="at">nrow =</span> <span class="dv">2</span>) <span class="sc">+</span></span>
+<span id="cb972-8"><a href="minería-de-textos.html#cb972-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_bar</span>(<span class="at">stat=</span><span class="st">&quot;identity&quot;</span>, <span class="at">show.legend =</span> <span class="cn">FALSE</span>) <span class="sc">+</span></span>
+<span id="cb972-9"><a href="minería-de-textos.html#cb972-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">axis.text.x =</span> <span class="fu">element_text</span>(<span class="at">angle =</span> <span class="dv">90</span>, <span class="at">hjust =</span> <span class="dv">1</span>))</span></code></pre></div>
 <p><img src="libro_files/figure-html/log-odds-by-word-1.png" width="100%" style="display: block; margin: auto;" /></p>
 <p>Este es solo un ejemplo sencillo de los muchos análisis que uno puede realizar con <strong>tidytext</strong>.
 Para obtener más información, nuevamente recomendamos el libro <em>Tidy Text Mining</em><a href="#fn105" class="footnote-ref" id="fnref105"><sup>105</sup></a>.</p>
 </div>
-<div id="ejercicios-43" class="section level2" number="26.4">
-<h2><span class="header-section-number">26.4</span> Ejercicios</h2>
+<div id="ejercicios-43" class="section level2 hasAnchor" number="26.4">
+<h2><span class="header-section-number">26.4</span> Ejercicios<a href="minería-de-textos.html#ejercicios-43" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p><em>Project Gutenberg</em> es un archivo digital de libros de dominio público. El paquete <strong>gutenbergr</strong> de R facilita la importación de estos textos en R. Puede instalar y cargarlo escribiendo:</p>
-<div class="sourceCode" id="cb972"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb972-1"><a href="minería-de-textos.html#cb972-1" aria-hidden="true" tabindex="-1"></a><span class="fu">install.packages</span>(<span class="st">&quot;gutenbergr&quot;</span>)</span>
-<span id="cb972-2"><a href="minería-de-textos.html#cb972-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(gutenbergr)</span></code></pre></div>
+<div class="sourceCode" id="cb973"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb973-1"><a href="minería-de-textos.html#cb973-1" aria-hidden="true" tabindex="-1"></a><span class="fu">install.packages</span>(<span class="st">&quot;gutenbergr&quot;</span>)</span>
+<span id="cb973-2"><a href="minería-de-textos.html#cb973-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(gutenbergr)</span></code></pre></div>
 <p>Los libros disponibles se pueden ver así:</p>
-<div class="sourceCode" id="cb973"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb973-1"><a href="minería-de-textos.html#cb973-1" aria-hidden="true" tabindex="-1"></a>gutenberg_metadata</span></code></pre></div>
+<div class="sourceCode" id="cb974"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb974-1"><a href="minería-de-textos.html#cb974-1" aria-hidden="true" tabindex="-1"></a>gutenberg_metadata</span></code></pre></div>
 <p>1. Utilice <code>str_detect</code> para encontrar la identificación de la novela <em>Pride and Prejudice</em>.</p>
 <p>2. Observe que hay varias versiones. La función <code>gutenberg_works()</code>filtra esta tabla para eliminar réplicas e incluye solo trabajos en inglés. Lea el archivo de ayuda y use esta función para encontrar la identificación de <em>Pride and Prejudice</em>.</p>
 <p>3. Utilice la función <code>gutenberg_download</code> para descargar el texto de <em>Pride and Prejudice</em>. Guárdelo en un objeto llamado <code>book</code>.</p>
@@ -1444,7 +1443,6 @@ Para obtener más información, nuevamente recomendamos el libro <em>Tidy Text M
     </div>
   </div>
 <script src="libs/gitbook-2.6.7/js/app.min.js"></script>
-<script src="libs/gitbook-2.6.7/js/lunr.js"></script>
 <script src="libs/gitbook-2.6.7/js/clipboard.min.js"></script>
 <script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
 <script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
@@ -1484,6 +1482,10 @@ gitbook.start({
 "text": null
 },
 "download": ["libro.pdf"],
+"search": {
+"engine": "fuse",
+"options": null
+},
 "toc": {
 "collapse": "section"
 }

@@ -6,11 +6,10 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <title>Capítulo 20 Introducción al wrangling de datos | Introducción a la ciencia de datos</title>
   <meta name="description" content="Este libro presenta conceptos y destrezas que les ayudarán abordar los retos de situaciones actuales del análisis de datos. Cubre conceptos de probabilidad, inferencia estadística, regresión lineal y machine learning. Además, les permitirá desarrollar destrezas como la programación R, el wrangling de datos con dplyr, la visualización de datos con ggplot2, la organización de archivos con Shell de UNIX / Linux, el control de versiones con GitHub y la preparación de documentos reproducibles con R markdown." />
-  <meta name="generator" content="bookdown 0.22 and GitBook 2.6.7" />
+  <meta name="generator" content="bookdown 0.27 and GitBook 2.6.7" />
 
   <meta property="og:title" content="Capítulo 20 Introducción al wrangling de datos | Introducción a la ciencia de datos" />
   <meta property="og:type" content="book" />
-  
   
   <meta property="og:description" content="Este libro presenta conceptos y destrezas que les ayudarán abordar los retos de situaciones actuales del análisis de datos. Cubre conceptos de probabilidad, inferencia estadística, regresión lineal y machine learning. Además, les permitirá desarrollar destrezas como la programación R, el wrangling de datos con dplyr, la visualización de datos con ggplot2, la organización de archivos con Shell de UNIX / Linux, el control de versiones con GitHub y la preparación de documentos reproducibles con R markdown." />
   
@@ -24,7 +23,7 @@
 <meta name="author" content="Rafael A. Irizarry" />
 
 
-<meta name="date" content="2021-07-03" />
+<meta name="date" content="2022-10-25" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -33,8 +32,8 @@
   
 <link rel="prev" href="la-correlación-no-implica-causalidad.html"/>
 <link rel="next" href="cómo-cambiar-el-formato-de-datos.html"/>
-<script src="libs/header-attrs-2.9/header-attrs.js"></script>
-<script src="libs/jquery-2.2.3/jquery.min.js"></script>
+<script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
 <link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
 <link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
@@ -50,9 +49,9 @@
 
 
 
-
-<link href="libs/anchor-sections-1.0.1/anchor-sections.css" rel="stylesheet" />
-<script src="libs/anchor-sections-1.0.1/anchor-sections.js"></script>
+<link href="libs/anchor-sections-1.1.0/anchor-sections.css" rel="stylesheet" />
+<link href="libs/anchor-sections-1.1.0/anchor-sections-hash.css" rel="stylesheet" />
+<script src="libs/anchor-sections-1.1.0/anchor-sections.js"></script>
 <script src="libs/kePrint-0.0.1/kePrint.js"></script>
 <link href="libs/lightable-0.0.1/lightable.css" rel="stylesheet" />
 
@@ -254,7 +253,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="4.3.3" data-path="tidyverse.html"><a href="tidyverse.html#cómo-seleccionar-columnas-con-select"><i class="fa fa-check"></i><b>4.3.3</b> Cómo seleccionar columnas con <code>select</code></a></li>
 </ul></li>
 <li class="chapter" data-level="4.4" data-path="tidyverse.html"><a href="tidyverse.html#ejercicios-9"><i class="fa fa-check"></i><b>4.4</b> Ejercicios</a></li>
-<li class="chapter" data-level="4.5" data-path="tidyverse.html"><a href="tidyverse.html#el-pipe"><i class="fa fa-check"></i><b>4.5</b> El <em>pipe</em>: <code>%&gt;%</code></a></li>
+<li class="chapter" data-level="4.5" data-path="tidyverse.html"><a href="tidyverse.html#el-pipe"><i class="fa fa-check"></i><b>4.5</b> El <em>pipe</em>: <code>|&gt;</code></a></li>
 <li class="chapter" data-level="4.6" data-path="tidyverse.html"><a href="tidyverse.html#ejercicios-10"><i class="fa fa-check"></i><b>4.6</b> Ejercicios</a></li>
 <li class="chapter" data-level="4.7" data-path="tidyverse.html"><a href="tidyverse.html#cómo-resumir-datos"><i class="fa fa-check"></i><b>4.7</b> Cómo resumir datos</a>
 <ul>
@@ -1025,8 +1024,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
           <div class="page-inner">
 
             <section class="normal" id="section-">
-<div id="introducción-al-wrangling-de-datos" class="section level1" number="20">
-<h1><span class="header-section-number">Capítulo 20</span> Introducción al wrangling de datos</h1>
+<div id="introducción-al-wrangling-de-datos" class="section level1 hasAnchor" number="20">
+<h1><span class="header-section-number">Capítulo 20</span> Introducción al wrangling de datos<a href="introducción-al-wrangling-de-datos.html#introducción-al-wrangling-de-datos" class="anchor-section" aria-label="Anchor link to header"></a></h1>
 <p>Los sets de datos utilizados en este libro se han puesto a su disposición como objetos R, específicamente como <em>data frames</em>. Los datos de asesinatos de EE. UU., los datos reportados de alturas y los datos de Gapminder son todos <em>data frames</em>. Estos sets de datos vienen incluidos en el paquete <strong>dslabs</strong> y los cargamos usando la función <code>data</code>. Además, hemos puesto a disposición los datos en formato <code>tidy</code>. Los paquetes y las funciones de tidyverse suponen que los datos son <code>tidy</code> y esta suposición es una gran parte de la razón por la que estos paquetes funcionan tan bien juntos.</p>
 <p>Sin embargo, es bien raro que en un proyecto de ciencia de datos haya datos fácilmente disponibles como parte de un paquete. Hicimos un buen trabajo “tras bastidores” para convertir los datos originales en las tablas <em>tidy</em> con que trabajamos. Mucho más común es que los datos estén en un archivo, una base de datos o extraídos de un documento, incluyendo páginas web, tuits o PDF. En estos casos, el primer paso es importar los datos a R y, cuando estemos usando <strong>tidyverse</strong>, ordenar los datos. Este paso inicial en el proceso de análisis de datos generalmente implica varios pasos, a menudo complicados, para convertir datos al formato <em>tidy</em> que facilita enormemente el resto del análisis. Nos referimos a este proceso como <em>wrangling de datos</em>.</p>
 <p>Aquí cubrimos varios pasos comunes del proceso del <em>wrangling</em> de datos, incluyendo cómo convertir los datos en formato <em>tidy</em>, procesar cadenas, leer y procesar (<em>parse</em> en inglés) HTML, trabajar con fechas y horas y, finalmente, <em>mineria de textos</em> (<em>text mining</em> en inglés). Raras veces se necesita hacer todos estos pasos de <em>wrangling</em> en un solo análisis, pero los científicos de datos probablemente enfrentarán a todos en algún momento. Algunos de los ejemplos que utilizamos para demostrar las técnicas del <em>wrangling</em> de datos se basan en el trabajo que hicimos para convertir datos sin procesar en los sets de datos <em>tidy</em> ofrecidos por el paquete <strong>dslabs</strong> y utilizados en el libro como ejemplos.</p>
@@ -1042,7 +1041,6 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
     </div>
   </div>
 <script src="libs/gitbook-2.6.7/js/app.min.js"></script>
-<script src="libs/gitbook-2.6.7/js/lunr.js"></script>
 <script src="libs/gitbook-2.6.7/js/clipboard.min.js"></script>
 <script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
 <script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
@@ -1082,6 +1080,10 @@ gitbook.start({
 "text": null
 },
 "download": ["libro.pdf"],
+"search": {
+"engine": "fuse",
+"options": null
+},
 "toc": {
 "collapse": "section"
 }

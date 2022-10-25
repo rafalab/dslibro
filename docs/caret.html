@@ -6,11 +6,10 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <title>Capítulo 30 El paquete caret | Introducción a la ciencia de datos</title>
   <meta name="description" content="Este libro presenta conceptos y destrezas que les ayudarán abordar los retos de situaciones actuales del análisis de datos. Cubre conceptos de probabilidad, inferencia estadística, regresión lineal y machine learning. Además, les permitirá desarrollar destrezas como la programación R, el wrangling de datos con dplyr, la visualización de datos con ggplot2, la organización de archivos con Shell de UNIX / Linux, el control de versiones con GitHub y la preparación de documentos reproducibles con R markdown." />
-  <meta name="generator" content="bookdown 0.22 and GitBook 2.6.7" />
+  <meta name="generator" content="bookdown 0.27 and GitBook 2.6.7" />
 
   <meta property="og:title" content="Capítulo 30 El paquete caret | Introducción a la ciencia de datos" />
   <meta property="og:type" content="book" />
-  
   
   <meta property="og:description" content="Este libro presenta conceptos y destrezas que les ayudarán abordar los retos de situaciones actuales del análisis de datos. Cubre conceptos de probabilidad, inferencia estadística, regresión lineal y machine learning. Además, les permitirá desarrollar destrezas como la programación R, el wrangling de datos con dplyr, la visualización de datos con ggplot2, la organización de archivos con Shell de UNIX / Linux, el control de versiones con GitHub y la preparación de documentos reproducibles con R markdown." />
   
@@ -24,7 +23,7 @@
 <meta name="author" content="Rafael A. Irizarry" />
 
 
-<meta name="date" content="2021-07-03" />
+<meta name="date" content="2022-10-25" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -33,8 +32,8 @@
   
 <link rel="prev" href="cross-validation.html"/>
 <link rel="next" href="ejemplos-de-algoritmos.html"/>
-<script src="libs/header-attrs-2.9/header-attrs.js"></script>
-<script src="libs/jquery-2.2.3/jquery.min.js"></script>
+<script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
 <link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
 <link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
@@ -50,9 +49,9 @@
 
 
 
-
-<link href="libs/anchor-sections-1.0.1/anchor-sections.css" rel="stylesheet" />
-<script src="libs/anchor-sections-1.0.1/anchor-sections.js"></script>
+<link href="libs/anchor-sections-1.1.0/anchor-sections.css" rel="stylesheet" />
+<link href="libs/anchor-sections-1.1.0/anchor-sections-hash.css" rel="stylesheet" />
+<script src="libs/anchor-sections-1.1.0/anchor-sections.js"></script>
 <script src="libs/kePrint-0.0.1/kePrint.js"></script>
 <link href="libs/lightable-0.0.1/lightable.css" rel="stylesheet" />
 
@@ -254,7 +253,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="4.3.3" data-path="tidyverse.html"><a href="tidyverse.html#cómo-seleccionar-columnas-con-select"><i class="fa fa-check"></i><b>4.3.3</b> Cómo seleccionar columnas con <code>select</code></a></li>
 </ul></li>
 <li class="chapter" data-level="4.4" data-path="tidyverse.html"><a href="tidyverse.html#ejercicios-9"><i class="fa fa-check"></i><b>4.4</b> Ejercicios</a></li>
-<li class="chapter" data-level="4.5" data-path="tidyverse.html"><a href="tidyverse.html#el-pipe"><i class="fa fa-check"></i><b>4.5</b> El <em>pipe</em>: <code>%&gt;%</code></a></li>
+<li class="chapter" data-level="4.5" data-path="tidyverse.html"><a href="tidyverse.html#el-pipe"><i class="fa fa-check"></i><b>4.5</b> El <em>pipe</em>: <code>|&gt;</code></a></li>
 <li class="chapter" data-level="4.6" data-path="tidyverse.html"><a href="tidyverse.html#ejercicios-10"><i class="fa fa-check"></i><b>4.6</b> Ejercicios</a></li>
 <li class="chapter" data-level="4.7" data-path="tidyverse.html"><a href="tidyverse.html#cómo-resumir-datos"><i class="fa fa-check"></i><b>4.7</b> Cómo resumir datos</a>
 <ul>
@@ -1025,82 +1024,82 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
           <div class="page-inner">
 
             <section class="normal" id="section-">
-<div id="caret" class="section level1" number="30">
-<h1><span class="header-section-number">Capítulo 30</span> El paquete caret</h1>
+<div id="caret" class="section level1 hasAnchor" number="30">
+<h1><span class="header-section-number">Capítulo 30</span> El paquete caret<a href="caret.html#caret" class="anchor-section" aria-label="Anchor link to header"></a></h1>
 <p>Ya hemos aprendido sobre regresión y kNN como algoritmos <em>machine learning</em> y, en secciones posteriores, aprenderemos sobre varios otros. Todos estos son solo un pequeño subconjunto del total de los algoritmos disponibles. Muchos de estos algoritmos se implementan en R. Sin embargo, se distribuyen a través de diferentes paquetes, desarrollados por diferentes autores, y a menudo usan una sintaxis diferente. El paquete <strong>caret</strong> intenta consolidar estas diferencias y dar consistencia. Actualmente incluye 237 métodos diferentes que se resumen en el manual del paquete <strong>caret</strong><a href="#fn110" class="footnote-ref" id="fnref110"><sup>110</sup></a>. Tengan en cuenta que <strong>caret</strong> no incluye los paquetes necesarios y, para implementar un paquete a través de <strong>caret</strong>, tendrán que instalar el paquete. Los paquetes requeridos para cada método se describen en el manual del paquete.</p>
 <p>El paquete <strong>caret</strong> también provee una función que realiza la validación cruzada para nosotros. Aquí oferecemos algunos ejemplos que muestran cómo utilizamos este paquete increíblemente útil. Usaremos el ejemplo “2 o 7” para ilustrar:</p>
-<div class="sourceCode" id="cb1046"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1046-1"><a href="caret.html#cb1046-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
-<span id="cb1046-2"><a href="caret.html#cb1046-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dslabs)</span>
-<span id="cb1046-3"><a href="caret.html#cb1046-3" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(<span class="st">&quot;mnist_27&quot;</span>)</span></code></pre></div>
-<div id="la-función-train-de-caret" class="section level2" number="30.1">
-<h2><span class="header-section-number">30.1</span> La función <code>train</code> de caret</h2>
+<div class="sourceCode" id="cb1047"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1047-1"><a href="caret.html#cb1047-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb1047-2"><a href="caret.html#cb1047-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dslabs)</span>
+<span id="cb1047-3"><a href="caret.html#cb1047-3" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(<span class="st">&quot;mnist_27&quot;</span>)</span></code></pre></div>
+<div id="la-función-train-de-caret" class="section level2 hasAnchor" number="30.1">
+<h2><span class="header-section-number">30.1</span> La función <code>train</code> de caret<a href="caret.html#la-función-train-de-caret" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>La función <code>train</code> de <strong>caret</strong> nos permite entrenar diferentes algoritmos utilizando una sintaxis similar. Entonces, por ejemplo, podemos escribir:</p>
-<div class="sourceCode" id="cb1047"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1047-1"><a href="caret.html#cb1047-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(caret)</span>
-<span id="cb1047-2"><a href="caret.html#cb1047-2" aria-hidden="true" tabindex="-1"></a>train_glm <span class="ot">&lt;-</span> <span class="fu">train</span>(y <span class="sc">~</span> ., <span class="at">method =</span> <span class="st">&quot;glm&quot;</span>, <span class="at">data =</span> mnist_27<span class="sc">$</span>train)</span>
-<span id="cb1047-3"><a href="caret.html#cb1047-3" aria-hidden="true" tabindex="-1"></a>train_knn <span class="ot">&lt;-</span> <span class="fu">train</span>(y <span class="sc">~</span> ., <span class="at">method =</span> <span class="st">&quot;knn&quot;</span>, <span class="at">data =</span> mnist_27<span class="sc">$</span>train)</span></code></pre></div>
+<div class="sourceCode" id="cb1048"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1048-1"><a href="caret.html#cb1048-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(caret)</span>
+<span id="cb1048-2"><a href="caret.html#cb1048-2" aria-hidden="true" tabindex="-1"></a>train_glm <span class="ot">&lt;-</span> <span class="fu">train</span>(y <span class="sc">~</span> ., <span class="at">method =</span> <span class="st">&quot;glm&quot;</span>, <span class="at">data =</span> mnist_27<span class="sc">$</span>train)</span>
+<span id="cb1048-3"><a href="caret.html#cb1048-3" aria-hidden="true" tabindex="-1"></a>train_knn <span class="ot">&lt;-</span> <span class="fu">train</span>(y <span class="sc">~</span> ., <span class="at">method =</span> <span class="st">&quot;knn&quot;</span>, <span class="at">data =</span> mnist_27<span class="sc">$</span>train)</span></code></pre></div>
 <p>Para hacer predicciones, podemos usar el resultado de esta función directamente sin necesidad de mirar los detalles de <code>predict.glm</code> y <code>predict.knn</code>. En cambio, podemos aprender cómo obtener predicciones de <code>predict.train</code>.</p>
 <p>El código se ve igual para ambos métodos:</p>
-<div class="sourceCode" id="cb1048"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1048-1"><a href="caret.html#cb1048-1" aria-hidden="true" tabindex="-1"></a>y_hat_glm <span class="ot">&lt;-</span> <span class="fu">predict</span>(train_glm, mnist_27<span class="sc">$</span>test, <span class="at">type =</span> <span class="st">&quot;raw&quot;</span>)</span>
-<span id="cb1048-2"><a href="caret.html#cb1048-2" aria-hidden="true" tabindex="-1"></a>y_hat_knn <span class="ot">&lt;-</span> <span class="fu">predict</span>(train_knn, mnist_27<span class="sc">$</span>test, <span class="at">type =</span> <span class="st">&quot;raw&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb1049"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1049-1"><a href="caret.html#cb1049-1" aria-hidden="true" tabindex="-1"></a>y_hat_glm <span class="ot">&lt;-</span> <span class="fu">predict</span>(train_glm, mnist_27<span class="sc">$</span>test, <span class="at">type =</span> <span class="st">&quot;raw&quot;</span>)</span>
+<span id="cb1049-2"><a href="caret.html#cb1049-2" aria-hidden="true" tabindex="-1"></a>y_hat_knn <span class="ot">&lt;-</span> <span class="fu">predict</span>(train_knn, mnist_27<span class="sc">$</span>test, <span class="at">type =</span> <span class="st">&quot;raw&quot;</span>)</span></code></pre></div>
 <p>Esto nos permite comparar rápidamente los algoritmos. Por ejemplo, podemos comparar la exactitud de esta manera:</p>
-<div class="sourceCode" id="cb1049"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1049-1"><a href="caret.html#cb1049-1" aria-hidden="true" tabindex="-1"></a><span class="fu">confusionMatrix</span>(y_hat_glm, mnist_27<span class="sc">$</span>test<span class="sc">$</span>y)<span class="sc">$</span>overall[[<span class="st">&quot;Accuracy&quot;</span>]]</span>
-<span id="cb1049-2"><a href="caret.html#cb1049-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] 0.75</span></span>
-<span id="cb1049-3"><a href="caret.html#cb1049-3" aria-hidden="true" tabindex="-1"></a><span class="fu">confusionMatrix</span>(y_hat_knn, mnist_27<span class="sc">$</span>test<span class="sc">$</span>y)<span class="sc">$</span>overall[[<span class="st">&quot;Accuracy&quot;</span>]]</span>
-<span id="cb1049-4"><a href="caret.html#cb1049-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] 0.84</span></span></code></pre></div>
+<div class="sourceCode" id="cb1050"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1050-1"><a href="caret.html#cb1050-1" aria-hidden="true" tabindex="-1"></a><span class="fu">confusionMatrix</span>(y_hat_glm, mnist_27<span class="sc">$</span>test<span class="sc">$</span>y)<span class="sc">$</span>overall[[<span class="st">&quot;Accuracy&quot;</span>]]</span>
+<span id="cb1050-2"><a href="caret.html#cb1050-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] 0.75</span></span>
+<span id="cb1050-3"><a href="caret.html#cb1050-3" aria-hidden="true" tabindex="-1"></a><span class="fu">confusionMatrix</span>(y_hat_knn, mnist_27<span class="sc">$</span>test<span class="sc">$</span>y)<span class="sc">$</span>overall[[<span class="st">&quot;Accuracy&quot;</span>]]</span>
+<span id="cb1050-4"><a href="caret.html#cb1050-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] 0.84</span></span></code></pre></div>
 </div>
-<div id="caret-cv" class="section level2" number="30.2">
-<h2><span class="header-section-number">30.2</span> Validación cruzada</h2>
+<div id="caret-cv" class="section level2 hasAnchor" number="30.2">
+<h2><span class="header-section-number">30.2</span> Validación cruzada<a href="caret.html#caret-cv" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>Cuando un algoritmo incluye parámetros de ajuste, <code>train</code> automáticamente utiliza la validación cruzada para decidir entre algunos valores predeterminados. Para saber qué parámetro o parámetros están optimizados, pueden leer el manual<a href="#fn111" class="footnote-ref" id="fnref111"><sup>111</sup></a> o estudiar lo que devuelve:</p>
-<div class="sourceCode" id="cb1050"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1050-1"><a href="caret.html#cb1050-1" aria-hidden="true" tabindex="-1"></a><span class="fu">getModelInfo</span>(<span class="st">&quot;knn&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb1051"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1051-1"><a href="caret.html#cb1051-1" aria-hidden="true" tabindex="-1"></a><span class="fu">getModelInfo</span>(<span class="st">&quot;knn&quot;</span>)</span></code></pre></div>
 <p>También podemos usar una búsqueda rápida como esta:</p>
-<div class="sourceCode" id="cb1051"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1051-1"><a href="caret.html#cb1051-1" aria-hidden="true" tabindex="-1"></a><span class="fu">modelLookup</span>(<span class="st">&quot;knn&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb1052"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1052-1"><a href="caret.html#cb1052-1" aria-hidden="true" tabindex="-1"></a><span class="fu">modelLookup</span>(<span class="st">&quot;knn&quot;</span>)</span></code></pre></div>
 <p>Si lo ejecutamos con valores predeterminados:</p>
-<div class="sourceCode" id="cb1052"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1052-1"><a href="caret.html#cb1052-1" aria-hidden="true" tabindex="-1"></a>train_knn <span class="ot">&lt;-</span> <span class="fu">train</span>(y <span class="sc">~</span> ., <span class="at">method =</span> <span class="st">&quot;knn&quot;</span>, <span class="at">data =</span> mnist_27<span class="sc">$</span>train)</span></code></pre></div>
+<div class="sourceCode" id="cb1053"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1053-1"><a href="caret.html#cb1053-1" aria-hidden="true" tabindex="-1"></a>train_knn <span class="ot">&lt;-</span> <span class="fu">train</span>(y <span class="sc">~</span> ., <span class="at">method =</span> <span class="st">&quot;knn&quot;</span>, <span class="at">data =</span> mnist_27<span class="sc">$</span>train)</span></code></pre></div>
 <p>pueden ver rápidamente los resultados de la validación cruzada utilizando la función <code>ggplot</code>. El argumento <code>highlight</code> destaca el máximo:</p>
-<div class="sourceCode" id="cb1053"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1053-1"><a href="caret.html#cb1053-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(train_knn, <span class="at">highlight =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb1054"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1054-1"><a href="caret.html#cb1054-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(train_knn, <span class="at">highlight =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
 <p><img src="libro_files/figure-html/caret-highlight-1.png" width="70%" style="display: block; margin: auto;" /></p>
 <p>Por defecto, la validación cruzada se realiza tomando 25 muestras de <em>bootstrap</em> que comprenden el 25% de las observaciones. Para el método <code>kNN</code>, por defecto se intenta <span class="math inline">\(k=5, 7, 9\)</span>. Cambiamos esto usando el parámetro <code>tuneGrid</code>. La cuadrícula de valores debe ser suministrada por un <em>data frame</em> con los nombres de los parámetros como se especifica en el output de <code>modelLookup</code>.</p>
 <p>Aquí, presentamos un ejemplo donde probamos 30 valores entre 9 y 67. Para hacer esto con <strong>caret</strong>, necesitamos definir una columna llamada <code>k</code> de la siguiente manera: <code>data.frame(k = seq(9, 67, 2))</code>.</p>
 <p>Noten que al ejecutar este código, estamos ajustando 30 versiones de kNN a 25 muestras de <em>bootstrap</em>. Como estamos ajustando <span class="math inline">\(30 \times 25 = 750\)</span> kNN modelos, ejecutar este código tomará varios segundos. Fijamos la semilla porque la validación cruzada es un procedimiento aleatorio y queremos asegurarnos de que el resultado aquí sea reproducible.</p>
-<div class="sourceCode" id="cb1054"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1054-1"><a href="caret.html#cb1054-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">2008</span>)</span>
-<span id="cb1054-2"><a href="caret.html#cb1054-2" aria-hidden="true" tabindex="-1"></a>train_knn <span class="ot">&lt;-</span> <span class="fu">train</span>(y <span class="sc">~</span> ., <span class="at">method =</span> <span class="st">&quot;knn&quot;</span>,</span>
-<span id="cb1054-3"><a href="caret.html#cb1054-3" aria-hidden="true" tabindex="-1"></a>                   <span class="at">data =</span> mnist_27<span class="sc">$</span>train,</span>
-<span id="cb1054-4"><a href="caret.html#cb1054-4" aria-hidden="true" tabindex="-1"></a>                   <span class="at">tuneGrid =</span> <span class="fu">data.frame</span>(<span class="at">k =</span> <span class="fu">seq</span>(<span class="dv">9</span>, <span class="dv">71</span>, <span class="dv">2</span>)))</span>
-<span id="cb1054-5"><a href="caret.html#cb1054-5" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(train_knn, <span class="at">highlight =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb1055"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1055-1"><a href="caret.html#cb1055-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">2008</span>)</span>
+<span id="cb1055-2"><a href="caret.html#cb1055-2" aria-hidden="true" tabindex="-1"></a>train_knn <span class="ot">&lt;-</span> <span class="fu">train</span>(y <span class="sc">~</span> ., <span class="at">method =</span> <span class="st">&quot;knn&quot;</span>,</span>
+<span id="cb1055-3"><a href="caret.html#cb1055-3" aria-hidden="true" tabindex="-1"></a>                   <span class="at">data =</span> mnist_27<span class="sc">$</span>train,</span>
+<span id="cb1055-4"><a href="caret.html#cb1055-4" aria-hidden="true" tabindex="-1"></a>                   <span class="at">tuneGrid =</span> <span class="fu">data.frame</span>(<span class="at">k =</span> <span class="fu">seq</span>(<span class="dv">9</span>, <span class="dv">71</span>, <span class="dv">2</span>)))</span>
+<span id="cb1055-5"><a href="caret.html#cb1055-5" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(train_knn, <span class="at">highlight =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
 <p><img src="libro_files/figure-html/train-knn-plot-1.png" width="70%" style="display: block; margin: auto;" /></p>
 <p>Para acceder al parámetro que maximiza la exactitud, pueden usar esto:</p>
-<div class="sourceCode" id="cb1055"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1055-1"><a href="caret.html#cb1055-1" aria-hidden="true" tabindex="-1"></a>train_knn<span class="sc">$</span>bestTune</span>
-<span id="cb1055-2"><a href="caret.html#cb1055-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;     k</span></span>
-<span id="cb1055-3"><a href="caret.html#cb1055-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 10 27</span></span></code></pre></div>
+<div class="sourceCode" id="cb1056"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1056-1"><a href="caret.html#cb1056-1" aria-hidden="true" tabindex="-1"></a>train_knn<span class="sc">$</span>bestTune</span>
+<span id="cb1056-2"><a href="caret.html#cb1056-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;     k</span></span>
+<span id="cb1056-3"><a href="caret.html#cb1056-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 10 27</span></span></code></pre></div>
 <p>y para acceder el mejor modelo, pueden usar esto:</p>
-<div class="sourceCode" id="cb1056"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1056-1"><a href="caret.html#cb1056-1" aria-hidden="true" tabindex="-1"></a>train_knn<span class="sc">$</span>finalModel</span>
-<span id="cb1056-2"><a href="caret.html#cb1056-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 27-nearest neighbor model</span></span>
-<span id="cb1056-3"><a href="caret.html#cb1056-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Training set outcome distribution:</span></span>
-<span id="cb1056-4"><a href="caret.html#cb1056-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
-<span id="cb1056-5"><a href="caret.html#cb1056-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   2   7 </span></span>
-<span id="cb1056-6"><a href="caret.html#cb1056-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 379 421</span></span></code></pre></div>
+<div class="sourceCode" id="cb1057"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1057-1"><a href="caret.html#cb1057-1" aria-hidden="true" tabindex="-1"></a>train_knn<span class="sc">$</span>finalModel</span>
+<span id="cb1057-2"><a href="caret.html#cb1057-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 27-nearest neighbor model</span></span>
+<span id="cb1057-3"><a href="caret.html#cb1057-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Training set outcome distribution:</span></span>
+<span id="cb1057-4"><a href="caret.html#cb1057-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb1057-5"><a href="caret.html#cb1057-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   2   7 </span></span>
+<span id="cb1057-6"><a href="caret.html#cb1057-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 379 421</span></span></code></pre></div>
 <p>La función <code>predict</code> utilizará este modelo de mejor rendimiento. Aquí está la exactitud del mejor modelo cuando se aplica al set de evaluación, que todavía no hemos utilizado porque la validación cruzada se realizó en el set de entrenamiento:</p>
-<div class="sourceCode" id="cb1057"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1057-1"><a href="caret.html#cb1057-1" aria-hidden="true" tabindex="-1"></a><span class="fu">confusionMatrix</span>(<span class="fu">predict</span>(train_knn, mnist_27<span class="sc">$</span>test, <span class="at">type =</span> <span class="st">&quot;raw&quot;</span>),</span>
-<span id="cb1057-2"><a href="caret.html#cb1057-2" aria-hidden="true" tabindex="-1"></a>                mnist_27<span class="sc">$</span>test<span class="sc">$</span>y)<span class="sc">$</span>overall[<span class="st">&quot;Accuracy&quot;</span>]</span>
-<span id="cb1057-3"><a href="caret.html#cb1057-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Accuracy </span></span>
-<span id="cb1057-4"><a href="caret.html#cb1057-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;    0.835</span></span></code></pre></div>
+<div class="sourceCode" id="cb1058"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1058-1"><a href="caret.html#cb1058-1" aria-hidden="true" tabindex="-1"></a><span class="fu">confusionMatrix</span>(<span class="fu">predict</span>(train_knn, mnist_27<span class="sc">$</span>test, <span class="at">type =</span> <span class="st">&quot;raw&quot;</span>),</span>
+<span id="cb1058-2"><a href="caret.html#cb1058-2" aria-hidden="true" tabindex="-1"></a>                mnist_27<span class="sc">$</span>test<span class="sc">$</span>y)<span class="sc">$</span>overall[<span class="st">&quot;Accuracy&quot;</span>]</span>
+<span id="cb1058-3"><a href="caret.html#cb1058-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Accuracy </span></span>
+<span id="cb1058-4"><a href="caret.html#cb1058-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;    0.835</span></span></code></pre></div>
 <p>Si queremos cambiar la forma en que realizamos la validación cruzada, podemos usar la función <code>trainControl</code>. Podemos hacer que el código anterior sea un poco más rápido mediante, por ejemplo, la validación cruzada <em>10 fold</em>. Esto significa que tenemos 10 muestras y cada una usa el 10% de las observaciones. Logramos esto usando el siguiente código:</p>
-<div class="sourceCode" id="cb1058"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1058-1"><a href="caret.html#cb1058-1" aria-hidden="true" tabindex="-1"></a>control <span class="ot">&lt;-</span> <span class="fu">trainControl</span>(<span class="at">method =</span> <span class="st">&quot;cv&quot;</span>, <span class="at">number =</span> <span class="dv">10</span>, <span class="at">p =</span> .<span class="dv">9</span>)</span>
-<span id="cb1058-2"><a href="caret.html#cb1058-2" aria-hidden="true" tabindex="-1"></a>train_knn_cv <span class="ot">&lt;-</span> <span class="fu">train</span>(y <span class="sc">~</span> ., <span class="at">method =</span> <span class="st">&quot;knn&quot;</span>,</span>
-<span id="cb1058-3"><a href="caret.html#cb1058-3" aria-hidden="true" tabindex="-1"></a>                      <span class="at">data =</span> mnist_27<span class="sc">$</span>train,</span>
-<span id="cb1058-4"><a href="caret.html#cb1058-4" aria-hidden="true" tabindex="-1"></a>                      <span class="at">tuneGrid =</span> <span class="fu">data.frame</span>(<span class="at">k =</span> <span class="fu">seq</span>(<span class="dv">9</span>, <span class="dv">71</span>, <span class="dv">2</span>)),</span>
-<span id="cb1058-5"><a href="caret.html#cb1058-5" aria-hidden="true" tabindex="-1"></a>                      <span class="at">trControl =</span> control)</span>
-<span id="cb1058-6"><a href="caret.html#cb1058-6" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(train_knn_cv, <span class="at">highlight =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb1059"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1059-1"><a href="caret.html#cb1059-1" aria-hidden="true" tabindex="-1"></a>control <span class="ot">&lt;-</span> <span class="fu">trainControl</span>(<span class="at">method =</span> <span class="st">&quot;cv&quot;</span>, <span class="at">number =</span> <span class="dv">10</span>, <span class="at">p =</span> .<span class="dv">9</span>)</span>
+<span id="cb1059-2"><a href="caret.html#cb1059-2" aria-hidden="true" tabindex="-1"></a>train_knn_cv <span class="ot">&lt;-</span> <span class="fu">train</span>(y <span class="sc">~</span> ., <span class="at">method =</span> <span class="st">&quot;knn&quot;</span>,</span>
+<span id="cb1059-3"><a href="caret.html#cb1059-3" aria-hidden="true" tabindex="-1"></a>                      <span class="at">data =</span> mnist_27<span class="sc">$</span>train,</span>
+<span id="cb1059-4"><a href="caret.html#cb1059-4" aria-hidden="true" tabindex="-1"></a>                      <span class="at">tuneGrid =</span> <span class="fu">data.frame</span>(<span class="at">k =</span> <span class="fu">seq</span>(<span class="dv">9</span>, <span class="dv">71</span>, <span class="dv">2</span>)),</span>
+<span id="cb1059-5"><a href="caret.html#cb1059-5" aria-hidden="true" tabindex="-1"></a>                      <span class="at">trControl =</span> control)</span>
+<span id="cb1059-6"><a href="caret.html#cb1059-6" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(train_knn_cv, <span class="at">highlight =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
 <p><img src="libro_files/figure-html/cv-10-fold-accuracy-estimate-1.png" width="70%" style="display: block; margin: auto;" /></p>
 <p>Observamos que los estimadores de exactitud son más variables, algo esperado ya que cambiamos el número de muestras utilizadas para estimar la exactitud.</p>
 <p>Tengan en cuenta que el componente <code>results</code> de lo que devuelve <code>train</code> incluye varias estadísticas de resumen relacionadas con la variabilidad de los estimadores de validación cruzada:</p>
-<div class="sourceCode" id="cb1059"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1059-1"><a href="caret.html#cb1059-1" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(train_knn<span class="sc">$</span>results)</span>
-<span id="cb1059-2"><a href="caret.html#cb1059-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] &quot;k&quot;          &quot;Accuracy&quot;   &quot;Kappa&quot;      &quot;AccuracySD&quot; &quot;KappaSD&quot;</span></span></code></pre></div>
+<div class="sourceCode" id="cb1060"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1060-1"><a href="caret.html#cb1060-1" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(train_knn<span class="sc">$</span>results)</span>
+<span id="cb1060-2"><a href="caret.html#cb1060-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] &quot;k&quot;          &quot;Accuracy&quot;   &quot;Kappa&quot;      &quot;AccuracySD&quot; &quot;KappaSD&quot;</span></span></code></pre></div>
 <!--We can also see the standard deviation bars obtained from the cross validation samples:
 
 
 ```r
-train_knn$results %>%
+train_knn$results |>
 ggplot(aes(x = k, y = Accuracy)) +
 geom_line() +
 geom_point() +
@@ -1112,32 +1111,32 @@ ymax = Accuracy + AccuracySD))
 <img src="libro_files/figure-html/accuracy-with-sd-bars-1.png" width="70%" style="display: block; margin: auto;" />
 -->
 </div>
-<div id="ejemplo-ajuste-con-loess" class="section level2" number="30.3">
-<h2><span class="header-section-number">30.3</span> Ejemplo: ajuste con loess</h2>
+<div id="ejemplo-ajuste-con-loess" class="section level2 hasAnchor" number="30.3">
+<h2><span class="header-section-number">30.3</span> Ejemplo: ajuste con loess<a href="caret.html#ejemplo-ajuste-con-loess" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>El modelo kNN que da el mejor resultado también da una buena aproximación de la probabilidad condicional verdadera:</p>
 <p><img src="libro_files/figure-html/mnist27-optimal-knn-fit-1.png" width="70%" style="display: block; margin: auto;" /></p>
 <p>Sin embargo, sí vemos que la frontera es algo ondulada. Esto se debe a que kNN, igual que el suavizador de compartimiento básico, no utiliza un <em>kernel</em>. Para mejorar esto, podríamos tratar loess. Al leer la parte sobre los modelos disponibles en el manual<a href="#fn112" class="footnote-ref" id="fnref112"><sup>112</sup></a>, vemos que podemos usar el método <code>gamLoess</code>.
 En el manual<a href="#fn113" class="footnote-ref" id="fnref113"><sup>113</sup></a>, también vemos que necesitamos instalar el paquete <strong>gam</strong> si aún no lo hemos hecho:</p>
-<div class="sourceCode" id="cb1060"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1060-1"><a href="caret.html#cb1060-1" aria-hidden="true" tabindex="-1"></a><span class="fu">install.packages</span>(<span class="st">&quot;gam&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb1061"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1061-1"><a href="caret.html#cb1061-1" aria-hidden="true" tabindex="-1"></a><span class="fu">install.packages</span>(<span class="st">&quot;gam&quot;</span>)</span></code></pre></div>
 <p>Luego, vemos que tenemos dos parámetros para optimizar:</p>
-<div class="sourceCode" id="cb1061"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1061-1"><a href="caret.html#cb1061-1" aria-hidden="true" tabindex="-1"></a><span class="fu">modelLookup</span>(<span class="st">&quot;gamLoess&quot;</span>)</span>
-<span id="cb1061-2"><a href="caret.html#cb1061-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;      model parameter  label forReg forClass probModel</span></span>
-<span id="cb1061-3"><a href="caret.html#cb1061-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1 gamLoess      span   Span   TRUE     TRUE      TRUE</span></span>
-<span id="cb1061-4"><a href="caret.html#cb1061-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2 gamLoess    degree Degree   TRUE     TRUE      TRUE</span></span></code></pre></div>
+<div class="sourceCode" id="cb1062"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1062-1"><a href="caret.html#cb1062-1" aria-hidden="true" tabindex="-1"></a><span class="fu">modelLookup</span>(<span class="st">&quot;gamLoess&quot;</span>)</span>
+<span id="cb1062-2"><a href="caret.html#cb1062-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;      model parameter  label forReg forClass probModel</span></span>
+<span id="cb1062-3"><a href="caret.html#cb1062-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1 gamLoess      span   Span   TRUE     TRUE      TRUE</span></span>
+<span id="cb1062-4"><a href="caret.html#cb1062-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2 gamLoess    degree Degree   TRUE     TRUE      TRUE</span></span></code></pre></div>
 <p>Nos mantendremos en un grado de 1. Pero para intentar diferentes valores para <em>span</em>, aún tenemos que incluir una columna en la tabla con el nombre <code>degree</code>:</p>
-<div class="sourceCode" id="cb1062"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1062-1"><a href="caret.html#cb1062-1" aria-hidden="true" tabindex="-1"></a>grid <span class="ot">&lt;-</span> <span class="fu">expand.grid</span>(<span class="at">span =</span> <span class="fu">seq</span>(<span class="fl">0.15</span>, <span class="fl">0.65</span>, <span class="at">len =</span> <span class="dv">10</span>), <span class="at">degree =</span> <span class="dv">1</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb1063"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1063-1"><a href="caret.html#cb1063-1" aria-hidden="true" tabindex="-1"></a>grid <span class="ot">&lt;-</span> <span class="fu">expand.grid</span>(<span class="at">span =</span> <span class="fu">seq</span>(<span class="fl">0.15</span>, <span class="fl">0.65</span>, <span class="at">len =</span> <span class="dv">10</span>), <span class="at">degree =</span> <span class="dv">1</span>)</span></code></pre></div>
 <p>Utilizaremos los parámetros de control de validación cruzada predeterminados.</p>
-<div class="sourceCode" id="cb1063"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1063-1"><a href="caret.html#cb1063-1" aria-hidden="true" tabindex="-1"></a>train_loess <span class="ot">&lt;-</span> <span class="fu">train</span>(y <span class="sc">~</span> .,</span>
-<span id="cb1063-2"><a href="caret.html#cb1063-2" aria-hidden="true" tabindex="-1"></a>                     <span class="at">method =</span> <span class="st">&quot;gamLoess&quot;</span>,</span>
-<span id="cb1063-3"><a href="caret.html#cb1063-3" aria-hidden="true" tabindex="-1"></a>                     <span class="at">tuneGrid=</span>grid,</span>
-<span id="cb1063-4"><a href="caret.html#cb1063-4" aria-hidden="true" tabindex="-1"></a>                     <span class="at">data =</span> mnist_27<span class="sc">$</span>train)</span>
-<span id="cb1063-5"><a href="caret.html#cb1063-5" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(train_loess, <span class="at">highlight =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb1064"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1064-1"><a href="caret.html#cb1064-1" aria-hidden="true" tabindex="-1"></a>train_loess <span class="ot">&lt;-</span> <span class="fu">train</span>(y <span class="sc">~</span> .,</span>
+<span id="cb1064-2"><a href="caret.html#cb1064-2" aria-hidden="true" tabindex="-1"></a>                     <span class="at">method =</span> <span class="st">&quot;gamLoess&quot;</span>,</span>
+<span id="cb1064-3"><a href="caret.html#cb1064-3" aria-hidden="true" tabindex="-1"></a>                     <span class="at">tuneGrid=</span>grid,</span>
+<span id="cb1064-4"><a href="caret.html#cb1064-4" aria-hidden="true" tabindex="-1"></a>                     <span class="at">data =</span> mnist_27<span class="sc">$</span>train)</span>
+<span id="cb1064-5"><a href="caret.html#cb1064-5" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(train_loess, <span class="at">highlight =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
 <p><img src="libro_files/figure-html/loess-accuracy-1.png" width="70%" style="display: block; margin: auto;" /></p>
 <p>Podemos ver que el método funciona de manera similar a kNN:</p>
-<div class="sourceCode" id="cb1064"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1064-1"><a href="caret.html#cb1064-1" aria-hidden="true" tabindex="-1"></a><span class="fu">confusionMatrix</span>(<span class="at">data =</span> <span class="fu">predict</span>(train_loess, mnist_27<span class="sc">$</span>test),</span>
-<span id="cb1064-2"><a href="caret.html#cb1064-2" aria-hidden="true" tabindex="-1"></a>                <span class="at">reference =</span> mnist_27<span class="sc">$</span>test<span class="sc">$</span>y)<span class="sc">$</span>overall[<span class="st">&quot;Accuracy&quot;</span>]</span>
-<span id="cb1064-3"><a href="caret.html#cb1064-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Accuracy </span></span>
-<span id="cb1064-4"><a href="caret.html#cb1064-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;     0.85</span></span></code></pre></div>
+<div class="sourceCode" id="cb1065"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1065-1"><a href="caret.html#cb1065-1" aria-hidden="true" tabindex="-1"></a><span class="fu">confusionMatrix</span>(<span class="at">data =</span> <span class="fu">predict</span>(train_loess, mnist_27<span class="sc">$</span>test),</span>
+<span id="cb1065-2"><a href="caret.html#cb1065-2" aria-hidden="true" tabindex="-1"></a>                <span class="at">reference =</span> mnist_27<span class="sc">$</span>test<span class="sc">$</span>y)<span class="sc">$</span>overall[<span class="st">&quot;Accuracy&quot;</span>]</span>
+<span id="cb1065-3"><a href="caret.html#cb1065-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Accuracy </span></span>
+<span id="cb1065-4"><a href="caret.html#cb1065-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;     0.85</span></span></code></pre></div>
 <p>y produce un estimador más suave de la probabilidad condicional:</p>
 <p><img src="libro_files/figure-html/gam-smooth-1.png" width="100%" style="display: block; margin: auto;" /></p>
 
@@ -1162,7 +1161,6 @@ En el manual<a href="#fn113" class="footnote-ref" id="fnref113"><sup>113</sup></
     </div>
   </div>
 <script src="libs/gitbook-2.6.7/js/app.min.js"></script>
-<script src="libs/gitbook-2.6.7/js/lunr.js"></script>
 <script src="libs/gitbook-2.6.7/js/clipboard.min.js"></script>
 <script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
 <script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
@@ -1202,6 +1200,10 @@ gitbook.start({
 "text": null
 },
 "download": ["libro.pdf"],
+"search": {
+"engine": "fuse",
+"options": null
+},
 "toc": {
 "collapse": "section"
 }

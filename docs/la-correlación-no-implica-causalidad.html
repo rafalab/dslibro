@@ -6,11 +6,10 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <title>Capítulo 19 La correlación no implica causalidad | Introducción a la ciencia de datos</title>
   <meta name="description" content="Este libro presenta conceptos y destrezas que les ayudarán abordar los retos de situaciones actuales del análisis de datos. Cubre conceptos de probabilidad, inferencia estadística, regresión lineal y machine learning. Además, les permitirá desarrollar destrezas como la programación R, el wrangling de datos con dplyr, la visualización de datos con ggplot2, la organización de archivos con Shell de UNIX / Linux, el control de versiones con GitHub y la preparación de documentos reproducibles con R markdown." />
-  <meta name="generator" content="bookdown 0.22 and GitBook 2.6.7" />
+  <meta name="generator" content="bookdown 0.27 and GitBook 2.6.7" />
 
   <meta property="og:title" content="Capítulo 19 La correlación no implica causalidad | Introducción a la ciencia de datos" />
   <meta property="og:type" content="book" />
-  
   
   <meta property="og:description" content="Este libro presenta conceptos y destrezas que les ayudarán abordar los retos de situaciones actuales del análisis de datos. Cubre conceptos de probabilidad, inferencia estadística, regresión lineal y machine learning. Además, les permitirá desarrollar destrezas como la programación R, el wrangling de datos con dplyr, la visualización de datos con ggplot2, la organización de archivos con Shell de UNIX / Linux, el control de versiones con GitHub y la preparación de documentos reproducibles con R markdown." />
   
@@ -24,7 +23,7 @@
 <meta name="author" content="Rafael A. Irizarry" />
 
 
-<meta name="date" content="2021-07-03" />
+<meta name="date" content="2022-10-25" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -33,8 +32,8 @@
   
 <link rel="prev" href="linear-models.html"/>
 <link rel="next" href="introducción-al-wrangling-de-datos.html"/>
-<script src="libs/header-attrs-2.9/header-attrs.js"></script>
-<script src="libs/jquery-2.2.3/jquery.min.js"></script>
+<script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
 <link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
 <link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
@@ -50,9 +49,9 @@
 
 
 
-
-<link href="libs/anchor-sections-1.0.1/anchor-sections.css" rel="stylesheet" />
-<script src="libs/anchor-sections-1.0.1/anchor-sections.js"></script>
+<link href="libs/anchor-sections-1.1.0/anchor-sections.css" rel="stylesheet" />
+<link href="libs/anchor-sections-1.1.0/anchor-sections-hash.css" rel="stylesheet" />
+<script src="libs/anchor-sections-1.1.0/anchor-sections.js"></script>
 <script src="libs/kePrint-0.0.1/kePrint.js"></script>
 <link href="libs/lightable-0.0.1/lightable.css" rel="stylesheet" />
 
@@ -254,7 +253,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="4.3.3" data-path="tidyverse.html"><a href="tidyverse.html#cómo-seleccionar-columnas-con-select"><i class="fa fa-check"></i><b>4.3.3</b> Cómo seleccionar columnas con <code>select</code></a></li>
 </ul></li>
 <li class="chapter" data-level="4.4" data-path="tidyverse.html"><a href="tidyverse.html#ejercicios-9"><i class="fa fa-check"></i><b>4.4</b> Ejercicios</a></li>
-<li class="chapter" data-level="4.5" data-path="tidyverse.html"><a href="tidyverse.html#el-pipe"><i class="fa fa-check"></i><b>4.5</b> El <em>pipe</em>: <code>%&gt;%</code></a></li>
+<li class="chapter" data-level="4.5" data-path="tidyverse.html"><a href="tidyverse.html#el-pipe"><i class="fa fa-check"></i><b>4.5</b> El <em>pipe</em>: <code>|&gt;</code></a></li>
 <li class="chapter" data-level="4.6" data-path="tidyverse.html"><a href="tidyverse.html#ejercicios-10"><i class="fa fa-check"></i><b>4.6</b> Ejercicios</a></li>
 <li class="chapter" data-level="4.7" data-path="tidyverse.html"><a href="tidyverse.html#cómo-resumir-datos"><i class="fa fa-check"></i><b>4.7</b> Cómo resumir datos</a>
 <ul>
@@ -1025,91 +1024,91 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
           <div class="page-inner">
 
             <section class="normal" id="section-">
-<div id="la-correlación-no-implica-causalidad" class="section level1" number="19">
-<h1><span class="header-section-number">Capítulo 19</span> La correlación no implica causalidad</h1>
+<div id="la-correlación-no-implica-causalidad" class="section level1 hasAnchor" number="19">
+<h1><span class="header-section-number">Capítulo 19</span> La correlación no implica causalidad<a href="la-correlación-no-implica-causalidad.html#la-correlación-no-implica-causalidad" class="anchor-section" aria-label="Anchor link to header"></a></h1>
 <p>La correlación no implica causalidad es quizás la lección más importante que uno aprende en una clase de estadística. A lo largo de la parte de estadísticas del libro, hemos descrito herramientas útiles para cuantificar asociaciones entre variables. Sin embargo, debemos tener cuidado de no malinterpretar estas asociaciones.</p>
 <p>Hay muchas razones por las que una variable <span class="math inline">\(X\)</span> se puede correlacionar con una variable <span class="math inline">\(Y\)</span> sin tener ningún efecto directo sobre <span class="math inline">\(Y\)</span>. A continuación examinaremos cuatro formas comunes que pueden conducir a una malinterpretación de los datos.</p>
-<div id="correlación-espuria" class="section level2" number="19.1">
-<h2><span class="header-section-number">19.1</span> Correlación espuria</h2>
+<div id="correlación-espuria" class="section level2 hasAnchor" number="19.1">
+<h2><span class="header-section-number">19.1</span> Correlación espuria<a href="la-correlación-no-implica-causalidad.html#correlación-espuria" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>El siguiente ejemplo cómico subraya que la correlación no es causalidad. Muestra una correlación muy fuerte entre las tasas de divorcio y el consumo de margarina.</p>
 <p><img src="libro_files/figure-html/divorce-versus-margarine-1.png" width="70%" style="display: block; margin: auto;" /></p>
-<p>¿Significa esto que la margarina causa divorcios? ¿O los divorcios hacen que las personas coman más margarina? Por supuesto, la respuesta a ambas preguntas es “no.” Esto es solo un ejemplo de lo que llamamos una correlación espuria.</p>
+<p>¿Significa esto que la margarina causa divorcios? ¿O los divorcios hacen que las personas coman más margarina? Por supuesto, la respuesta a ambas preguntas es “no”. Esto es solo un ejemplo de lo que llamamos una correlación espuria.</p>
 <p>Pueden ver muchos más ejemplos absurdos en el sitio web <em>Spurious Correlations</em><a href="#fn82" class="footnote-ref" id="fnref82"><sup>82</sup></a>.</p>
 <p>Los casos que se presentan en el sitio de web de correlaciones espurias son todas instancias de lo que generalmente se llama <em>dragado de datos</em> o <em>pesca de datos</em> (<em>data dredging</em>, <em>data fishing</em>, o <em>data snooping</em> en inglés). Básicamente es cuando se escogen los datos selectivamente para confirmar cierta hipótesis. Un ejemplo de dragado de datos sería si observamos muchos resultados producidos por un proceso aleatorio y elegimos solo los que muestran una relación que respalda una teoría que queremos defender.</p>
 <p>Se puede usar una simulación Monte Carlo para mostrar cómo el dragado de datos puede resultar en altas correlaciones entre variables no correlacionadas. Guardaremos los resultados de nuestra simulación en un tibble:</p>
-<div class="sourceCode" id="cb703"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb703-1"><a href="la-correlación-no-implica-causalidad.html#cb703-1" aria-hidden="true" tabindex="-1"></a>N <span class="ot">&lt;-</span> <span class="dv">25</span></span>
-<span id="cb703-2"><a href="la-correlación-no-implica-causalidad.html#cb703-2" aria-hidden="true" tabindex="-1"></a>g <span class="ot">&lt;-</span> <span class="dv">1000000</span></span>
-<span id="cb703-3"><a href="la-correlación-no-implica-causalidad.html#cb703-3" aria-hidden="true" tabindex="-1"></a>sim_data <span class="ot">&lt;-</span> <span class="fu">tibble</span>(<span class="at">group =</span> <span class="fu">rep</span>(<span class="dv">1</span><span class="sc">:</span>g, <span class="at">each=</span>N),</span>
-<span id="cb703-4"><a href="la-correlación-no-implica-causalidad.html#cb703-4" aria-hidden="true" tabindex="-1"></a>                   <span class="at">x =</span> <span class="fu">rnorm</span>(N <span class="sc">*</span> g),</span>
-<span id="cb703-5"><a href="la-correlación-no-implica-causalidad.html#cb703-5" aria-hidden="true" tabindex="-1"></a>                   <span class="at">y =</span> <span class="fu">rnorm</span>(N <span class="sc">*</span> g))</span></code></pre></div>
+<div class="sourceCode" id="cb704"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb704-1"><a href="la-correlación-no-implica-causalidad.html#cb704-1" aria-hidden="true" tabindex="-1"></a>N <span class="ot">&lt;-</span> <span class="dv">25</span></span>
+<span id="cb704-2"><a href="la-correlación-no-implica-causalidad.html#cb704-2" aria-hidden="true" tabindex="-1"></a>g <span class="ot">&lt;-</span> <span class="dv">1000000</span></span>
+<span id="cb704-3"><a href="la-correlación-no-implica-causalidad.html#cb704-3" aria-hidden="true" tabindex="-1"></a>sim_data <span class="ot">&lt;-</span> <span class="fu">tibble</span>(<span class="at">group =</span> <span class="fu">rep</span>(<span class="dv">1</span><span class="sc">:</span>g, <span class="at">each=</span>N),</span>
+<span id="cb704-4"><a href="la-correlación-no-implica-causalidad.html#cb704-4" aria-hidden="true" tabindex="-1"></a>                   <span class="at">x =</span> <span class="fu">rnorm</span>(N <span class="sc">*</span> g),</span>
+<span id="cb704-5"><a href="la-correlación-no-implica-causalidad.html#cb704-5" aria-hidden="true" tabindex="-1"></a>                   <span class="at">y =</span> <span class="fu">rnorm</span>(N <span class="sc">*</span> g))</span></code></pre></div>
 <p>La primera columna denota grupo. Creamos grupos y para cada uno generamos un par de vectores independientes, <span class="math inline">\(X\)</span> e <span class="math inline">\(Y\)</span>, cada una con 25 observaciones, almacenadas en la segunda y tercera columnas. Debido a que construimos la simulación, sabemos que <span class="math inline">\(X\)</span> e <span class="math inline">\(Y\)</span> no están correlacionadas.</p>
 <p>A continuación, calculamos la correlación entre <span class="math inline">\(X\)</span> e <span class="math inline">\(Y\)</span> para cada grupo y miramos el máximo:</p>
-<div class="sourceCode" id="cb704"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb704-1"><a href="la-correlación-no-implica-causalidad.html#cb704-1" aria-hidden="true" tabindex="-1"></a>res <span class="ot">&lt;-</span> sim_data <span class="sc">%&gt;%</span></span>
-<span id="cb704-2"><a href="la-correlación-no-implica-causalidad.html#cb704-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(group) <span class="sc">%&gt;%</span></span>
-<span id="cb704-3"><a href="la-correlación-no-implica-causalidad.html#cb704-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="at">r =</span> <span class="fu">cor</span>(x, y)) <span class="sc">%&gt;%</span></span>
-<span id="cb704-4"><a href="la-correlación-no-implica-causalidad.html#cb704-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(<span class="fu">desc</span>(r))</span>
-<span id="cb704-5"><a href="la-correlación-no-implica-causalidad.html#cb704-5" aria-hidden="true" tabindex="-1"></a>res</span>
-<span id="cb704-6"><a href="la-correlación-no-implica-causalidad.html#cb704-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # A tibble: 1,000,000 x 2</span></span>
-<span id="cb704-7"><a href="la-correlación-no-implica-causalidad.html#cb704-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;    group     r</span></span>
-<span id="cb704-8"><a href="la-correlación-no-implica-causalidad.html#cb704-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;    &lt;int&gt; &lt;dbl&gt;</span></span>
-<span id="cb704-9"><a href="la-correlación-no-implica-causalidad.html#cb704-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1 469312 0.777</span></span>
-<span id="cb704-10"><a href="la-correlación-no-implica-causalidad.html#cb704-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2 302528 0.773</span></span>
-<span id="cb704-11"><a href="la-correlación-no-implica-causalidad.html#cb704-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 3 266383 0.767</span></span>
-<span id="cb704-12"><a href="la-correlación-no-implica-causalidad.html#cb704-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 4 828123 0.763</span></span>
-<span id="cb704-13"><a href="la-correlación-no-implica-causalidad.html#cb704-13" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 5 940853 0.760</span></span>
-<span id="cb704-14"><a href="la-correlación-no-implica-causalidad.html#cb704-14" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # … with 999,995 more rows</span></span></code></pre></div>
-<p>Vemos una correlación máxima de 0.777 y, si solo graficamos los datos del grupo con esta correlación, vemos un gráfico convincente que <span class="math inline">\(X\)</span> e <span class="math inline">\(Y\)</span> sí están correlacionados:</p>
-<div class="sourceCode" id="cb705"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb705-1"><a href="la-correlación-no-implica-causalidad.html#cb705-1" aria-hidden="true" tabindex="-1"></a>sim_data <span class="sc">%&gt;%</span> <span class="fu">filter</span>(group <span class="sc">==</span> res<span class="sc">$</span>group[<span class="fu">which.max</span>(res<span class="sc">$</span>r)]) <span class="sc">%&gt;%</span></span>
-<span id="cb705-2"><a href="la-correlación-no-implica-causalidad.html#cb705-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(x, y)) <span class="sc">+</span></span>
-<span id="cb705-3"><a href="la-correlación-no-implica-causalidad.html#cb705-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>() <span class="sc">+</span></span>
-<span id="cb705-4"><a href="la-correlación-no-implica-causalidad.html#cb705-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_smooth</span>(<span class="at">method =</span> <span class="st">&quot;lm&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb705"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb705-1"><a href="la-correlación-no-implica-causalidad.html#cb705-1" aria-hidden="true" tabindex="-1"></a>res <span class="ot">&lt;-</span> sim_data <span class="sc">|&gt;</span></span>
+<span id="cb705-2"><a href="la-correlación-no-implica-causalidad.html#cb705-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(group) <span class="sc">|&gt;</span></span>
+<span id="cb705-3"><a href="la-correlación-no-implica-causalidad.html#cb705-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="at">r =</span> <span class="fu">cor</span>(x, y)) <span class="sc">|&gt;</span></span>
+<span id="cb705-4"><a href="la-correlación-no-implica-causalidad.html#cb705-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(<span class="fu">desc</span>(r))</span>
+<span id="cb705-5"><a href="la-correlación-no-implica-causalidad.html#cb705-5" aria-hidden="true" tabindex="-1"></a>res</span>
+<span id="cb705-6"><a href="la-correlación-no-implica-causalidad.html#cb705-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # A tibble: 1,000,000 × 2</span></span>
+<span id="cb705-7"><a href="la-correlación-no-implica-causalidad.html#cb705-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;    group     r</span></span>
+<span id="cb705-8"><a href="la-correlación-no-implica-causalidad.html#cb705-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;    &lt;int&gt; &lt;dbl&gt;</span></span>
+<span id="cb705-9"><a href="la-correlación-no-implica-causalidad.html#cb705-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1 523431 0.788</span></span>
+<span id="cb705-10"><a href="la-correlación-no-implica-causalidad.html#cb705-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2 482207 0.788</span></span>
+<span id="cb705-11"><a href="la-correlación-no-implica-causalidad.html#cb705-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 3 219209 0.785</span></span>
+<span id="cb705-12"><a href="la-correlación-no-implica-causalidad.html#cb705-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 4 560187 0.782</span></span>
+<span id="cb705-13"><a href="la-correlación-no-implica-causalidad.html#cb705-13" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 5 461317 0.782</span></span>
+<span id="cb705-14"><a href="la-correlación-no-implica-causalidad.html#cb705-14" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # … with 999,995 more rows</span></span></code></pre></div>
+<p>Vemos una correlación máxima de 0.788 y, si solo graficamos los datos del grupo con esta correlación, vemos un gráfico convincente que <span class="math inline">\(X\)</span> e <span class="math inline">\(Y\)</span> sí están correlacionados:</p>
+<div class="sourceCode" id="cb706"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb706-1"><a href="la-correlación-no-implica-causalidad.html#cb706-1" aria-hidden="true" tabindex="-1"></a>sim_data <span class="sc">|&gt;</span> <span class="fu">filter</span>(group <span class="sc">==</span> res<span class="sc">$</span>group[<span class="fu">which.max</span>(res<span class="sc">$</span>r)]) <span class="sc">|&gt;</span></span>
+<span id="cb706-2"><a href="la-correlación-no-implica-causalidad.html#cb706-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(x, y)) <span class="sc">+</span></span>
+<span id="cb706-3"><a href="la-correlación-no-implica-causalidad.html#cb706-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>() <span class="sc">+</span></span>
+<span id="cb706-4"><a href="la-correlación-no-implica-causalidad.html#cb706-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_smooth</span>(<span class="at">method =</span> <span class="st">&quot;lm&quot;</span>)</span></code></pre></div>
 <p><img src="libro_files/figure-html/dredging-1.png" width="70%" style="display: block; margin: auto;" /></p>
 <p>Recuerden que el resumen de correlación es una variable aleatoria. Aquí tenemos la distribución generada por la simulación Monte Carlo:</p>
-<div class="sourceCode" id="cb706"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb706-1"><a href="la-correlación-no-implica-causalidad.html#cb706-1" aria-hidden="true" tabindex="-1"></a>res <span class="sc">%&gt;%</span> <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span>r)) <span class="sc">+</span> <span class="fu">geom_histogram</span>(<span class="at">binwidth =</span> <span class="fl">0.1</span>, <span class="at">color =</span> <span class="st">&quot;black&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb707"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb707-1"><a href="la-correlación-no-implica-causalidad.html#cb707-1" aria-hidden="true" tabindex="-1"></a>res <span class="sc">|&gt;</span> <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span>r)) <span class="sc">+</span> <span class="fu">geom_histogram</span>(<span class="at">binwidth =</span> <span class="fl">0.1</span>, <span class="at">color =</span> <span class="st">&quot;black&quot;</span>)</span></code></pre></div>
 <p><img src="libro_files/figure-html/null-corr-hist-1.png" width="70%" style="display: block; margin: auto;" /></p>
 <p>Es un hecho matemático que si observamos correlaciones aleatorias que se esperan que sean 0, pero tienen un error estándar de 0.204, la más grande estará cerca de 1.</p>
 <p>Si realizamos una regresión en este grupo e interpretamos el valor-p, afirmaríamos incorrectamente que esta es una relación estadísticamente significativa:</p>
-<div class="sourceCode" id="cb707"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb707-1"><a href="la-correlación-no-implica-causalidad.html#cb707-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(broom)</span>
-<span id="cb707-2"><a href="la-correlación-no-implica-causalidad.html#cb707-2" aria-hidden="true" tabindex="-1"></a>sim_data <span class="sc">%&gt;%</span></span>
-<span id="cb707-3"><a href="la-correlación-no-implica-causalidad.html#cb707-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(group <span class="sc">==</span> res<span class="sc">$</span>group[<span class="fu">which.max</span>(res<span class="sc">$</span>r)]) <span class="sc">%&gt;%</span></span>
-<span id="cb707-4"><a href="la-correlación-no-implica-causalidad.html#cb707-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="fu">tidy</span>(<span class="fu">lm</span>(y <span class="sc">~</span> x))) <span class="sc">%&gt;%</span></span>
-<span id="cb707-5"><a href="la-correlación-no-implica-causalidad.html#cb707-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(term <span class="sc">==</span> <span class="st">&quot;x&quot;</span>)</span>
-<span id="cb707-6"><a href="la-correlación-no-implica-causalidad.html#cb707-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # A tibble: 1 x 5</span></span>
-<span id="cb707-7"><a href="la-correlación-no-implica-causalidad.html#cb707-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   term  estimate std.error statistic    p.value</span></span>
-<span id="cb707-8"><a href="la-correlación-no-implica-causalidad.html#cb707-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   &lt;chr&gt;    &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;      &lt;dbl&gt;</span></span>
-<span id="cb707-9"><a href="la-correlación-no-implica-causalidad.html#cb707-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1 x        0.878     0.148      5.92 0.00000487</span></span></code></pre></div>
+<div class="sourceCode" id="cb708"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb708-1"><a href="la-correlación-no-implica-causalidad.html#cb708-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(broom)</span>
+<span id="cb708-2"><a href="la-correlación-no-implica-causalidad.html#cb708-2" aria-hidden="true" tabindex="-1"></a>sim_data <span class="sc">|&gt;</span></span>
+<span id="cb708-3"><a href="la-correlación-no-implica-causalidad.html#cb708-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(group <span class="sc">==</span> res<span class="sc">$</span>group[<span class="fu">which.max</span>(res<span class="sc">$</span>r)]) <span class="sc">|&gt;</span></span>
+<span id="cb708-4"><a href="la-correlación-no-implica-causalidad.html#cb708-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="fu">tidy</span>(<span class="fu">lm</span>(y <span class="sc">~</span> x))) <span class="sc">|&gt;</span></span>
+<span id="cb708-5"><a href="la-correlación-no-implica-causalidad.html#cb708-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(term <span class="sc">==</span> <span class="st">&quot;x&quot;</span>)</span>
+<span id="cb708-6"><a href="la-correlación-no-implica-causalidad.html#cb708-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # A tibble: 1 × 5</span></span>
+<span id="cb708-7"><a href="la-correlación-no-implica-causalidad.html#cb708-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   term  estimate std.error statistic    p.value</span></span>
+<span id="cb708-8"><a href="la-correlación-no-implica-causalidad.html#cb708-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   &lt;chr&gt;    &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;      &lt;dbl&gt;</span></span>
+<span id="cb708-9"><a href="la-correlación-no-implica-causalidad.html#cb708-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1 x        0.790     0.129      6.13 0.00000295</span></span></code></pre></div>
 <p>Esta forma particular de dragado de datos se conoce como <em>p-hacking</em>. El <em>p-hacking</em> es un tema de mucha discusión porque es un problema en publicaciones científicas. Debido a que los editores tienden a premiar resultados estadísticamente significativos sobre resultados negativos, existe un incentivo para informar resultados significativos. En la epidemiología y las ciencias sociales, por ejemplo, los investigadores pueden buscar asociaciones entre un resultado adverso y varias exposiciones a distintos tipos de riesgo e informar solo la exposición que resultó en un valor-p pequeño. Además, podrían intentar ajustar varios modelos diferentes para tomar en cuenta la confusión y elegir el que da el valor-p más pequeño. En disciplinas experimentales, un experimento puede repetirse más de una vez, pero solo informar los resultados del experimento con un valor-p pequeño. Esto no sucede necesariamente debido a comportamientos antiéticos, sino más bien como resultado de la ignorancia estadística o de meras ilusiones. En los cursos de estadística avanzada, pueden aprender métodos para tomar en cuenta estas múltiples comparaciones.</p>
 </div>
-<div id="valores-atípicos-1" class="section level2" number="19.2">
-<h2><span class="header-section-number">19.2</span> Valores atípicos</h2>
+<div id="valores-atípicos-1" class="section level2 hasAnchor" number="19.2">
+<h2><span class="header-section-number">19.2</span> Valores atípicos<a href="la-correlación-no-implica-causalidad.html#valores-atípicos-1" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>Supongan que tomamos medidas de dos resultados independientes, <span class="math inline">\(X\)</span> e <span class="math inline">\(Y\)</span>, y estandarizamos las medidas. Sin embargo, cometemos un error y olvidamos estandarizar la entrada 23. Podemos simular dichos datos usando:</p>
-<div class="sourceCode" id="cb708"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb708-1"><a href="la-correlación-no-implica-causalidad.html#cb708-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">1985</span>)</span>
-<span id="cb708-2"><a href="la-correlación-no-implica-causalidad.html#cb708-2" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(<span class="dv">100</span>,<span class="dv">100</span>,<span class="dv">1</span>)</span>
-<span id="cb708-3"><a href="la-correlación-no-implica-causalidad.html#cb708-3" aria-hidden="true" tabindex="-1"></a>y <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(<span class="dv">100</span>,<span class="dv">84</span>,<span class="dv">1</span>)</span>
-<span id="cb708-4"><a href="la-correlación-no-implica-causalidad.html#cb708-4" aria-hidden="true" tabindex="-1"></a>x[<span class="sc">-</span><span class="dv">23</span>] <span class="ot">&lt;-</span> <span class="fu">scale</span>(x[<span class="sc">-</span><span class="dv">23</span>])</span>
-<span id="cb708-5"><a href="la-correlación-no-implica-causalidad.html#cb708-5" aria-hidden="true" tabindex="-1"></a>y[<span class="sc">-</span><span class="dv">23</span>] <span class="ot">&lt;-</span> <span class="fu">scale</span>(y[<span class="sc">-</span><span class="dv">23</span>])</span></code></pre></div>
+<div class="sourceCode" id="cb709"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb709-1"><a href="la-correlación-no-implica-causalidad.html#cb709-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">1985</span>)</span>
+<span id="cb709-2"><a href="la-correlación-no-implica-causalidad.html#cb709-2" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(<span class="dv">100</span>,<span class="dv">100</span>,<span class="dv">1</span>)</span>
+<span id="cb709-3"><a href="la-correlación-no-implica-causalidad.html#cb709-3" aria-hidden="true" tabindex="-1"></a>y <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(<span class="dv">100</span>,<span class="dv">84</span>,<span class="dv">1</span>)</span>
+<span id="cb709-4"><a href="la-correlación-no-implica-causalidad.html#cb709-4" aria-hidden="true" tabindex="-1"></a>x[<span class="sc">-</span><span class="dv">23</span>] <span class="ot">&lt;-</span> <span class="fu">scale</span>(x[<span class="sc">-</span><span class="dv">23</span>])</span>
+<span id="cb709-5"><a href="la-correlación-no-implica-causalidad.html#cb709-5" aria-hidden="true" tabindex="-1"></a>y[<span class="sc">-</span><span class="dv">23</span>] <span class="ot">&lt;-</span> <span class="fu">scale</span>(y[<span class="sc">-</span><span class="dv">23</span>])</span></code></pre></div>
 <p>Los datos se ven así:</p>
-<div class="sourceCode" id="cb709"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb709-1"><a href="la-correlación-no-implica-causalidad.html#cb709-1" aria-hidden="true" tabindex="-1"></a><span class="fu">qplot</span>(x, y)</span></code></pre></div>
+<div class="sourceCode" id="cb710"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb710-1"><a href="la-correlación-no-implica-causalidad.html#cb710-1" aria-hidden="true" tabindex="-1"></a><span class="fu">qplot</span>(x, y)</span></code></pre></div>
 <p><img src="libro_files/figure-html/outlier-1.png" width="70%" style="display: block; margin: auto;" /></p>
 <p>No es sorprendente que la correlación sea bien alta:</p>
-<div class="sourceCode" id="cb710"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb710-1"><a href="la-correlación-no-implica-causalidad.html#cb710-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cor</span>(x,y)</span>
-<span id="cb710-2"><a href="la-correlación-no-implica-causalidad.html#cb710-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] 0.988</span></span></code></pre></div>
+<div class="sourceCode" id="cb711"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb711-1"><a href="la-correlación-no-implica-causalidad.html#cb711-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cor</span>(x,y)</span>
+<span id="cb711-2"><a href="la-correlación-no-implica-causalidad.html#cb711-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] 0.988</span></span></code></pre></div>
 <p>Pero lo impulsa un valor atípico. Si eliminamos este valor atípico, la correlación se reduce considerablemente a casi 0, que es lo que debería ser:</p>
-<div class="sourceCode" id="cb711"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb711-1"><a href="la-correlación-no-implica-causalidad.html#cb711-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cor</span>(x[<span class="sc">-</span><span class="dv">23</span>], y[<span class="sc">-</span><span class="dv">23</span>])</span>
-<span id="cb711-2"><a href="la-correlación-no-implica-causalidad.html#cb711-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] -0.0442</span></span></code></pre></div>
+<div class="sourceCode" id="cb712"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb712-1"><a href="la-correlación-no-implica-causalidad.html#cb712-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cor</span>(x[<span class="sc">-</span><span class="dv">23</span>], y[<span class="sc">-</span><span class="dv">23</span>])</span>
+<span id="cb712-2"><a href="la-correlación-no-implica-causalidad.html#cb712-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] -0.0442</span></span></code></pre></div>
 <p>En la Sección <a href="robust-summaries.html#robust-summaries">11</a>, describimos alternativas al promedio y la desviación estándar que son robustas a valores atípicos. También hay una alternativa a la correlación muestral para estimar la correlación de población que es robusta a valores atípicos. Se llama <em>la correlación de Spearman</em>. La idea es sencilla: calcular la correlación basada en los rangos de los valores. Aquí tenemos un gráfico de los rangos graficados uno contra el otro:</p>
-<div class="sourceCode" id="cb712"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb712-1"><a href="la-correlación-no-implica-causalidad.html#cb712-1" aria-hidden="true" tabindex="-1"></a><span class="fu">qplot</span>(<span class="fu">rank</span>(x), <span class="fu">rank</span>(y))</span></code></pre></div>
+<div class="sourceCode" id="cb713"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb713-1"><a href="la-correlación-no-implica-causalidad.html#cb713-1" aria-hidden="true" tabindex="-1"></a><span class="fu">qplot</span>(<span class="fu">rank</span>(x), <span class="fu">rank</span>(y))</span></code></pre></div>
 <p><img src="libro_files/figure-html/scatter-plot-of-ranks-1.png" width="70%" style="display: block; margin: auto;" /></p>
 <p>El valor atípico ya no está asociado con un valor muy grande y la correlación se reduce:</p>
-<div class="sourceCode" id="cb713"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb713-1"><a href="la-correlación-no-implica-causalidad.html#cb713-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cor</span>(<span class="fu">rank</span>(x), <span class="fu">rank</span>(y))</span>
-<span id="cb713-2"><a href="la-correlación-no-implica-causalidad.html#cb713-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] 0.00251</span></span></code></pre></div>
-<p>La correlación de Spearman también se puede calcular así:</p>
-<div class="sourceCode" id="cb714"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb714-1"><a href="la-correlación-no-implica-causalidad.html#cb714-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cor</span>(x, y, <span class="at">method =</span> <span class="st">&quot;spearman&quot;</span>)</span>
+<div class="sourceCode" id="cb714"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb714-1"><a href="la-correlación-no-implica-causalidad.html#cb714-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cor</span>(<span class="fu">rank</span>(x), <span class="fu">rank</span>(y))</span>
 <span id="cb714-2"><a href="la-correlación-no-implica-causalidad.html#cb714-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] 0.00251</span></span></code></pre></div>
+<p>La correlación de Spearman también se puede calcular así:</p>
+<div class="sourceCode" id="cb715"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb715-1"><a href="la-correlación-no-implica-causalidad.html#cb715-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cor</span>(x, y, <span class="at">method =</span> <span class="st">&quot;spearman&quot;</span>)</span>
+<span id="cb715-2"><a href="la-correlación-no-implica-causalidad.html#cb715-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] 0.00251</span></span></code></pre></div>
 <p>Además, hay métodos robustos para ajustar modelos lineales que pueden aprender, por ejemplo, en en libro <em>Robust Statistics: Edition 2</em> de Peter J. Huber y Elvezio M. Ronchetti.</p>
 </div>
-<div id="inversión-de-causa-y-efecto" class="section level2" number="19.3">
-<h2><span class="header-section-number">19.3</span> Inversión de causa y efecto</h2>
+<div id="inversión-de-causa-y-efecto" class="section level2 hasAnchor" number="19.3">
+<h2><span class="header-section-number">19.3</span> Inversión de causa y efecto<a href="la-correlación-no-implica-causalidad.html#inversión-de-causa-y-efecto" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>Otra forma en que la asociación se confunde con la causalidad es cuando la causa y el efecto se invierten. Un ejemplo de esto es afirmar que la tutoría afecta negativamente a los estudiantes porque éstos evalúan peor que sus compañeros que no reciben tutoría. En este caso, la tutoría no está causando las bajas puntuaciones en las pruebas, sino al revés.</p>
 <p>Una versión de este reclamo se convirtió en un artículo de opinión en el New York Times titulado <em>Parental Involvement Is Overrated</em><a href="#fn83" class="footnote-ref" id="fnref83"><sup>83</sup></a>. Consideren esta cita del artículo:</p>
 <blockquote>
@@ -1121,35 +1120,35 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <p>Fácilmente podemos construir un ejemplo de inversión de causa y efecto utilizando los datos de altura de padre e hijo. Si nos ajustamos al modelo:</p>
 <p><span class="math display">\[X_i = \beta_0 + \beta_1 y_i + \varepsilon_i, i=1, \dots, N\]</span></p>
 <p>a los datos de altura de padre e hijo, con <span class="math inline">\(X_i\)</span> la altura del padre e <span class="math inline">\(y_i\)</span> la altura del hijo, obtenemos un resultado estadísticamente significativo:</p>
-<div class="sourceCode" id="cb715"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb715-1"><a href="la-correlación-no-implica-causalidad.html#cb715-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(HistData)</span>
-<span id="cb715-2"><a href="la-correlación-no-implica-causalidad.html#cb715-2" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(<span class="st">&quot;GaltonFamilies&quot;</span>)</span>
-<span id="cb715-3"><a href="la-correlación-no-implica-causalidad.html#cb715-3" aria-hidden="true" tabindex="-1"></a>GaltonFamilies <span class="sc">%&gt;%</span></span>
-<span id="cb715-4"><a href="la-correlación-no-implica-causalidad.html#cb715-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(childNum <span class="sc">==</span> <span class="dv">1</span> <span class="sc">&amp;</span> gender <span class="sc">==</span> <span class="st">&quot;male&quot;</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb715-5"><a href="la-correlación-no-implica-causalidad.html#cb715-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(father, childHeight) <span class="sc">%&gt;%</span></span>
-<span id="cb715-6"><a href="la-correlación-no-implica-causalidad.html#cb715-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rename</span>(<span class="at">son =</span> childHeight) <span class="sc">%&gt;%</span></span>
-<span id="cb715-7"><a href="la-correlación-no-implica-causalidad.html#cb715-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="fu">tidy</span>(<span class="fu">lm</span>(father <span class="sc">~</span> son)))</span>
-<span id="cb715-8"><a href="la-correlación-no-implica-causalidad.html#cb715-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;          term estimate std.error statistic  p.value</span></span>
-<span id="cb715-9"><a href="la-correlación-no-implica-causalidad.html#cb715-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1 (Intercept)   33.965    4.5682      7.44 4.31e-12</span></span>
-<span id="cb715-10"><a href="la-correlación-no-implica-causalidad.html#cb715-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2         son    0.499    0.0648      7.70 9.47e-13</span></span></code></pre></div>
+<div class="sourceCode" id="cb716"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb716-1"><a href="la-correlación-no-implica-causalidad.html#cb716-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(HistData)</span>
+<span id="cb716-2"><a href="la-correlación-no-implica-causalidad.html#cb716-2" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(<span class="st">&quot;GaltonFamilies&quot;</span>)</span>
+<span id="cb716-3"><a href="la-correlación-no-implica-causalidad.html#cb716-3" aria-hidden="true" tabindex="-1"></a>GaltonFamilies <span class="sc">|&gt;</span></span>
+<span id="cb716-4"><a href="la-correlación-no-implica-causalidad.html#cb716-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(childNum <span class="sc">==</span> <span class="dv">1</span> <span class="sc">&amp;</span> gender <span class="sc">==</span> <span class="st">&quot;male&quot;</span>) <span class="sc">|&gt;</span></span>
+<span id="cb716-5"><a href="la-correlación-no-implica-causalidad.html#cb716-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(father, childHeight) <span class="sc">|&gt;</span></span>
+<span id="cb716-6"><a href="la-correlación-no-implica-causalidad.html#cb716-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rename</span>(<span class="at">son =</span> childHeight) <span class="sc">|&gt;</span></span>
+<span id="cb716-7"><a href="la-correlación-no-implica-causalidad.html#cb716-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="fu">tidy</span>(<span class="fu">lm</span>(father <span class="sc">~</span> son)))</span>
+<span id="cb716-8"><a href="la-correlación-no-implica-causalidad.html#cb716-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;          term estimate std.error statistic  p.value</span></span>
+<span id="cb716-9"><a href="la-correlación-no-implica-causalidad.html#cb716-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1 (Intercept)   33.965    4.5682      7.44 4.31e-12</span></span>
+<span id="cb716-10"><a href="la-correlación-no-implica-causalidad.html#cb716-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2         son    0.499    0.0648      7.70 9.47e-13</span></span></code></pre></div>
 <p>El modelo se ajusta muy bien a los datos. Si observamos la formulación matemática del modelo anterior, podría interpretarse fácilmente de manera incorrecta para sugerir que el hijo siendo alto hace que el padre sea alto. Pero dado lo que sabemos sobre genética y biología, sabemos que es al revés. El modelo es técnicamente correcto. Los estimadores y los valores-p también se obtuvieron correctamente. Lo que está mal aquí es la interpretación.</p>
 </div>
-<div id="factores-de-confusión" class="section level2" number="19.4">
-<h2><span class="header-section-number">19.4</span> Factores de confusión</h2>
+<div id="factores-de-confusión" class="section level2 hasAnchor" number="19.4">
+<h2><span class="header-section-number">19.4</span> Factores de confusión<a href="la-correlación-no-implica-causalidad.html#factores-de-confusión" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>Los factores de confusión son quizás la razón más común que conduce a que las asociaciones se malinterpreten.</p>
 <p>Si <span class="math inline">\(X\)</span> e <span class="math inline">\(Y\)</span> están correlacionados, llamamos <span class="math inline">\(Z\)</span> un <em>factor de confusión</em> (<em>confounder</em> en inglés) si cambios en <span class="math inline">\(Z\)</span> provocan cambios en ambos <span class="math inline">\(X\)</span> e <span class="math inline">\(Y\)</span>. Anteriormente, al estudiar los datos del béisbol, vimos cómo los cuadrangulares eran un factor de confusión que resultaban en una correlación más alta de lo esperado al estudiar la relación entre BB y HR. En algunos casos, podemos usar modelos lineales para tomar en cuenta los factores de confusión. Sin embargo, este no siempre es el caso.</p>
 <p>La interpretación incorrecta debido a factores de confusión es omnipresente en la prensa laica y, a menudo, son difíciles de detectar. Aquí, presentamos un ejemplo ampliamente utilizado relacionado con las admisiones a la universidad.</p>
-<div id="ejemplo-admisiones-a-la-universidad-de-california-berkeley" class="section level3" number="19.4.1">
-<h3><span class="header-section-number">19.4.1</span> Ejemplo: admisiones a la Universidad de California, Berkeley</h3>
+<div id="ejemplo-admisiones-a-la-universidad-de-california-berkeley" class="section level3 hasAnchor" number="19.4.1">
+<h3><span class="header-section-number">19.4.1</span> Ejemplo: admisiones a la Universidad de California, Berkeley<a href="la-correlación-no-implica-causalidad.html#ejemplo-admisiones-a-la-universidad-de-california-berkeley" class="anchor-section" aria-label="Anchor link to header"></a></h3>
 <p>Los datos de admisión de seis concentraciones de U.C. Berkeley, de 1973, mostraron que se admitían a más hombres que mujeres: el 44% de los hombres fueron aceptados en comparación con el 30% de las mujeres. PJ Bickel, EA Hammel &amp; JW O’Connell. Science (1975). Podemos cargar los datos y
 <!--compute the percent of men and women that were accepted like this:
 
 
 ```r
 data(admissions)
-admissions %>% group_by(gender) %>%
+admissions |> group_by(gender) |>
 summarize(percentage =
 round(sum(admitted*applicants)/sum(applicants),1))
-#> # A tibble: 2 x 2
+#> # A tibble: 2 × 2
 #>   gender percentage
 #>   <chr>       <dbl>
 #> 1 men          44.5
@@ -1157,49 +1156,50 @@ round(sum(admitted*applicants)/sum(applicants),1))
 ```
 -->
 ejecutar una prueba estadística, que rechaza claramente la hipótesis de que el género y la admisión son independientes:</p>
-<div class="sourceCode" id="cb716"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb716-1"><a href="la-correlación-no-implica-causalidad.html#cb716-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(admissions)</span>
-<span id="cb716-2"><a href="la-correlación-no-implica-causalidad.html#cb716-2" aria-hidden="true" tabindex="-1"></a>admissions <span class="sc">%&gt;%</span> <span class="fu">group_by</span>(gender) <span class="sc">%&gt;%</span></span>
-<span id="cb716-3"><a href="la-correlación-no-implica-causalidad.html#cb716-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="at">total_admitted =</span> <span class="fu">round</span>(<span class="fu">sum</span>(admitted<span class="sc">/</span> <span class="dv">100</span> <span class="sc">*</span> applicants)),</span>
-<span id="cb716-4"><a href="la-correlación-no-implica-causalidad.html#cb716-4" aria-hidden="true" tabindex="-1"></a>            <span class="at">not_admitted =</span> <span class="fu">sum</span>(applicants) <span class="sc">-</span> <span class="fu">sum</span>(total_admitted)) <span class="sc">%&gt;%</span></span>
-<span id="cb716-5"><a href="la-correlación-no-implica-causalidad.html#cb716-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="sc">-</span>gender) <span class="sc">%&gt;%</span></span>
-<span id="cb716-6"><a href="la-correlación-no-implica-causalidad.html#cb716-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="fu">tidy</span>(<span class="fu">chisq.test</span>(.))) <span class="sc">%&gt;%</span> .<span class="sc">$</span>p.value</span>
-<span id="cb716-7"><a href="la-correlación-no-implica-causalidad.html#cb716-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] 1.06e-21</span></span></code></pre></div>
+<div class="sourceCode" id="cb717"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb717-1"><a href="la-correlación-no-implica-causalidad.html#cb717-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(admissions)</span>
+<span id="cb717-2"><a href="la-correlación-no-implica-causalidad.html#cb717-2" aria-hidden="true" tabindex="-1"></a>two_by_two <span class="ot">&lt;-</span> admissions <span class="sc">|&gt;</span> <span class="fu">group_by</span>(gender) <span class="sc">|&gt;</span> </span>
+<span id="cb717-3"><a href="la-correlación-no-implica-causalidad.html#cb717-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="at">total_admitted =</span> <span class="fu">round</span>(<span class="fu">sum</span>(admitted <span class="sc">/</span> <span class="dv">100</span> <span class="sc">*</span> applicants)), </span>
+<span id="cb717-4"><a href="la-correlación-no-implica-causalidad.html#cb717-4" aria-hidden="true" tabindex="-1"></a>            <span class="at">not_admitted =</span> <span class="fu">sum</span>(applicants) <span class="sc">-</span> <span class="fu">sum</span>(total_admitted)) <span class="sc">|&gt;</span></span>
+<span id="cb717-5"><a href="la-correlación-no-implica-causalidad.html#cb717-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="sc">-</span>gender) </span>
+<span id="cb717-6"><a href="la-correlación-no-implica-causalidad.html#cb717-6" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb717-7"><a href="la-correlación-no-implica-causalidad.html#cb717-7" aria-hidden="true" tabindex="-1"></a><span class="fu">chisq.test</span>(two_by_two)<span class="sc">$</span>p.value</span>
+<span id="cb717-8"><a href="la-correlación-no-implica-causalidad.html#cb717-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] 1.06e-21</span></span></code></pre></div>
 <p>Pero una inspección más cuidadosa muestra un resultado paradójico. Aquí están los porcentajes de admisión por concentración :</p>
-<div class="sourceCode" id="cb717"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb717-1"><a href="la-correlación-no-implica-causalidad.html#cb717-1" aria-hidden="true" tabindex="-1"></a>admissions <span class="sc">%&gt;%</span> <span class="fu">select</span>(major, gender, admitted) <span class="sc">%&gt;%</span></span>
-<span id="cb717-2"><a href="la-correlación-no-implica-causalidad.html#cb717-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_wider</span>(<span class="at">names_from =</span> <span class="st">&quot;gender&quot;</span>, <span class="at">values_from =</span> <span class="st">&quot;admitted&quot;</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb717-3"><a href="la-correlación-no-implica-causalidad.html#cb717-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">women_minus_men =</span> women <span class="sc">-</span> men)</span>
-<span id="cb717-4"><a href="la-correlación-no-implica-causalidad.html#cb717-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # A tibble: 6 x 4</span></span>
-<span id="cb717-5"><a href="la-correlación-no-implica-causalidad.html#cb717-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   major   men women women_minus_men</span></span>
-<span id="cb717-6"><a href="la-correlación-no-implica-causalidad.html#cb717-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   &lt;chr&gt; &lt;dbl&gt; &lt;dbl&gt;           &lt;dbl&gt;</span></span>
-<span id="cb717-7"><a href="la-correlación-no-implica-causalidad.html#cb717-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1 A        62    82              20</span></span>
-<span id="cb717-8"><a href="la-correlación-no-implica-causalidad.html#cb717-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2 B        63    68               5</span></span>
-<span id="cb717-9"><a href="la-correlación-no-implica-causalidad.html#cb717-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 3 C        37    34              -3</span></span>
-<span id="cb717-10"><a href="la-correlación-no-implica-causalidad.html#cb717-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 4 D        33    35               2</span></span>
-<span id="cb717-11"><a href="la-correlación-no-implica-causalidad.html#cb717-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 5 E        28    24              -4</span></span>
-<span id="cb717-12"><a href="la-correlación-no-implica-causalidad.html#cb717-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # … with 1 more row</span></span></code></pre></div>
+<div class="sourceCode" id="cb718"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb718-1"><a href="la-correlación-no-implica-causalidad.html#cb718-1" aria-hidden="true" tabindex="-1"></a>admissions <span class="sc">|&gt;</span> <span class="fu">select</span>(major, gender, admitted) <span class="sc">|&gt;</span></span>
+<span id="cb718-2"><a href="la-correlación-no-implica-causalidad.html#cb718-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_wider</span>(<span class="at">names_from =</span> <span class="st">&quot;gender&quot;</span>, <span class="at">values_from =</span> <span class="st">&quot;admitted&quot;</span>) <span class="sc">|&gt;</span></span>
+<span id="cb718-3"><a href="la-correlación-no-implica-causalidad.html#cb718-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">women_minus_men =</span> women <span class="sc">-</span> men)</span>
+<span id="cb718-4"><a href="la-correlación-no-implica-causalidad.html#cb718-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # A tibble: 6 × 4</span></span>
+<span id="cb718-5"><a href="la-correlación-no-implica-causalidad.html#cb718-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   major   men women women_minus_men</span></span>
+<span id="cb718-6"><a href="la-correlación-no-implica-causalidad.html#cb718-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   &lt;chr&gt; &lt;dbl&gt; &lt;dbl&gt;           &lt;dbl&gt;</span></span>
+<span id="cb718-7"><a href="la-correlación-no-implica-causalidad.html#cb718-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1 A        62    82              20</span></span>
+<span id="cb718-8"><a href="la-correlación-no-implica-causalidad.html#cb718-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2 B        63    68               5</span></span>
+<span id="cb718-9"><a href="la-correlación-no-implica-causalidad.html#cb718-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 3 C        37    34              -3</span></span>
+<span id="cb718-10"><a href="la-correlación-no-implica-causalidad.html#cb718-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 4 D        33    35               2</span></span>
+<span id="cb718-11"><a href="la-correlación-no-implica-causalidad.html#cb718-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 5 E        28    24              -4</span></span>
+<span id="cb718-12"><a href="la-correlación-no-implica-causalidad.html#cb718-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # … with 1 more row</span></span></code></pre></div>
 <p>Cuatro de las seis concentraciones favorecen a las mujeres. Más importante aún, todas las diferencias son mucho más pequeñas que la diferencia de 14.2 que vemos al examinar los totales.</p>
 <p>La paradoja es que analizar los totales sugiere una dependencia entre admisión y género, pero cuando los datos se agrupan por concentración, esta dependencia parece desaparecer. ¿Qué está pasando? Esto puede suceder cuando un factor de confusión no detectado está impulsando la mayor parte de la variabilidad.</p>
 <p>Así que definamos tres variables: <span class="math inline">\(X\)</span> es 1 para hombres y 0 para mujeres, <span class="math inline">\(Y\)</span> es 1 para los admitidos y 0 en caso contrario, y <span class="math inline">\(Z\)</span> cuantifica la selectividad de la concentración. Una afirmación de sesgo de género se basaría en el hecho de que <span class="math inline">\(\mbox{Pr}(Y=1 | X = x)\)</span> es mayor para <span class="math inline">\(x=1\)</span> que <span class="math inline">\(x=0\)</span>. Sin embargo, <span class="math inline">\(Z\)</span> es un factor de confusión importante para tomar en cuenta. Claramente <span class="math inline">\(Z\)</span> está asociado con <span class="math inline">\(Y\)</span>, ya que entre más selectiva sea la concentración, <span class="math inline">\(\mbox{Pr}(Y=1 | Z = z)\)</span> será menor. Pero, ¿está asociada la selección de concentración <span class="math inline">\(Z\)</span> con el género <span class="math inline">\(X\)</span>?</p>
 <p>Una forma de ver esto es graficar el porcentaje total admitido a una concentración versus el porcentaje de mujeres que componen los solicitantes:</p>
-<div class="sourceCode" id="cb718"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb718-1"><a href="la-correlación-no-implica-causalidad.html#cb718-1" aria-hidden="true" tabindex="-1"></a>admissions <span class="sc">%&gt;%</span></span>
-<span id="cb718-2"><a href="la-correlación-no-implica-causalidad.html#cb718-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(major) <span class="sc">%&gt;%</span></span>
-<span id="cb718-3"><a href="la-correlación-no-implica-causalidad.html#cb718-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="at">major_selectivity =</span> <span class="fu">sum</span>(admitted <span class="sc">*</span> applicants)<span class="sc">/</span><span class="fu">sum</span>(applicants),</span>
-<span id="cb718-4"><a href="la-correlación-no-implica-causalidad.html#cb718-4" aria-hidden="true" tabindex="-1"></a>            <span class="at">percent_women_applicants =</span> <span class="fu">sum</span>(applicants <span class="sc">*</span> (gender<span class="sc">==</span><span class="st">&quot;women&quot;</span>))<span class="sc">/</span></span>
-<span id="cb718-5"><a href="la-correlación-no-implica-causalidad.html#cb718-5" aria-hidden="true" tabindex="-1"></a>              <span class="fu">sum</span>(applicants) <span class="sc">*</span> <span class="dv">100</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb718-6"><a href="la-correlación-no-implica-causalidad.html#cb718-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(major_selectivity, percent_women_applicants, <span class="at">label =</span> major)) <span class="sc">+</span></span>
-<span id="cb718-7"><a href="la-correlación-no-implica-causalidad.html#cb718-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_text</span>()</span></code></pre></div>
+<div class="sourceCode" id="cb719"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb719-1"><a href="la-correlación-no-implica-causalidad.html#cb719-1" aria-hidden="true" tabindex="-1"></a>admissions <span class="sc">|&gt;</span></span>
+<span id="cb719-2"><a href="la-correlación-no-implica-causalidad.html#cb719-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(major) <span class="sc">|&gt;</span></span>
+<span id="cb719-3"><a href="la-correlación-no-implica-causalidad.html#cb719-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="at">major_selectivity =</span> <span class="fu">sum</span>(admitted <span class="sc">*</span> applicants)<span class="sc">/</span><span class="fu">sum</span>(applicants),</span>
+<span id="cb719-4"><a href="la-correlación-no-implica-causalidad.html#cb719-4" aria-hidden="true" tabindex="-1"></a>            <span class="at">percent_women_applicants =</span> <span class="fu">sum</span>(applicants <span class="sc">*</span> (gender<span class="sc">==</span><span class="st">&quot;women&quot;</span>))<span class="sc">/</span></span>
+<span id="cb719-5"><a href="la-correlación-no-implica-causalidad.html#cb719-5" aria-hidden="true" tabindex="-1"></a>              <span class="fu">sum</span>(applicants) <span class="sc">*</span> <span class="dv">100</span>) <span class="sc">|&gt;</span></span>
+<span id="cb719-6"><a href="la-correlación-no-implica-causalidad.html#cb719-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(major_selectivity, percent_women_applicants, <span class="at">label =</span> major)) <span class="sc">+</span></span>
+<span id="cb719-7"><a href="la-correlación-no-implica-causalidad.html#cb719-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_text</span>()</span></code></pre></div>
 <p><img src="libro_files/figure-html/uc-berkeley-majors-1.png" width="70%" style="display: block; margin: auto;" /></p>
 <p>Parece haber asociación. El gráfico sugiere que las mujeres eran mucho más propensas a solicitar a las dos concentraciones “difíciles”: el género y la selectividad de la concentración están confundidos. Compare, por ejemplo, la concentración B y la E. La concentración B es mucho más difícil de ingresar que la B y más del 60% de los solicitantes a la concentración E eran mujeres, mientras que menos del 30% de los solicitantes a la concentración B eran mujeres.</p>
 </div>
-<div id="confusión-explicada-gráficamente" class="section level3" number="19.4.2">
-<h3><span class="header-section-number">19.4.2</span> Confusión explicada gráficamente</h3>
+<div id="confusión-explicada-gráficamente" class="section level3 hasAnchor" number="19.4.2">
+<h3><span class="header-section-number">19.4.2</span> Confusión explicada gráficamente<a href="la-correlación-no-implica-causalidad.html#confusión-explicada-gráficamente" class="anchor-section" aria-label="Anchor link to header"></a></h3>
 <p>El siguiente gráfico muestra el número de solicitantes que fueron admitidos y los que no fueron según sexo:</p>
 <p><img src="libro_files/figure-html/confounding-1.png" width="70%" style="display: block; margin: auto;" /></p>
 <!--
 
 ```r
-admissions %>%
-mutate(percent_admitted = admitted * applicants/sum(applicants)) %>%
+admissions |>
+mutate(percent_admitted = admitted * applicants/sum(applicants)) |>
 ggplot(aes(gender, y = percent_admitted, fill = major)) +
 geom_bar(stat = "identity", position = "stack")
 ```
@@ -1208,33 +1208,33 @@ geom_bar(stat = "identity", position = "stack")
 -->
 <p>También desglosamos las aceptaciones por concentración. Este gráfico nos permite ver que la mayoría de los hombres aceptados provenían de dos concentraciones: A y B, y que pocas mujeres solicitaron estas concentraciones.</p>
 </div>
-<div id="calcular-promedio-luego-de-estratificar" class="section level3" number="19.4.3">
-<h3><span class="header-section-number">19.4.3</span> Calcular promedio luego de estratificar</h3>
+<div id="calcular-promedio-luego-de-estratificar" class="section level3 hasAnchor" number="19.4.3">
+<h3><span class="header-section-number">19.4.3</span> Calcular promedio luego de estratificar<a href="la-correlación-no-implica-causalidad.html#calcular-promedio-luego-de-estratificar" class="anchor-section" aria-label="Anchor link to header"></a></h3>
 <p>En este gráfico, podemos ver que si condicionamos o estratificamos por concentración, controlamos el factor de confusión y este efecto desaparece:</p>
-<div class="sourceCode" id="cb719"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb719-1"><a href="la-correlación-no-implica-causalidad.html#cb719-1" aria-hidden="true" tabindex="-1"></a>admissions <span class="sc">%&gt;%</span></span>
-<span id="cb719-2"><a href="la-correlación-no-implica-causalidad.html#cb719-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(major, admitted, <span class="at">col =</span> gender, <span class="at">size =</span> applicants)) <span class="sc">+</span></span>
-<span id="cb719-3"><a href="la-correlación-no-implica-causalidad.html#cb719-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>()</span></code></pre></div>
+<div class="sourceCode" id="cb720"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb720-1"><a href="la-correlación-no-implica-causalidad.html#cb720-1" aria-hidden="true" tabindex="-1"></a>admissions <span class="sc">|&gt;</span></span>
+<span id="cb720-2"><a href="la-correlación-no-implica-causalidad.html#cb720-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(major, admitted, <span class="at">col =</span> gender, <span class="at">size =</span> applicants)) <span class="sc">+</span></span>
+<span id="cb720-3"><a href="la-correlación-no-implica-causalidad.html#cb720-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>()</span></code></pre></div>
 <p><img src="libro_files/figure-html/admission-by-major-1.png" width="70%" style="display: block; margin: auto;" /></p>
 <p>Ahora vemos que concentración por concentración, no hay mucha diferencia. El tamaño del punto representa el número de solicitantes y explica la paradoja: vemos grandes puntos rojos y pequeños puntos azules para las concentraciones más fáciles/menos retantes, A y B.</p>
 <p>Si promediamos la diferencia por concentración, encontramos que el porcentaje es 3.5% más alto para las mujeres.</p>
-<div class="sourceCode" id="cb720"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb720-1"><a href="la-correlación-no-implica-causalidad.html#cb720-1" aria-hidden="true" tabindex="-1"></a>admissions <span class="sc">%&gt;%</span> <span class="fu">group_by</span>(gender) <span class="sc">%&gt;%</span> <span class="fu">summarize</span>(<span class="at">average =</span> <span class="fu">mean</span>(admitted))</span>
-<span id="cb720-2"><a href="la-correlación-no-implica-causalidad.html#cb720-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # A tibble: 2 x 2</span></span>
-<span id="cb720-3"><a href="la-correlación-no-implica-causalidad.html#cb720-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   gender average</span></span>
-<span id="cb720-4"><a href="la-correlación-no-implica-causalidad.html#cb720-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   &lt;chr&gt;    &lt;dbl&gt;</span></span>
-<span id="cb720-5"><a href="la-correlación-no-implica-causalidad.html#cb720-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1 men       38.2</span></span>
-<span id="cb720-6"><a href="la-correlación-no-implica-causalidad.html#cb720-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2 women     41.7</span></span></code></pre></div>
+<div class="sourceCode" id="cb721"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb721-1"><a href="la-correlación-no-implica-causalidad.html#cb721-1" aria-hidden="true" tabindex="-1"></a>admissions <span class="sc">|&gt;</span> <span class="fu">group_by</span>(gender) <span class="sc">|&gt;</span> <span class="fu">summarize</span>(<span class="at">average =</span> <span class="fu">mean</span>(admitted))</span>
+<span id="cb721-2"><a href="la-correlación-no-implica-causalidad.html#cb721-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # A tibble: 2 × 2</span></span>
+<span id="cb721-3"><a href="la-correlación-no-implica-causalidad.html#cb721-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   gender average</span></span>
+<span id="cb721-4"><a href="la-correlación-no-implica-causalidad.html#cb721-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   &lt;chr&gt;    &lt;dbl&gt;</span></span>
+<span id="cb721-5"><a href="la-correlación-no-implica-causalidad.html#cb721-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1 men       38.2</span></span>
+<span id="cb721-6"><a href="la-correlación-no-implica-causalidad.html#cb721-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2 women     41.7</span></span></code></pre></div>
 </div>
 </div>
-<div id="la-paradoja-de-simpson" class="section level2" number="19.5">
-<h2><span class="header-section-number">19.5</span> La paradoja de Simpson</h2>
+<div id="la-paradoja-de-simpson" class="section level2 hasAnchor" number="19.5">
+<h2><span class="header-section-number">19.5</span> La paradoja de Simpson<a href="la-correlación-no-implica-causalidad.html#la-paradoja-de-simpson" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>El caso que acabamos de discutir es un ejemplo de la paradoja de Simpson. Se le llama paradoja porque vemos que el signo de la correlación cambia al comparar la población entera y estratos específicos. Como ejemplo ilustrativo, supongan que observamos realizaciones de las tres variables aleatorias <span class="math inline">\(X\)</span>, <span class="math inline">\(Y\)</span> y <span class="math inline">\(Z\)</span>. Aquí hay un gráfico de observaciones simuladas para <span class="math inline">\(X\)</span> e <span class="math inline">\(Y\)</span> junto con la correlación de muestra:</p>
 <p><img src="libro_files/figure-html/simpsons-paradox-1.png" width="70%" style="display: block; margin: auto;" /></p>
 <p>Pueden ver que <span class="math inline">\(X\)</span> e <span class="math inline">\(Y\)</span> están correlacionados negativamente. Sin embargo, una vez que estratificamos por <span class="math inline">\(Z\)</span> (se muestra en diferentes colores a continuación), surge otro patrón:</p>
 <p><img src="libro_files/figure-html/simpsons-paradox-explained-1.png" width="70%" style="display: block; margin: auto;" /></p>
 <p>Realmente es <span class="math inline">\(Z\)</span> que está negativamente correlacionada con <span class="math inline">\(X\)</span>. Si estratificamos por <span class="math inline">\(Z\)</span>, las <span class="math inline">\(X\)</span> e <span class="math inline">\(Y\)</span> están positivamente correlacionadas como se observa en el gráfico anterior.</p>
 </div>
-<div id="ejercicios-37" class="section level2" number="19.6">
-<h2><span class="header-section-number">19.6</span> Ejercicios</h2>
+<div id="ejercicios-37" class="section level2 hasAnchor" number="19.6">
+<h2><span class="header-section-number">19.6</span> Ejercicios<a href="la-correlación-no-implica-causalidad.html#ejercicios-37" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>Para el próximo set de ejercicios, examinamos los datos de un artículo de PNAS del 2014<a href="#fn84" class="footnote-ref" id="fnref84"><sup>84</sup></a> que analizó las tasas de éxito de agencias de financiación en los Países Bajos y concluyó que:</p>
 <blockquote>
 <p>Nuestros resultados revelan un sesgo de género que favorece a los solicitantes sobre las solicitantes en la priorización de sus evaluaciones y tasas de éxito con respecto a su “calidad de investigador” (pero no “calidad de propuesta”), así como en el lenguaje utilizado en los materiales de instrucción y evaluación.</p>
@@ -1245,9 +1245,9 @@ geom_bar(stat = "identity", position = "stack")
 </blockquote>
 <p>¿Quién tiene la razón aquí? ¿El artículo original o la respuesta? Aquí, examinarán los datos y llegarán a su propia conclusión.</p>
 <p>1. La evidencia principal para la conclusión del artículo original se reduce a una comparación de los porcentajes. La Tabla S1 en el artículo incluye la información que necesitamos:</p>
-<div class="sourceCode" id="cb721"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb721-1"><a href="la-correlación-no-implica-causalidad.html#cb721-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dslabs)</span>
-<span id="cb721-2"><a href="la-correlación-no-implica-causalidad.html#cb721-2" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(<span class="st">&quot;research_funding_rates&quot;</span>)</span>
-<span id="cb721-3"><a href="la-correlación-no-implica-causalidad.html#cb721-3" aria-hidden="true" tabindex="-1"></a>research_funding_rates</span></code></pre></div>
+<div class="sourceCode" id="cb722"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb722-1"><a href="la-correlación-no-implica-causalidad.html#cb722-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dslabs)</span>
+<span id="cb722-2"><a href="la-correlación-no-implica-causalidad.html#cb722-2" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(<span class="st">&quot;research_funding_rates&quot;</span>)</span>
+<span id="cb722-3"><a href="la-correlación-no-implica-causalidad.html#cb722-3" aria-hidden="true" tabindex="-1"></a>research_funding_rates</span></code></pre></div>
 <p>Construya la tabla 2 X 2 utilizada para la conclusión sobre las diferencias en los premios por género.</p>
 <p>2. Calcule la diferencia en porcentaje de la tabla 2 X 2.</p>
 <p>3. En el ejercicio anterior, notamos que la tasa de éxito es menor para las mujeres. ¿Pero es significativo? Calcule un valor-p usando una prueba de Chi-cuadrado.</p>
@@ -1281,7 +1281,6 @@ geom_bar(stat = "identity", position = "stack")
     </div>
   </div>
 <script src="libs/gitbook-2.6.7/js/app.min.js"></script>
-<script src="libs/gitbook-2.6.7/js/lunr.js"></script>
 <script src="libs/gitbook-2.6.7/js/clipboard.min.js"></script>
 <script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
 <script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
@@ -1321,6 +1320,10 @@ gitbook.start({
 "text": null
 },
 "download": ["libro.pdf"],
+"search": {
+"engine": "fuse",
+"options": null
+},
 "toc": {
 "collapse": "section"
 }

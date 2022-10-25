@@ -6,11 +6,10 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <title>Capítulo 9 Visualización de datos en la práctica | Introducción a la ciencia de datos</title>
   <meta name="description" content="Este libro presenta conceptos y destrezas que les ayudarán abordar los retos de situaciones actuales del análisis de datos. Cubre conceptos de probabilidad, inferencia estadística, regresión lineal y machine learning. Además, les permitirá desarrollar destrezas como la programación R, el wrangling de datos con dplyr, la visualización de datos con ggplot2, la organización de archivos con Shell de UNIX / Linux, el control de versiones con GitHub y la preparación de documentos reproducibles con R markdown." />
-  <meta name="generator" content="bookdown 0.22 and GitBook 2.6.7" />
+  <meta name="generator" content="bookdown 0.27 and GitBook 2.6.7" />
 
   <meta property="og:title" content="Capítulo 9 Visualización de datos en la práctica | Introducción a la ciencia de datos" />
   <meta property="og:type" content="book" />
-  
   
   <meta property="og:description" content="Este libro presenta conceptos y destrezas que les ayudarán abordar los retos de situaciones actuales del análisis de datos. Cubre conceptos de probabilidad, inferencia estadística, regresión lineal y machine learning. Además, les permitirá desarrollar destrezas como la programación R, el wrangling de datos con dplyr, la visualización de datos con ggplot2, la organización de archivos con Shell de UNIX / Linux, el control de versiones con GitHub y la preparación de documentos reproducibles con R markdown." />
   
@@ -24,7 +23,7 @@
 <meta name="author" content="Rafael A. Irizarry" />
 
 
-<meta name="date" content="2021-07-03" />
+<meta name="date" content="2022-10-25" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -33,8 +32,8 @@
   
 <link rel="prev" href="distributions.html"/>
 <link rel="next" href="principios-de-visualización-de-datos.html"/>
-<script src="libs/header-attrs-2.9/header-attrs.js"></script>
-<script src="libs/jquery-2.2.3/jquery.min.js"></script>
+<script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
 <link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
 <link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
@@ -50,9 +49,9 @@
 
 
 
-
-<link href="libs/anchor-sections-1.0.1/anchor-sections.css" rel="stylesheet" />
-<script src="libs/anchor-sections-1.0.1/anchor-sections.js"></script>
+<link href="libs/anchor-sections-1.1.0/anchor-sections.css" rel="stylesheet" />
+<link href="libs/anchor-sections-1.1.0/anchor-sections-hash.css" rel="stylesheet" />
+<script src="libs/anchor-sections-1.1.0/anchor-sections.js"></script>
 <script src="libs/kePrint-0.0.1/kePrint.js"></script>
 <link href="libs/lightable-0.0.1/lightable.css" rel="stylesheet" />
 
@@ -254,7 +253,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="4.3.3" data-path="tidyverse.html"><a href="tidyverse.html#cómo-seleccionar-columnas-con-select"><i class="fa fa-check"></i><b>4.3.3</b> Cómo seleccionar columnas con <code>select</code></a></li>
 </ul></li>
 <li class="chapter" data-level="4.4" data-path="tidyverse.html"><a href="tidyverse.html#ejercicios-9"><i class="fa fa-check"></i><b>4.4</b> Ejercicios</a></li>
-<li class="chapter" data-level="4.5" data-path="tidyverse.html"><a href="tidyverse.html#el-pipe"><i class="fa fa-check"></i><b>4.5</b> El <em>pipe</em>: <code>%&gt;%</code></a></li>
+<li class="chapter" data-level="4.5" data-path="tidyverse.html"><a href="tidyverse.html#el-pipe"><i class="fa fa-check"></i><b>4.5</b> El <em>pipe</em>: <code>|&gt;</code></a></li>
 <li class="chapter" data-level="4.6" data-path="tidyverse.html"><a href="tidyverse.html#ejercicios-10"><i class="fa fa-check"></i><b>4.6</b> Ejercicios</a></li>
 <li class="chapter" data-level="4.7" data-path="tidyverse.html"><a href="tidyverse.html#cómo-resumir-datos"><i class="fa fa-check"></i><b>4.7</b> Cómo resumir datos</a>
 <ul>
@@ -1025,16 +1024,16 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
           <div class="page-inner">
 
             <section class="normal" id="section-">
-<div id="gapminder" class="section level1" number="9">
-<h1><span class="header-section-number">Capítulo 9</span> Visualización de datos en la práctica</h1>
+<div id="gapminder" class="section level1 hasAnchor" number="9">
+<h1><span class="header-section-number">Capítulo 9</span> Visualización de datos en la práctica<a href="gapminder.html#gapminder" class="anchor-section" aria-label="Anchor link to header"></a></h1>
 <p>En este capítulo, demostraremos cómo el código relativamente sencillo de <strong>ggplot2</strong> puede crear gráficos esclarecedores y estéticamente agradables. Como motivación, crearemos gráficos que nos ayudarán a comprender mejor las tendencias de la salud y la economía mundial. Implementaremos lo que aprendimos en los Capítulos <a href="ggplot2.html#ggplot2">7</a> y <a href="distributions.html#other-geometries">8.16</a> y aprenderemos a expandir el código para perfeccionar los gráficos. A medida que avancemos en nuestro estudio de caso, describiremos los principios generales más relevantes a la visualización de datos y aprenderemos conceptos como <em>facetas</em>, <em>gráficos de series de tiempo</em>, <em>transformaciones</em> y <em>gráficos ridge</em>.</p>
-<div id="estudio-de-caso-nuevas-ideas-sobre-la-pobreza" class="section level2" number="9.1">
-<h2><span class="header-section-number">9.1</span> Estudio de caso: nuevas ideas sobre la pobreza</h2>
+<div id="estudio-de-caso-nuevas-ideas-sobre-la-pobreza" class="section level2 hasAnchor" number="9.1">
+<h2><span class="header-section-number">9.1</span> Estudio de caso: nuevas ideas sobre la pobreza<a href="gapminder.html#estudio-de-caso-nuevas-ideas-sobre-la-pobreza" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>Hans Rosling<a href="#fn31" class="footnote-ref" id="fnref31"><sup>31</sup></a> era el cofundador de la Fundación Gapminder<a href="#fn32" class="footnote-ref" id="fnref32"><sup>32</sup></a>, una organización dedicada a educar al público mediante datos para disipar mitos comunes sobre el llamado mundo en desarrollo. La organización utiliza datos para mostrar cómo las tendencias actuales en los campos de salud y economía contradicen las narrativas que emanan de la cobertura sensacionalista de los medios de catástrofes, tragedias y otros eventos desafortunados. Como se indica en el sitio web de la Fundación Gapminder:</p>
 <blockquote>
 <blockquote>
 <blockquote>
-<p>Los periodistas y cabilderos cuentan historias dramáticas. Ese es su trabajo. Cuentan historias sobre eventos extraordinarios y personas inusuales. Las historias dramáticas se acumulan en las mentes de las personas en una visión del mundo demasiado dramática y con fuertes sentimientos de estrés negativo: “¡El mundo está empeorando!” “¡Somos nosotros contra ellos!” “¡Las demás personas son extrañas!” “¡La población sigue creciendo!” y “¡A nadie le importa!”</p>
+<p>Los periodistas y cabilderos cuentan historias dramáticas. Ese es su trabajo. Cuentan historias sobre eventos extraordinarios y personas inusuales. Las historias dramáticas se acumulan en las mentes de las personas en una visión del mundo demasiado dramática y con fuertes sentimientos de estrés negativo: “¡El mundo está empeorando!”, “¡Somos nosotros contra ellos!”, “¡Las demás personas son extrañas!”, “¡La población sigue creciendo!” y “¡A nadie le importa!”</p>
 </blockquote>
 </blockquote>
 </blockquote>
@@ -1044,22 +1043,22 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li>¿Ha empeorado la desigualdad de ingresos en todos los países durante los últimos 40 años?</li>
 </ol>
 <p>Para responder a estas preguntas, utilizaremos el set de datos <code>gapminder</code> proveído por <strong>dslabs</strong>. Este set de datos se creó utilizando varias hojas de cálculo disponibles de la Fundación Gapminder. Pueden acceder a la tabla de esta manera:</p>
-<div class="sourceCode" id="cb342"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb342-1"><a href="gapminder.html#cb342-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
-<span id="cb342-2"><a href="gapminder.html#cb342-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dslabs)</span>
-<span id="cb342-3"><a href="gapminder.html#cb342-3" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(gapminder)</span>
-<span id="cb342-4"><a href="gapminder.html#cb342-4" aria-hidden="true" tabindex="-1"></a>gapminder <span class="sc">%&gt;%</span> <span class="fu">as_tibble</span>()</span>
-<span id="cb342-5"><a href="gapminder.html#cb342-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # A tibble: 10,545 x 9</span></span>
-<span id="cb342-6"><a href="gapminder.html#cb342-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   country     year infant_mortality life_expectancy fertility population</span></span>
-<span id="cb342-7"><a href="gapminder.html#cb342-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   &lt;fct&gt;      &lt;int&gt;            &lt;dbl&gt;           &lt;dbl&gt;     &lt;dbl&gt;      &lt;dbl&gt;</span></span>
-<span id="cb342-8"><a href="gapminder.html#cb342-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1 Albania     1960            115.             62.9      6.19    1636054</span></span>
-<span id="cb342-9"><a href="gapminder.html#cb342-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2 Algeria     1960            148.             47.5      7.65   11124892</span></span>
-<span id="cb342-10"><a href="gapminder.html#cb342-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 3 Angola      1960            208              36.0      7.32    5270844</span></span>
-<span id="cb342-11"><a href="gapminder.html#cb342-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 4 Antigua a…  1960             NA              63.0      4.43      54681</span></span>
-<span id="cb342-12"><a href="gapminder.html#cb342-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 5 Argentina   1960             59.9            65.4      3.11   20619075</span></span>
-<span id="cb342-13"><a href="gapminder.html#cb342-13" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # … with 10,540 more rows, and 3 more variables: gdp &lt;dbl&gt;,</span></span>
-<span id="cb342-14"><a href="gapminder.html#cb342-14" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; #   continent &lt;fct&gt;, region &lt;fct&gt;</span></span></code></pre></div>
-<div id="la-prueba-de-hans-rosling" class="section level3" number="9.1.1">
-<h3><span class="header-section-number">9.1.1</span> La prueba de Hans Rosling</h3>
+<div class="sourceCode" id="cb343"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb343-1"><a href="gapminder.html#cb343-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb343-2"><a href="gapminder.html#cb343-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dslabs)</span>
+<span id="cb343-3"><a href="gapminder.html#cb343-3" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(gapminder)</span>
+<span id="cb343-4"><a href="gapminder.html#cb343-4" aria-hidden="true" tabindex="-1"></a>gapminder <span class="sc">|&gt;</span> <span class="fu">as_tibble</span>()</span>
+<span id="cb343-5"><a href="gapminder.html#cb343-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # A tibble: 10,545 × 9</span></span>
+<span id="cb343-6"><a href="gapminder.html#cb343-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   country     year infant_mortality life_expectancy fertility population</span></span>
+<span id="cb343-7"><a href="gapminder.html#cb343-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   &lt;fct&gt;      &lt;int&gt;            &lt;dbl&gt;           &lt;dbl&gt;     &lt;dbl&gt;      &lt;dbl&gt;</span></span>
+<span id="cb343-8"><a href="gapminder.html#cb343-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1 Albania     1960            115.             62.9      6.19    1636054</span></span>
+<span id="cb343-9"><a href="gapminder.html#cb343-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2 Algeria     1960            148.             47.5      7.65   11124892</span></span>
+<span id="cb343-10"><a href="gapminder.html#cb343-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 3 Angola      1960            208              36.0      7.32    5270844</span></span>
+<span id="cb343-11"><a href="gapminder.html#cb343-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 4 Antigua a…  1960             NA              63.0      4.43      54681</span></span>
+<span id="cb343-12"><a href="gapminder.html#cb343-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 5 Argentina   1960             59.9            65.4      3.11   20619075</span></span>
+<span id="cb343-13"><a href="gapminder.html#cb343-13" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # … with 10,540 more rows, and 3 more variables: gdp &lt;dbl&gt;,</span></span>
+<span id="cb343-14"><a href="gapminder.html#cb343-14" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; #   continent &lt;fct&gt;, region &lt;fct&gt;</span></span></code></pre></div>
+<div id="la-prueba-de-hans-rosling" class="section level3 hasAnchor" number="9.1.1">
+<h3><span class="header-section-number">9.1.1</span> La prueba de Hans Rosling<a href="gapminder.html#la-prueba-de-hans-rosling" class="anchor-section" aria-label="Anchor link to header"></a></h3>
 <p>Igual que en el video <em>New Insights on Poverty</em>, comenzamos examinando nuestros conocimientos sobre las diferencias en la mortalidad infantil en diferentes países. Para cada uno de los cinco pares de países a continuación, ¿qué países creen que tuvieron las tasas de mortalidad infantil más altas en 2015? ¿Qué pares creen que son más similares?</p>
 <ol style="list-style-type: decimal">
 <li>Sri Lanka o Turquía</li>
@@ -1070,19 +1069,19 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </ol>
 <p>Al responder a estas preguntas sin datos, los países no europeos suelen ser elegidos como los que tienen tasas de mortalidad infantil más altas: Sri Lanka sobre Turquía, Corea del Sur sobre Polonia y Malasia sobre Rusia. También es común suponer que los países considerados como parte del mundo en desarrollo: Pakistán, Vietnam, Tailandia y Sudáfrica, tienen tasas de mortalidad igualmente altas.</p>
 <p>Para responder a estas preguntas <strong>con datos</strong>, podemos usar <strong>dplyr</strong>. Por ejemplo, para la primera comparación vemos que:</p>
-<div class="sourceCode" id="cb343"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb343-1"><a href="gapminder.html#cb343-1" aria-hidden="true" tabindex="-1"></a>gapminder <span class="sc">%&gt;%</span></span>
-<span id="cb343-2"><a href="gapminder.html#cb343-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(year <span class="sc">==</span> <span class="dv">2015</span> <span class="sc">&amp;</span> country <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">&quot;Sri Lanka&quot;</span>,<span class="st">&quot;Turkey&quot;</span>)) <span class="sc">%&gt;%</span></span>
-<span id="cb343-3"><a href="gapminder.html#cb343-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(country, infant_mortality)</span>
-<span id="cb343-4"><a href="gapminder.html#cb343-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;     country infant_mortality</span></span>
-<span id="cb343-5"><a href="gapminder.html#cb343-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1 Sri Lanka              8.4</span></span>
-<span id="cb343-6"><a href="gapminder.html#cb343-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2    Turkey             11.6</span></span></code></pre></div>
+<div class="sourceCode" id="cb344"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb344-1"><a href="gapminder.html#cb344-1" aria-hidden="true" tabindex="-1"></a>gapminder <span class="sc">|&gt;</span></span>
+<span id="cb344-2"><a href="gapminder.html#cb344-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(year <span class="sc">==</span> <span class="dv">2015</span> <span class="sc">&amp;</span> country <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">&quot;Sri Lanka&quot;</span>,<span class="st">&quot;Turkey&quot;</span>)) <span class="sc">|&gt;</span></span>
+<span id="cb344-3"><a href="gapminder.html#cb344-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(country, infant_mortality)</span>
+<span id="cb344-4"><a href="gapminder.html#cb344-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;     country infant_mortality</span></span>
+<span id="cb344-5"><a href="gapminder.html#cb344-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1 Sri Lanka              8.4</span></span>
+<span id="cb344-6"><a href="gapminder.html#cb344-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2    Turkey             11.6</span></span></code></pre></div>
 <p>Turquía tiene la mayor tasa de mortalidad infantil.</p>
 <p>Podemos usar este código en todas las comparaciones y descubrimos lo siguiente:</p>
 <pre><code>#&gt; New names:
-#&gt; * country -&gt; country...1
-#&gt; * infant_mortality -&gt; infant_mortality...2
-#&gt; * country -&gt; country...3
-#&gt; * infant_mortality -&gt; infant_mortality...4</code></pre>
+#&gt; • `country` -&gt; `country...1`
+#&gt; • `infant_mortality` -&gt; `infant_mortality...2`
+#&gt; • `country` -&gt; `country...3`
+#&gt; • `infant_mortality` -&gt; `infant_mortality...4`</code></pre>
 <table class="table table-striped" style="width: auto !important; margin-left: auto; margin-right: auto;">
 <thead>
 <tr>
@@ -1176,14 +1175,14 @@ South Africa
 <p>Vemos que los países europeos en esta lista tienen tasas de mortalidad infantil más altas: Polonia tiene una tasa más alta que Corea del Sur y Rusia tiene una tasa más alta que Malasia. También vemos que Pakistán tiene una tasa mucho más alta que Vietnam y Sudáfrica tiene una tasa mucho más alta que Tailandia. Resulta que cuando Hans Rosling le dio este cuestionario a grupos de personas educadas, la puntuación promedio fue menos de 2.5 de 5, peor de lo que hubieran obtenido si hubieran adivinado. Esto implica que más que ignorantes, estamos mal informados. En este capítulo, vemos cómo la visualización de datos nos ayuda a informarnos.</p>
 </div>
 </div>
-<div id="diagramas-de-dispersión" class="section level2" number="9.2">
-<h2><span class="header-section-number">9.2</span> Diagramas de dispersión</h2>
+<div id="diagramas-de-dispersión" class="section level2 hasAnchor" number="9.2">
+<h2><span class="header-section-number">9.2</span> Diagramas de dispersión<a href="gapminder.html#diagramas-de-dispersión" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>La razón por las bajas puntuaciones se deriva de la noción preconcebida de que el mundo está dividido en dos grupos: el mundo occidental (Europa occidental y América del Norte), caracterizado por una larga vida y familias pequeñas, versus el mundo en desarrollo (África, Asia y América Latina), caracterizados por cortos períodos de vida y familias numerosas. ¿Pero los datos respaldan esta visión dicotómica?</p>
 <p>Los datos necesarios para responder a esta pregunta también están disponibles en nuestra tabla <code>gapminder</code>. Usando nuestras recién aprendidas habilidades de visualización de datos, podemos enfrentar este desafío.</p>
 <p>Para analizar esta visión del mundo, nuestro primer gráfico es un diagrama de dispersión de la esperanza de vida versus las tasas de fertilidad (número promedio de hijos por mujer). Comenzamos mirando los datos de hace unos 50 años, cuando quizás esta visión se consolidó por primera vez en nuestras mentes.</p>
-<div class="sourceCode" id="cb345"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb345-1"><a href="gapminder.html#cb345-1" aria-hidden="true" tabindex="-1"></a><span class="fu">filter</span>(gapminder, year <span class="sc">==</span> <span class="dv">1962</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb345-2"><a href="gapminder.html#cb345-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(fertility, life_expectancy)) <span class="sc">+</span></span>
-<span id="cb345-3"><a href="gapminder.html#cb345-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>()</span></code></pre></div>
+<div class="sourceCode" id="cb346"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb346-1"><a href="gapminder.html#cb346-1" aria-hidden="true" tabindex="-1"></a><span class="fu">filter</span>(gapminder, year <span class="sc">==</span> <span class="dv">1962</span>) <span class="sc">|&gt;</span></span>
+<span id="cb346-2"><a href="gapminder.html#cb346-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(fertility, life_expectancy)) <span class="sc">+</span></span>
+<span id="cb346-3"><a href="gapminder.html#cb346-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>()</span></code></pre></div>
 <p><img src="libro_files/figure-html/fertility-versus-life-expectancy-1962-1.png" width="70%" style="display: block; margin: auto;" /></p>
 <p>La mayoría de puntos se dividen en dos categorías distintas:</p>
 <ol style="list-style-type: decimal">
@@ -1191,304 +1190,304 @@ South Africa
 <li>Esperanza de vida inferior a 65 años y más de 5 niños por familia.</li>
 </ol>
 <p>Para confirmar que estos países son de las regiones que esperamos, podemos usar un color para representar un continente.</p>
-<div class="sourceCode" id="cb346"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb346-1"><a href="gapminder.html#cb346-1" aria-hidden="true" tabindex="-1"></a><span class="fu">filter</span>(gapminder, year <span class="sc">==</span> <span class="dv">1962</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb346-2"><a href="gapminder.html#cb346-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>( <span class="fu">aes</span>(fertility, life_expectancy, <span class="at">color =</span> continent)) <span class="sc">+</span></span>
-<span id="cb346-3"><a href="gapminder.html#cb346-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>()</span></code></pre></div>
+<div class="sourceCode" id="cb347"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb347-1"><a href="gapminder.html#cb347-1" aria-hidden="true" tabindex="-1"></a><span class="fu">filter</span>(gapminder, year <span class="sc">==</span> <span class="dv">1962</span>) <span class="sc">|&gt;</span></span>
+<span id="cb347-2"><a href="gapminder.html#cb347-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>( <span class="fu">aes</span>(fertility, life_expectancy, <span class="at">color =</span> continent)) <span class="sc">+</span></span>
+<span id="cb347-3"><a href="gapminder.html#cb347-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>()</span></code></pre></div>
 <p><img src="libro_files/figure-html/fertility-versus-life-expectancy-1962-with-color-1.png" width="70%" style="display: block; margin: auto;" /></p>
 <p>En 1962, la visión del “Oeste versus el mundo en desarrollo” se basaba en cierta realidad. ¿Sigue siendo así 50 años después?</p>
 </div>
-<div id="separar-en-facetas" class="section level2" number="9.3">
-<h2><span class="header-section-number">9.3</span> Separar en facetas</h2>
+<div id="separar-en-facetas" class="section level2 hasAnchor" number="9.3">
+<h2><span class="header-section-number">9.3</span> Separar en facetas<a href="gapminder.html#separar-en-facetas" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>Podemos graficar fácilmente los datos de 2012 de la misma manera que lo hicimos para 1962. Sin embargo, para hacer comparaciones, es preferible graficar lado a lado. En <strong>ggplot2</strong>, logramos esto separando las variables en <em>facetas</em> (<em>faceting</em> en inglés): estratificamos los datos por alguna variable y hacemos el mismo gráfico para cada estrato.</p>
 <p>Para separar en facetas, añadimos una capa con la función <code>facet_grid</code>, que automáticamente separa los gráficos. Esta función les permite separar hasta dos variables en facetas usando columnas para representar una variable y filas para representar la otra. La función espera que las variables de fila y de columna estén separadas por un <code>~</code>. Aquí vemos un ejemplo de un diagrama de dispersión donde añadimos <code>facet_grid</code> como la última capa:</p>
-<div class="sourceCode" id="cb347"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb347-1"><a href="gapminder.html#cb347-1" aria-hidden="true" tabindex="-1"></a><span class="fu">filter</span>(gapminder, year<span class="sc">%in%</span><span class="fu">c</span>(<span class="dv">1962</span>, <span class="dv">2012</span>)) <span class="sc">%&gt;%</span></span>
-<span id="cb347-2"><a href="gapminder.html#cb347-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(fertility, life_expectancy, <span class="at">col =</span> continent)) <span class="sc">+</span></span>
-<span id="cb347-3"><a href="gapminder.html#cb347-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>() <span class="sc">+</span></span>
-<span id="cb347-4"><a href="gapminder.html#cb347-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_grid</span>(continent<span class="sc">~</span>year)</span></code></pre></div>
-<p><img src="libro_files/figure-html/fertility-versus-life-expectancy-facet-1.png" width="100%" style="display: block; margin: auto;" /></p>
-<p>Arriba vemos un gráfico para cada combinación de continente/año. Sin embargo, esto es solo un ejemplo y más de lo que queremos, que es simplemente comparar dos años: 1962 y 2012. En este caso, solo hay una variable y usamos <code>.</code> para que <code>facet_grid</code> sepa que no estamos usando una de las variables:</p>
-<div class="sourceCode" id="cb348"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb348-1"><a href="gapminder.html#cb348-1" aria-hidden="true" tabindex="-1"></a><span class="fu">filter</span>(gapminder, year<span class="sc">%in%</span><span class="fu">c</span>(<span class="dv">1962</span>, <span class="dv">2012</span>)) <span class="sc">%&gt;%</span></span>
+<div class="sourceCode" id="cb348"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb348-1"><a href="gapminder.html#cb348-1" aria-hidden="true" tabindex="-1"></a><span class="fu">filter</span>(gapminder, year<span class="sc">%in%</span><span class="fu">c</span>(<span class="dv">1962</span>, <span class="dv">2012</span>)) <span class="sc">|&gt;</span></span>
 <span id="cb348-2"><a href="gapminder.html#cb348-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(fertility, life_expectancy, <span class="at">col =</span> continent)) <span class="sc">+</span></span>
 <span id="cb348-3"><a href="gapminder.html#cb348-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>() <span class="sc">+</span></span>
-<span id="cb348-4"><a href="gapminder.html#cb348-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_grid</span>(. <span class="sc">~</span> year)</span></code></pre></div>
+<span id="cb348-4"><a href="gapminder.html#cb348-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_grid</span>(continent<span class="sc">~</span>year)</span></code></pre></div>
+<p><img src="libro_files/figure-html/fertility-versus-life-expectancy-facet-1.png" width="100%" style="display: block; margin: auto;" /></p>
+<p>Arriba vemos un gráfico para cada combinación de continente/año. Sin embargo, esto es solo un ejemplo y más de lo que queremos, que es simplemente comparar dos años: 1962 y 2012. En este caso, solo hay una variable y usamos <code>.</code> para que <code>facet_grid</code> sepa que no estamos usando una de las variables:</p>
+<div class="sourceCode" id="cb349"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb349-1"><a href="gapminder.html#cb349-1" aria-hidden="true" tabindex="-1"></a><span class="fu">filter</span>(gapminder, year<span class="sc">%in%</span><span class="fu">c</span>(<span class="dv">1962</span>, <span class="dv">2012</span>)) <span class="sc">|&gt;</span></span>
+<span id="cb349-2"><a href="gapminder.html#cb349-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(fertility, life_expectancy, <span class="at">col =</span> continent)) <span class="sc">+</span></span>
+<span id="cb349-3"><a href="gapminder.html#cb349-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>() <span class="sc">+</span></span>
+<span id="cb349-4"><a href="gapminder.html#cb349-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_grid</span>(. <span class="sc">~</span> year)</span></code></pre></div>
 <p><img src="libro_files/figure-html/fertility-versus-life-expectancy-two-years-1.png" width="100%" style="display: block; margin: auto;" /></p>
 <p>Este gráfico muestra claramente que la mayoría de los países se han mudado del conjunto <em>mundo en desarrollo</em> al conjunto <em>mundo occidental</em>. En 2012, la visión del mundo occidental versus el mundo en desarrollo ya no tiene sentido. Esto es particularmente evidente cuando se compara Europa con Asia, este último ahora con varios países que han realizado grandes mejoras.</p>
-<div id="facet_wrap" class="section level3" number="9.3.1">
-<h3><span class="header-section-number">9.3.1</span> <code>facet_wrap</code></h3>
+<div id="facet_wrap" class="section level3 hasAnchor" number="9.3.1">
+<h3><span class="header-section-number">9.3.1</span> <code>facet_wrap</code><a href="gapminder.html#facet_wrap" class="anchor-section" aria-label="Anchor link to header"></a></h3>
 <p>Para explorar cómo sucedió esta transformación a través de los años, podemos hacer el gráfico para varios años. Por ejemplo, podemos añadir los años 1970, 1980, 1990 y 2000. Sin embargo, si hacemos esto, no queremos a todos los gráficos en la misma fila, que es lo que hace <code>facet_grid</code> por defecto, ya que aparecerán demasiado estrechos para mostrar los datos. En cambio, queremos usar múltiples filas y columnas. La función <code>facet_wrap</code> nos permite hacer esto automáticamente acomodando la serie de gráficos para que cada imagen tenga dimensiones visibles:</p>
-<div class="sourceCode" id="cb349"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb349-1"><a href="gapminder.html#cb349-1" aria-hidden="true" tabindex="-1"></a>years <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">1962</span>, <span class="dv">1980</span>, <span class="dv">1990</span>, <span class="dv">2000</span>, <span class="dv">2012</span>)</span>
-<span id="cb349-2"><a href="gapminder.html#cb349-2" aria-hidden="true" tabindex="-1"></a>continents <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;Europe&quot;</span>, <span class="st">&quot;Asia&quot;</span>)</span>
-<span id="cb349-3"><a href="gapminder.html#cb349-3" aria-hidden="true" tabindex="-1"></a>gapminder <span class="sc">%&gt;%</span></span>
-<span id="cb349-4"><a href="gapminder.html#cb349-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(year <span class="sc">%in%</span> years <span class="sc">&amp;</span> continent <span class="sc">%in%</span> continents) <span class="sc">%&gt;%</span></span>
-<span id="cb349-5"><a href="gapminder.html#cb349-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>( <span class="fu">aes</span>(fertility, life_expectancy, <span class="at">col =</span> continent)) <span class="sc">+</span></span>
-<span id="cb349-6"><a href="gapminder.html#cb349-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>() <span class="sc">+</span></span>
-<span id="cb349-7"><a href="gapminder.html#cb349-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span>year)</span></code></pre></div>
+<div class="sourceCode" id="cb350"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb350-1"><a href="gapminder.html#cb350-1" aria-hidden="true" tabindex="-1"></a>years <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">1962</span>, <span class="dv">1980</span>, <span class="dv">1990</span>, <span class="dv">2000</span>, <span class="dv">2012</span>)</span>
+<span id="cb350-2"><a href="gapminder.html#cb350-2" aria-hidden="true" tabindex="-1"></a>continents <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;Europe&quot;</span>, <span class="st">&quot;Asia&quot;</span>)</span>
+<span id="cb350-3"><a href="gapminder.html#cb350-3" aria-hidden="true" tabindex="-1"></a>gapminder <span class="sc">|&gt;</span></span>
+<span id="cb350-4"><a href="gapminder.html#cb350-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(year <span class="sc">%in%</span> years <span class="sc">&amp;</span> continent <span class="sc">%in%</span> continents) <span class="sc">|&gt;</span></span>
+<span id="cb350-5"><a href="gapminder.html#cb350-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>( <span class="fu">aes</span>(fertility, life_expectancy, <span class="at">col =</span> continent)) <span class="sc">+</span></span>
+<span id="cb350-6"><a href="gapminder.html#cb350-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>() <span class="sc">+</span></span>
+<span id="cb350-7"><a href="gapminder.html#cb350-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span>year)</span></code></pre></div>
 <p><img src="libro_files/figure-html/fertility-versus-life-expectancy-five-years-1.png" width="100%" style="display: block; margin: auto;" /></p>
 <p>Este gráfico muestra claramente cómo la mayoría de los países asiáticos han mejorado a un ritmo mucho más rápido que los europeos.</p>
 </div>
-<div id="escalas-fijas-para-mejores-comparaciones" class="section level3" number="9.3.2">
-<h3><span class="header-section-number">9.3.2</span> Escalas fijas para mejores comparaciones</h3>
+<div id="escalas-fijas-para-mejores-comparaciones" class="section level3 hasAnchor" number="9.3.2">
+<h3><span class="header-section-number">9.3.2</span> Escalas fijas para mejores comparaciones<a href="gapminder.html#escalas-fijas-para-mejores-comparaciones" class="anchor-section" aria-label="Anchor link to header"></a></h3>
 <p>La elección por defecto del rango de los ejes es importante. Cuando no se usa <code>facet</code>, este rango está determinado por los datos que se muestran en el gráfico. Cuando usan <code>facet</code>, este rango está determinado por los datos que se muestran en todos los gráficos y, por lo tanto, se mantienen fijos en todos los gráficos. Esto hace que las comparaciones entre gráficos sean mucho más fáciles. Por ejemplo, en el gráfico anterior, podemos ver que la esperanza de vida ha aumentado y la fertilidad ha disminuido en la mayoría de los países. Vemos esto porque la nube de puntos se mueve. Este no es el caso si ajustamos las escalas:</p>
-<div class="sourceCode" id="cb350"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb350-1"><a href="gapminder.html#cb350-1" aria-hidden="true" tabindex="-1"></a><span class="fu">filter</span>(gapminder, year<span class="sc">%in%</span><span class="fu">c</span>(<span class="dv">1962</span>, <span class="dv">2012</span>)) <span class="sc">%&gt;%</span></span>
-<span id="cb350-2"><a href="gapminder.html#cb350-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(fertility, life_expectancy, <span class="at">col =</span> continent)) <span class="sc">+</span></span>
-<span id="cb350-3"><a href="gapminder.html#cb350-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>() <span class="sc">+</span></span>
-<span id="cb350-4"><a href="gapminder.html#cb350-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(. <span class="sc">~</span> year, <span class="at">scales =</span> <span class="st">&quot;free&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb351"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb351-1"><a href="gapminder.html#cb351-1" aria-hidden="true" tabindex="-1"></a><span class="fu">filter</span>(gapminder, year<span class="sc">%in%</span><span class="fu">c</span>(<span class="dv">1962</span>, <span class="dv">2012</span>)) <span class="sc">|&gt;</span></span>
+<span id="cb351-2"><a href="gapminder.html#cb351-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(fertility, life_expectancy, <span class="at">col =</span> continent)) <span class="sc">+</span></span>
+<span id="cb351-3"><a href="gapminder.html#cb351-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>() <span class="sc">+</span></span>
+<span id="cb351-4"><a href="gapminder.html#cb351-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(. <span class="sc">~</span> year, <span class="at">scales =</span> <span class="st">&quot;free&quot;</span>)</span></code></pre></div>
 <p><img src="libro_files/figure-html/facet-without-fixed-scales-1.png" width="70%" style="display: block; margin: auto;" /></p>
 <p>En el gráfico anterior, debemos prestar atención particular al rango para notar que el gráfico de la derecha tiene una mayor esperanza de vida.</p>
 </div>
 </div>
-<div id="gráficos-de-series-de-tiempo" class="section level2" number="9.4">
-<h2><span class="header-section-number">9.4</span> Gráficos de series de tiempo</h2>
+<div id="gráficos-de-series-de-tiempo" class="section level2 hasAnchor" number="9.4">
+<h2><span class="header-section-number">9.4</span> Gráficos de series de tiempo<a href="gapminder.html#gráficos-de-series-de-tiempo" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>Las visualizaciones anteriores ilustran efectivamente que los datos ya no son compatibles con la visión del mundo occidental frente al mundo en desarrollo. Al ver estos gráficos, surgen nuevas preguntas. Por ejemplo, ¿qué países están mejorando más y cuáles menos? ¿La mejora fue constante durante los últimos 50 años o se aceleró más durante ciertos períodos? Para una mirada más detenida que pueda ayudar a responder a estas preguntas, presentamos <em>gráficos de series de tiempo</em> (<em>time series plots</em> en inglés).</p>
 <p>Los gráficos de series de tiempo tienen tiempo en el eje-x y un resultado o medida de interés en el eje-y. Por ejemplo, aquí vemos un gráfico de la tendencia de las tasas de fertilidad de Estados Unidos:</p>
-<div class="sourceCode" id="cb351"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb351-1"><a href="gapminder.html#cb351-1" aria-hidden="true" tabindex="-1"></a>gapminder <span class="sc">%&gt;%</span></span>
-<span id="cb351-2"><a href="gapminder.html#cb351-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(country <span class="sc">==</span> <span class="st">&quot;United States&quot;</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb351-3"><a href="gapminder.html#cb351-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(year, fertility)) <span class="sc">+</span></span>
-<span id="cb351-4"><a href="gapminder.html#cb351-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>()</span></code></pre></div>
+<div class="sourceCode" id="cb352"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb352-1"><a href="gapminder.html#cb352-1" aria-hidden="true" tabindex="-1"></a>gapminder <span class="sc">|&gt;</span></span>
+<span id="cb352-2"><a href="gapminder.html#cb352-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(country <span class="sc">==</span> <span class="st">&quot;United States&quot;</span>) <span class="sc">|&gt;</span></span>
+<span id="cb352-3"><a href="gapminder.html#cb352-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(year, fertility)) <span class="sc">+</span></span>
+<span id="cb352-4"><a href="gapminder.html#cb352-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>()</span></code></pre></div>
 <p><img src="libro_files/figure-html/fertility-time-series-plot-points-1.png" width="70%" style="display: block; margin: auto;" /></p>
 <p>Observamos que la tendencia no es lineal en absoluto, sino que durante los años sesenta y setenta se produce una fuerte caída por debajo de 2. Entonces la tendencia vuelve a 2 y se estabiliza durante los años noventa.</p>
 <p>Cuando los puntos están regular y densamente espaciados, como vemos arriba, creamos una curva que une los puntos con líneas, para transmitir que estos datos provienen de una sola serie, aquí un país. Para hacer esto, usamos la función <code>geom_line</code> en vez de <code>geom_point</code>.</p>
-<div class="sourceCode" id="cb352"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb352-1"><a href="gapminder.html#cb352-1" aria-hidden="true" tabindex="-1"></a>gapminder <span class="sc">%&gt;%</span></span>
-<span id="cb352-2"><a href="gapminder.html#cb352-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(country <span class="sc">==</span> <span class="st">&quot;United States&quot;</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb352-3"><a href="gapminder.html#cb352-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(year, fertility)) <span class="sc">+</span></span>
-<span id="cb352-4"><a href="gapminder.html#cb352-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>()</span></code></pre></div>
+<div class="sourceCode" id="cb353"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb353-1"><a href="gapminder.html#cb353-1" aria-hidden="true" tabindex="-1"></a>gapminder <span class="sc">|&gt;</span></span>
+<span id="cb353-2"><a href="gapminder.html#cb353-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(country <span class="sc">==</span> <span class="st">&quot;United States&quot;</span>) <span class="sc">|&gt;</span></span>
+<span id="cb353-3"><a href="gapminder.html#cb353-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(year, fertility)) <span class="sc">+</span></span>
+<span id="cb353-4"><a href="gapminder.html#cb353-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>()</span></code></pre></div>
 <p><img src="libro_files/figure-html/fertility-time-series-plot-curve-1.png" width="70%" style="display: block; margin: auto;" /></p>
 <p>Esto es particularmente útil cuando comparamos dos países. Si creamos un subconjunto de los datos para incluir dos países, uno de Europa y uno de Asia, entonces adaptamos el código anterior:</p>
-<div class="sourceCode" id="cb353"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb353-1"><a href="gapminder.html#cb353-1" aria-hidden="true" tabindex="-1"></a>countries <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;South Korea&quot;</span>,<span class="st">&quot;Germany&quot;</span>)</span>
-<span id="cb353-2"><a href="gapminder.html#cb353-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb353-3"><a href="gapminder.html#cb353-3" aria-hidden="true" tabindex="-1"></a>gapminder <span class="sc">%&gt;%</span> <span class="fu">filter</span>(country <span class="sc">%in%</span> countries) <span class="sc">%&gt;%</span></span>
-<span id="cb353-4"><a href="gapminder.html#cb353-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(year,fertility)) <span class="sc">+</span></span>
-<span id="cb353-5"><a href="gapminder.html#cb353-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>()</span></code></pre></div>
-<p><img src="libro_files/figure-html/wrong-time-series-plot-1.png" width="70%" style="display: block; margin: auto;" /></p>
-<p>Claramente, este <strong>no</strong> es el gráfico que queremos. En lugar de una línea para cada país, se unen los puntos para ambos países porque no le hemos dicho a <code>ggplot</code> que queremos dos líneas independientes. Para que <code>ggplot</code> entienda que hay dos curvas que se deben hacer por separado, asignamos cada punto a un <code>group</code>, uno para cada país:</p>
 <div class="sourceCode" id="cb354"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb354-1"><a href="gapminder.html#cb354-1" aria-hidden="true" tabindex="-1"></a>countries <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;South Korea&quot;</span>,<span class="st">&quot;Germany&quot;</span>)</span>
 <span id="cb354-2"><a href="gapminder.html#cb354-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb354-3"><a href="gapminder.html#cb354-3" aria-hidden="true" tabindex="-1"></a>gapminder <span class="sc">%&gt;%</span> <span class="fu">filter</span>(country <span class="sc">%in%</span> countries <span class="sc">&amp;</span> <span class="sc">!</span><span class="fu">is.na</span>(fertility)) <span class="sc">%&gt;%</span></span>
-<span id="cb354-4"><a href="gapminder.html#cb354-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(year, fertility, <span class="at">group =</span> country)) <span class="sc">+</span></span>
+<span id="cb354-3"><a href="gapminder.html#cb354-3" aria-hidden="true" tabindex="-1"></a>gapminder <span class="sc">|&gt;</span> <span class="fu">filter</span>(country <span class="sc">%in%</span> countries) <span class="sc">|&gt;</span></span>
+<span id="cb354-4"><a href="gapminder.html#cb354-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(year,fertility)) <span class="sc">+</span></span>
 <span id="cb354-5"><a href="gapminder.html#cb354-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>()</span></code></pre></div>
+<p><img src="libro_files/figure-html/wrong-time-series-plot-1.png" width="70%" style="display: block; margin: auto;" /></p>
+<p>Claramente, este <strong>no</strong> es el gráfico que queremos. En lugar de una línea para cada país, se unen los puntos para ambos países porque no le hemos dicho a <code>ggplot</code> que queremos dos líneas independientes. Para que <code>ggplot</code> entienda que hay dos curvas que se deben hacer por separado, asignamos cada punto a un <code>group</code>, uno para cada país:</p>
+<div class="sourceCode" id="cb355"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb355-1"><a href="gapminder.html#cb355-1" aria-hidden="true" tabindex="-1"></a>countries <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;South Korea&quot;</span>,<span class="st">&quot;Germany&quot;</span>)</span>
+<span id="cb355-2"><a href="gapminder.html#cb355-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb355-3"><a href="gapminder.html#cb355-3" aria-hidden="true" tabindex="-1"></a>gapminder <span class="sc">|&gt;</span> <span class="fu">filter</span>(country <span class="sc">%in%</span> countries <span class="sc">&amp;</span> <span class="sc">!</span><span class="fu">is.na</span>(fertility)) <span class="sc">|&gt;</span></span>
+<span id="cb355-4"><a href="gapminder.html#cb355-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(year, fertility, <span class="at">group =</span> country)) <span class="sc">+</span></span>
+<span id="cb355-5"><a href="gapminder.html#cb355-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>()</span></code></pre></div>
 <p><img src="libro_files/figure-html/time-series-two-curves-1.png" width="70%" style="display: block; margin: auto;" /></p>
 <p>¿Pero qué línea va con qué país? Podemos asignar colores para hacer esta distinción.
 Un efecto secundario útil de usar el argumento <code>color</code> para asignar diferentes colores a los diferentes países es que los datos se agrupan automáticamente:</p>
-<div class="sourceCode" id="cb355"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb355-1"><a href="gapminder.html#cb355-1" aria-hidden="true" tabindex="-1"></a>countries <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;South Korea&quot;</span>,<span class="st">&quot;Germany&quot;</span>)</span>
-<span id="cb355-2"><a href="gapminder.html#cb355-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb355-3"><a href="gapminder.html#cb355-3" aria-hidden="true" tabindex="-1"></a>gapminder <span class="sc">%&gt;%</span> <span class="fu">filter</span>(country <span class="sc">%in%</span> countries <span class="sc">&amp;</span> <span class="sc">!</span><span class="fu">is.na</span>(fertility)) <span class="sc">%&gt;%</span></span>
-<span id="cb355-4"><a href="gapminder.html#cb355-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(year,fertility, <span class="at">col =</span> country)) <span class="sc">+</span></span>
-<span id="cb355-5"><a href="gapminder.html#cb355-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>()</span></code></pre></div>
+<div class="sourceCode" id="cb356"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb356-1"><a href="gapminder.html#cb356-1" aria-hidden="true" tabindex="-1"></a>countries <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;South Korea&quot;</span>,<span class="st">&quot;Germany&quot;</span>)</span>
+<span id="cb356-2"><a href="gapminder.html#cb356-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb356-3"><a href="gapminder.html#cb356-3" aria-hidden="true" tabindex="-1"></a>gapminder <span class="sc">|&gt;</span> <span class="fu">filter</span>(country <span class="sc">%in%</span> countries <span class="sc">&amp;</span> <span class="sc">!</span><span class="fu">is.na</span>(fertility)) <span class="sc">|&gt;</span></span>
+<span id="cb356-4"><a href="gapminder.html#cb356-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(year,fertility, <span class="at">col =</span> country)) <span class="sc">+</span></span>
+<span id="cb356-5"><a href="gapminder.html#cb356-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>()</span></code></pre></div>
 <p><img src="libro_files/figure-html/fertility-time-series-plot-1.png" width="70%" style="display: block; margin: auto;" /></p>
 <p>El gráfico muestra claramente cómo la tasa de fertilidad de Corea del Sur cayó drásticamente durante los años sesenta y setenta, y en 1990 tuvo una tasa similar a la de Alemania.</p>
-<div id="etiquetas-en-lugar-de-leyendas" class="section level3" number="9.4.1">
-<h3><span class="header-section-number">9.4.1</span> Etiquetas en lugar de leyendas</h3>
+<div id="etiquetas-en-lugar-de-leyendas" class="section level3 hasAnchor" number="9.4.1">
+<h3><span class="header-section-number">9.4.1</span> Etiquetas en lugar de leyendas<a href="gapminder.html#etiquetas-en-lugar-de-leyendas" class="anchor-section" aria-label="Anchor link to header"></a></h3>
 <p>Para los gráficos de tendencias, recomendamos etiquetar las líneas en lugar de usar leyendas, ya que el espectador puede ver rápidamente qué línea representa qué país. Esta sugerencia aplica a la mayoría de los gráficos: las etiquetas generalmente se prefieren a las leyendas.</p>
 <p>Demostramos cómo hacer esto usando los datos de esperanza de vida. Definimos una tabla de datos con las ubicaciones de las etiquetas y luego usamos una segunda asignación solo para estas etiquetas:</p>
-<div class="sourceCode" id="cb356"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb356-1"><a href="gapminder.html#cb356-1" aria-hidden="true" tabindex="-1"></a>labels <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">country =</span> countries, <span class="at">x =</span> <span class="fu">c</span>(<span class="dv">1975</span>,<span class="dv">1965</span>), <span class="at">y =</span> <span class="fu">c</span>(<span class="dv">60</span>,<span class="dv">72</span>))</span>
-<span id="cb356-2"><a href="gapminder.html#cb356-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb356-3"><a href="gapminder.html#cb356-3" aria-hidden="true" tabindex="-1"></a>gapminder <span class="sc">%&gt;%</span></span>
-<span id="cb356-4"><a href="gapminder.html#cb356-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(country <span class="sc">%in%</span> countries) <span class="sc">%&gt;%</span></span>
-<span id="cb356-5"><a href="gapminder.html#cb356-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(year, life_expectancy, <span class="at">col =</span> country)) <span class="sc">+</span></span>
-<span id="cb356-6"><a href="gapminder.html#cb356-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>() <span class="sc">+</span></span>
-<span id="cb356-7"><a href="gapminder.html#cb356-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_text</span>(<span class="at">data =</span> labels, <span class="fu">aes</span>(x, y, <span class="at">label =</span> country), <span class="at">size =</span> <span class="dv">5</span>) <span class="sc">+</span></span>
-<span id="cb356-8"><a href="gapminder.html#cb356-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">&quot;none&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb357"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb357-1"><a href="gapminder.html#cb357-1" aria-hidden="true" tabindex="-1"></a>labels <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">country =</span> countries, <span class="at">x =</span> <span class="fu">c</span>(<span class="dv">1975</span>,<span class="dv">1965</span>), <span class="at">y =</span> <span class="fu">c</span>(<span class="dv">60</span>,<span class="dv">72</span>))</span>
+<span id="cb357-2"><a href="gapminder.html#cb357-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb357-3"><a href="gapminder.html#cb357-3" aria-hidden="true" tabindex="-1"></a>gapminder <span class="sc">|&gt;</span></span>
+<span id="cb357-4"><a href="gapminder.html#cb357-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(country <span class="sc">%in%</span> countries) <span class="sc">|&gt;</span></span>
+<span id="cb357-5"><a href="gapminder.html#cb357-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(year, life_expectancy, <span class="at">col =</span> country)) <span class="sc">+</span></span>
+<span id="cb357-6"><a href="gapminder.html#cb357-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>() <span class="sc">+</span></span>
+<span id="cb357-7"><a href="gapminder.html#cb357-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_text</span>(<span class="at">data =</span> labels, <span class="fu">aes</span>(x, y, <span class="at">label =</span> country), <span class="at">size =</span> <span class="dv">5</span>) <span class="sc">+</span></span>
+<span id="cb357-8"><a href="gapminder.html#cb357-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">&quot;none&quot;</span>)</span></code></pre></div>
 <p><img src="libro_files/figure-html/labels-better-than-legends-1.png" width="70%" style="display: block; margin: auto;" /></p>
 <p>El gráfico muestra claramente cómo una mejora en la esperanza de vida siguió a caídas en las tasas de fertilidad. En 1960, los alemanes vivieron 15 años más que los surcoreanos, aunque para 2010 la brecha está completamente cerrada. Ejemplifica la mejora que muchos países no occidentales han logrado en los últimos 40 años.</p>
 </div>
 </div>
-<div id="transformaciones-de-datos" class="section level2" number="9.5">
-<h2><span class="header-section-number">9.5</span> Transformaciones de datos</h2>
+<div id="transformaciones-de-datos" class="section level2 hasAnchor" number="9.5">
+<h2><span class="header-section-number">9.5</span> Transformaciones de datos<a href="gapminder.html#transformaciones-de-datos" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>Ahora cambiamos nuestra atención a la segunda pregunta relacionada con la idea común de que la distribución de la riqueza en todo el mundo ha empeorado durante las últimas décadas. Cuando se le pregunta al público en general si los países pobres se han vuelto más pobres y los países ricos se han vuelto más ricos, la mayoría responde que sí. Mediante el uso de estratificación, histogramas, densidades suaves y diagramas de caja, podremos ver si este realmente es el caso. Primero, aprenderemos cómo las transformaciones a veces pueden ayudar a proporcionar resúmenes y gráficos más informativos.</p>
-<p>La tabla de datos <code>gapminder</code> incluye una columna con el producto interno bruto de los países (GDP por sus siglas en inglés). El GDP mide el valor de mercado de los bienes y servicios producidos por un país en un año. El GDP por persona a menudo se usa como un resumen aproximado de la riqueza de un país. Aquí dividimos esta cantidad por 365 para obtener la medida más interpretable de <em>dólares por día</em>. Utilizando los dólares estadounidenses actuales como una unidad, una persona que sobrevive con un ingreso de menos de $2 por día se define como viviendo en la “pobreza absoluta.” Añadimos esta variable a la tabla de datos:</p>
-<div class="sourceCode" id="cb357"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb357-1"><a href="gapminder.html#cb357-1" aria-hidden="true" tabindex="-1"></a>gapminder <span class="ot">&lt;-</span> gapminder <span class="sc">%&gt;%</span> <span class="fu">mutate</span>(<span class="at">dollars_per_day =</span> gdp<span class="sc">/</span>population<span class="sc">/</span><span class="dv">365</span>)</span></code></pre></div>
+<p>La tabla de datos <code>gapminder</code> incluye una columna con el producto interno bruto de los países (GDP por sus siglas en inglés). El GDP mide el valor de mercado de los bienes y servicios producidos por un país en un año. El GDP por persona a menudo se usa como un resumen aproximado de la riqueza de un país. Aquí dividimos esta cantidad por 365 para obtener la medida más interpretable de <em>dólares por día</em>. Utilizando los dólares estadounidenses actuales como una unidad, una persona que sobrevive con un ingreso de menos de $2 por día se define como viviendo en la “pobreza absoluta”. Añadimos esta variable a la tabla de datos:</p>
+<div class="sourceCode" id="cb358"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb358-1"><a href="gapminder.html#cb358-1" aria-hidden="true" tabindex="-1"></a>gapminder <span class="ot">&lt;-</span> gapminder <span class="sc">|&gt;</span> <span class="fu">mutate</span>(<span class="at">dollars_per_day =</span> gdp<span class="sc">/</span>population<span class="sc">/</span><span class="dv">365</span>)</span></code></pre></div>
 <p>Los valores del GDP se ajustan a la inflación y representan dólares estadounidenses actuales, por lo que estos valores deben ser comparables a lo largo de los años. Por supuesto, estos son promedios de país y dentro de cada país hay mucha variabilidad. Todos los gráficos y las ideas que se describen a continuación se refieren a los promedios de los países y no a los individuos dentro de estos.</p>
-<div id="transformación-logarítmica" class="section level3" number="9.5.1">
-<h3><span class="header-section-number">9.5.1</span> Transformación logarítmica</h3>
+<div id="transformación-logarítmica" class="section level3 hasAnchor" number="9.5.1">
+<h3><span class="header-section-number">9.5.1</span> Transformación logarítmica<a href="gapminder.html#transformación-logarítmica" class="anchor-section" aria-label="Anchor link to header"></a></h3>
 <p>Abajo tenemos un histograma de ingresos diarios desde 1970:</p>
-<div class="sourceCode" id="cb358"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb358-1"><a href="gapminder.html#cb358-1" aria-hidden="true" tabindex="-1"></a>past_year <span class="ot">&lt;-</span> <span class="dv">1970</span></span>
-<span id="cb358-2"><a href="gapminder.html#cb358-2" aria-hidden="true" tabindex="-1"></a>gapminder <span class="sc">%&gt;%</span></span>
-<span id="cb358-3"><a href="gapminder.html#cb358-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(year <span class="sc">==</span> past_year <span class="sc">&amp;</span> <span class="sc">!</span><span class="fu">is.na</span>(gdp)) <span class="sc">%&gt;%</span></span>
-<span id="cb358-4"><a href="gapminder.html#cb358-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(dollars_per_day)) <span class="sc">+</span></span>
-<span id="cb358-5"><a href="gapminder.html#cb358-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_histogram</span>(<span class="at">binwidth =</span> <span class="dv">1</span>, <span class="at">color =</span> <span class="st">&quot;black&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb359"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb359-1"><a href="gapminder.html#cb359-1" aria-hidden="true" tabindex="-1"></a>past_year <span class="ot">&lt;-</span> <span class="dv">1970</span></span>
+<span id="cb359-2"><a href="gapminder.html#cb359-2" aria-hidden="true" tabindex="-1"></a>gapminder <span class="sc">|&gt;</span></span>
+<span id="cb359-3"><a href="gapminder.html#cb359-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(year <span class="sc">==</span> past_year <span class="sc">&amp;</span> <span class="sc">!</span><span class="fu">is.na</span>(gdp)) <span class="sc">|&gt;</span></span>
+<span id="cb359-4"><a href="gapminder.html#cb359-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(dollars_per_day)) <span class="sc">+</span></span>
+<span id="cb359-5"><a href="gapminder.html#cb359-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_histogram</span>(<span class="at">binwidth =</span> <span class="dv">1</span>, <span class="at">color =</span> <span class="st">&quot;black&quot;</span>)</span></code></pre></div>
 <p><img src="libro_files/figure-html/dollars-per-day-distribution-1.png" width="70%" style="display: block; margin: auto;" /></p>
 <p>Utilizamos el argumento <code>color = "black"</code> para dibujar un límite y distinguir claramente los compartimientos.</p>
 <p>En este gráfico, vemos que para la mayoría de los países, los promedios están por debajo de $10 por día. Sin embargo, la mayoría del eje-x está dedicado a 35 países con promedio de menos de $10. Por lo tanto, el gráfico no es muy informativo con respecto a países con valores inferiores a $10 por día.</p>
 <p>Sería más informativo poder ver rápidamente cuántos países tienen ingresos diarios promedio de aproximadamente $1 (extremadamente pobre), $2 (muy pobre), $4 (pobre), $8 (promedio), $16 (acomodado), $32 (rico), $64 (muy rico) por día. Estos cambios son multiplicativos y las transformaciones logarítmicas convierten los cambios multiplicativos en aditivos: cuando se usa la base 2, la duplicación de un valor se convierte en un aumento de 1.</p>
 <p>Aquí tenemos la distribución si aplicamos una transformación logarítmica base 2:</p>
-<div class="sourceCode" id="cb359"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb359-1"><a href="gapminder.html#cb359-1" aria-hidden="true" tabindex="-1"></a>gapminder <span class="sc">%&gt;%</span></span>
-<span id="cb359-2"><a href="gapminder.html#cb359-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(year <span class="sc">==</span> past_year <span class="sc">&amp;</span> <span class="sc">!</span><span class="fu">is.na</span>(gdp)) <span class="sc">%&gt;%</span></span>
-<span id="cb359-3"><a href="gapminder.html#cb359-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="fu">log2</span>(dollars_per_day))) <span class="sc">+</span></span>
-<span id="cb359-4"><a href="gapminder.html#cb359-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_histogram</span>(<span class="at">binwidth =</span> <span class="dv">1</span>, <span class="at">color =</span> <span class="st">&quot;black&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb360"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb360-1"><a href="gapminder.html#cb360-1" aria-hidden="true" tabindex="-1"></a>gapminder <span class="sc">|&gt;</span></span>
+<span id="cb360-2"><a href="gapminder.html#cb360-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(year <span class="sc">==</span> past_year <span class="sc">&amp;</span> <span class="sc">!</span><span class="fu">is.na</span>(gdp)) <span class="sc">|&gt;</span></span>
+<span id="cb360-3"><a href="gapminder.html#cb360-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="fu">log2</span>(dollars_per_day))) <span class="sc">+</span></span>
+<span id="cb360-4"><a href="gapminder.html#cb360-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_histogram</span>(<span class="at">binwidth =</span> <span class="dv">1</span>, <span class="at">color =</span> <span class="st">&quot;black&quot;</span>)</span></code></pre></div>
 <p><img src="libro_files/figure-html/dollars-per-day-distribution-log-1.png" width="70%" style="display: block; margin: auto;" /></p>
 <p>Así logramos ver de cerca a los países de ingresos medios a ingresos bajos.</p>
 </div>
-<div id="qué-base" class="section level3" number="9.5.2">
-<h3><span class="header-section-number">9.5.2</span> ¿Qué base?</h3>
+<div id="qué-base" class="section level3 hasAnchor" number="9.5.2">
+<h3><span class="header-section-number">9.5.2</span> ¿Qué base?<a href="gapminder.html#qué-base" class="anchor-section" aria-label="Anchor link to header"></a></h3>
 <p>En el caso anterior, utilizamos la base 2 en las transformaciones logarítmicas. Otras opciones comunes son base <span class="math inline">\(\mathrm{e}\)</span> (el logaritmo natural) y base 10.</p>
 <p>En general, no recomendamos utilizar el logaritmo natural para la exploración y visualización de datos. La razón es porque mientras <span class="math inline">\(2^2, 2^3, 2^4, \dots\)</span> o <span class="math inline">\(10^2, 10^3, \dots\)</span> son fáciles de calcular en nuestras cabezas, lo mismo no es cierto para <span class="math inline">\(\mathrm{e}^2, \mathrm{e}^3, \dots\)</span>, por lo que la escala no es intuitiva ni fácil de interpretar.</p>
 <p>En el ejemplo de dólares por día, utilizamos la base 2 en lugar de la base 10 porque el rango resultante es más fácil de interpretar. El rango de los valores que se trazan es 0.327, 48.885.</p>
 <p>En la base 10, esto se convierte en un rango que incluye muy pocos enteros: solo 0 y 1. Con la base dos, nuestro rango incluye -2, -1, 0, 1, 2, 3, 4 y 5. Es más fácil calcular <span class="math inline">\(2^x\)</span> y <span class="math inline">\(10^x\)</span> cuando <span class="math inline">\(x\)</span> es un entero y entre -10 y 10, por lo que preferimos tener enteros más pequeños en la escala. Otra consecuencia de un rango limitado es que elegir el ancho del compartimiento (<em>binwidth</em> en inglés) es más difícil. Con logaritmo base 2, sabemos que un ancho de compartimiento de 1 se convertirá en un compartimiento con rango <span class="math inline">\(x\)</span> a <span class="math inline">\(2x\)</span>.</p>
 <p>Para un ejemplo en el que la base 10 tiene más sentido, consideren los tamaños de poblaciones. Un logaritmo base 10 es preferible ya que el rango para estos es:</p>
-<div class="sourceCode" id="cb360"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb360-1"><a href="gapminder.html#cb360-1" aria-hidden="true" tabindex="-1"></a><span class="fu">filter</span>(gapminder, year <span class="sc">==</span> past_year) <span class="sc">%&gt;%</span></span>
-<span id="cb360-2"><a href="gapminder.html#cb360-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="at">min =</span> <span class="fu">min</span>(population), <span class="at">max =</span> <span class="fu">max</span>(population))</span>
-<span id="cb360-3"><a href="gapminder.html#cb360-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;     min      max</span></span>
-<span id="cb360-4"><a href="gapminder.html#cb360-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1 46075 8.09e+08</span></span></code></pre></div>
+<div class="sourceCode" id="cb361"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb361-1"><a href="gapminder.html#cb361-1" aria-hidden="true" tabindex="-1"></a><span class="fu">filter</span>(gapminder, year <span class="sc">==</span> past_year) <span class="sc">|&gt;</span></span>
+<span id="cb361-2"><a href="gapminder.html#cb361-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="at">min =</span> <span class="fu">min</span>(population), <span class="at">max =</span> <span class="fu">max</span>(population))</span>
+<span id="cb361-3"><a href="gapminder.html#cb361-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;     min      max</span></span>
+<span id="cb361-4"><a href="gapminder.html#cb361-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1 46075 8.09e+08</span></span></code></pre></div>
 <p>Abajo tenemos el histograma de los valores transformados:</p>
-<div class="sourceCode" id="cb361"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb361-1"><a href="gapminder.html#cb361-1" aria-hidden="true" tabindex="-1"></a>gapminder <span class="sc">%&gt;%</span></span>
-<span id="cb361-2"><a href="gapminder.html#cb361-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(year <span class="sc">==</span> past_year) <span class="sc">%&gt;%</span></span>
-<span id="cb361-3"><a href="gapminder.html#cb361-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="fu">log10</span>(population))) <span class="sc">+</span></span>
-<span id="cb361-4"><a href="gapminder.html#cb361-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_histogram</span>(<span class="at">binwidth =</span> <span class="fl">0.5</span>, <span class="at">color =</span> <span class="st">&quot;black&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb362"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb362-1"><a href="gapminder.html#cb362-1" aria-hidden="true" tabindex="-1"></a>gapminder <span class="sc">|&gt;</span></span>
+<span id="cb362-2"><a href="gapminder.html#cb362-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(year <span class="sc">==</span> past_year) <span class="sc">|&gt;</span></span>
+<span id="cb362-3"><a href="gapminder.html#cb362-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="fu">log10</span>(population))) <span class="sc">+</span></span>
+<span id="cb362-4"><a href="gapminder.html#cb362-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_histogram</span>(<span class="at">binwidth =</span> <span class="fl">0.5</span>, <span class="at">color =</span> <span class="st">&quot;black&quot;</span>)</span></code></pre></div>
 <p><img src="libro_files/figure-html/population-histogram-log10-1.png" width="70%" style="display: block; margin: auto;" /></p>
 <p>En el gráfico anterior, rápidamente vemos que las poblaciones de los países oscilan entre diez mil y diez mil millones.</p>
 </div>
-<div id="transformar-los-valores-o-la-escala" class="section level3" number="9.5.3">
-<h3><span class="header-section-number">9.5.3</span> ¿Transformar los valores o la escala?</h3>
+<div id="transformar-los-valores-o-la-escala" class="section level3 hasAnchor" number="9.5.3">
+<h3><span class="header-section-number">9.5.3</span> ¿Transformar los valores o la escala?<a href="gapminder.html#transformar-los-valores-o-la-escala" class="anchor-section" aria-label="Anchor link to header"></a></h3>
 <p>Hay dos formas en que podemos usar las transformaciones logarítmicas en los gráficos. Podemos tomar el logaritmo de los valores antes de graficarlos o usar escalas logarítmicas en los ejes. Ambos enfoques son útiles y tienen diferentes ventajas. Si tomamos el logaritmo de los datos, podemos interpretar más fácilmente los valores intermedios en la escala. Por ejemplo, si vemos:</p>
 <p><code>----1----x----2--------3----</code></p>
 <p>para datos transformados con el logaritmo, sabemos que el valor de <span class="math inline">\(x\)</span> es de aproximadamente 1.5. Si usamos escalas logarítmicas:</p>
 <p><code>----10---x---100------1000---</code></p>
-<p>entonces, para determinar <code>x</code>, necesitamos calcular <span class="math inline">\(10^{1.5}\)</span>, que no es fácil de hacer mentalmente. La ventaja de usar escalas logarítmicas es que vemos los valores originales en los ejes. Sin embargo, la ventaja de mostrar escalas logarítmicas es que los valores originales se muestran en el gráfico y son más fáciles de interpretar. Por ejemplo, veríamos “32 dólares por día” en lugar de “5 log base 2 dólares por día.”</p>
+<p>entonces, para determinar <code>x</code>, necesitamos calcular <span class="math inline">\(10^{1.5}\)</span>, que no es fácil de hacer mentalmente. La ventaja de usar escalas logarítmicas es que vemos los valores originales en los ejes. Sin embargo, la ventaja de mostrar escalas logarítmicas es que los valores originales se muestran en el gráfico y son más fáciles de interpretar. Por ejemplo, veríamos “32 dólares por día” en lugar de “5 log base 2 dólares por día”.</p>
 <p>Como aprendimos anteriormente, si queremos escalar el eje con logaritmos, podemos usar la función <code>scale_x_continuous</code>. En vez de primero tomar el logaritmo de los valores, aplicamos esta capa:</p>
-<div class="sourceCode" id="cb362"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb362-1"><a href="gapminder.html#cb362-1" aria-hidden="true" tabindex="-1"></a>gapminder <span class="sc">%&gt;%</span></span>
-<span id="cb362-2"><a href="gapminder.html#cb362-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(year <span class="sc">==</span> past_year <span class="sc">&amp;</span> <span class="sc">!</span><span class="fu">is.na</span>(gdp)) <span class="sc">%&gt;%</span></span>
-<span id="cb362-3"><a href="gapminder.html#cb362-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(dollars_per_day)) <span class="sc">+</span></span>
-<span id="cb362-4"><a href="gapminder.html#cb362-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_histogram</span>(<span class="at">binwidth =</span> <span class="dv">1</span>, <span class="at">color =</span> <span class="st">&quot;black&quot;</span>) <span class="sc">+</span></span>
-<span id="cb362-5"><a href="gapminder.html#cb362-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">trans =</span> <span class="st">&quot;log2&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb363"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb363-1"><a href="gapminder.html#cb363-1" aria-hidden="true" tabindex="-1"></a>gapminder <span class="sc">|&gt;</span></span>
+<span id="cb363-2"><a href="gapminder.html#cb363-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(year <span class="sc">==</span> past_year <span class="sc">&amp;</span> <span class="sc">!</span><span class="fu">is.na</span>(gdp)) <span class="sc">|&gt;</span></span>
+<span id="cb363-3"><a href="gapminder.html#cb363-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(dollars_per_day)) <span class="sc">+</span></span>
+<span id="cb363-4"><a href="gapminder.html#cb363-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_histogram</span>(<span class="at">binwidth =</span> <span class="dv">1</span>, <span class="at">color =</span> <span class="st">&quot;black&quot;</span>) <span class="sc">+</span></span>
+<span id="cb363-5"><a href="gapminder.html#cb363-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">trans =</span> <span class="st">&quot;log2&quot;</span>)</span></code></pre></div>
 <p><img src="libro_files/figure-html/dollars-per-day-log-scale-1.png" width="70%" style="display: block; margin: auto;" /></p>
 <p>Tengan en cuenta que la transformación logarítmica base 10 tiene su propia función: <code>scale_x_log10()</code>, pero actualmente la base 2 no tiene, aunque fácilmente podríamos definir una.</p>
 <p>Hay otras transformaciones disponibles a través del argumento <code>trans</code>. Como aprenderemos más adelante, la transformación de raíz cuadrada (<code>sqrt</code>) es útil cuando se consideran conteos. La transformación logística (<code>logit</code>) es útil cuando se grafican proporciones entre 0 y 1. La transformación <code>reverse</code> es útil cuando queremos que los valores más pequeños estén a la derecha o arriba.</p>
 </div>
 </div>
-<div id="cómo-visualizar-distribuciones-multimodales" class="section level2" number="9.6">
-<h2><span class="header-section-number">9.6</span> Cómo visualizar distribuciones multimodales</h2>
+<div id="cómo-visualizar-distribuciones-multimodales" class="section level2 hasAnchor" number="9.6">
+<h2><span class="header-section-number">9.6</span> Cómo visualizar distribuciones multimodales<a href="gapminder.html#cómo-visualizar-distribuciones-multimodales" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>En el histograma anterior vemos dos protuberancias: una aproximadamente en 4 y otra aproximadamente en 32. En estadística, estas protuberancias a veces se denominan <em>modas</em> (<em>modes</em> en inglés). La moda de una distribución es el valor con la frecuencia más alta. La moda de distribución normal es el promedio. Cuando una distribución, como la anterior, no disminuye monotónicamente de la moda, llamamos a los lugares donde sube y baja de nuevo <em>modas locales</em> y decimos que la distribución tiene <em>modas múltiples</em>.</p>
 <p>El histograma anterior sugiere que la distribución de ingreso de los países en 1970 tiene dos modas: una de aproximadamente 2 dólares por día (1 en la escala log 2) y la otra de aproximadamente 32 dólares por día (5 en la escala log 2). Esta <em>bimodalidad</em> es consistente con un mundo dicotómico compuesto por países con ingresos promedio inferiores a $8 (3 en la escala log 2) por día y países por encima de eso.</p>
 </div>
-<div id="cómo-comparar-múltiples-distribuciones-con-diagramas-de-caja-y-gráficos-ridge" class="section level2" number="9.7">
-<h2><span class="header-section-number">9.7</span> Cómo comparar múltiples distribuciones con diagramas de caja y gráficos <em>ridge</em></h2>
+<div id="cómo-comparar-múltiples-distribuciones-con-diagramas-de-caja-y-gráficos-ridge" class="section level2 hasAnchor" number="9.7">
+<h2><span class="header-section-number">9.7</span> Cómo comparar múltiples distribuciones con diagramas de caja y gráficos <em>ridge</em><a href="gapminder.html#cómo-comparar-múltiples-distribuciones-con-diagramas-de-caja-y-gráficos-ridge" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>De acuerdo con el histograma, los valores de distribución del ingreso de 1970 muestran una dicotomía. Sin embargo, el histograma no nos muestra si los dos grupos de países están en el <em>oeste</em> o forman parte del mundo <em>en desarrollo</em>.</p>
 <p>Comencemos examinando rápidamente los datos por región. Reordenamos las regiones por la mediana y usamos una escala logarítmica.</p>
-<div class="sourceCode" id="cb363"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb363-1"><a href="gapminder.html#cb363-1" aria-hidden="true" tabindex="-1"></a>gapminder <span class="sc">%&gt;%</span></span>
-<span id="cb363-2"><a href="gapminder.html#cb363-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(year <span class="sc">==</span> past_year <span class="sc">&amp;</span> <span class="sc">!</span><span class="fu">is.na</span>(gdp)) <span class="sc">%&gt;%</span></span>
-<span id="cb363-3"><a href="gapminder.html#cb363-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">region =</span> <span class="fu">reorder</span>(region, dollars_per_day, <span class="at">FUN =</span> median)) <span class="sc">%&gt;%</span></span>
-<span id="cb363-4"><a href="gapminder.html#cb363-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(dollars_per_day, region)) <span class="sc">+</span></span>
-<span id="cb363-5"><a href="gapminder.html#cb363-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>() <span class="sc">+</span></span>
-<span id="cb363-6"><a href="gapminder.html#cb363-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">trans =</span> <span class="st">&quot;log2&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb364"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb364-1"><a href="gapminder.html#cb364-1" aria-hidden="true" tabindex="-1"></a>gapminder <span class="sc">|&gt;</span></span>
+<span id="cb364-2"><a href="gapminder.html#cb364-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(year <span class="sc">==</span> past_year <span class="sc">&amp;</span> <span class="sc">!</span><span class="fu">is.na</span>(gdp)) <span class="sc">|&gt;</span></span>
+<span id="cb364-3"><a href="gapminder.html#cb364-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">region =</span> <span class="fu">reorder</span>(region, dollars_per_day, <span class="at">FUN =</span> median)) <span class="sc">|&gt;</span></span>
+<span id="cb364-4"><a href="gapminder.html#cb364-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(dollars_per_day, region)) <span class="sc">+</span></span>
+<span id="cb364-5"><a href="gapminder.html#cb364-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>() <span class="sc">+</span></span>
+<span id="cb364-6"><a href="gapminder.html#cb364-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">trans =</span> <span class="st">&quot;log2&quot;</span>)</span></code></pre></div>
 <p><img src="libro_files/figure-html/unnamed-chunk-360-1.png" width="70%" style="display: block; margin: auto;" /></p>
 <p>Ya podemos ver que efectivamente existe una dicotomía “el Oeste versus el Resto”: hay dos grupos claros, con el grupo rico compuesto por Norteamérica, Europa del Norte y Occidental, Nueva Zelanda y Australia. Definimos grupos basados en esta observación:</p>
-<div class="sourceCode" id="cb364"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb364-1"><a href="gapminder.html#cb364-1" aria-hidden="true" tabindex="-1"></a>gapminder <span class="ot">&lt;-</span> gapminder <span class="sc">%&gt;%</span></span>
-<span id="cb364-2"><a href="gapminder.html#cb364-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">group =</span> <span class="fu">case_when</span>(</span>
-<span id="cb364-3"><a href="gapminder.html#cb364-3" aria-hidden="true" tabindex="-1"></a>    region <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">&quot;Western Europe&quot;</span>, <span class="st">&quot;Northern Europe&quot;</span>,<span class="st">&quot;Southern Europe&quot;</span>,</span>
-<span id="cb364-4"><a href="gapminder.html#cb364-4" aria-hidden="true" tabindex="-1"></a>                  <span class="st">&quot;Northern America&quot;</span>,</span>
-<span id="cb364-5"><a href="gapminder.html#cb364-5" aria-hidden="true" tabindex="-1"></a>                  <span class="st">&quot;Australia and New Zealand&quot;</span>) <span class="sc">~</span> <span class="st">&quot;West&quot;</span>,</span>
-<span id="cb364-6"><a href="gapminder.html#cb364-6" aria-hidden="true" tabindex="-1"></a>    region <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">&quot;Eastern Asia&quot;</span>, <span class="st">&quot;South-Eastern Asia&quot;</span>) <span class="sc">~</span> <span class="st">&quot;East Asia&quot;</span>,</span>
-<span id="cb364-7"><a href="gapminder.html#cb364-7" aria-hidden="true" tabindex="-1"></a>    region <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">&quot;Caribbean&quot;</span>, <span class="st">&quot;Central America&quot;</span>,</span>
-<span id="cb364-8"><a href="gapminder.html#cb364-8" aria-hidden="true" tabindex="-1"></a>                  <span class="st">&quot;South America&quot;</span>) <span class="sc">~</span> <span class="st">&quot;Latin America&quot;</span>,</span>
-<span id="cb364-9"><a href="gapminder.html#cb364-9" aria-hidden="true" tabindex="-1"></a>    continent <span class="sc">==</span> <span class="st">&quot;Africa&quot;</span> <span class="sc">&amp;</span></span>
-<span id="cb364-10"><a href="gapminder.html#cb364-10" aria-hidden="true" tabindex="-1"></a>      region <span class="sc">!=</span> <span class="st">&quot;Northern Africa&quot;</span> <span class="sc">~</span> <span class="st">&quot;Sub-Saharan&quot;</span>,</span>
-<span id="cb364-11"><a href="gapminder.html#cb364-11" aria-hidden="true" tabindex="-1"></a>    <span class="cn">TRUE</span> <span class="sc">~</span> <span class="st">&quot;Others&quot;</span>))</span></code></pre></div>
+<div class="sourceCode" id="cb365"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb365-1"><a href="gapminder.html#cb365-1" aria-hidden="true" tabindex="-1"></a>gapminder <span class="ot">&lt;-</span> gapminder <span class="sc">|&gt;</span></span>
+<span id="cb365-2"><a href="gapminder.html#cb365-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">group =</span> <span class="fu">case_when</span>(</span>
+<span id="cb365-3"><a href="gapminder.html#cb365-3" aria-hidden="true" tabindex="-1"></a>    region <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">&quot;Western Europe&quot;</span>, <span class="st">&quot;Northern Europe&quot;</span>,<span class="st">&quot;Southern Europe&quot;</span>,</span>
+<span id="cb365-4"><a href="gapminder.html#cb365-4" aria-hidden="true" tabindex="-1"></a>                  <span class="st">&quot;Northern America&quot;</span>,</span>
+<span id="cb365-5"><a href="gapminder.html#cb365-5" aria-hidden="true" tabindex="-1"></a>                  <span class="st">&quot;Australia and New Zealand&quot;</span>) <span class="sc">~</span> <span class="st">&quot;West&quot;</span>,</span>
+<span id="cb365-6"><a href="gapminder.html#cb365-6" aria-hidden="true" tabindex="-1"></a>    region <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">&quot;Eastern Asia&quot;</span>, <span class="st">&quot;South-Eastern Asia&quot;</span>) <span class="sc">~</span> <span class="st">&quot;East Asia&quot;</span>,</span>
+<span id="cb365-7"><a href="gapminder.html#cb365-7" aria-hidden="true" tabindex="-1"></a>    region <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">&quot;Caribbean&quot;</span>, <span class="st">&quot;Central America&quot;</span>,</span>
+<span id="cb365-8"><a href="gapminder.html#cb365-8" aria-hidden="true" tabindex="-1"></a>                  <span class="st">&quot;South America&quot;</span>) <span class="sc">~</span> <span class="st">&quot;Latin America&quot;</span>,</span>
+<span id="cb365-9"><a href="gapminder.html#cb365-9" aria-hidden="true" tabindex="-1"></a>    continent <span class="sc">==</span> <span class="st">&quot;Africa&quot;</span> <span class="sc">&amp;</span></span>
+<span id="cb365-10"><a href="gapminder.html#cb365-10" aria-hidden="true" tabindex="-1"></a>      region <span class="sc">!=</span> <span class="st">&quot;Northern Africa&quot;</span> <span class="sc">~</span> <span class="st">&quot;Sub-Saharan&quot;</span>,</span>
+<span id="cb365-11"><a href="gapminder.html#cb365-11" aria-hidden="true" tabindex="-1"></a>    <span class="cn">TRUE</span> <span class="sc">~</span> <span class="st">&quot;Others&quot;</span>))</span></code></pre></div>
 <p>Convertimos esta variable <code>group</code> en un factor para controlar el orden de los niveles:</p>
-<div class="sourceCode" id="cb365"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb365-1"><a href="gapminder.html#cb365-1" aria-hidden="true" tabindex="-1"></a>gapminder <span class="ot">&lt;-</span> gapminder <span class="sc">%&gt;%</span></span>
-<span id="cb365-2"><a href="gapminder.html#cb365-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">group =</span> <span class="fu">factor</span>(group, <span class="at">levels =</span> <span class="fu">c</span>(<span class="st">&quot;Others&quot;</span>, <span class="st">&quot;Latin America&quot;</span>,</span>
-<span id="cb365-3"><a href="gapminder.html#cb365-3" aria-hidden="true" tabindex="-1"></a>                                          <span class="st">&quot;East Asia&quot;</span>, <span class="st">&quot;Sub-Saharan&quot;</span>,</span>
-<span id="cb365-4"><a href="gapminder.html#cb365-4" aria-hidden="true" tabindex="-1"></a>                                          <span class="st">&quot;West&quot;</span>)))</span></code></pre></div>
+<div class="sourceCode" id="cb366"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb366-1"><a href="gapminder.html#cb366-1" aria-hidden="true" tabindex="-1"></a>gapminder <span class="ot">&lt;-</span> gapminder <span class="sc">|&gt;</span></span>
+<span id="cb366-2"><a href="gapminder.html#cb366-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">group =</span> <span class="fu">factor</span>(group, <span class="at">levels =</span> <span class="fu">c</span>(<span class="st">&quot;Others&quot;</span>, <span class="st">&quot;Latin America&quot;</span>,</span>
+<span id="cb366-3"><a href="gapminder.html#cb366-3" aria-hidden="true" tabindex="-1"></a>                                          <span class="st">&quot;East Asia&quot;</span>, <span class="st">&quot;Sub-Saharan&quot;</span>,</span>
+<span id="cb366-4"><a href="gapminder.html#cb366-4" aria-hidden="true" tabindex="-1"></a>                                          <span class="st">&quot;West&quot;</span>)))</span></code></pre></div>
 <p>En la siguiente sección mostramos cómo visualizar y comparar distribuciones entre grupos.</p>
-<div id="diagramas-de-caja-2" class="section level3" number="9.7.1">
-<h3><span class="header-section-number">9.7.1</span> Diagramas de caja</h3>
-<p>El anterior análisis exploratorio de datos reveló dos características sobre la distribución de ingreso promedio en 1970. Usando un histograma, encontramos una distribución bimodal con los modos relacionados con los países pobres y ricos. Ahora queremos comparar la distribución entre estos cinco grupos para confirmar la dicotomía “el Oeste versus el Resto.” El número de puntos en cada categoría es lo suficientemente grande como para que un gráfico de resumen pueda ser útil. Podríamos generar cinco histogramas o cinco gráficos de densidad, pero puede ser más práctico tener todos los resúmenes visuales en un gráfico. Por lo tanto, comenzamos apilando diagramas de caja uno al lado del otro. Tengan en cuenta que añadimos la capa <code>theme(axis.text.x = element_text(angle = 90, hjust = 1))</code> para que las etiquetas de grupo sean verticales, ya que no encajan si las mostramos horizontalmente, y para quitar la etiqueta del eje a fin de hacer espacio.</p>
-<div class="sourceCode" id="cb366"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb366-1"><a href="gapminder.html#cb366-1" aria-hidden="true" tabindex="-1"></a>p <span class="ot">&lt;-</span> gapminder <span class="sc">%&gt;%</span></span>
-<span id="cb366-2"><a href="gapminder.html#cb366-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(year <span class="sc">==</span> past_year <span class="sc">&amp;</span> <span class="sc">!</span><span class="fu">is.na</span>(gdp)) <span class="sc">%&gt;%</span></span>
-<span id="cb366-3"><a href="gapminder.html#cb366-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(group, dollars_per_day)) <span class="sc">+</span></span>
-<span id="cb366-4"><a href="gapminder.html#cb366-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_boxplot</span>() <span class="sc">+</span></span>
-<span id="cb366-5"><a href="gapminder.html#cb366-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">trans =</span> <span class="st">&quot;log2&quot;</span>) <span class="sc">+</span></span>
-<span id="cb366-6"><a href="gapminder.html#cb366-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlab</span>(<span class="st">&quot;&quot;</span>) <span class="sc">+</span></span>
-<span id="cb366-7"><a href="gapminder.html#cb366-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">axis.text.x =</span> <span class="fu">element_text</span>(<span class="at">angle =</span> <span class="dv">90</span>, <span class="at">hjust =</span> <span class="dv">1</span>))</span>
-<span id="cb366-8"><a href="gapminder.html#cb366-8" aria-hidden="true" tabindex="-1"></a>p</span></code></pre></div>
+<div id="diagramas-de-caja-2" class="section level3 hasAnchor" number="9.7.1">
+<h3><span class="header-section-number">9.7.1</span> Diagramas de caja<a href="gapminder.html#diagramas-de-caja-2" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>El anterior análisis exploratorio de datos reveló dos características sobre la distribución de ingreso promedio en 1970. Usando un histograma, encontramos una distribución bimodal con los modos relacionados con los países pobres y ricos. Ahora queremos comparar la distribución entre estos cinco grupos para confirmar la dicotomía “el Oeste versus el Resto”. El número de puntos en cada categoría es lo suficientemente grande como para que un gráfico de resumen pueda ser útil. Podríamos generar cinco histogramas o cinco gráficos de densidad, pero puede ser más práctico tener todos los resúmenes visuales en un gráfico. Por lo tanto, comenzamos apilando diagramas de caja uno al lado del otro. Tengan en cuenta que añadimos la capa <code>theme(axis.text.x = element_text(angle = 90, hjust = 1))</code> para que las etiquetas de grupo sean verticales, ya que no encajan si las mostramos horizontalmente, y para quitar la etiqueta del eje a fin de hacer espacio.</p>
+<div class="sourceCode" id="cb367"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb367-1"><a href="gapminder.html#cb367-1" aria-hidden="true" tabindex="-1"></a>p <span class="ot">&lt;-</span> gapminder <span class="sc">|&gt;</span></span>
+<span id="cb367-2"><a href="gapminder.html#cb367-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(year <span class="sc">==</span> past_year <span class="sc">&amp;</span> <span class="sc">!</span><span class="fu">is.na</span>(gdp)) <span class="sc">|&gt;</span></span>
+<span id="cb367-3"><a href="gapminder.html#cb367-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(group, dollars_per_day)) <span class="sc">+</span></span>
+<span id="cb367-4"><a href="gapminder.html#cb367-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_boxplot</span>() <span class="sc">+</span></span>
+<span id="cb367-5"><a href="gapminder.html#cb367-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">trans =</span> <span class="st">&quot;log2&quot;</span>) <span class="sc">+</span></span>
+<span id="cb367-6"><a href="gapminder.html#cb367-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlab</span>(<span class="st">&quot;&quot;</span>) <span class="sc">+</span></span>
+<span id="cb367-7"><a href="gapminder.html#cb367-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">axis.text.x =</span> <span class="fu">element_text</span>(<span class="at">angle =</span> <span class="dv">90</span>, <span class="at">hjust =</span> <span class="dv">1</span>))</span>
+<span id="cb367-8"><a href="gapminder.html#cb367-8" aria-hidden="true" tabindex="-1"></a>p</span></code></pre></div>
 <p><img src="libro_files/figure-html/dollars-per-day-boxplot-1.png" width="70%" style="display: block; margin: auto;" /></p>
 <p>Los diagramas de caja tienen la limitación de que al resumir los datos en cinco números, se pueden perder características importantes de los datos. Una forma de evitar esto es mostrando los datos.</p>
-<div class="sourceCode" id="cb367"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb367-1"><a href="gapminder.html#cb367-1" aria-hidden="true" tabindex="-1"></a>p <span class="sc">+</span> <span class="fu">geom_point</span>(<span class="at">alpha =</span> <span class="fl">0.5</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb368"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb368-1"><a href="gapminder.html#cb368-1" aria-hidden="true" tabindex="-1"></a>p <span class="sc">+</span> <span class="fu">geom_point</span>(<span class="at">alpha =</span> <span class="fl">0.5</span>)</span></code></pre></div>
 <p><img src="libro_files/figure-html/dollars-per-day-boxplot-with-data-1.png" width="70%" style="display: block; margin: auto;" /></p>
 </div>
-<div id="gráficos-ridge" class="section level3" number="9.7.2">
-<h3><span class="header-section-number">9.7.2</span> Gráficos <em>ridge</em></h3>
+<div id="gráficos-ridge" class="section level3 hasAnchor" number="9.7.2">
+<h3><span class="header-section-number">9.7.2</span> Gráficos <em>ridge</em><a href="gapminder.html#gráficos-ridge" class="anchor-section" aria-label="Anchor link to header"></a></h3>
 <p>Mostrar cada punto individual no siempre revela características importantes de la distribución. Aunque no es el caso aquí, cuando el número de puntos de datos es demasiado grande acabamos sobregraficando y mostrar los datos puede ser contraproducente. Los diagramas de caja ayudan con esto al proveer un resumen de cinco números, pero esto también tiene limitaciones. Por ejemplo, los diagramas de caja no revelan distribuciones bimodales. Para ver esto, miren los dos gráficos abajo que resumen el mismo set de datos:</p>
 <p><img src="libro_files/figure-html/boxplot-dont-show-bimodal-1.png" width="100%" style="display: block; margin: auto;" /></p>
 <p>En los casos en que nos preocupa que el resumen del diagrama de caja sea demasiado simplista, podemos mostrar densidades suaves o histogramas apilados utilizando <em>gráficos ridge</em>. Como estamos acostumbrados a visualizar densidades con valores en el eje-x, las apilamos verticalmente. Además, debido a que necesitamos más espacio en este enfoque, es conveniente superponerlos. El paquete <strong>ggridges</strong> incluye una función conveniente para hacer esto. Abajo vemos los datos de ingresos, que mostramos arriba con diagramas de caja, pero ahora visualizados con un <em>gráfico ridge</em>.</p>
-<div class="sourceCode" id="cb368"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb368-1"><a href="gapminder.html#cb368-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggridges)</span>
-<span id="cb368-2"><a href="gapminder.html#cb368-2" aria-hidden="true" tabindex="-1"></a>p <span class="ot">&lt;-</span> gapminder <span class="sc">%&gt;%</span></span>
-<span id="cb368-3"><a href="gapminder.html#cb368-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(year <span class="sc">==</span> past_year <span class="sc">&amp;</span> <span class="sc">!</span><span class="fu">is.na</span>(dollars_per_day)) <span class="sc">%&gt;%</span></span>
-<span id="cb368-4"><a href="gapminder.html#cb368-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(dollars_per_day, group)) <span class="sc">+</span></span>
-<span id="cb368-5"><a href="gapminder.html#cb368-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">trans =</span> <span class="st">&quot;log2&quot;</span>)</span>
-<span id="cb368-6"><a href="gapminder.html#cb368-6" aria-hidden="true" tabindex="-1"></a>p <span class="sc">+</span> <span class="fu">geom_density_ridges</span>()</span></code></pre></div>
+<div class="sourceCode" id="cb369"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb369-1"><a href="gapminder.html#cb369-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggridges)</span>
+<span id="cb369-2"><a href="gapminder.html#cb369-2" aria-hidden="true" tabindex="-1"></a>p <span class="ot">&lt;-</span> gapminder <span class="sc">|&gt;</span></span>
+<span id="cb369-3"><a href="gapminder.html#cb369-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(year <span class="sc">==</span> past_year <span class="sc">&amp;</span> <span class="sc">!</span><span class="fu">is.na</span>(dollars_per_day)) <span class="sc">|&gt;</span></span>
+<span id="cb369-4"><a href="gapminder.html#cb369-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(dollars_per_day, group)) <span class="sc">+</span></span>
+<span id="cb369-5"><a href="gapminder.html#cb369-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">trans =</span> <span class="st">&quot;log2&quot;</span>)</span>
+<span id="cb369-6"><a href="gapminder.html#cb369-6" aria-hidden="true" tabindex="-1"></a>p <span class="sc">+</span> <span class="fu">geom_density_ridges</span>()</span></code></pre></div>
 <p><img src="libro_files/figure-html/ridge-plot-1.png" width="70%" style="display: block; margin: auto;" /></p>
 <p>Tengan en cuenta que tenemos que invertir el <code>x</code> e <code>y</code> que se usaron para el diagrama de caja. Un parametro útil de <code>geom_density_ridges</code> es <code>scale</code>, que les permite determinar cuánto superponer; por ejemplo, <code>scale = 1</code> significa que no hay superposición. Valores mayores que 1 resultan en mayor superposición.</p>
 <p>Si el número de puntos de datos es lo suficientemente pequeño, podemos añadirlos al gráfico <em>ridge</em> usando el siguiente código:</p>
-<div class="sourceCode" id="cb369"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb369-1"><a href="gapminder.html#cb369-1" aria-hidden="true" tabindex="-1"></a>p <span class="sc">+</span> <span class="fu">geom_density_ridges</span>(<span class="at">jittered_points =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb370"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb370-1"><a href="gapminder.html#cb370-1" aria-hidden="true" tabindex="-1"></a>p <span class="sc">+</span> <span class="fu">geom_density_ridges</span>(<span class="at">jittered_points =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
 <p><img src="libro_files/figure-html/ridge-plot-with-points-1.png" width="70%" style="display: block; margin: auto;" /></p>
 <p>Por defecto, la altura de los puntos está <em>jittered</em> y no se debe interpretar de ninguna manera. Para mostrar puntos de datos, pero sin usar <em>jitter</em>, podemos usar el siguiente código para agregar lo que se conoce como una representación <em>rug</em> de los datos.</p>
-<div class="sourceCode" id="cb370"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb370-1"><a href="gapminder.html#cb370-1" aria-hidden="true" tabindex="-1"></a>p <span class="sc">+</span> <span class="fu">geom_density_ridges</span>(<span class="at">jittered_points =</span> <span class="cn">TRUE</span>,</span>
-<span id="cb370-2"><a href="gapminder.html#cb370-2" aria-hidden="true" tabindex="-1"></a>                        <span class="at">position =</span> <span class="fu">position_points_jitter</span>(<span class="at">height =</span> <span class="dv">0</span>),</span>
-<span id="cb370-3"><a href="gapminder.html#cb370-3" aria-hidden="true" tabindex="-1"></a>                        <span class="at">point_shape =</span> <span class="st">&#39;|&#39;</span>, <span class="at">point_size =</span> <span class="dv">3</span>,</span>
-<span id="cb370-4"><a href="gapminder.html#cb370-4" aria-hidden="true" tabindex="-1"></a>                        <span class="at">point_alpha =</span> <span class="dv">1</span>, <span class="at">alpha =</span> <span class="fl">0.7</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb371"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb371-1"><a href="gapminder.html#cb371-1" aria-hidden="true" tabindex="-1"></a>p <span class="sc">+</span> <span class="fu">geom_density_ridges</span>(<span class="at">jittered_points =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb371-2"><a href="gapminder.html#cb371-2" aria-hidden="true" tabindex="-1"></a>                        <span class="at">position =</span> <span class="fu">position_points_jitter</span>(<span class="at">height =</span> <span class="dv">0</span>),</span>
+<span id="cb371-3"><a href="gapminder.html#cb371-3" aria-hidden="true" tabindex="-1"></a>                        <span class="at">point_shape =</span> <span class="st">&#39;|&#39;</span>, <span class="at">point_size =</span> <span class="dv">3</span>,</span>
+<span id="cb371-4"><a href="gapminder.html#cb371-4" aria-hidden="true" tabindex="-1"></a>                        <span class="at">point_alpha =</span> <span class="dv">1</span>, <span class="at">alpha =</span> <span class="fl">0.7</span>)</span></code></pre></div>
 <p><img src="libro_files/figure-html/ridge-plot-with-rug-1.png" width="70%" style="display: block; margin: auto;" /></p>
 </div>
-<div id="ejemplo-distribuciones-de-ingresos-de-1970-versus-2010" class="section level3" number="9.7.3">
-<h3><span class="header-section-number">9.7.3</span> Ejemplo: distribuciones de ingresos de 1970 versus 2010</h3>
-<p>La exploración de datos muestra claramente que en 1970 hubo una dicotomía del “Oeste versus el Resto.” ¿Pero persiste esta dicotomía? Vamos a usar <code>facet_grid</code> para ver cómo han cambiado las distribuciones. Para comenzar, nos enfocamos en dos grupos: el Oeste y el Resto. Hacemos cuatro histogramas.</p>
-<div class="sourceCode" id="cb371"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb371-1"><a href="gapminder.html#cb371-1" aria-hidden="true" tabindex="-1"></a>past_year <span class="ot">&lt;-</span> <span class="dv">1970</span></span>
-<span id="cb371-2"><a href="gapminder.html#cb371-2" aria-hidden="true" tabindex="-1"></a>present_year <span class="ot">&lt;-</span> <span class="dv">2010</span></span>
-<span id="cb371-3"><a href="gapminder.html#cb371-3" aria-hidden="true" tabindex="-1"></a>years <span class="ot">&lt;-</span> <span class="fu">c</span>(past_year, present_year)</span>
-<span id="cb371-4"><a href="gapminder.html#cb371-4" aria-hidden="true" tabindex="-1"></a>gapminder <span class="sc">%&gt;%</span></span>
-<span id="cb371-5"><a href="gapminder.html#cb371-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(year <span class="sc">%in%</span> years <span class="sc">&amp;</span> <span class="sc">!</span><span class="fu">is.na</span>(gdp)) <span class="sc">%&gt;%</span></span>
-<span id="cb371-6"><a href="gapminder.html#cb371-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">west =</span> <span class="fu">ifelse</span>(group <span class="sc">==</span> <span class="st">&quot;West&quot;</span>, <span class="st">&quot;West&quot;</span>, <span class="st">&quot;Developing&quot;</span>)) <span class="sc">%&gt;%</span></span>
-<span id="cb371-7"><a href="gapminder.html#cb371-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(dollars_per_day)) <span class="sc">+</span></span>
-<span id="cb371-8"><a href="gapminder.html#cb371-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_histogram</span>(<span class="at">binwidth =</span> <span class="dv">1</span>, <span class="at">color =</span> <span class="st">&quot;black&quot;</span>) <span class="sc">+</span></span>
-<span id="cb371-9"><a href="gapminder.html#cb371-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">trans =</span> <span class="st">&quot;log2&quot;</span>) <span class="sc">+</span></span>
-<span id="cb371-10"><a href="gapminder.html#cb371-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_grid</span>(year <span class="sc">~</span> west)</span></code></pre></div>
+<div id="ejemplo-distribuciones-de-ingresos-de-1970-versus-2010" class="section level3 hasAnchor" number="9.7.3">
+<h3><span class="header-section-number">9.7.3</span> Ejemplo: distribuciones de ingresos de 1970 versus 2010<a href="gapminder.html#ejemplo-distribuciones-de-ingresos-de-1970-versus-2010" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>La exploración de datos muestra claramente que en 1970 hubo una dicotomía del “Oeste versus el Resto”. ¿Pero persiste esta dicotomía? Vamos a usar <code>facet_grid</code> para ver cómo han cambiado las distribuciones. Para comenzar, nos enfocamos en dos grupos: el Oeste y el Resto. Hacemos cuatro histogramas.</p>
+<div class="sourceCode" id="cb372"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb372-1"><a href="gapminder.html#cb372-1" aria-hidden="true" tabindex="-1"></a>past_year <span class="ot">&lt;-</span> <span class="dv">1970</span></span>
+<span id="cb372-2"><a href="gapminder.html#cb372-2" aria-hidden="true" tabindex="-1"></a>present_year <span class="ot">&lt;-</span> <span class="dv">2010</span></span>
+<span id="cb372-3"><a href="gapminder.html#cb372-3" aria-hidden="true" tabindex="-1"></a>years <span class="ot">&lt;-</span> <span class="fu">c</span>(past_year, present_year)</span>
+<span id="cb372-4"><a href="gapminder.html#cb372-4" aria-hidden="true" tabindex="-1"></a>gapminder <span class="sc">|&gt;</span></span>
+<span id="cb372-5"><a href="gapminder.html#cb372-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(year <span class="sc">%in%</span> years <span class="sc">&amp;</span> <span class="sc">!</span><span class="fu">is.na</span>(gdp)) <span class="sc">|&gt;</span></span>
+<span id="cb372-6"><a href="gapminder.html#cb372-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">west =</span> <span class="fu">ifelse</span>(group <span class="sc">==</span> <span class="st">&quot;West&quot;</span>, <span class="st">&quot;West&quot;</span>, <span class="st">&quot;Developing&quot;</span>)) <span class="sc">|&gt;</span></span>
+<span id="cb372-7"><a href="gapminder.html#cb372-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(dollars_per_day)) <span class="sc">+</span></span>
+<span id="cb372-8"><a href="gapminder.html#cb372-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_histogram</span>(<span class="at">binwidth =</span> <span class="dv">1</span>, <span class="at">color =</span> <span class="st">&quot;black&quot;</span>) <span class="sc">+</span></span>
+<span id="cb372-9"><a href="gapminder.html#cb372-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">trans =</span> <span class="st">&quot;log2&quot;</span>) <span class="sc">+</span></span>
+<span id="cb372-10"><a href="gapminder.html#cb372-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_grid</span>(year <span class="sc">~</span> west)</span></code></pre></div>
 <p><img src="libro_files/figure-html/income-hist-west-v-developing-two-years-1.png" width="70%" style="display: block; margin: auto;" /></p>
 <p>Antes de interpretar los hallazgos de este gráfico, notamos que hay más países representados en los histogramas de 2010 que en 1970: los conteos totales son mayores. Una razón para esto es que varios países se fundaron después de 1970. Por ejemplo, la Unión Soviética se dividió en diferentes países durante la década de 1990. Otra razón es que hay mas datos disponibles para más países en 2010.</p>
 <p>Rehacemos los gráficos utilizando solo países con datos disponibles para ambos años. En la parte sobre <em>wrangling</em> de datos de este libro, aprenderemos a usar herramientas de <strong>tidyverse</strong> que nos permitará escribir código eficiente para esto, pero aquí podemos usar un código sencillo usando la función <code>intersect</code>:</p>
-<div class="sourceCode" id="cb372"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb372-1"><a href="gapminder.html#cb372-1" aria-hidden="true" tabindex="-1"></a>country_list_1 <span class="ot">&lt;-</span> gapminder <span class="sc">%&gt;%</span></span>
-<span id="cb372-2"><a href="gapminder.html#cb372-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(year <span class="sc">==</span> past_year <span class="sc">&amp;</span> <span class="sc">!</span><span class="fu">is.na</span>(dollars_per_day)) <span class="sc">%&gt;%</span></span>
-<span id="cb372-3"><a href="gapminder.html#cb372-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pull</span>(country)</span>
-<span id="cb372-4"><a href="gapminder.html#cb372-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb372-5"><a href="gapminder.html#cb372-5" aria-hidden="true" tabindex="-1"></a>country_list_2 <span class="ot">&lt;-</span> gapminder <span class="sc">%&gt;%</span></span>
-<span id="cb372-6"><a href="gapminder.html#cb372-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(year <span class="sc">==</span> present_year <span class="sc">&amp;</span> <span class="sc">!</span><span class="fu">is.na</span>(dollars_per_day)) <span class="sc">%&gt;%</span></span>
-<span id="cb372-7"><a href="gapminder.html#cb372-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pull</span>(country)</span>
-<span id="cb372-8"><a href="gapminder.html#cb372-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb372-9"><a href="gapminder.html#cb372-9" aria-hidden="true" tabindex="-1"></a>country_list <span class="ot">&lt;-</span> <span class="fu">intersect</span>(country_list_1, country_list_2)</span></code></pre></div>
+<div class="sourceCode" id="cb373"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb373-1"><a href="gapminder.html#cb373-1" aria-hidden="true" tabindex="-1"></a>country_list_1 <span class="ot">&lt;-</span> gapminder <span class="sc">|&gt;</span></span>
+<span id="cb373-2"><a href="gapminder.html#cb373-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(year <span class="sc">==</span> past_year <span class="sc">&amp;</span> <span class="sc">!</span><span class="fu">is.na</span>(dollars_per_day)) <span class="sc">|&gt;</span></span>
+<span id="cb373-3"><a href="gapminder.html#cb373-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pull</span>(country)</span>
+<span id="cb373-4"><a href="gapminder.html#cb373-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb373-5"><a href="gapminder.html#cb373-5" aria-hidden="true" tabindex="-1"></a>country_list_2 <span class="ot">&lt;-</span> gapminder <span class="sc">|&gt;</span></span>
+<span id="cb373-6"><a href="gapminder.html#cb373-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(year <span class="sc">==</span> present_year <span class="sc">&amp;</span> <span class="sc">!</span><span class="fu">is.na</span>(dollars_per_day)) <span class="sc">|&gt;</span></span>
+<span id="cb373-7"><a href="gapminder.html#cb373-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pull</span>(country)</span>
+<span id="cb373-8"><a href="gapminder.html#cb373-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb373-9"><a href="gapminder.html#cb373-9" aria-hidden="true" tabindex="-1"></a>country_list <span class="ot">&lt;-</span> <span class="fu">intersect</span>(country_list_1, country_list_2)</span></code></pre></div>
 <p>Estos 108 constituyen
 86% de la población mundial, por lo que este subconjunto debe ser representativo.</p>
 <p>Vamos a rehacer el gráfico, pero solo para este subconjunto simplemente agregando <code>country %in% country_list</code> a la función <code>filter</code>:</p>
 <p><img src="libro_files/figure-html/income-histogram-west-v-devel-1.png" width="70%" style="display: block; margin: auto;" /></p>
 <p>Ahora vemos que los países ricos se han vuelto un poco más ricos, pero en términos de porcentaje, los países pobres parecen haber mejorado más. En particular, vemos que la proporción de países <em>en desarrollo</em> que ganan más de $16 por día aumentó sustancialmente.</p>
 <p>Para ver qué regiones específicas mejoraron más, podemos rehacer los diagramas de caja que hicimos anteriormente, pero ahora añadimos el año 2010 y luego usamos <em>facet</em> para comparar los dos años.</p>
-<div class="sourceCode" id="cb373"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb373-1"><a href="gapminder.html#cb373-1" aria-hidden="true" tabindex="-1"></a>gapminder <span class="sc">%&gt;%</span></span>
-<span id="cb373-2"><a href="gapminder.html#cb373-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(year <span class="sc">%in%</span> years <span class="sc">&amp;</span> country <span class="sc">%in%</span> country_list) <span class="sc">%&gt;%</span></span>
-<span id="cb373-3"><a href="gapminder.html#cb373-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(group, dollars_per_day)) <span class="sc">+</span></span>
-<span id="cb373-4"><a href="gapminder.html#cb373-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_boxplot</span>() <span class="sc">+</span></span>
-<span id="cb373-5"><a href="gapminder.html#cb373-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">axis.text.x =</span> <span class="fu">element_text</span>(<span class="at">angle =</span> <span class="dv">90</span>, <span class="at">hjust =</span> <span class="dv">1</span>)) <span class="sc">+</span></span>
-<span id="cb373-6"><a href="gapminder.html#cb373-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">trans =</span> <span class="st">&quot;log2&quot;</span>) <span class="sc">+</span></span>
-<span id="cb373-7"><a href="gapminder.html#cb373-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlab</span>(<span class="st">&quot;&quot;</span>) <span class="sc">+</span></span>
-<span id="cb373-8"><a href="gapminder.html#cb373-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_grid</span>(. <span class="sc">~</span> year)</span></code></pre></div>
+<div class="sourceCode" id="cb374"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb374-1"><a href="gapminder.html#cb374-1" aria-hidden="true" tabindex="-1"></a>gapminder <span class="sc">|&gt;</span></span>
+<span id="cb374-2"><a href="gapminder.html#cb374-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(year <span class="sc">%in%</span> years <span class="sc">&amp;</span> country <span class="sc">%in%</span> country_list) <span class="sc">|&gt;</span></span>
+<span id="cb374-3"><a href="gapminder.html#cb374-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(group, dollars_per_day)) <span class="sc">+</span></span>
+<span id="cb374-4"><a href="gapminder.html#cb374-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_boxplot</span>() <span class="sc">+</span></span>
+<span id="cb374-5"><a href="gapminder.html#cb374-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">axis.text.x =</span> <span class="fu">element_text</span>(<span class="at">angle =</span> <span class="dv">90</span>, <span class="at">hjust =</span> <span class="dv">1</span>)) <span class="sc">+</span></span>
+<span id="cb374-6"><a href="gapminder.html#cb374-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">trans =</span> <span class="st">&quot;log2&quot;</span>) <span class="sc">+</span></span>
+<span id="cb374-7"><a href="gapminder.html#cb374-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlab</span>(<span class="st">&quot;&quot;</span>) <span class="sc">+</span></span>
+<span id="cb374-8"><a href="gapminder.html#cb374-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_grid</span>(. <span class="sc">~</span> year)</span></code></pre></div>
 <p><img src="libro_files/figure-html/income-histogram-by-region-1.png" width="100%" style="display: block; margin: auto;" /></p>
 <p>Aquí pausamos para presentar otra importante característica de <strong>ggplot2</strong>. Como queremos comparar cada región antes y después, sería conveniente tener el diagrama de caja de 1970 al lado del de 2010 para cada región. En general, las comparaciones son más fáciles cuando los datos se grafican uno al lado del otro.</p>
 <p>Entonces, en lugar de separar en facetas, mantenemos los datos de cada año juntos y pedimos colorearlos (o rellenarlos) según el año. Tengan en cuenta que los grupos se separan automáticamente por año y cada par de diagramas de caja se dibujan uno al lado del otro. Como el año es un número, lo convertimos en un factor ya que <strong>ggplot2</strong> asigna automáticamente un color a cada categoría de un factor. Recuerden que tenemos que convertir la columnas <code>year</code> de numérica a factor.</p>
-<div class="sourceCode" id="cb374"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb374-1"><a href="gapminder.html#cb374-1" aria-hidden="true" tabindex="-1"></a>gapminder <span class="sc">%&gt;%</span></span>
-<span id="cb374-2"><a href="gapminder.html#cb374-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(year <span class="sc">%in%</span> years <span class="sc">&amp;</span> country <span class="sc">%in%</span> country_list) <span class="sc">%&gt;%</span></span>
-<span id="cb374-3"><a href="gapminder.html#cb374-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">year =</span> <span class="fu">factor</span>(year)) <span class="sc">%&gt;%</span></span>
-<span id="cb374-4"><a href="gapminder.html#cb374-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(group, dollars_per_day, <span class="at">fill =</span> year)) <span class="sc">+</span></span>
-<span id="cb374-5"><a href="gapminder.html#cb374-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_boxplot</span>() <span class="sc">+</span></span>
-<span id="cb374-6"><a href="gapminder.html#cb374-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">axis.text.x =</span> <span class="fu">element_text</span>(<span class="at">angle =</span> <span class="dv">90</span>, <span class="at">hjust =</span> <span class="dv">1</span>)) <span class="sc">+</span></span>
-<span id="cb374-7"><a href="gapminder.html#cb374-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">trans =</span> <span class="st">&quot;log2&quot;</span>) <span class="sc">+</span></span>
-<span id="cb374-8"><a href="gapminder.html#cb374-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlab</span>(<span class="st">&quot;&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb375"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb375-1"><a href="gapminder.html#cb375-1" aria-hidden="true" tabindex="-1"></a>gapminder <span class="sc">|&gt;</span></span>
+<span id="cb375-2"><a href="gapminder.html#cb375-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(year <span class="sc">%in%</span> years <span class="sc">&amp;</span> country <span class="sc">%in%</span> country_list) <span class="sc">|&gt;</span></span>
+<span id="cb375-3"><a href="gapminder.html#cb375-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">year =</span> <span class="fu">factor</span>(year)) <span class="sc">|&gt;</span></span>
+<span id="cb375-4"><a href="gapminder.html#cb375-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(group, dollars_per_day, <span class="at">fill =</span> year)) <span class="sc">+</span></span>
+<span id="cb375-5"><a href="gapminder.html#cb375-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_boxplot</span>() <span class="sc">+</span></span>
+<span id="cb375-6"><a href="gapminder.html#cb375-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">axis.text.x =</span> <span class="fu">element_text</span>(<span class="at">angle =</span> <span class="dv">90</span>, <span class="at">hjust =</span> <span class="dv">1</span>)) <span class="sc">+</span></span>
+<span id="cb375-7"><a href="gapminder.html#cb375-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">trans =</span> <span class="st">&quot;log2&quot;</span>) <span class="sc">+</span></span>
+<span id="cb375-8"><a href="gapminder.html#cb375-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlab</span>(<span class="st">&quot;&quot;</span>)</span></code></pre></div>
 <p><img src="libro_files/figure-html/income-histogram-west-v-devel-by-year-1.png" width="70%" style="display: block; margin: auto;" /></p>
 <p>Finalmente, señalamos que si lo más que nos interesa es comparar los valores de antes y después, podría tener más sentido graficar los aumentos porcentuales. Todavía no estamos listos para aprender a codificar esto, pero así es como se vería el gráfico:</p>
 <p><img src="libro_files/figure-html/income-west-v-devel-before-after-ratio-1.png" width="70%" style="display: block; margin: auto;" /></p>
 <p>La exploración de datos previa sugiere que la brecha de ingresos entre países ricos y pobres se ha reducido considerablemente durante los últimos 40 años. Usamos una serie de histogramas y diagramas de caja para ver esto. Sugerimos una forma sucinta de transmitir este mensaje con solo un gráfico.</p>
 <p>Empecemos observando que los gráficos de densidad para la distribución del ingreso en 1970 y 2010 transmiten el mensaje de que la brecha se está cerrando:</p>
-<div class="sourceCode" id="cb375"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb375-1"><a href="gapminder.html#cb375-1" aria-hidden="true" tabindex="-1"></a>gapminder <span class="sc">%&gt;%</span></span>
-<span id="cb375-2"><a href="gapminder.html#cb375-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(year <span class="sc">%in%</span> years <span class="sc">&amp;</span> country <span class="sc">%in%</span> country_list) <span class="sc">%&gt;%</span></span>
-<span id="cb375-3"><a href="gapminder.html#cb375-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(dollars_per_day)) <span class="sc">+</span></span>
-<span id="cb375-4"><a href="gapminder.html#cb375-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_density</span>(<span class="at">fill =</span> <span class="st">&quot;grey&quot;</span>) <span class="sc">+</span></span>
-<span id="cb375-5"><a href="gapminder.html#cb375-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">trans =</span> <span class="st">&quot;log2&quot;</span>) <span class="sc">+</span></span>
-<span id="cb375-6"><a href="gapminder.html#cb375-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_grid</span>(. <span class="sc">~</span> year)</span></code></pre></div>
+<div class="sourceCode" id="cb376"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb376-1"><a href="gapminder.html#cb376-1" aria-hidden="true" tabindex="-1"></a>gapminder <span class="sc">|&gt;</span></span>
+<span id="cb376-2"><a href="gapminder.html#cb376-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(year <span class="sc">%in%</span> years <span class="sc">&amp;</span> country <span class="sc">%in%</span> country_list) <span class="sc">|&gt;</span></span>
+<span id="cb376-3"><a href="gapminder.html#cb376-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(dollars_per_day)) <span class="sc">+</span></span>
+<span id="cb376-4"><a href="gapminder.html#cb376-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_density</span>(<span class="at">fill =</span> <span class="st">&quot;grey&quot;</span>) <span class="sc">+</span></span>
+<span id="cb376-5"><a href="gapminder.html#cb376-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">trans =</span> <span class="st">&quot;log2&quot;</span>) <span class="sc">+</span></span>
+<span id="cb376-6"><a href="gapminder.html#cb376-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_grid</span>(. <span class="sc">~</span> year)</span></code></pre></div>
 <p><img src="libro_files/figure-html/income-smooth-density-by-year-1.png" width="100%" style="display: block; margin: auto;" /></p>
 <p>En el gráfico de 1970, vemos dos modas claras: países pobres y ricos. En 2010, parece que algunos de los países pobres se han desplazado hacia la derecha, cerrando la brecha.</p>
 <p>El próximo mensaje que debemos transmitir es que la razón de este cambio en distribución es que varios países pobres se hicieron más ricos, en lugar de que algunos países ricos se hicieron más pobres. Para hacer esto, podemos asignar un color a los grupos que identificamos durante la exploración de datos.</p>
@@ -1516,80 +1515,80 @@ West
 </tbody>
 </table>
 <p>Pero cuando superponemos dos densidades, el comportamiento por defecto es que el área representada por cada distribución sume a 1, independientemente del tamaño de cada grupo:</p>
-<div class="sourceCode" id="cb376"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb376-1"><a href="gapminder.html#cb376-1" aria-hidden="true" tabindex="-1"></a>gapminder <span class="sc">%&gt;%</span></span>
-<span id="cb376-2"><a href="gapminder.html#cb376-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(year <span class="sc">%in%</span> years <span class="sc">&amp;</span> country <span class="sc">%in%</span> country_list) <span class="sc">%&gt;%</span></span>
-<span id="cb376-3"><a href="gapminder.html#cb376-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">group =</span> <span class="fu">ifelse</span>(group <span class="sc">==</span> <span class="st">&quot;West&quot;</span>, <span class="st">&quot;West&quot;</span>, <span class="st">&quot;Developing&quot;</span>)) <span class="sc">%&gt;%</span></span>
-<span id="cb376-4"><a href="gapminder.html#cb376-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(dollars_per_day, <span class="at">fill =</span> group)) <span class="sc">+</span></span>
-<span id="cb376-5"><a href="gapminder.html#cb376-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">trans =</span> <span class="st">&quot;log2&quot;</span>) <span class="sc">+</span></span>
-<span id="cb376-6"><a href="gapminder.html#cb376-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_density</span>(<span class="at">alpha =</span> <span class="fl">0.2</span>) <span class="sc">+</span></span>
-<span id="cb376-7"><a href="gapminder.html#cb376-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_grid</span>(year <span class="sc">~</span> .)</span></code></pre></div>
+<div class="sourceCode" id="cb377"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb377-1"><a href="gapminder.html#cb377-1" aria-hidden="true" tabindex="-1"></a>gapminder <span class="sc">|&gt;</span></span>
+<span id="cb377-2"><a href="gapminder.html#cb377-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(year <span class="sc">%in%</span> years <span class="sc">&amp;</span> country <span class="sc">%in%</span> country_list) <span class="sc">|&gt;</span></span>
+<span id="cb377-3"><a href="gapminder.html#cb377-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">group =</span> <span class="fu">ifelse</span>(group <span class="sc">==</span> <span class="st">&quot;West&quot;</span>, <span class="st">&quot;West&quot;</span>, <span class="st">&quot;Developing&quot;</span>)) <span class="sc">|&gt;</span></span>
+<span id="cb377-4"><a href="gapminder.html#cb377-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(dollars_per_day, <span class="at">fill =</span> group)) <span class="sc">+</span></span>
+<span id="cb377-5"><a href="gapminder.html#cb377-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">trans =</span> <span class="st">&quot;log2&quot;</span>) <span class="sc">+</span></span>
+<span id="cb377-6"><a href="gapminder.html#cb377-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_density</span>(<span class="at">alpha =</span> <span class="fl">0.2</span>) <span class="sc">+</span></span>
+<span id="cb377-7"><a href="gapminder.html#cb377-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_grid</span>(year <span class="sc">~</span> .)</span></code></pre></div>
 <p><img src="libro_files/figure-html/income-smooth-density-by-year-west-v-developing-1.png" width="70%" style="display: block; margin: auto;" /></p>
 <p>El gráfico de arriba hace que parezca que hay el mismo número de países en cada grupo. Para cambiar esto, necesitaremos aprender a acceder a las variables calculadas con la función <code>geom_density</code>.</p>
 </div>
-<div id="cómo-obtener-acceso-a-variables-calculadas" class="section level3" number="9.7.4">
-<h3><span class="header-section-number">9.7.4</span> Cómo obtener acceso a variables calculadas</h3>
+<div id="cómo-obtener-acceso-a-variables-calculadas" class="section level3 hasAnchor" number="9.7.4">
+<h3><span class="header-section-number">9.7.4</span> Cómo obtener acceso a variables calculadas<a href="gapminder.html#cómo-obtener-acceso-a-variables-calculadas" class="anchor-section" aria-label="Anchor link to header"></a></h3>
 <p>Para que las áreas de estas densidades sean proporcionales al tamaño de los grupos, simplemente multiplicamos los valores del eje-y por el tamaño del grupo. En el archivo de ayuda de <code>geom_density</code>, vemos que las funciones calculan una variable denominada <code>count</code> que hace exactamente esto. Queremos que esta variable, y no la densidad, esté en el eje-y.</p>
 <p>En <strong>ggplot2</strong>, obtenemos acceso a estas variables rodeando el nombre con dos puntos. Por lo tanto, utilizaremos el siguiente mapeo:</p>
-<div class="sourceCode" id="cb377"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb377-1"><a href="gapminder.html#cb377-1" aria-hidden="true" tabindex="-1"></a><span class="fu">aes</span>(<span class="at">x =</span> dollars_per_day, <span class="at">y =</span> ..count..)</span></code></pre></div>
+<div class="sourceCode" id="cb378"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb378-1"><a href="gapminder.html#cb378-1" aria-hidden="true" tabindex="-1"></a><span class="fu">aes</span>(<span class="at">x =</span> dollars_per_day, <span class="at">y =</span> ..count..)</span></code></pre></div>
 <p>Ahora podemos crear el diagrama deseado simplemente cambiando el mapeo en el fragmento del código anterior. También ampliaremos los límites del eje-x.</p>
-<div class="sourceCode" id="cb378"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb378-1"><a href="gapminder.html#cb378-1" aria-hidden="true" tabindex="-1"></a>p <span class="ot">&lt;-</span> gapminder <span class="sc">%&gt;%</span></span>
-<span id="cb378-2"><a href="gapminder.html#cb378-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(year <span class="sc">%in%</span> years <span class="sc">&amp;</span> country <span class="sc">%in%</span> country_list) <span class="sc">%&gt;%</span></span>
-<span id="cb378-3"><a href="gapminder.html#cb378-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">group =</span> <span class="fu">ifelse</span>(group <span class="sc">==</span> <span class="st">&quot;West&quot;</span>, <span class="st">&quot;West&quot;</span>, <span class="st">&quot;Developing&quot;</span>)) <span class="sc">%&gt;%</span></span>
-<span id="cb378-4"><a href="gapminder.html#cb378-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(dollars_per_day, <span class="at">y =</span> ..count.., <span class="at">fill =</span> group)) <span class="sc">+</span></span>
-<span id="cb378-5"><a href="gapminder.html#cb378-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">trans =</span> <span class="st">&quot;log2&quot;</span>, <span class="at">limit =</span> <span class="fu">c</span>(<span class="fl">0.125</span>, <span class="dv">300</span>))</span>
-<span id="cb378-6"><a href="gapminder.html#cb378-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb378-7"><a href="gapminder.html#cb378-7" aria-hidden="true" tabindex="-1"></a>p <span class="sc">+</span> <span class="fu">geom_density</span>(<span class="at">alpha =</span> <span class="fl">0.2</span>) <span class="sc">+</span></span>
-<span id="cb378-8"><a href="gapminder.html#cb378-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_grid</span>(year <span class="sc">~</span> .)</span></code></pre></div>
+<div class="sourceCode" id="cb379"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb379-1"><a href="gapminder.html#cb379-1" aria-hidden="true" tabindex="-1"></a>p <span class="ot">&lt;-</span> gapminder <span class="sc">|&gt;</span></span>
+<span id="cb379-2"><a href="gapminder.html#cb379-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(year <span class="sc">%in%</span> years <span class="sc">&amp;</span> country <span class="sc">%in%</span> country_list) <span class="sc">|&gt;</span></span>
+<span id="cb379-3"><a href="gapminder.html#cb379-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">group =</span> <span class="fu">ifelse</span>(group <span class="sc">==</span> <span class="st">&quot;West&quot;</span>, <span class="st">&quot;West&quot;</span>, <span class="st">&quot;Developing&quot;</span>)) <span class="sc">|&gt;</span></span>
+<span id="cb379-4"><a href="gapminder.html#cb379-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(dollars_per_day, <span class="at">y =</span> ..count.., <span class="at">fill =</span> group)) <span class="sc">+</span></span>
+<span id="cb379-5"><a href="gapminder.html#cb379-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">trans =</span> <span class="st">&quot;log2&quot;</span>, <span class="at">limit =</span> <span class="fu">c</span>(<span class="fl">0.125</span>, <span class="dv">300</span>))</span>
+<span id="cb379-6"><a href="gapminder.html#cb379-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb379-7"><a href="gapminder.html#cb379-7" aria-hidden="true" tabindex="-1"></a>p <span class="sc">+</span> <span class="fu">geom_density</span>(<span class="at">alpha =</span> <span class="fl">0.2</span>) <span class="sc">+</span></span>
+<span id="cb379-8"><a href="gapminder.html#cb379-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_grid</span>(year <span class="sc">~</span> .)</span></code></pre></div>
 <p><img src="libro_files/figure-html/income-smooth-density-counts-1.png" width="70%" style="display: block; margin: auto;" /></p>
 <p>Si queremos que las densidades sean más suaves, usamos el argumento <code>bw</code> para que se use el mismo parámetro de suavizado en cada densidad. Seleccionamos 0.75 después de probar varios valores.</p>
-<div class="sourceCode" id="cb379"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb379-1"><a href="gapminder.html#cb379-1" aria-hidden="true" tabindex="-1"></a>p <span class="sc">+</span> <span class="fu">geom_density</span>(<span class="at">alpha =</span> <span class="fl">0.2</span>, <span class="at">bw =</span> <span class="fl">0.75</span>) <span class="sc">+</span> <span class="fu">facet_grid</span>(year <span class="sc">~</span> .)</span></code></pre></div>
+<div class="sourceCode" id="cb380"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb380-1"><a href="gapminder.html#cb380-1" aria-hidden="true" tabindex="-1"></a>p <span class="sc">+</span> <span class="fu">geom_density</span>(<span class="at">alpha =</span> <span class="fl">0.2</span>, <span class="at">bw =</span> <span class="fl">0.75</span>) <span class="sc">+</span> <span class="fu">facet_grid</span>(year <span class="sc">~</span> .)</span></code></pre></div>
 <p><img src="libro_files/figure-html/income-smooth-density-counts-by-year-1.png" width="70%" style="display: block; margin: auto;" /></p>
 <p>Este gráfico ahora muestra lo que está sucediendo muy claramente. La distribución del mundo en desarrollo está cambiando. Aparece una tercera moda formada por los países que más redujeron la brecha.</p>
 <p>Para visualizar si alguno de los grupos definidos anteriormente son la causa principal de estos cambios, rápidamente podemos hacer un gráfico <em>ridge</em>:</p>
-<div class="sourceCode" id="cb380"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb380-1"><a href="gapminder.html#cb380-1" aria-hidden="true" tabindex="-1"></a>gapminder <span class="sc">%&gt;%</span></span>
-<span id="cb380-2"><a href="gapminder.html#cb380-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(year <span class="sc">%in%</span> years <span class="sc">&amp;</span> <span class="sc">!</span><span class="fu">is.na</span>(dollars_per_day)) <span class="sc">%&gt;%</span></span>
-<span id="cb380-3"><a href="gapminder.html#cb380-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(dollars_per_day, group)) <span class="sc">+</span></span>
-<span id="cb380-4"><a href="gapminder.html#cb380-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">trans =</span> <span class="st">&quot;log2&quot;</span>) <span class="sc">+</span></span>
-<span id="cb380-5"><a href="gapminder.html#cb380-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_density_ridges</span>(<span class="at">adjust =</span> <span class="fl">1.5</span>) <span class="sc">+</span></span>
-<span id="cb380-6"><a href="gapminder.html#cb380-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_grid</span>(. <span class="sc">~</span> year)</span></code></pre></div>
+<div class="sourceCode" id="cb381"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb381-1"><a href="gapminder.html#cb381-1" aria-hidden="true" tabindex="-1"></a>gapminder <span class="sc">|&gt;</span></span>
+<span id="cb381-2"><a href="gapminder.html#cb381-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(year <span class="sc">%in%</span> years <span class="sc">&amp;</span> <span class="sc">!</span><span class="fu">is.na</span>(dollars_per_day)) <span class="sc">|&gt;</span></span>
+<span id="cb381-3"><a href="gapminder.html#cb381-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(dollars_per_day, group)) <span class="sc">+</span></span>
+<span id="cb381-4"><a href="gapminder.html#cb381-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">trans =</span> <span class="st">&quot;log2&quot;</span>) <span class="sc">+</span></span>
+<span id="cb381-5"><a href="gapminder.html#cb381-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_density_ridges</span>(<span class="at">adjust =</span> <span class="fl">1.5</span>) <span class="sc">+</span></span>
+<span id="cb381-6"><a href="gapminder.html#cb381-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_grid</span>(. <span class="sc">~</span> year)</span></code></pre></div>
 <p><img src="libro_files/figure-html/ridge-plot-income-five-regions-1.png" width="70%" style="display: block; margin: auto;" /></p>
 <p>Otra forma de lograr esto es apilando las densidades una encima de otra:</p>
-<div class="sourceCode" id="cb381"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb381-1"><a href="gapminder.html#cb381-1" aria-hidden="true" tabindex="-1"></a>gapminder <span class="sc">%&gt;%</span></span>
-<span id="cb381-2"><a href="gapminder.html#cb381-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(year <span class="sc">%in%</span> years <span class="sc">&amp;</span> country <span class="sc">%in%</span> country_list) <span class="sc">%&gt;%</span></span>
-<span id="cb381-3"><a href="gapminder.html#cb381-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(year) <span class="sc">%&gt;%</span></span>
-<span id="cb381-4"><a href="gapminder.html#cb381-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">weight =</span> population<span class="sc">/</span><span class="fu">sum</span>(population)<span class="sc">*</span><span class="dv">2</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb381-5"><a href="gapminder.html#cb381-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ungroup</span>() <span class="sc">%&gt;%</span></span>
-<span id="cb381-6"><a href="gapminder.html#cb381-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(dollars_per_day, <span class="at">fill =</span> group)) <span class="sc">+</span></span>
-<span id="cb381-7"><a href="gapminder.html#cb381-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">trans =</span> <span class="st">&quot;log2&quot;</span>, <span class="at">limit =</span> <span class="fu">c</span>(<span class="fl">0.125</span>, <span class="dv">300</span>)) <span class="sc">+</span></span>
-<span id="cb381-8"><a href="gapminder.html#cb381-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_density</span>(<span class="at">alpha =</span> <span class="fl">0.2</span>, <span class="at">bw =</span> <span class="fl">0.75</span>, <span class="at">position =</span> <span class="st">&quot;stack&quot;</span>) <span class="sc">+</span></span>
-<span id="cb381-9"><a href="gapminder.html#cb381-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_grid</span>(year <span class="sc">~</span> .)</span></code></pre></div>
+<div class="sourceCode" id="cb382"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb382-1"><a href="gapminder.html#cb382-1" aria-hidden="true" tabindex="-1"></a>gapminder <span class="sc">|&gt;</span></span>
+<span id="cb382-2"><a href="gapminder.html#cb382-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(year <span class="sc">%in%</span> years <span class="sc">&amp;</span> country <span class="sc">%in%</span> country_list) <span class="sc">|&gt;</span></span>
+<span id="cb382-3"><a href="gapminder.html#cb382-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(year) <span class="sc">|&gt;</span></span>
+<span id="cb382-4"><a href="gapminder.html#cb382-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">weight =</span> population<span class="sc">/</span><span class="fu">sum</span>(population)<span class="sc">*</span><span class="dv">2</span>) <span class="sc">|&gt;</span></span>
+<span id="cb382-5"><a href="gapminder.html#cb382-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ungroup</span>() <span class="sc">|&gt;</span></span>
+<span id="cb382-6"><a href="gapminder.html#cb382-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(dollars_per_day, <span class="at">fill =</span> group)) <span class="sc">+</span></span>
+<span id="cb382-7"><a href="gapminder.html#cb382-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">trans =</span> <span class="st">&quot;log2&quot;</span>, <span class="at">limit =</span> <span class="fu">c</span>(<span class="fl">0.125</span>, <span class="dv">300</span>)) <span class="sc">+</span></span>
+<span id="cb382-8"><a href="gapminder.html#cb382-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_density</span>(<span class="at">alpha =</span> <span class="fl">0.2</span>, <span class="at">bw =</span> <span class="fl">0.75</span>, <span class="at">position =</span> <span class="st">&quot;stack&quot;</span>) <span class="sc">+</span></span>
+<span id="cb382-9"><a href="gapminder.html#cb382-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_grid</span>(year <span class="sc">~</span> .)</span></code></pre></div>
 <p><img src="libro_files/figure-html/income-smooth-density-counts-by-region-and-year-1.png" width="70%" style="display: block; margin: auto;" /></p>
 <p>Aquí podemos ver claramente cómo las distribuciones para Asia Oriental, América Latina y otros se desplazan notablemente hacia la derecha. Mientras que África subsahariana permanece estancada.</p>
 <p>Noten que ordenamos los niveles del grupo para que la densidad del Occidente se grafique primero, luego África subsahariana. Tener los dos extremos graficados primero nos permite ver mejor la bimodalidad restante.</p>
 </div>
-<div id="densidades-ponderadas" class="section level3" number="9.7.5">
-<h3><span class="header-section-number">9.7.5</span> Densidades ponderadas</h3>
+<div id="densidades-ponderadas" class="section level3 hasAnchor" number="9.7.5">
+<h3><span class="header-section-number">9.7.5</span> Densidades ponderadas<a href="gapminder.html#densidades-ponderadas" class="anchor-section" aria-label="Anchor link to header"></a></h3>
 <p>Como punto final, notamos que estas distribuciones ponderan cada país igual. Entonces si la mayoría de la población está mejorando, pero viviendo en un país muy grande, como China, podríamos no apreciar esto. De hecho, podemos ponderar las densidades suaves usando el argumento de mapeo <code>weight</code>. El gráfico entonces se ve así:</p>
 <p><img src="libro_files/figure-html/income-smooth-density-counts-by-region-year-weighted-1.png" width="70%" style="display: block; margin: auto;" /></p>
 <p>Esta figura en particular muestra muy claramente cómo se está cerrando la brecha de distribución de ingresos y que la mayoría de paises que siguen en la pobreza están en África subsahariana.</p>
 </div>
 </div>
-<div id="la-falacia-ecológica-y-la-importancia-de-mostrar-los-datos" class="section level2" number="9.8">
-<h2><span class="header-section-number">9.8</span> La falacia ecológica y la importancia de mostrar los datos</h2>
+<div id="la-falacia-ecológica-y-la-importancia-de-mostrar-los-datos" class="section level2 hasAnchor" number="9.8">
+<h2><span class="header-section-number">9.8</span> La falacia ecológica y la importancia de mostrar los datos<a href="gapminder.html#la-falacia-ecológica-y-la-importancia-de-mostrar-los-datos" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>A lo largo de esta sección, hemos estado comparando regiones del mundo. Hemos visto que, en promedio, algunas regiones obtienen mejores resultados que otras. En esta sección, nos enfocamos en describir la importancia de la variabilidad dentro de los grupos al examinar la relación entre las tasas de mortalidad infantil de un país y el ingreso promedio.</p>
 <p>Definimos algunas regiones más y comparamos los promedios entre regiones:</p>
 <p><img src="libro_files/figure-html/ecological-fallacy-averages-1.png" width="70%" style="display: block; margin: auto;" /></p>
 <p>La relación entre estas dos variables es casi perfectamente lineal y el gráfico muestra una diferencia dramática. Mientras que en el Occidente mueren menos del 0.5% de los bebés, ¡en África subsahariana la tasa es superior al 6%!</p>
 <p>Observen que el gráfico utiliza una nueva transformación, la transformación logística.</p>
-<div id="logit" class="section level3" number="9.8.1">
-<h3><span class="header-section-number">9.8.1</span> Transformación logística</h3>
+<div id="logit" class="section level3 hasAnchor" number="9.8.1">
+<h3><span class="header-section-number">9.8.1</span> Transformación logística<a href="gapminder.html#logit" class="anchor-section" aria-label="Anchor link to header"></a></h3>
 <p>La transformación logística o <em>logit</em> para una proporción o tasa <span class="math inline">\(p\)</span> se define como:</p>
 <p><span class="math display">\[f(p) = \log \left( \frac{p}{1-p} \right)\]</span></p>
 <p>Cuando <span class="math inline">\(p\)</span> es una proporción o probabilidad, la cantidad que transformamos con el logaritmo, <span class="math inline">\(p/(1-p)\)</span>, se llama <em>odds</em>. En este caso <span class="math inline">\(p\)</span> es la proporción de bebés que sobrevivieron. Los <em>odds</em> nos dicen cuántos más bebés se espera que sobrevivan a que mueran. La transformación logarítmica lo hace simétrico. Si las tasas son iguales, entonces el <em>log odds</em> es 0. Los aumentos multiplicativos se convierten en incrementos positivos o negativos, respectivamente.</p>
 <p>Esta escala es útil cuando queremos resaltar diferencias cercanas a 0 o 1. Para las tasas de supervivencia, esto es importante porque una tasa de supervivencia del 90% es inaceptable, mientras que una supervivencia del 99% es relativamente buena. Preferiríamos mucho una tasa de supervivencia más cercana al 99.9%. Queremos que nuestra escala resalte estas diferencias y el <em>logit</em> lo hace. Recuerden que 99.9/0.1 es aproximadamente 10 veces más grande que 99/1, que es aproximadamente 10 veces más grande que 90/10. Al usar el logaritmo, estos incrementos multiplicativos se convierten en aumentos constantes.</p>
 </div>
-<div id="mostrar-los-datos" class="section level3" number="9.8.2">
-<h3><span class="header-section-number">9.8.2</span> Mostrar los datos</h3>
+<div id="mostrar-los-datos" class="section level3 hasAnchor" number="9.8.2">
+<h3><span class="header-section-number">9.8.2</span> Mostrar los datos<a href="gapminder.html#mostrar-los-datos" class="anchor-section" aria-label="Anchor link to header"></a></h3>
 <p>Ahora, regresamos a nuestro gráfico. Basado en el gráfico anterior, ¿concluimos que un país con ingresos bajos está destinado a tener una tasa de supervivencia baja? Además, ¿concluímos que las tasas de supervivencia en el África subsahariana son más bajas que en el sur de Asia, que a su vez son más bajas que en las islas del Pacífico y así sucesivamente?</p>
 <p>Llegar a esta conclusión basada en un gráfico que muestra promedios se denomina una <em>falacia ecológica</em>. La relación casi perfecta entre las tasas de supervivencia y los ingresos solo se observa para los promedios a nivel regional. Cuando mostramos todos los datos, vemos una historia más complicada:</p>
 <p><img src="libro_files/figure-html/ecological-fallacy-all-data-1.png" width="70%" style="display: block; margin: auto;" /></p>
@@ -1617,7 +1616,6 @@ West
     </div>
   </div>
 <script src="libs/gitbook-2.6.7/js/app.min.js"></script>
-<script src="libs/gitbook-2.6.7/js/lunr.js"></script>
 <script src="libs/gitbook-2.6.7/js/clipboard.min.js"></script>
 <script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
 <script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
@@ -1657,6 +1655,10 @@ gitbook.start({
 "text": null
 },
 "download": ["libro.pdf"],
+"search": {
+"engine": "fuse",
+"options": null
+},
 "toc": {
 "collapse": "section"
 }

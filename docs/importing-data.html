@@ -6,11 +6,10 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <title>Capítulo 5 Importando datos | Introducción a la ciencia de datos</title>
   <meta name="description" content="Este libro presenta conceptos y destrezas que les ayudarán abordar los retos de situaciones actuales del análisis de datos. Cubre conceptos de probabilidad, inferencia estadística, regresión lineal y machine learning. Además, les permitirá desarrollar destrezas como la programación R, el wrangling de datos con dplyr, la visualización de datos con ggplot2, la organización de archivos con Shell de UNIX / Linux, el control de versiones con GitHub y la preparación de documentos reproducibles con R markdown." />
-  <meta name="generator" content="bookdown 0.22 and GitBook 2.6.7" />
+  <meta name="generator" content="bookdown 0.27 and GitBook 2.6.7" />
 
   <meta property="og:title" content="Capítulo 5 Importando datos | Introducción a la ciencia de datos" />
   <meta property="og:type" content="book" />
-  
   
   <meta property="og:description" content="Este libro presenta conceptos y destrezas que les ayudarán abordar los retos de situaciones actuales del análisis de datos. Cubre conceptos de probabilidad, inferencia estadística, regresión lineal y machine learning. Además, les permitirá desarrollar destrezas como la programación R, el wrangling de datos con dplyr, la visualización de datos con ggplot2, la organización de archivos con Shell de UNIX / Linux, el control de versiones con GitHub y la preparación de documentos reproducibles con R markdown." />
   
@@ -24,7 +23,7 @@
 <meta name="author" content="Rafael A. Irizarry" />
 
 
-<meta name="date" content="2021-07-03" />
+<meta name="date" content="2022-10-25" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -33,8 +32,8 @@
   
 <link rel="prev" href="tidyverse.html"/>
 <link rel="next" href="introducción-a-la-visualización-de-datos.html"/>
-<script src="libs/header-attrs-2.9/header-attrs.js"></script>
-<script src="libs/jquery-2.2.3/jquery.min.js"></script>
+<script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
 <link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
 <link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
@@ -50,9 +49,9 @@
 
 
 
-
-<link href="libs/anchor-sections-1.0.1/anchor-sections.css" rel="stylesheet" />
-<script src="libs/anchor-sections-1.0.1/anchor-sections.js"></script>
+<link href="libs/anchor-sections-1.1.0/anchor-sections.css" rel="stylesheet" />
+<link href="libs/anchor-sections-1.1.0/anchor-sections-hash.css" rel="stylesheet" />
+<script src="libs/anchor-sections-1.1.0/anchor-sections.js"></script>
 <script src="libs/kePrint-0.0.1/kePrint.js"></script>
 <link href="libs/lightable-0.0.1/lightable.css" rel="stylesheet" />
 
@@ -254,7 +253,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="4.3.3" data-path="tidyverse.html"><a href="tidyverse.html#cómo-seleccionar-columnas-con-select"><i class="fa fa-check"></i><b>4.3.3</b> Cómo seleccionar columnas con <code>select</code></a></li>
 </ul></li>
 <li class="chapter" data-level="4.4" data-path="tidyverse.html"><a href="tidyverse.html#ejercicios-9"><i class="fa fa-check"></i><b>4.4</b> Ejercicios</a></li>
-<li class="chapter" data-level="4.5" data-path="tidyverse.html"><a href="tidyverse.html#el-pipe"><i class="fa fa-check"></i><b>4.5</b> El <em>pipe</em>: <code>%&gt;%</code></a></li>
+<li class="chapter" data-level="4.5" data-path="tidyverse.html"><a href="tidyverse.html#el-pipe"><i class="fa fa-check"></i><b>4.5</b> El <em>pipe</em>: <code>|&gt;</code></a></li>
 <li class="chapter" data-level="4.6" data-path="tidyverse.html"><a href="tidyverse.html#ejercicios-10"><i class="fa fa-check"></i><b>4.6</b> Ejercicios</a></li>
 <li class="chapter" data-level="4.7" data-path="tidyverse.html"><a href="tidyverse.html#cómo-resumir-datos"><i class="fa fa-check"></i><b>4.7</b> Cómo resumir datos</a>
 <ul>
@@ -1025,87 +1024,87 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
           <div class="page-inner">
 
             <section class="normal" id="section-">
-<div id="importing-data" class="section level1" number="5">
-<h1><span class="header-section-number">Capítulo 5</span> Importando datos</h1>
+<div id="importing-data" class="section level1 hasAnchor" number="5">
+<h1><span class="header-section-number">Capítulo 5</span> Importando datos<a href="importing-data.html#importing-data" class="anchor-section" aria-label="Anchor link to header"></a></h1>
 <p>Hemos estado usando sets de datos ya almacenados como objetos R. Los científicos de datos rara vez tendrán tanta suerte y frecuentemente tendrán que importar datos a R desde un archivo, una base de datos u otras fuentes. Actualmente, una de las formas más comunes de almacenar y compartir datos para el análisis es a través de hojas de cálculo electrónicas. Una hoja de cálculo almacena datos en filas y columnas. Básicamente es una versión de archivo de un <em>data frame</em>. Al guardar dicha tabla en un archivo de computadora, uno necesita una manera de definir cuándo termina una nueva fila o columna y cuando comienza la otra. Esto a su vez define las celdas en las que se almacenan los valores individuales.</p>
 <p>Al crear hojas de cálculo con archivos de texto, como esas creadas con un editor sencillo de texto, se define una nueva fila con <em>return</em> y se separan las columnas con un carácter especial predefinido. Los caracteres más comunes son coma (<code>,</code>), punto y coma (<code>;</code>), espacio ( ) y el <em>tab</em> (un número predeterminado de espacios o <code>\t</code>). Aquí tenemos un ejemplo de cómo se ve un archivo separado por comas si lo abrimos con un editor básico de texto:</p>
 <p><img src="R/img/csv-file.png" width="70%" style="display: block; margin: auto;" /></p>
 <p>La primera fila contiene nombres de columnas en lugar de datos. Nos referimos a esto como un <em>encabezado</em> (<em>header</em> en inglés), y cuando leemos (<em>read-in</em> en inglés) datos de una hoja de cálculo es importante saber si el archivo tiene un encabezado o no. La mayoría de las funciones de lectura suponen que hay un encabezado. Para saber si el archivo tiene un encabezado, miren el archivo antes de intentar leerlo. Esto se puede hacer con un editor de texto o con RStudio. En RStudio, podemos hacerlo abriendo el archivo en el editor o navegando a la ubicación del archivo, haciendo doble clic en el archivo y presionando <em>View File</em>.</p>
 <p>Sin embargo, no todos los archivos de hojas de cálculo están en formato de texto. Las hojas de cálculo de Google (<em>Google Sheets</em> en inglés), por ejemplo, se acceden con un navegador. Otro ejemplo es el formato propietario utilizado por Microsoft Excel, que no se puede ver con un editor de texto. A pesar de esto y debido a la popularidad del software Microsoft Excel, este formato se utiliza ampliamente.</p>
-<p>Comenzamos este capítulo describiendo las diferencias entre archivos de texto (ASCII), Unicode y binarios y cómo estas afectan la forma en que los importamos. Entonces, explicamos los conceptos de rutas de archivos y directorios de trabajo, que son esenciales para comprender cómo importar datos de manera efectiva. Luego, presentamos los paquetes <strong>readr</strong> y <strong>readxl</strong> y las funciones disponibles para importar hojas de cálculo en R. Finalmente, ofrecemos algunas recomendaciones sobre cómo almacenar y organizar datos en archivos. Los desafíos más complejos, sin embargo, como la extracción de datos de páginas web o de documentos PDF, se discutirán en la parte del libro “<em>Wrangling</em> de datos.”</p>
-<div id="las-rutas-y-el-directorio-de-trabajo" class="section level2" number="5.1">
-<h2><span class="header-section-number">5.1</span> Las rutas y el directorio de trabajo</h2>
-<p>El primer paso para importar datos desde una hoja de cálculo es ubicar el archivo que contiene los datos. Aunque no lo recomendamos, pueden utilizar un enfoque similar al que usan para abrir archivos en Microsoft Excel: haciendo clic en el menú de <em>File</em> de RStudio, haciendo clic en <em>Import Dataset</em> y luego haciendo clic en las carpetas hasta encontrar el archivo. Queremos poder escribir código en lugar de estar apuntando y haciendo clic. Las claves y los conceptos que necesitamos para aprender a hacer esto se describen en detalle en la parte del libro “Herramientas de productividad.” Aquí ofrecemos una descripción general de los conceptos básicos.</p>
+<p>Comenzamos este capítulo describiendo las diferencias entre archivos de texto (ASCII), Unicode y binarios y cómo estas afectan la forma en que los importamos. Entonces, explicamos los conceptos de rutas de archivos y directorios de trabajo, que son esenciales para comprender cómo importar datos de manera efectiva. Luego, presentamos los paquetes <strong>readr</strong> y <strong>readxl</strong> y las funciones disponibles para importar hojas de cálculo en R. Finalmente, ofrecemos algunas recomendaciones sobre cómo almacenar y organizar datos en archivos. Los desafíos más complejos, sin embargo, como la extracción de datos de páginas web o de documentos PDF, se discutirán en la parte del libro “<em>Wrangling</em> de datos”.</p>
+<div id="las-rutas-y-el-directorio-de-trabajo" class="section level2 hasAnchor" number="5.1">
+<h2><span class="header-section-number">5.1</span> Las rutas y el directorio de trabajo<a href="importing-data.html#las-rutas-y-el-directorio-de-trabajo" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>El primer paso para importar datos desde una hoja de cálculo es ubicar el archivo que contiene los datos. Aunque no lo recomendamos, pueden utilizar un enfoque similar al que usan para abrir archivos en Microsoft Excel: haciendo clic en el menú de <em>File</em> de RStudio, haciendo clic en <em>Import Dataset</em> y luego haciendo clic en las carpetas hasta encontrar el archivo. Queremos poder escribir código en lugar de estar apuntando y haciendo clic. Las claves y los conceptos que necesitamos para aprender a hacer esto se describen en detalle en la parte del libro “Herramientas de productividad”. Aquí ofrecemos una descripción general de los conceptos básicos.</p>
 <p>El principal reto de este primer paso es permitir que las funciones de R que realizan la importación sepan dónde buscar el archivo que contiene los datos. La forma más sencilla de hacer esto es tener una copia del archivo en la carpeta donde las funciones de importación buscan por defecto. Una vez que hagamos esto, solo tenemos que proveerle el nombre del archivo a la función de importación.</p>
 <p>El paquete <strong>dslabs</strong> incluye una hoja de cálculo que contiene los datos de los asesinatos de EE. UU. Encontrar este archivo no es obvio, pero las siguientes líneas de código copian el archivo a la carpeta en la que R busca por defecto. A continuación explicamos cómo funcionan estas líneas.</p>
-<div class="sourceCode" id="cb228"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb228-1"><a href="importing-data.html#cb228-1" aria-hidden="true" tabindex="-1"></a>filename <span class="ot">&lt;-</span> <span class="st">&quot;murders.csv&quot;</span></span>
-<span id="cb228-2"><a href="importing-data.html#cb228-2" aria-hidden="true" tabindex="-1"></a>dir <span class="ot">&lt;-</span> <span class="fu">system.file</span>(<span class="st">&quot;extdata&quot;</span>, <span class="at">package =</span> <span class="st">&quot;dslabs&quot;</span>)</span>
-<span id="cb228-3"><a href="importing-data.html#cb228-3" aria-hidden="true" tabindex="-1"></a>fullpath <span class="ot">&lt;-</span> <span class="fu">file.path</span>(dir, filename)</span>
-<span id="cb228-4"><a href="importing-data.html#cb228-4" aria-hidden="true" tabindex="-1"></a><span class="fu">file.copy</span>(fullpath, <span class="st">&quot;murders.csv&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb229"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb229-1"><a href="importing-data.html#cb229-1" aria-hidden="true" tabindex="-1"></a>filename <span class="ot">&lt;-</span> <span class="st">&quot;murders.csv&quot;</span></span>
+<span id="cb229-2"><a href="importing-data.html#cb229-2" aria-hidden="true" tabindex="-1"></a>dir <span class="ot">&lt;-</span> <span class="fu">system.file</span>(<span class="st">&quot;extdata&quot;</span>, <span class="at">package =</span> <span class="st">&quot;dslabs&quot;</span>)</span>
+<span id="cb229-3"><a href="importing-data.html#cb229-3" aria-hidden="true" tabindex="-1"></a>fullpath <span class="ot">&lt;-</span> <span class="fu">file.path</span>(dir, filename)</span>
+<span id="cb229-4"><a href="importing-data.html#cb229-4" aria-hidden="true" tabindex="-1"></a><span class="fu">file.copy</span>(fullpath, <span class="st">&quot;murders.csv&quot;</span>)</span></code></pre></div>
 <p>Este código no lee los datos en R, solo copia un archivo. Pero una vez copie el archivo, podemos importar los datos con solo una línea de código. Aquí usamos la función <code>read_csv</code> del paquete <strong>readr</strong>, que forma parte del <strong>tidyverse</strong>.</p>
-<div class="sourceCode" id="cb229"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb229-1"><a href="importing-data.html#cb229-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
-<span id="cb229-2"><a href="importing-data.html#cb229-2" aria-hidden="true" tabindex="-1"></a>dat <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(filename)</span></code></pre></div>
+<div class="sourceCode" id="cb230"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb230-1"><a href="importing-data.html#cb230-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb230-2"><a href="importing-data.html#cb230-2" aria-hidden="true" tabindex="-1"></a>dat <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(filename)</span></code></pre></div>
 <p>Los datos se importan y almacenan en <code>dat</code>. El resto de esta sección define algunos conceptos importantes y ofrece una visión general de cómo escribimos código para que R pueda encontrar los archivos que queremos importar. Capítulo <a href="unix.html#unix">38</a> ofrece más detalles sobre este tema.</p>
-<div id="el-sistema-de-archivos" class="section level3" number="5.1.1">
-<h3><span class="header-section-number">5.1.1</span> El sistema de archivos</h3>
+<div id="el-sistema-de-archivos" class="section level3 hasAnchor" number="5.1.1">
+<h3><span class="header-section-number">5.1.1</span> El sistema de archivos<a href="importing-data.html#el-sistema-de-archivos" class="anchor-section" aria-label="Anchor link to header"></a></h3>
 <p>Pueden pensar en el sistema de archivos (<em>filesystem</em> en inglés) de su computadora como una serie de carpetas anidadas, cada una con otras carpetas y archivos. Los científicos de datos se refieren a las carpetas como <em>directorios</em> y a la carpeta que contiene todas las demás carpetas como el <em>directorio raíz</em> (<em>root directory</em> en inglés). El directorio en el que estamos ubicados actualmente se llama el <em>directorio de trabajo</em> (<em>working directory</em> en inglés). Por lo tanto, el directorio de trabajo cambia a medida que se muevan por las carpetas: considérenlo como su ubicación actual.</p>
 </div>
-<div id="las-rutas-relativas-y-completas" class="section level3" number="5.1.2">
-<h3><span class="header-section-number">5.1.2</span> Las rutas relativas y completas</h3>
+<div id="las-rutas-relativas-y-completas" class="section level3 hasAnchor" number="5.1.2">
+<h3><span class="header-section-number">5.1.2</span> Las rutas relativas y completas<a href="importing-data.html#las-rutas-relativas-y-completas" class="anchor-section" aria-label="Anchor link to header"></a></h3>
 <p>La <em>ruta</em> (<em>path</em> en inglés) de un archivo es una lista de nombres de directorios que se pueden considerar instrucciones sobre en qué carpetas hacer clic y en qué orden encontrar el archivo. Si estas instrucciones son para encontrar el archivo desde el directorio raíz, nos referiremos a ellas como la <em>ruta completa</em> (<em>full path</em> en inglés). Si las instrucciones son para encontrar el archivo desde el directorio de trabajo, nos referimos a ellas como una <em>ruta relativa</em> (<em>relative path</em> en inglés). Sección <a href="unix.html#filesystem">38.3</a> ofrece más detalles sobre este tema.</p>
 <p>Para ver un ejemplo de una ruta completa en su sistema, escriban lo siguiente:</p>
-<div class="sourceCode" id="cb230"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb230-1"><a href="importing-data.html#cb230-1" aria-hidden="true" tabindex="-1"></a><span class="fu">system.file</span>(<span class="at">package =</span> <span class="st">&quot;dslabs&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb231"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb231-1"><a href="importing-data.html#cb231-1" aria-hidden="true" tabindex="-1"></a><span class="fu">system.file</span>(<span class="at">package =</span> <span class="st">&quot;dslabs&quot;</span>)</span></code></pre></div>
 <p>Las cadenas separadas por barras son los nombres de los directorios. La primera barra diagonal representa el directorio raíz y sabemos que esta es una ruta completa porque comienza con una barra diagonal. Si el primer nombre del directorio aparece sin una barra diagonal en el comienzo, entonces R supone que la ruta es relativa. Podemos usar la función <code>list.files</code> para ver ejemplos de rutas relativas:</p>
-<div class="sourceCode" id="cb231"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb231-1"><a href="importing-data.html#cb231-1" aria-hidden="true" tabindex="-1"></a>dir <span class="ot">&lt;-</span> <span class="fu">system.file</span>(<span class="at">package =</span> <span class="st">&quot;dslabs&quot;</span>)</span>
-<span id="cb231-2"><a href="importing-data.html#cb231-2" aria-hidden="true" tabindex="-1"></a><span class="fu">list.files</span>(<span class="at">path =</span> dir)</span>
-<span id="cb231-3"><a href="importing-data.html#cb231-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  [1] &quot;data&quot;        &quot;DESCRIPTION&quot; &quot;extdata&quot;     &quot;help&quot;       </span></span>
-<span id="cb231-4"><a href="importing-data.html#cb231-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  [5] &quot;html&quot;        &quot;INDEX&quot;       &quot;Meta&quot;        &quot;NAMESPACE&quot;  </span></span>
-<span id="cb231-5"><a href="importing-data.html#cb231-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  [9] &quot;R&quot;           &quot;script&quot;</span></span></code></pre></div>
+<div class="sourceCode" id="cb232"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb232-1"><a href="importing-data.html#cb232-1" aria-hidden="true" tabindex="-1"></a>dir <span class="ot">&lt;-</span> <span class="fu">system.file</span>(<span class="at">package =</span> <span class="st">&quot;dslabs&quot;</span>)</span>
+<span id="cb232-2"><a href="importing-data.html#cb232-2" aria-hidden="true" tabindex="-1"></a><span class="fu">list.files</span>(<span class="at">path =</span> dir)</span>
+<span id="cb232-3"><a href="importing-data.html#cb232-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  [1] &quot;data&quot;        &quot;DESCRIPTION&quot; &quot;extdata&quot;     &quot;help&quot;       </span></span>
+<span id="cb232-4"><a href="importing-data.html#cb232-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  [5] &quot;html&quot;        &quot;INDEX&quot;       &quot;Meta&quot;        &quot;NAMESPACE&quot;  </span></span>
+<span id="cb232-5"><a href="importing-data.html#cb232-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  [9] &quot;R&quot;           &quot;script&quot;</span></span></code></pre></div>
 <p>Estas rutas relativas nos dan la localización de los archivos o directorios si comenzamos en el directorio con la ruta completa. Por ejemplo, la ruta completa al directorio <code>help</code> en el ejemplo anterior es: <code>/Library/Frameworks/R.framework/Versions/3.5/Resources/library/dslabs/help</code>.</p>
 <p><strong>Nota</strong>: Probablemente no harán mucho uso de la función <code>system.file</code> en su trabajo diario de análisis de datos. Lo presentamos en esta sección porque facilita el intercambio de hojas de cálculo al incluirlas en el paquete <strong>dslabs</strong>. Raras veces tendrán el lujo de tener datos incluidos en paquetes que ya han instalado. Sin embargo, con frecuencia necesitarán navegar por rutas completas y relativas e importar datos con formato de hoja de cálculo.</p>
 </div>
-<div id="el-directorio-de-trabajo" class="section level3" number="5.1.3">
-<h3><span class="header-section-number">5.1.3</span> El directorio de trabajo</h3>
+<div id="el-directorio-de-trabajo" class="section level3 hasAnchor" number="5.1.3">
+<h3><span class="header-section-number">5.1.3</span> El directorio de trabajo<a href="importing-data.html#el-directorio-de-trabajo" class="anchor-section" aria-label="Anchor link to header"></a></h3>
 <p>Recomendamos escribir solo rutas relativas en su código ya que las rutas completas son exclusivas de sus computadoras y es preferible que su código sea portátil. Pueden obtener la ruta completa de su directorio de trabajo sin escribirla explícitamente utilizando la función <code>getwd</code>:</p>
-<div class="sourceCode" id="cb232"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb232-1"><a href="importing-data.html#cb232-1" aria-hidden="true" tabindex="-1"></a>wd <span class="ot">&lt;-</span> <span class="fu">getwd</span>()</span></code></pre></div>
+<div class="sourceCode" id="cb233"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb233-1"><a href="importing-data.html#cb233-1" aria-hidden="true" tabindex="-1"></a>wd <span class="ot">&lt;-</span> <span class="fu">getwd</span>()</span></code></pre></div>
 <p>Si necesitan cambiar su directorio de trabajo, pueden usar la función <code>setwd</code> o pueden cambiarlo a través de RStudio haciendo clic en <em>Session</em>.</p>
 </div>
-<div id="cómo-generar-los-nombres-de-ruta" class="section level3" number="5.1.4">
-<h3><span class="header-section-number">5.1.4</span> Cómo generar los nombres de ruta</h3>
+<div id="cómo-generar-los-nombres-de-ruta" class="section level3 hasAnchor" number="5.1.4">
+<h3><span class="header-section-number">5.1.4</span> Cómo generar los nombres de ruta<a href="importing-data.html#cómo-generar-los-nombres-de-ruta" class="anchor-section" aria-label="Anchor link to header"></a></h3>
 <p>Otro ejemplo de cómo obtener una ruta completa sin escribirla explícitamente se ofreció arriba cuando creamos el objeto <code>fullpath</code> de esta manera:</p>
-<div class="sourceCode" id="cb233"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb233-1"><a href="importing-data.html#cb233-1" aria-hidden="true" tabindex="-1"></a>filename <span class="ot">&lt;-</span> <span class="st">&quot;murders.csv&quot;</span></span>
-<span id="cb233-2"><a href="importing-data.html#cb233-2" aria-hidden="true" tabindex="-1"></a>dir <span class="ot">&lt;-</span> <span class="fu">system.file</span>(<span class="st">&quot;extdata&quot;</span>, <span class="at">package =</span> <span class="st">&quot;dslabs&quot;</span>)</span>
-<span id="cb233-3"><a href="importing-data.html#cb233-3" aria-hidden="true" tabindex="-1"></a>fullpath <span class="ot">&lt;-</span> <span class="fu">file.path</span>(dir, filename)</span></code></pre></div>
+<div class="sourceCode" id="cb234"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb234-1"><a href="importing-data.html#cb234-1" aria-hidden="true" tabindex="-1"></a>filename <span class="ot">&lt;-</span> <span class="st">&quot;murders.csv&quot;</span></span>
+<span id="cb234-2"><a href="importing-data.html#cb234-2" aria-hidden="true" tabindex="-1"></a>dir <span class="ot">&lt;-</span> <span class="fu">system.file</span>(<span class="st">&quot;extdata&quot;</span>, <span class="at">package =</span> <span class="st">&quot;dslabs&quot;</span>)</span>
+<span id="cb234-3"><a href="importing-data.html#cb234-3" aria-hidden="true" tabindex="-1"></a>fullpath <span class="ot">&lt;-</span> <span class="fu">file.path</span>(dir, filename)</span></code></pre></div>
 <p>La función <code>system.file</code> provee la ruta completa de la carpeta que contiene todos los archivos y directorios relevantes para el paquete especificado por el argumento <code>package</code>. Al explorar los directorios en <code>dir</code>, nos encontramos con que <code>extdata</code> contiene el archivo que queremos:</p>
-<div class="sourceCode" id="cb234"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb234-1"><a href="importing-data.html#cb234-1" aria-hidden="true" tabindex="-1"></a>dir <span class="ot">&lt;-</span> <span class="fu">system.file</span>(<span class="at">package =</span> <span class="st">&quot;dslabs&quot;</span>)</span>
-<span id="cb234-2"><a href="importing-data.html#cb234-2" aria-hidden="true" tabindex="-1"></a>filename <span class="sc">%in%</span> <span class="fu">list.files</span>(<span class="fu">file.path</span>(dir, <span class="st">&quot;extdata&quot;</span>))</span>
-<span id="cb234-3"><a href="importing-data.html#cb234-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] TRUE</span></span></code></pre></div>
+<div class="sourceCode" id="cb235"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb235-1"><a href="importing-data.html#cb235-1" aria-hidden="true" tabindex="-1"></a>dir <span class="ot">&lt;-</span> <span class="fu">system.file</span>(<span class="at">package =</span> <span class="st">&quot;dslabs&quot;</span>)</span>
+<span id="cb235-2"><a href="importing-data.html#cb235-2" aria-hidden="true" tabindex="-1"></a>filename <span class="sc">%in%</span> <span class="fu">list.files</span>(<span class="fu">file.path</span>(dir, <span class="st">&quot;extdata&quot;</span>))</span>
+<span id="cb235-3"><a href="importing-data.html#cb235-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] TRUE</span></span></code></pre></div>
 <p>La función <code>system.file</code> nos permite proveer un subdirectorio como primer argumento, para que podamos obtener la ruta completa del directorio <code>extdata</code> así:</p>
-<div class="sourceCode" id="cb235"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb235-1"><a href="importing-data.html#cb235-1" aria-hidden="true" tabindex="-1"></a>dir <span class="ot">&lt;-</span> <span class="fu">system.file</span>(<span class="st">&quot;extdata&quot;</span>, <span class="at">package =</span> <span class="st">&quot;dslabs&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb236"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb236-1"><a href="importing-data.html#cb236-1" aria-hidden="true" tabindex="-1"></a>dir <span class="ot">&lt;-</span> <span class="fu">system.file</span>(<span class="st">&quot;extdata&quot;</span>, <span class="at">package =</span> <span class="st">&quot;dslabs&quot;</span>)</span></code></pre></div>
 <p>La función <code>file.path</code> se usa para combinar los nombres de directorios para producir la ruta completa del archivo que queremos importar.</p>
-<div class="sourceCode" id="cb236"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb236-1"><a href="importing-data.html#cb236-1" aria-hidden="true" tabindex="-1"></a>fullpath <span class="ot">&lt;-</span> <span class="fu">file.path</span>(dir, filename)</span></code></pre></div>
+<div class="sourceCode" id="cb237"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb237-1"><a href="importing-data.html#cb237-1" aria-hidden="true" tabindex="-1"></a>fullpath <span class="ot">&lt;-</span> <span class="fu">file.path</span>(dir, filename)</span></code></pre></div>
 </div>
-<div id="cómo-copiar-los-archivos-usando-rutas" class="section level3" number="5.1.5">
-<h3><span class="header-section-number">5.1.5</span> Cómo copiar los archivos usando rutas</h3>
+<div id="cómo-copiar-los-archivos-usando-rutas" class="section level3 hasAnchor" number="5.1.5">
+<h3><span class="header-section-number">5.1.5</span> Cómo copiar los archivos usando rutas<a href="importing-data.html#cómo-copiar-los-archivos-usando-rutas" class="anchor-section" aria-label="Anchor link to header"></a></h3>
 <p>La última línea de código que usamos para copiar el archivo en nuestro directorio de inicio usó la función <code>file.copy</code>. Esta toma dos argumentos: el nombre del archivo para copiar y el nombre que se usará en el nuevo directorio.</p>
-<div class="sourceCode" id="cb237"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb237-1"><a href="importing-data.html#cb237-1" aria-hidden="true" tabindex="-1"></a><span class="fu">file.copy</span>(fullpath, <span class="st">&quot;murders.csv&quot;</span>)</span>
-<span id="cb237-2"><a href="importing-data.html#cb237-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] TRUE</span></span></code></pre></div>
+<div class="sourceCode" id="cb238"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb238-1"><a href="importing-data.html#cb238-1" aria-hidden="true" tabindex="-1"></a><span class="fu">file.copy</span>(fullpath, <span class="st">&quot;murders.csv&quot;</span>)</span>
+<span id="cb238-2"><a href="importing-data.html#cb238-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] TRUE</span></span></code></pre></div>
 <p>Si un archivo se copia exitosamente, la función <code>file.copy</code> devuelve <code>TRUE</code>. Tengan en cuenta que le estamos dando al archivo el mismo nombre, <code>murders.csv</code>, pero podríamos haberle dado cualquier nombre. También recuerden que al no iniciar la cadena con una barra diagonal, R supone que esta es una ruta relativa y copia el archivo al directorio de trabajo.</p>
 <p>Deberían poder ver el archivo en su directorio de trabajo usando:</p>
-<div class="sourceCode" id="cb238"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb238-1"><a href="importing-data.html#cb238-1" aria-hidden="true" tabindex="-1"></a><span class="fu">list.files</span>()</span></code></pre></div>
+<div class="sourceCode" id="cb239"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb239-1"><a href="importing-data.html#cb239-1" aria-hidden="true" tabindex="-1"></a><span class="fu">list.files</span>()</span></code></pre></div>
 </div>
 </div>
-<div id="los-paquetes-readr-y-readxl" class="section level2" number="5.2">
-<h2><span class="header-section-number">5.2</span> Los paquetes readr y readxl</h2>
+<div id="los-paquetes-readr-y-readxl" class="section level2 hasAnchor" number="5.2">
+<h2><span class="header-section-number">5.2</span> Los paquetes readr y readxl<a href="importing-data.html#los-paquetes-readr-y-readxl" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>En esta sección presentamos las principales funciones de importación del <em>tidyverse</em>. Utilizaremos el archivo <code>murders.csv</code> del paquete <strong>dslabs</strong> como ejemplo. Para simplificar la ilustración, copiaremos el archivo a nuestro directorio de trabajo usando el siguiente código:</p>
-<div class="sourceCode" id="cb239"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb239-1"><a href="importing-data.html#cb239-1" aria-hidden="true" tabindex="-1"></a>filename <span class="ot">&lt;-</span> <span class="st">&quot;murders.csv&quot;</span></span>
-<span id="cb239-2"><a href="importing-data.html#cb239-2" aria-hidden="true" tabindex="-1"></a>dir <span class="ot">&lt;-</span> <span class="fu">system.file</span>(<span class="st">&quot;extdata&quot;</span>, <span class="at">package =</span> <span class="st">&quot;dslabs&quot;</span>)</span>
-<span id="cb239-3"><a href="importing-data.html#cb239-3" aria-hidden="true" tabindex="-1"></a>fullpath <span class="ot">&lt;-</span> <span class="fu">file.path</span>(dir, filename)</span>
-<span id="cb239-4"><a href="importing-data.html#cb239-4" aria-hidden="true" tabindex="-1"></a><span class="fu">file.copy</span>(fullpath, <span class="st">&quot;murders.csv&quot;</span>)</span></code></pre></div>
-<div id="readr" class="section level3" number="5.2.1">
-<h3><span class="header-section-number">5.2.1</span> readr</h3>
+<div class="sourceCode" id="cb240"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb240-1"><a href="importing-data.html#cb240-1" aria-hidden="true" tabindex="-1"></a>filename <span class="ot">&lt;-</span> <span class="st">&quot;murders.csv&quot;</span></span>
+<span id="cb240-2"><a href="importing-data.html#cb240-2" aria-hidden="true" tabindex="-1"></a>dir <span class="ot">&lt;-</span> <span class="fu">system.file</span>(<span class="st">&quot;extdata&quot;</span>, <span class="at">package =</span> <span class="st">&quot;dslabs&quot;</span>)</span>
+<span id="cb240-3"><a href="importing-data.html#cb240-3" aria-hidden="true" tabindex="-1"></a>fullpath <span class="ot">&lt;-</span> <span class="fu">file.path</span>(dir, filename)</span>
+<span id="cb240-4"><a href="importing-data.html#cb240-4" aria-hidden="true" tabindex="-1"></a><span class="fu">file.copy</span>(fullpath, <span class="st">&quot;murders.csv&quot;</span>)</span></code></pre></div>
+<div id="readr" class="section level3 hasAnchor" number="5.2.1">
+<h3><span class="header-section-number">5.2.1</span> readr<a href="importing-data.html#readr" class="anchor-section" aria-label="Anchor link to header"></a></h3>
 <p>El paquete <strong>readr</strong> incluye funciones para leer datos almacenados en hojas de cálculo. <strong>readr</strong> es parte del paquete <strong>tidyverse</strong>, o pueden cargarlo directamente así:</p>
-<div class="sourceCode" id="cb240"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb240-1"><a href="importing-data.html#cb240-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(readr)</span></code></pre></div>
+<div class="sourceCode" id="cb241"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb241-1"><a href="importing-data.html#cb241-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(readr)</span></code></pre></div>
 <p>Las siguientes funciones están disponibles para leer hojas de cálculo:</p>
 <table>
 <colgroup>
@@ -1149,23 +1148,28 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </tbody>
 </table>
 <p>Aunque el sufijo generalmente nos indica qué tipo de archivo es, no hay garantía de que estos siempre coincidan. Podemos abrir el archivo para echar un vistazo o usar la función <code>read_lines</code> para ver algunas líneas:</p>
-<div class="sourceCode" id="cb241"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb241-1"><a href="importing-data.html#cb241-1" aria-hidden="true" tabindex="-1"></a><span class="fu">read_lines</span>(<span class="st">&quot;murders.csv&quot;</span>, <span class="at">n_max =</span> <span class="dv">3</span>)</span>
-<span id="cb241-2"><a href="importing-data.html#cb241-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] &quot;state,abb,region,population,total&quot;</span></span>
-<span id="cb241-3"><a href="importing-data.html#cb241-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [2] &quot;Alabama,AL,South,4779736,135&quot;     </span></span>
-<span id="cb241-4"><a href="importing-data.html#cb241-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [3] &quot;Alaska,AK,West,710231,19&quot;</span></span></code></pre></div>
+<div class="sourceCode" id="cb242"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb242-1"><a href="importing-data.html#cb242-1" aria-hidden="true" tabindex="-1"></a><span class="fu">read_lines</span>(<span class="st">&quot;murders.csv&quot;</span>, <span class="at">n_max =</span> <span class="dv">3</span>)</span>
+<span id="cb242-2"><a href="importing-data.html#cb242-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] &quot;state,abb,region,population,total&quot;</span></span>
+<span id="cb242-3"><a href="importing-data.html#cb242-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [2] &quot;Alabama,AL,South,4779736,135&quot;     </span></span>
+<span id="cb242-4"><a href="importing-data.html#cb242-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [3] &quot;Alaska,AK,West,710231,19&quot;</span></span></code></pre></div>
 <p>Esto también muestra que hay un encabezado. Ahora estamos listos para leer los datos en R. Del sufijo .csv y del vistazo al archivo, sabemos que tenemos que usar <code>read_csv</code>:</p>
-<div class="sourceCode" id="cb242"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb242-1"><a href="importing-data.html#cb242-1" aria-hidden="true" tabindex="-1"></a>dat <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(filename)</span></code></pre></div>
+<div class="sourceCode" id="cb243"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb243-1"><a href="importing-data.html#cb243-1" aria-hidden="true" tabindex="-1"></a>dat <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(filename)</span></code></pre></div>
 <p>Tengan en cuenta que recibimos un mensaje informándonos qué tipos de datos se utilizaron para cada columna. También observen que <code>dat</code> es un <code>tibble</code>, no solo un <em>data frame</em>. Esto es porque <code>read_csv</code> es un leedor (<em>parser</em> en inglés) del <em>tidyverse</em>. Podemos confirmar que los datos se han leído de la siguiente manera:</p>
-<div class="sourceCode" id="cb243"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb243-1"><a href="importing-data.html#cb243-1" aria-hidden="true" tabindex="-1"></a><span class="fu">View</span>(dat)</span></code></pre></div>
+<div class="sourceCode" id="cb244"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb244-1"><a href="importing-data.html#cb244-1" aria-hidden="true" tabindex="-1"></a><span class="fu">View</span>(dat)</span></code></pre></div>
 <p>Finalmente, recuerden que también podemos usar la ruta completa para el archivo:</p>
-<div class="sourceCode" id="cb244"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb244-1"><a href="importing-data.html#cb244-1" aria-hidden="true" tabindex="-1"></a>dat <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(fullpath)</span></code></pre></div>
+<div class="sourceCode" id="cb245"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb245-1"><a href="importing-data.html#cb245-1" aria-hidden="true" tabindex="-1"></a>dat <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(fullpath)</span></code></pre></div>
 </div>
-<div id="readxl" class="section level3" number="5.2.2">
-<h3><span class="header-section-number">5.2.2</span> readxl</h3>
+<div id="readxl" class="section level3 hasAnchor" number="5.2.2">
+<h3><span class="header-section-number">5.2.2</span> readxl<a href="importing-data.html#readxl" class="anchor-section" aria-label="Anchor link to header"></a></h3>
 <p>Pueden cargar el paquete <strong>readxl</strong> usando:</p>
-<div class="sourceCode" id="cb245"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb245-1"><a href="importing-data.html#cb245-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(readxl)</span></code></pre></div>
+<div class="sourceCode" id="cb246"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb246-1"><a href="importing-data.html#cb246-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(readxl)</span></code></pre></div>
 <p>El paquete ofrece funciones para leer formatos de Microsoft Excel:</p>
 <table>
+<colgroup>
+<col width="14%" />
+<col width="64%" />
+<col width="20%" />
+</colgroup>
 <thead>
 <tr class="header">
 <th>Función</th>
@@ -1194,66 +1198,66 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <p>Los formatos de Microsoft Excel le permiten tener más de una hoja de cálculo en un archivo. Estos se conocen como <em>hojas</em> (<em>sheets</em> en inglés). Las funciones enumeradas anteriormente leen la primera hoja por defecto, pero también podemos leer las otras. La función <code>excel_sheets</code> nos da los nombres de todas las hojas en un archivo de Excel. Estos nombres entonces se pueden pasar al argumento <code>sheet</code> en las tres funciones anteriores para leer hojas distintas a la primera.</p>
 </div>
 </div>
-<div id="ejercicios-13" class="section level2" number="5.3">
-<h2><span class="header-section-number">5.3</span> Ejercicios</h2>
+<div id="ejercicios-13" class="section level2 hasAnchor" number="5.3">
+<h2><span class="header-section-number">5.3</span> Ejercicios<a href="importing-data.html#ejercicios-13" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>1. Utilice la función <code>read_csv</code> para leer cada uno de los archivos que el siguiente código guarda en el objeto <code>files</code>:</p>
-<div class="sourceCode" id="cb246"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb246-1"><a href="importing-data.html#cb246-1" aria-hidden="true" tabindex="-1"></a>path <span class="ot">&lt;-</span> <span class="fu">system.file</span>(<span class="st">&quot;extdata&quot;</span>, <span class="at">package =</span> <span class="st">&quot;dslabs&quot;</span>)</span>
-<span id="cb246-2"><a href="importing-data.html#cb246-2" aria-hidden="true" tabindex="-1"></a>files <span class="ot">&lt;-</span> <span class="fu">list.files</span>(path)</span>
-<span id="cb246-3"><a href="importing-data.html#cb246-3" aria-hidden="true" tabindex="-1"></a>files</span></code></pre></div>
+<div class="sourceCode" id="cb247"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb247-1"><a href="importing-data.html#cb247-1" aria-hidden="true" tabindex="-1"></a>path <span class="ot">&lt;-</span> <span class="fu">system.file</span>(<span class="st">&quot;extdata&quot;</span>, <span class="at">package =</span> <span class="st">&quot;dslabs&quot;</span>)</span>
+<span id="cb247-2"><a href="importing-data.html#cb247-2" aria-hidden="true" tabindex="-1"></a>files <span class="ot">&lt;-</span> <span class="fu">list.files</span>(path)</span>
+<span id="cb247-3"><a href="importing-data.html#cb247-3" aria-hidden="true" tabindex="-1"></a>files</span></code></pre></div>
 <p>2. Observe que el último, el archivo <code>olive</code>, nos da una advertencia. Esto se debe a que a la primera línea del archivo le falta el encabezado de la primera columna.</p>
 <p>Lea la página de ayuda para <code>read_csv</code> para aprender cómo leer el archivo sin leer este encabezado. Si omite el encabezado, no debería recibir esta advertencia. Guarde el resultado en un objeto llamado <code>dat</code>.</p>
 <p>3. Un problema con el enfoque anterior es que no sabemos qué representan las columnas. Escriba:</p>
-<div class="sourceCode" id="cb247"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb247-1"><a href="importing-data.html#cb247-1" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(dat)</span></code></pre></div>
+<div class="sourceCode" id="cb248"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb248-1"><a href="importing-data.html#cb248-1" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(dat)</span></code></pre></div>
 <p>para confirmar que los nombres no son informativos.</p>
 <p>Utilice la función <code>readLines</code> para leer solo la primera línea (luego aprenderemos cómo extraer valores del <em>output</em>).</p>
 </div>
-<div id="cómo-descargar-archivos" class="section level2" number="5.4">
-<h2><span class="header-section-number">5.4</span> Cómo descargar archivos</h2>
+<div id="cómo-descargar-archivos" class="section level2 hasAnchor" number="5.4">
+<h2><span class="header-section-number">5.4</span> Cómo descargar archivos<a href="importing-data.html#cómo-descargar-archivos" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>Otro lugar común donde residen los datos es en el internet. Cuando estos datos están en archivos, podemos descargarlos y luego importarlos, o incluso leerlos directamente de la web. Por ejemplo, notamos que como nuestro paquete <strong>dslabs</strong> está en GitHub, el archivo que descargamos con el paquete tiene una URL:</p>
-<div class="sourceCode" id="cb248"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb248-1"><a href="importing-data.html#cb248-1" aria-hidden="true" tabindex="-1"></a>url <span class="ot">&lt;-</span> <span class="st">&quot;https://raw.githubusercontent.com/rafalab/dslabs/master/inst/</span></span>
-<span id="cb248-2"><a href="importing-data.html#cb248-2" aria-hidden="true" tabindex="-1"></a><span class="st">extdata/murders.csv&quot;</span></span></code></pre></div>
+<div class="sourceCode" id="cb249"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb249-1"><a href="importing-data.html#cb249-1" aria-hidden="true" tabindex="-1"></a>url <span class="ot">&lt;-</span> <span class="st">&quot;https://raw.githubusercontent.com/rafalab/dslabs/master/inst/</span></span>
+<span id="cb249-2"><a href="importing-data.html#cb249-2" aria-hidden="true" tabindex="-1"></a><span class="st">extdata/murders.csv&quot;</span></span></code></pre></div>
 <p>El archivo <code>read_csv</code> puede leer estos archivos directamente:</p>
-<div class="sourceCode" id="cb249"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb249-1"><a href="importing-data.html#cb249-1" aria-hidden="true" tabindex="-1"></a>dat <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(url)</span></code></pre></div>
+<div class="sourceCode" id="cb250"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb250-1"><a href="importing-data.html#cb250-1" aria-hidden="true" tabindex="-1"></a>dat <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(url)</span></code></pre></div>
 <p>Si quieren tener una copia local del archivo, pueden usar la función <code>download.file</code>:</p>
-<div class="sourceCode" id="cb250"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb250-1"><a href="importing-data.html#cb250-1" aria-hidden="true" tabindex="-1"></a><span class="fu">download.file</span>(url, <span class="st">&quot;murders.csv&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb251"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb251-1"><a href="importing-data.html#cb251-1" aria-hidden="true" tabindex="-1"></a><span class="fu">download.file</span>(url, <span class="st">&quot;murders.csv&quot;</span>)</span></code></pre></div>
 <p>Esto descargará el archivo y lo guardará en su sistema con el nombre <code>murders.csv</code>. Pueden usar cualquier nombre aquí, no necesariamente <code>murders.csv</code>. Recuerden que al usar <code>download.file</code> deben tener cuidado ya que <strong>sobrescribirá los archivos existentes sin previo aviso</strong>.</p>
 <p>Dos funciones que a veces son útiles al descargar datos del internet son <code>tempdir</code> y <code>tempfile</code>. La primera crea un directorio con un nombre aleatorio que es muy probable que sea único. Igualmente, <code>tempfile</code> crea una cadena de caracteres, no un archivo, que probablemente sea un nombre de archivo único. Entonces pueden ejecutar un comando, como el siguiente, que borra el archivo temporero una vez que importe los datos:</p>
-<div class="sourceCode" id="cb251"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb251-1"><a href="importing-data.html#cb251-1" aria-hidden="true" tabindex="-1"></a>tmp_filename <span class="ot">&lt;-</span> <span class="fu">tempfile</span>()</span>
-<span id="cb251-2"><a href="importing-data.html#cb251-2" aria-hidden="true" tabindex="-1"></a><span class="fu">download.file</span>(url, tmp_filename)</span>
-<span id="cb251-3"><a href="importing-data.html#cb251-3" aria-hidden="true" tabindex="-1"></a>dat <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(tmp_filename)</span>
-<span id="cb251-4"><a href="importing-data.html#cb251-4" aria-hidden="true" tabindex="-1"></a><span class="fu">file.remove</span>(tmp_filename)</span></code></pre></div>
+<div class="sourceCode" id="cb252"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb252-1"><a href="importing-data.html#cb252-1" aria-hidden="true" tabindex="-1"></a>tmp_filename <span class="ot">&lt;-</span> <span class="fu">tempfile</span>()</span>
+<span id="cb252-2"><a href="importing-data.html#cb252-2" aria-hidden="true" tabindex="-1"></a><span class="fu">download.file</span>(url, tmp_filename)</span>
+<span id="cb252-3"><a href="importing-data.html#cb252-3" aria-hidden="true" tabindex="-1"></a>dat <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(tmp_filename)</span>
+<span id="cb252-4"><a href="importing-data.html#cb252-4" aria-hidden="true" tabindex="-1"></a><span class="fu">file.remove</span>(tmp_filename)</span></code></pre></div>
 </div>
-<div id="las-funciones-de-importación-de-base-r" class="section level2" number="5.5">
-<h2><span class="header-section-number">5.5</span> Las funciones de importación de base R</h2>
+<div id="las-funciones-de-importación-de-base-r" class="section level2 hasAnchor" number="5.5">
+<h2><span class="header-section-number">5.5</span> Las funciones de importación de base R<a href="importing-data.html#las-funciones-de-importación-de-base-r" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>La base R también provee funciones de importación. Estos tienen nombres similares a esas del <em>tidyverse</em>, por ejemplo <code>read.table</code>, <code>read.csv</code> y <code>read.delim</code>.</p>
-<div class="sourceCode" id="cb252"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb252-1"><a href="importing-data.html#cb252-1" aria-hidden="true" tabindex="-1"></a>dat2 <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(filename)</span></code></pre></div>
-<div id="scan" class="section level3" number="5.5.1">
-<h3><span class="header-section-number">5.5.1</span> <code>scan</code></h3>
+<div class="sourceCode" id="cb253"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb253-1"><a href="importing-data.html#cb253-1" aria-hidden="true" tabindex="-1"></a>dat2 <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(filename)</span></code></pre></div>
+<div id="scan" class="section level3 hasAnchor" number="5.5.1">
+<h3><span class="header-section-number">5.5.1</span> <code>scan</code><a href="importing-data.html#scan" class="anchor-section" aria-label="Anchor link to header"></a></h3>
 <p>Al leer hojas de cálculo, muchas cosas pueden salir mal. El archivo puede tener un encabezado multilíneal, pueden faltar celdas, o puede usar una codificación inesperada<a href="#fn17" class="footnote-ref" id="fnref17"><sup>17</sup></a>. Les recomendamos que lean esta publicación sobre problemas comunes<a href="#fn18" class="footnote-ref" id="fnref18"><sup>18</sup></a>.</p>
 <p>Con experiencia, aprenderán a manejar los diferentes retos. Además, les ayudará leer detenidamente los archivos de ayuda para las funciones que discutimos aquí. Con <code>scan</code> pueden leer cada celda de un archivo, como vemos aquí:</p>
-<div class="sourceCode" id="cb253"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb253-1"><a href="importing-data.html#cb253-1" aria-hidden="true" tabindex="-1"></a>path <span class="ot">&lt;-</span> <span class="fu">system.file</span>(<span class="st">&quot;extdata&quot;</span>, <span class="at">package =</span> <span class="st">&quot;dslabs&quot;</span>)</span>
-<span id="cb253-2"><a href="importing-data.html#cb253-2" aria-hidden="true" tabindex="-1"></a>filename <span class="ot">&lt;-</span> <span class="st">&quot;murders.csv&quot;</span></span>
-<span id="cb253-3"><a href="importing-data.html#cb253-3" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="fu">scan</span>(<span class="fu">file.path</span>(path, filename), <span class="at">sep=</span><span class="st">&quot;,&quot;</span>, <span class="at">what =</span> <span class="st">&quot;c&quot;</span>)</span>
-<span id="cb253-4"><a href="importing-data.html#cb253-4" aria-hidden="true" tabindex="-1"></a>x[<span class="dv">1</span><span class="sc">:</span><span class="dv">10</span>]</span>
-<span id="cb253-5"><a href="importing-data.html#cb253-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  [1] &quot;state&quot;      &quot;abb&quot;        &quot;region&quot;     &quot;population&quot; &quot;total&quot;     </span></span>
-<span id="cb253-6"><a href="importing-data.html#cb253-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  [6] &quot;Alabama&quot;    &quot;AL&quot;         &quot;South&quot;      &quot;4779736&quot;    &quot;135&quot;</span></span></code></pre></div>
+<div class="sourceCode" id="cb254"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb254-1"><a href="importing-data.html#cb254-1" aria-hidden="true" tabindex="-1"></a>path <span class="ot">&lt;-</span> <span class="fu">system.file</span>(<span class="st">&quot;extdata&quot;</span>, <span class="at">package =</span> <span class="st">&quot;dslabs&quot;</span>)</span>
+<span id="cb254-2"><a href="importing-data.html#cb254-2" aria-hidden="true" tabindex="-1"></a>filename <span class="ot">&lt;-</span> <span class="st">&quot;murders.csv&quot;</span></span>
+<span id="cb254-3"><a href="importing-data.html#cb254-3" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="fu">scan</span>(<span class="fu">file.path</span>(path, filename), <span class="at">sep=</span><span class="st">&quot;,&quot;</span>, <span class="at">what =</span> <span class="st">&quot;c&quot;</span>)</span>
+<span id="cb254-4"><a href="importing-data.html#cb254-4" aria-hidden="true" tabindex="-1"></a>x[<span class="dv">1</span><span class="sc">:</span><span class="dv">10</span>]</span>
+<span id="cb254-5"><a href="importing-data.html#cb254-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  [1] &quot;state&quot;      &quot;abb&quot;        &quot;region&quot;     &quot;population&quot; &quot;total&quot;     </span></span>
+<span id="cb254-6"><a href="importing-data.html#cb254-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  [6] &quot;Alabama&quot;    &quot;AL&quot;         &quot;South&quot;      &quot;4779736&quot;    &quot;135&quot;</span></span></code></pre></div>
 <p>Noten que el <em>tidyverse</em> incluye <code>read_lines</code>, una función igualmente útil.</p>
 </div>
 </div>
-<div id="archivos-de-texto-versus-archivos-binarios" class="section level2" number="5.6">
-<h2><span class="header-section-number">5.6</span> Archivos de texto versus archivos binarios</h2>
+<div id="archivos-de-texto-versus-archivos-binarios" class="section level2 hasAnchor" number="5.6">
+<h2><span class="header-section-number">5.6</span> Archivos de texto versus archivos binarios<a href="importing-data.html#archivos-de-texto-versus-archivos-binarios" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>En la ciencia de datos, los archivos generalmente se pueden clasificar en dos categorías: archivos de texto (también conocidos como archivos ASCII) y archivos binarios. Ya han trabajado con archivos de texto. Todos sus <em>scripts</em> de R son archivos de texto igual que los archivos de R markdown utilizados para crear este libro. Las tablas csv que han leído también son archivos de texto. Una gran ventaja de estos archivos es que podemos “mirarlos” fácilmente sin tener que comprar ningún tipo de software especial o seguir instrucciones complicadas. Se puede usar cualquier editor de texto para examinar un archivo de texto, incluyendo los editores disponibles gratuitamente como RStudio, Notepad, textEdit, vi, emacs, nano y pico. Para ver esto, intenten abrir un archivo csv con la herramienta de RStudio <em>Open file</em>. Deberían poder ver el contenido directamente en su editor. Sin embargo, si intentan abrir, digamos, un archivo Excel xls, jpg o png, no podrán ver nada inmediatamente útil. Estos son archivos binarios. Los archivos de Excel son carpetas comprimidas con varios archivos de texto dentro de ellas. Pero la principal distinción aquí es que los archivos de texto se pueden examinar fácilmente.</p>
 <p>Aunque R incluye herramientas para leer archivos binarios ampliamente utilizados, como archivos xls, en general es mejor encontrar sets de datos almacenados en archivos de texto. Del mismo modo, al compartir datos, es mejor que estén disponibles como archivos de texto siempre que el almacenamiento no sea un problema (los archivos binarios son mucho más eficientes para ahorrar espacio en su disco). En general, los formatos de texto facilitan el intercambio de datos, ya que no requieren software comercial para trabajar con los datos.</p>
-<p>Extraer datos de una hoja de cálculo almacenada como un archivo de texto es quizás la forma más fácil de llevar datos de un archivo a una sesión R. Desafortunadamente, las hojas de cálculo no siempre están disponibles y el hecho de que puedan ver los archivos de texto no necesariamente implica que extraer datos de ellos sea sencillo. En la parte del libro “<em>Wrangling</em> de datos,” aprendemos a extraer datos de archivos de texto más complejos, como los archivos HTML.</p>
+<p>Extraer datos de una hoja de cálculo almacenada como un archivo de texto es quizás la forma más fácil de llevar datos de un archivo a una sesión R. Desafortunadamente, las hojas de cálculo no siempre están disponibles y el hecho de que puedan ver los archivos de texto no necesariamente implica que extraer datos de ellos sea sencillo. En la parte del libro “<em>Wrangling</em> de datos”, aprendemos a extraer datos de archivos de texto más complejos, como los archivos HTML.</p>
 </div>
-<div id="unicode-versus-ascii" class="section level2" number="5.7">
-<h2><span class="header-section-number">5.7</span> Unicode versus ASCII</h2>
+<div id="unicode-versus-ascii" class="section level2 hasAnchor" number="5.7">
+<h2><span class="header-section-number">5.7</span> Unicode versus ASCII<a href="importing-data.html#unicode-versus-ascii" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>Un problema en la ciencia de datos es suponer que un archivo es un archivo de texto ASCII cuando en actualidad es otra cosa que puede parecerse mucho a un archivo de texto ASCII: un archivo de texto Unicode.</p>
 <p>Para entender la diferencia entre estos, recuerden que todo en una computadora necesita convertirse eventualmente en 0s y 1s. ASCII es una <em>codificación</em> (<em>encoding</em> en inglés) que define una correspondencia entre caracteres y números. ASCII usa 7 <em>bits</em> (0s y 1s) que resulta en <span class="math inline">\(2^7 = 128\)</span> elementos únicos, suficientes para codificar todos los caracteres en un teclado en inglés. Sin embargo, otros idiomas, como el español, usan caracteres no incluidos en esta codificación. Por ejemplo, las tildes no están codificadas por ASCII. Por esta razón, se definió una nueva codificación que utiliza más de 7 <em>bits</em>: Unicode. Cuando se utiliza Unicode, se puede elegir entre 8, 16 y 32 <em>bits</em> abreviados UTF-8, UTF-16 y UTF-32 respectivamente. RStudio usa la codificación UTF-8 por defecto.</p>
 <p>Aunque no entraremos en detalles sobre cómo lidiar con las diferentes codificaciones aquí, es importante que sepan que existen diferentes codificaciones para que pueden diagnosticar bien un problema si lo encuentran. Una forma en que se manifiestan los problemas es cuando surjen caracteres de “aspecto extraño” que no esperaban. Esta discusión de StackOverflow es un ejemplo: <a href="https://stackoverflow.com/questions/18789330/r-on-windows-character-encoding-hell">https://stackoverflow.com/questions/18789330/r-on-windows-character-encoding-hell</a>.</p>
 </div>
-<div id="cómo-organizar-datos-con-hojas-de-cálculo" class="section level2" number="5.8">
-<h2><span class="header-section-number">5.8</span> Cómo organizar datos con hojas de cálculo</h2>
+<div id="cómo-organizar-datos-con-hojas-de-cálculo" class="section level2 hasAnchor" number="5.8">
+<h2><span class="header-section-number">5.8</span> Cómo organizar datos con hojas de cálculo<a href="importing-data.html#cómo-organizar-datos-con-hojas-de-cálculo" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>Aunque este libro se enfoca casi exclusivamente en el análisis de datos, el manejo de datos también es una parte importante de la ciencia de datos. Como explicamos en la introducción, no cubrimos este tema. Sin embargo, los analistas de datos frecuentemente necesitan recopilar datos, o trabajar con otros que recopilan datos, de manera que la forma más conveniente de almacenarlos es en una hoja de cálculo. Aunque completar una hoja de cálculo a mano es una práctica que no recomendamos y preferimos que el proceso se automatice lo más posible, a veces no queda otro remedio. Por lo tanto, en esta sección, ofrecemos recomendaciones sobre cómo organizar los datos en una hoja de cálculo. Aunque hay paquetes R diseñados para
 leer hojas de cálculo de Microsoft Excel, generalmente queremos evitar este formato. Recomendamos <em>Google Sheets</em> como una herramienta de software gratuita. Abajo resumimos las recomendaciones hechas en una publicación de Karl Broman y Kara Woo<a href="#fn19" class="footnote-ref" id="fnref19"><sup>19</sup></a>.
 Favor de leer el artículo completo para más detalles importantes.</p>
@@ -1272,8 +1276,8 @@ Favor de leer el artículo completo para más detalles importantes.</p>
 <li><strong>Guarde los datos como archivos de texto</strong> - Guarde los archivos para compartir en formato delimitado por comas o <em>tabs</em>.</li>
 </ul>
 </div>
-<div id="ejercicios-14" class="section level2" number="5.9">
-<h2><span class="header-section-number">5.9</span> Ejercicios</h2>
+<div id="ejercicios-14" class="section level2 hasAnchor" number="5.9">
+<h2><span class="header-section-number">5.9</span> Ejercicios<a href="importing-data.html#ejercicios-14" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>1. Elija una medida que pueda tomar regularmente. Por ejemplo, su peso diario o cuánto tiempo le toma correr 8 kilometros. Mantenga una hoja de cálculo que incluya la fecha, la hora, la medición y cualquier otra variable informativa que considere valiosa. Haga esto por 2 semanas. Luego haga un gráfico.</p>
 
 </div>
@@ -1299,7 +1303,6 @@ Favor de leer el artículo completo para más detalles importantes.</p>
     </div>
   </div>
 <script src="libs/gitbook-2.6.7/js/app.min.js"></script>
-<script src="libs/gitbook-2.6.7/js/lunr.js"></script>
 <script src="libs/gitbook-2.6.7/js/clipboard.min.js"></script>
 <script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
 <script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
@@ -1339,6 +1342,10 @@ gitbook.start({
 "text": null
 },
 "download": ["libro.pdf"],
+"search": {
+"engine": "fuse",
+"options": null
+},
 "toc": {
 "collapse": "section"
 }

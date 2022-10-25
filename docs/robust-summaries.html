@@ -6,11 +6,10 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <title>Capítulo 11 Resúmenes robustos | Introducción a la ciencia de datos</title>
   <meta name="description" content="Este libro presenta conceptos y destrezas que les ayudarán abordar los retos de situaciones actuales del análisis de datos. Cubre conceptos de probabilidad, inferencia estadística, regresión lineal y machine learning. Además, les permitirá desarrollar destrezas como la programación R, el wrangling de datos con dplyr, la visualización de datos con ggplot2, la organización de archivos con Shell de UNIX / Linux, el control de versiones con GitHub y la preparación de documentos reproducibles con R markdown." />
-  <meta name="generator" content="bookdown 0.22 and GitBook 2.6.7" />
+  <meta name="generator" content="bookdown 0.27 and GitBook 2.6.7" />
 
   <meta property="og:title" content="Capítulo 11 Resúmenes robustos | Introducción a la ciencia de datos" />
   <meta property="og:type" content="book" />
-  
   
   <meta property="og:description" content="Este libro presenta conceptos y destrezas que les ayudarán abordar los retos de situaciones actuales del análisis de datos. Cubre conceptos de probabilidad, inferencia estadística, regresión lineal y machine learning. Además, les permitirá desarrollar destrezas como la programación R, el wrangling de datos con dplyr, la visualización de datos con ggplot2, la organización de archivos con Shell de UNIX / Linux, el control de versiones con GitHub y la preparación de documentos reproducibles con R markdown." />
   
@@ -24,7 +23,7 @@
 <meta name="author" content="Rafael A. Irizarry" />
 
 
-<meta name="date" content="2021-07-03" />
+<meta name="date" content="2022-10-25" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -33,8 +32,8 @@
   
 <link rel="prev" href="principios-de-visualización-de-datos.html"/>
 <link rel="next" href="introducción-a-las-estadísticas-con-r.html"/>
-<script src="libs/header-attrs-2.9/header-attrs.js"></script>
-<script src="libs/jquery-2.2.3/jquery.min.js"></script>
+<script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
 <link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
 <link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
@@ -50,9 +49,9 @@
 
 
 
-
-<link href="libs/anchor-sections-1.0.1/anchor-sections.css" rel="stylesheet" />
-<script src="libs/anchor-sections-1.0.1/anchor-sections.js"></script>
+<link href="libs/anchor-sections-1.1.0/anchor-sections.css" rel="stylesheet" />
+<link href="libs/anchor-sections-1.1.0/anchor-sections-hash.css" rel="stylesheet" />
+<script src="libs/anchor-sections-1.1.0/anchor-sections.js"></script>
 <script src="libs/kePrint-0.0.1/kePrint.js"></script>
 <link href="libs/lightable-0.0.1/lightable.css" rel="stylesheet" />
 
@@ -254,7 +253,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="4.3.3" data-path="tidyverse.html"><a href="tidyverse.html#cómo-seleccionar-columnas-con-select"><i class="fa fa-check"></i><b>4.3.3</b> Cómo seleccionar columnas con <code>select</code></a></li>
 </ul></li>
 <li class="chapter" data-level="4.4" data-path="tidyverse.html"><a href="tidyverse.html#ejercicios-9"><i class="fa fa-check"></i><b>4.4</b> Ejercicios</a></li>
-<li class="chapter" data-level="4.5" data-path="tidyverse.html"><a href="tidyverse.html#el-pipe"><i class="fa fa-check"></i><b>4.5</b> El <em>pipe</em>: <code>%&gt;%</code></a></li>
+<li class="chapter" data-level="4.5" data-path="tidyverse.html"><a href="tidyverse.html#el-pipe"><i class="fa fa-check"></i><b>4.5</b> El <em>pipe</em>: <code>|&gt;</code></a></li>
 <li class="chapter" data-level="4.6" data-path="tidyverse.html"><a href="tidyverse.html#ejercicios-10"><i class="fa fa-check"></i><b>4.6</b> Ejercicios</a></li>
 <li class="chapter" data-level="4.7" data-path="tidyverse.html"><a href="tidyverse.html#cómo-resumir-datos"><i class="fa fa-check"></i><b>4.7</b> Cómo resumir datos</a>
 <ul>
@@ -1025,24 +1024,24 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
           <div class="page-inner">
 
             <section class="normal" id="section-">
-<div id="robust-summaries" class="section level1" number="11">
-<h1><span class="header-section-number">Capítulo 11</span> Resúmenes robustos</h1>
-<div id="valores-atípicos" class="section level2" number="11.1">
-<h2><span class="header-section-number">11.1</span> Valores atípicos</h2>
+<div id="robust-summaries" class="section level1 hasAnchor" number="11">
+<h1><span class="header-section-number">Capítulo 11</span> Resúmenes robustos<a href="robust-summaries.html#robust-summaries" class="anchor-section" aria-label="Anchor link to header"></a></h1>
+<div id="valores-atípicos" class="section level2 hasAnchor" number="11.1">
+<h2><span class="header-section-number">11.1</span> Valores atípicos<a href="robust-summaries.html#valores-atípicos" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>Anteriormente describimos cómo los diagramas de caja muestran <em>valores atípicos</em> (<em>outliers</em> en inglés), pero no ofrecimos una definición precisa. Aquí discutimos los valores atípicos, los acercamientos que pueden ayudar para detectarlos y los resúmenes que toman en cuenta su presencia.</p>
 <p>Los valores atípicos son muy comunes en la ciencia de datos. La recopilación de datos puede ser compleja y es común observar puntos de datos generados por error. Por ejemplo, un viejo dispositivo de monitoreo puede leer mediciones sin sentido antes de fallar por completo. El error humano también es una fuente de valores atípicos, en particular cuando la entrada de datos se realiza manualmente. Un individuo, por ejemplo, puede ingresar erróneamente su altura en centímetros en lugar de pulgadas o colocar el decimal en el lugar equivocado.</p>
 <p>¿Cómo distinguimos un valor atípico de mediciones que son demasiado grandes o pequeñas simplemente debido a la variabilidad esperada? Esta no siempre es una pregunta fácil de contestar, pero intentaremos ofrecer alguna orientación. Comencemos con un caso sencillo.</p>
 <p>Supongan que un colega se encarga de recopilar datos demográficos para un grupo de varones. Los datos indican la altura en pies y se almacenan en el objeto:</p>
-<div class="sourceCode" id="cb405"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb405-1"><a href="robust-summaries.html#cb405-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
-<span id="cb405-2"><a href="robust-summaries.html#cb405-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dslabs)</span>
-<span id="cb405-3"><a href="robust-summaries.html#cb405-3" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(outlier_example)</span>
-<span id="cb405-4"><a href="robust-summaries.html#cb405-4" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(outlier_example)</span>
-<span id="cb405-5"><a href="robust-summaries.html#cb405-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  num [1:500] 5.59 5.8 5.54 6.15 5.83 5.54 5.87 5.93 5.89 5.67 ...</span></span></code></pre></div>
+<div class="sourceCode" id="cb406"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb406-1"><a href="robust-summaries.html#cb406-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb406-2"><a href="robust-summaries.html#cb406-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dslabs)</span>
+<span id="cb406-3"><a href="robust-summaries.html#cb406-3" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(outlier_example)</span>
+<span id="cb406-4"><a href="robust-summaries.html#cb406-4" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(outlier_example)</span>
+<span id="cb406-5"><a href="robust-summaries.html#cb406-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  num [1:500] 5.59 5.8 5.54 6.15 5.83 5.54 5.87 5.93 5.89 5.67 ...</span></span></code></pre></div>
 <p>Nuestro colega utiliza el hecho de que las alturas suelen estar bien aproximadas por una distribución normal y resume los datos con el promedio y la desviación estándar:</p>
-<div class="sourceCode" id="cb406"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb406-1"><a href="robust-summaries.html#cb406-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mean</span>(outlier_example)</span>
-<span id="cb406-2"><a href="robust-summaries.html#cb406-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] 6.1</span></span>
-<span id="cb406-3"><a href="robust-summaries.html#cb406-3" aria-hidden="true" tabindex="-1"></a><span class="fu">sd</span>(outlier_example)</span>
-<span id="cb406-4"><a href="robust-summaries.html#cb406-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] 7.8</span></span></code></pre></div>
+<div class="sourceCode" id="cb407"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb407-1"><a href="robust-summaries.html#cb407-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mean</span>(outlier_example)</span>
+<span id="cb407-2"><a href="robust-summaries.html#cb407-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] 6.1</span></span>
+<span id="cb407-3"><a href="robust-summaries.html#cb407-3" aria-hidden="true" tabindex="-1"></a><span class="fu">sd</span>(outlier_example)</span>
+<span id="cb407-4"><a href="robust-summaries.html#cb407-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] 7.8</span></span></code></pre></div>
 <p>y escribe un informe sobre el hecho interesante de que este grupo de varones es mucho más alto de lo normal. ¡La altura promedio es más de seis pies! Sin embargo, al usar sus conocimientos de ciencia de datos, notan algo más que es inesperado: la desviación estándar es de más de 7 pies. Al sumar y restar dos desviaciones estándar, observan que el 95% de esta población parece tener alturas entre -9.489, 21.697 pies, que no tiene sentido. Un gráfico rápido muestra el problema:</p>
 <!--
 
@@ -1052,73 +1051,73 @@ qplot(outlier_example, bins = 30)
 
 <img src="libro_files/figure-html/histogram-reveals-outliers-1.png" width="70%" style="display: block; margin: auto;" />
 -->
-<div class="sourceCode" id="cb407"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb407-1"><a href="robust-summaries.html#cb407-1" aria-hidden="true" tabindex="-1"></a><span class="fu">boxplot</span>(outlier_example)</span></code></pre></div>
+<div class="sourceCode" id="cb408"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb408-1"><a href="robust-summaries.html#cb408-1" aria-hidden="true" tabindex="-1"></a><span class="fu">boxplot</span>(outlier_example)</span></code></pre></div>
 <p><img src="libro_files/figure-html/boxplot-reveals-outliers-1.png" width="50%" style="display: block; margin: auto;" /></p>
 <p>Parece que hay al menos un valor que no tiene sentido, ya que sabemos que una altura de 180 pies es imposible. El diagrama de caja detecta este punto como un valor atípico.</p>
 </div>
-<div id="mediana" class="section level2" number="11.2">
-<h2><span class="header-section-number">11.2</span> Mediana</h2>
+<div id="mediana" class="section level2 hasAnchor" number="11.2">
+<h2><span class="header-section-number">11.2</span> Mediana<a href="robust-summaries.html#mediana" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>Cuando tenemos un valor atípico como este, el promedio puede llegar a ser muy grande. Matemáticamente, podemos hacer que el promedio sea tan grande como queramos simplemente cambiando un número: con 500 puntos de datos, podemos aumentar el promedio en cualquier cantidad <span class="math inline">\(\Delta\)</span> añadiendo <span class="math inline">\(\Delta \times\)</span> 500 a un solo número. La mediana, definida como el valor para el cual la mitad de los valores son más pequeños y la otra mitad son más grandes, es robusta para tales valores atípicos. No importa cuán grande hagamos el punto más grande, la mediana sigue siendo la misma.</p>
 <p>Con estos datos, la mediana es:</p>
-<div class="sourceCode" id="cb408"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb408-1"><a href="robust-summaries.html#cb408-1" aria-hidden="true" tabindex="-1"></a><span class="fu">median</span>(outlier_example)</span>
-<span id="cb408-2"><a href="robust-summaries.html#cb408-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] 5.74</span></span></code></pre></div>
+<div class="sourceCode" id="cb409"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb409-1"><a href="robust-summaries.html#cb409-1" aria-hidden="true" tabindex="-1"></a><span class="fu">median</span>(outlier_example)</span>
+<span id="cb409-2"><a href="robust-summaries.html#cb409-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] 5.74</span></span></code></pre></div>
 <p>lo cual es aproximadamente 5 pies y 9 pulgadas.</p>
 <p>La mediana es lo que los diagramas de caja muestran como una línea horizontal.</p>
 </div>
-<div id="el-rango-intercuartil-iqr" class="section level2" number="11.3">
-<h2><span class="header-section-number">11.3</span> El rango intercuartil (IQR)</h2>
+<div id="el-rango-intercuartil-iqr" class="section level2 hasAnchor" number="11.3">
+<h2><span class="header-section-number">11.3</span> El rango intercuartil (IQR)<a href="robust-summaries.html#el-rango-intercuartil-iqr" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>La caja en un diagrama de caja se define por el primer y tercer cuartil. Estos están destinados a proveer una idea de la variabilidad en los datos: el 50% de los datos están dentro de este rango. La diferencia entre el 3er y 1er cuartil (o los percentiles 75 y 25) se conoce como el rango intercuartil (IQR por sus siglas en inglés). Como sucede con la mediana, esta cantidad será robusta para los valores atípicos ya que los valores grandes no la afectan. Podemos hacer algunos cálculos y ver que para los datos que siguen la distribución normal, el IQR/1.349 se aproxima a la desviación estándar de los datos si un valor atípico no hubiera estado presente. Podemos ver que esto funciona bien en nuestro ejemplo, ya que obtenemos un estimado de la desviación estándar de:</p>
-<div class="sourceCode" id="cb409"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb409-1"><a href="robust-summaries.html#cb409-1" aria-hidden="true" tabindex="-1"></a><span class="fu">IQR</span>(outlier_example)<span class="sc">/</span> <span class="fl">1.349</span></span>
-<span id="cb409-2"><a href="robust-summaries.html#cb409-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] 0.245</span></span></code></pre></div>
+<div class="sourceCode" id="cb410"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb410-1"><a href="robust-summaries.html#cb410-1" aria-hidden="true" tabindex="-1"></a><span class="fu">IQR</span>(outlier_example)<span class="sc">/</span> <span class="fl">1.349</span></span>
+<span id="cb410-2"><a href="robust-summaries.html#cb410-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] 0.245</span></span></code></pre></div>
 <p>lo cual es cerca de 3 pulgadas.</p>
 </div>
-<div id="la-definición-de-tukey-de-un-valor-atípico" class="section level2" number="11.4">
-<h2><span class="header-section-number">11.4</span> La definición de Tukey de un valor atípico</h2>
+<div id="la-definición-de-tukey-de-un-valor-atípico" class="section level2 hasAnchor" number="11.4">
+<h2><span class="header-section-number">11.4</span> La definición de Tukey de un valor atípico<a href="robust-summaries.html#la-definición-de-tukey-de-un-valor-atípico" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>En R, los puntos que caen fuera de los bigotes del diagrama de caja se denominan <em>valores atípicos</em>, una definición que Tukey introdujo. El bigote superior termina en el percentil 75 más 1.5 <span class="math inline">\(\times\)</span> IQR, mientras que el bigote inferior termina en el percentil 25 menos 1.5 <span class="math inline">\(\times\)</span> IQR. Si definimos el primer y el tercer cuartil como <span class="math inline">\(Q_1\)</span> y <span class="math inline">\(Q_3\)</span>, respectivamente, entonces un valor atípico es cualquier valor fuera del rango:</p>
 <p><span class="math display">\[[Q_1 - 1.5 \times (Q_3 - Q1), Q_3 + 1.5 \times (Q_3 - Q1)].\]</span></p>
 <p>Cuando los datos se distribuyen normalmente, las unidades estándar de estos valores son:</p>
-<div class="sourceCode" id="cb410"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb410-1"><a href="robust-summaries.html#cb410-1" aria-hidden="true" tabindex="-1"></a>q3 <span class="ot">&lt;-</span> <span class="fu">qnorm</span>(<span class="fl">0.75</span>)</span>
-<span id="cb410-2"><a href="robust-summaries.html#cb410-2" aria-hidden="true" tabindex="-1"></a>q1 <span class="ot">&lt;-</span> <span class="fu">qnorm</span>(<span class="fl">0.25</span>)</span>
-<span id="cb410-3"><a href="robust-summaries.html#cb410-3" aria-hidden="true" tabindex="-1"></a>iqr <span class="ot">&lt;-</span> q3 <span class="sc">-</span> q1</span>
-<span id="cb410-4"><a href="robust-summaries.html#cb410-4" aria-hidden="true" tabindex="-1"></a>r <span class="ot">&lt;-</span> <span class="fu">c</span>(q1 <span class="sc">-</span> <span class="fl">1.5</span><span class="sc">*</span>iqr, q3 <span class="sc">+</span> <span class="fl">1.5</span><span class="sc">*</span>iqr)</span>
-<span id="cb410-5"><a href="robust-summaries.html#cb410-5" aria-hidden="true" tabindex="-1"></a>r</span>
-<span id="cb410-6"><a href="robust-summaries.html#cb410-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] -2.7  2.7</span></span></code></pre></div>
+<div class="sourceCode" id="cb411"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb411-1"><a href="robust-summaries.html#cb411-1" aria-hidden="true" tabindex="-1"></a>q3 <span class="ot">&lt;-</span> <span class="fu">qnorm</span>(<span class="fl">0.75</span>)</span>
+<span id="cb411-2"><a href="robust-summaries.html#cb411-2" aria-hidden="true" tabindex="-1"></a>q1 <span class="ot">&lt;-</span> <span class="fu">qnorm</span>(<span class="fl">0.25</span>)</span>
+<span id="cb411-3"><a href="robust-summaries.html#cb411-3" aria-hidden="true" tabindex="-1"></a>iqr <span class="ot">&lt;-</span> q3 <span class="sc">-</span> q1</span>
+<span id="cb411-4"><a href="robust-summaries.html#cb411-4" aria-hidden="true" tabindex="-1"></a>r <span class="ot">&lt;-</span> <span class="fu">c</span>(q1 <span class="sc">-</span> <span class="fl">1.5</span><span class="sc">*</span>iqr, q3 <span class="sc">+</span> <span class="fl">1.5</span><span class="sc">*</span>iqr)</span>
+<span id="cb411-5"><a href="robust-summaries.html#cb411-5" aria-hidden="true" tabindex="-1"></a>r</span>
+<span id="cb411-6"><a href="robust-summaries.html#cb411-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] -2.7  2.7</span></span></code></pre></div>
 <p>Utilizando la función <code>pnorm</code>, vemos que 99.3% de los datos caen en este intervalo.</p>
 <p>Tengan en cuenta que este no es un evento tan extremo: si tenemos 1000 puntos de datos que se distribuyen normalmente, esperamos ver unos 7 fuera de este rango. Pero estos no serían valores atípicos ya que esperamos verlos bajo la variación típica.</p>
 <p>Si queremos que un valor atípico sea más raro, podemos cambiar el 1.5 a un número mas grande. Tukey también usó 3 y los denominó <em>far out outliers</em> o <em>valores atípicos extremos</em>. Con una distribución normal,
 100%
 de los datos caen en este intervalo. Esto se traduce en aproximadamente 2 en un millón de posibilidades de estar fuera del rango. En la función <code>geom_boxplot</code>, esto se puede controlar usando el argumento <code>outlier.size</code>, que por defecto es 1.5.</p>
 <p>La medida de 180 pulgadas está más allá del rango de los datos de altura:</p>
-<div class="sourceCode" id="cb411"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb411-1"><a href="robust-summaries.html#cb411-1" aria-hidden="true" tabindex="-1"></a>max_height <span class="ot">&lt;-</span> <span class="fu">quantile</span>(outlier_example, <span class="fl">0.75</span>) <span class="sc">+</span> <span class="dv">3</span><span class="sc">*</span><span class="fu">IQR</span>(outlier_example)</span>
-<span id="cb411-2"><a href="robust-summaries.html#cb411-2" aria-hidden="true" tabindex="-1"></a>max_height</span>
-<span id="cb411-3"><a href="robust-summaries.html#cb411-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  75% </span></span>
-<span id="cb411-4"><a href="robust-summaries.html#cb411-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 6.91</span></span></code></pre></div>
+<div class="sourceCode" id="cb412"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb412-1"><a href="robust-summaries.html#cb412-1" aria-hidden="true" tabindex="-1"></a>max_height <span class="ot">&lt;-</span> <span class="fu">quantile</span>(outlier_example, <span class="fl">0.75</span>) <span class="sc">+</span> <span class="dv">3</span><span class="sc">*</span><span class="fu">IQR</span>(outlier_example)</span>
+<span id="cb412-2"><a href="robust-summaries.html#cb412-2" aria-hidden="true" tabindex="-1"></a>max_height</span>
+<span id="cb412-3"><a href="robust-summaries.html#cb412-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  75% </span></span>
+<span id="cb412-4"><a href="robust-summaries.html#cb412-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 6.91</span></span></code></pre></div>
 <p>Si sacamos este valor, podemos ver que los datos se distribuyen normalmente como se espera:</p>
-<div class="sourceCode" id="cb412"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb412-1"><a href="robust-summaries.html#cb412-1" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> outlier_example[outlier_example <span class="sc">&lt;</span> max_height]</span>
-<span id="cb412-2"><a href="robust-summaries.html#cb412-2" aria-hidden="true" tabindex="-1"></a><span class="fu">qqnorm</span>(x)</span>
-<span id="cb412-3"><a href="robust-summaries.html#cb412-3" aria-hidden="true" tabindex="-1"></a><span class="fu">qqline</span>(x)</span></code></pre></div>
+<div class="sourceCode" id="cb413"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb413-1"><a href="robust-summaries.html#cb413-1" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> outlier_example[outlier_example <span class="sc">&lt;</span> max_height]</span>
+<span id="cb413-2"><a href="robust-summaries.html#cb413-2" aria-hidden="true" tabindex="-1"></a><span class="fu">qqnorm</span>(x)</span>
+<span id="cb413-3"><a href="robust-summaries.html#cb413-3" aria-hidden="true" tabindex="-1"></a><span class="fu">qqline</span>(x)</span></code></pre></div>
 <p><img src="libro_files/figure-html/outlier-qqnorm-1.png" width="70%" style="display: block; margin: auto;" /></p>
 </div>
-<div id="desviación-absoluta-mediana" class="section level2" number="11.5">
-<h2><span class="header-section-number">11.5</span> Desviación absoluta mediana</h2>
+<div id="desviación-absoluta-mediana" class="section level2 hasAnchor" number="11.5">
+<h2><span class="header-section-number">11.5</span> Desviación absoluta mediana<a href="robust-summaries.html#desviación-absoluta-mediana" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>Otra opción para estimar la desviación estándar de manera robusta en presencia de valores atípicos es usar la desviación absoluta mediana (<em>median absolute deviation</em> o MAD por sus siglas en inglés). Para calcular el MAD, primero calculamos la mediana y luego, para cada valor, calculamos la distancia entre ese valor y la mediana. El MAD se define como la mediana de estas distancias. Por razones técnicas que no discutimos aquí, esta cantidad debe multiplicarse por 1.4826 para asegurar que se aproxime a la desviación estándar real. La función <code>mad</code> ya incorpora esta corrección. Para los datos de altura, obtenemos una MAD de:</p>
-<div class="sourceCode" id="cb413"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb413-1"><a href="robust-summaries.html#cb413-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mad</span>(outlier_example)</span>
-<span id="cb413-2"><a href="robust-summaries.html#cb413-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] 0.237</span></span></code></pre></div>
+<div class="sourceCode" id="cb414"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb414-1"><a href="robust-summaries.html#cb414-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mad</span>(outlier_example)</span>
+<span id="cb414-2"><a href="robust-summaries.html#cb414-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] 0.237</span></span></code></pre></div>
 <p>lo cual es cerca de 3 pulgadas.</p>
 </div>
-<div id="ejercicios-21" class="section level2" number="11.6">
-<h2><span class="header-section-number">11.6</span> Ejercicios</h2>
+<div id="ejercicios-21" class="section level2 hasAnchor" number="11.6">
+<h2><span class="header-section-number">11.6</span> Ejercicios<a href="robust-summaries.html#ejercicios-21" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>Vamos a usar el paquete <strong>HistData</strong>. Si no lo ha instalando, puede hacerlo así:</p>
-<div class="sourceCode" id="cb414"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb414-1"><a href="robust-summaries.html#cb414-1" aria-hidden="true" tabindex="-1"></a><span class="fu">install.packages</span>(<span class="st">&quot;HistData&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb415"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb415-1"><a href="robust-summaries.html#cb415-1" aria-hidden="true" tabindex="-1"></a><span class="fu">install.packages</span>(<span class="st">&quot;HistData&quot;</span>)</span></code></pre></div>
 <p>Cargue el set de datos de altura y cree un vector <code>x</code> que contiene solo las alturas masculinas de los datos de Galton de los padres y sus hijos de su investigación histórica sobre la herencia.</p>
-<div class="sourceCode" id="cb415"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb415-1"><a href="robust-summaries.html#cb415-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(HistData)</span>
-<span id="cb415-2"><a href="robust-summaries.html#cb415-2" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(Galton)</span>
-<span id="cb415-3"><a href="robust-summaries.html#cb415-3" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> Galton<span class="sc">$</span>child</span></code></pre></div>
+<div class="sourceCode" id="cb416"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb416-1"><a href="robust-summaries.html#cb416-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(HistData)</span>
+<span id="cb416-2"><a href="robust-summaries.html#cb416-2" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(Galton)</span>
+<span id="cb416-3"><a href="robust-summaries.html#cb416-3" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> Galton<span class="sc">$</span>child</span></code></pre></div>
 <p>1. Calcule el promedio y la mediana de estos datos.</p>
 <p>2. Calcule la mediana y el MAD de estos datos.</p>
 <p>3. Ahora supongan que Galton cometió un error al ingresar el primer valor y olvidó usar el punto decimal. Puede imitar este error escribriendo:</p>
-<div class="sourceCode" id="cb416"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb416-1"><a href="robust-summaries.html#cb416-1" aria-hidden="true" tabindex="-1"></a>x_with_error <span class="ot">&lt;-</span> x</span>
-<span id="cb416-2"><a href="robust-summaries.html#cb416-2" aria-hidden="true" tabindex="-1"></a>x_with_error[<span class="dv">1</span>] <span class="ot">&lt;-</span> x_with_error[<span class="dv">1</span>]<span class="sc">*</span><span class="dv">10</span></span></code></pre></div>
+<div class="sourceCode" id="cb417"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb417-1"><a href="robust-summaries.html#cb417-1" aria-hidden="true" tabindex="-1"></a>x_with_error <span class="ot">&lt;-</span> x</span>
+<span id="cb417-2"><a href="robust-summaries.html#cb417-2" aria-hidden="true" tabindex="-1"></a>x_with_error[<span class="dv">1</span>] <span class="ot">&lt;-</span> x_with_error[<span class="dv">1</span>]<span class="sc">*</span><span class="dv">10</span></span></code></pre></div>
 <p>¿Cuántas pulgadas crece el promedio como resultado de este error?</p>
 <p>4. ¿Cuántas pulgadas crece la SD como resultado de este error?</p>
 <p>5. ¿Cuántas pulgadas crece la mediana como resultado de este error?</p>
@@ -1132,63 +1131,63 @@ de los datos caen en este intervalo. Esto se traduce en aproximadamente 2 en un 
 </ol>
 <p>8. ¿Cuánto puede crecer accidentalmente el promedio con errores como este? Escribe una función llamada <code>error_avg</code> que toma un valor <code>k</code> y devuelve el promedio del vector <code>x</code> después de que la primera entrada cambie a <code>k</code>. Muestre los resultados para <code>k=10000</code> y <code>k=-10000</code>.</p>
 </div>
-<div id="estudio-de-caso-alturas-autoreportadas-de-estudiantes" class="section level2" number="11.7">
-<h2><span class="header-section-number">11.7</span> Estudio de caso: alturas autoreportadas de estudiantes</h2>
+<div id="estudio-de-caso-alturas-autoreportadas-de-estudiantes" class="section level2 hasAnchor" number="11.7">
+<h2><span class="header-section-number">11.7</span> Estudio de caso: alturas autoreportadas de estudiantes<a href="robust-summaries.html#estudio-de-caso-alturas-autoreportadas-de-estudiantes" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>Las alturas que hemos estado estudiando no son las alturas originales reportadas por los estudiantes. Las alturas originales también se incluyen en el paquete <strong>dslabs</strong> y se pueden cargar así:</p>
-<div class="sourceCode" id="cb417"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb417-1"><a href="robust-summaries.html#cb417-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dslabs)</span>
-<span id="cb417-2"><a href="robust-summaries.html#cb417-2" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(<span class="st">&quot;reported_heights&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb418"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb418-1"><a href="robust-summaries.html#cb418-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dslabs)</span>
+<span id="cb418-2"><a href="robust-summaries.html#cb418-2" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(<span class="st">&quot;reported_heights&quot;</span>)</span></code></pre></div>
 <p>La altura es un vector de caracteres, por lo que creamos una nueva columna con la versión numérica:</p>
-<div class="sourceCode" id="cb418"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb418-1"><a href="robust-summaries.html#cb418-1" aria-hidden="true" tabindex="-1"></a>reported_heights <span class="ot">&lt;-</span> reported_heights <span class="sc">%&gt;%</span></span>
-<span id="cb418-2"><a href="robust-summaries.html#cb418-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">original_heights =</span> height, <span class="at">height =</span> <span class="fu">as.numeric</span>(height))</span>
-<span id="cb418-3"><a href="robust-summaries.html#cb418-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Warning in mask$eval_all_mutate(quo): NAs introducidos por coerción</span></span></code></pre></div>
+<div class="sourceCode" id="cb419"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb419-1"><a href="robust-summaries.html#cb419-1" aria-hidden="true" tabindex="-1"></a>reported_heights <span class="ot">&lt;-</span> reported_heights <span class="sc">|&gt;</span></span>
+<span id="cb419-2"><a href="robust-summaries.html#cb419-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">original_heights =</span> height, <span class="at">height =</span> <span class="fu">as.numeric</span>(height))</span>
+<span id="cb419-3"><a href="robust-summaries.html#cb419-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Warning in mask$eval_all_mutate(quo): NAs introducidos por coerción</span></span></code></pre></div>
 <p>Tengan en cuenta que recibimos una advertencia sobre los NAs. Esto se debe a que algunas de las alturas autoreportadas no eran números. Podemos ver por qué obtenemos estos NAs:</p>
-<div class="sourceCode" id="cb419"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb419-1"><a href="robust-summaries.html#cb419-1" aria-hidden="true" tabindex="-1"></a>reported_heights <span class="sc">%&gt;%</span> <span class="fu">filter</span>(<span class="fu">is.na</span>(height)) <span class="sc">%&gt;%</span> <span class="fu">head</span>()</span>
-<span id="cb419-2"><a href="robust-summaries.html#cb419-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;            time_stamp    sex height original_heights</span></span>
-<span id="cb419-3"><a href="robust-summaries.html#cb419-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1 2014-09-02 15:16:28   Male     NA            5&#39; 4&quot;</span></span>
-<span id="cb419-4"><a href="robust-summaries.html#cb419-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2 2014-09-02 15:16:37 Female     NA            165cm</span></span>
-<span id="cb419-5"><a href="robust-summaries.html#cb419-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 3 2014-09-02 15:16:52   Male     NA              5&#39;7</span></span>
-<span id="cb419-6"><a href="robust-summaries.html#cb419-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 4 2014-09-02 15:16:56   Male     NA            &gt;9000</span></span>
-<span id="cb419-7"><a href="robust-summaries.html#cb419-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 5 2014-09-02 15:16:56   Male     NA             5&#39;7&quot;</span></span>
-<span id="cb419-8"><a href="robust-summaries.html#cb419-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 6 2014-09-02 15:17:09 Female     NA             5&#39;3&quot;</span></span></code></pre></div>
-<p>Algunos estudiantes indicaron sus alturas usando pies y pulgadas en lugar de solo pulgadas. Otros usaron centímetros y otros solo estaban “trolleando.” Por ahora eliminaremos estas entradas:</p>
-<div class="sourceCode" id="cb420"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb420-1"><a href="robust-summaries.html#cb420-1" aria-hidden="true" tabindex="-1"></a>reported_heights <span class="ot">&lt;-</span> <span class="fu">filter</span>(reported_heights, <span class="sc">!</span><span class="fu">is.na</span>(height))</span></code></pre></div>
+<div class="sourceCode" id="cb420"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb420-1"><a href="robust-summaries.html#cb420-1" aria-hidden="true" tabindex="-1"></a>reported_heights <span class="sc">|&gt;</span> <span class="fu">filter</span>(<span class="fu">is.na</span>(height)) <span class="sc">|&gt;</span> <span class="fu">head</span>()</span>
+<span id="cb420-2"><a href="robust-summaries.html#cb420-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;            time_stamp    sex height original_heights</span></span>
+<span id="cb420-3"><a href="robust-summaries.html#cb420-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1 2014-09-02 15:16:28   Male     NA            5&#39; 4&quot;</span></span>
+<span id="cb420-4"><a href="robust-summaries.html#cb420-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2 2014-09-02 15:16:37 Female     NA            165cm</span></span>
+<span id="cb420-5"><a href="robust-summaries.html#cb420-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 3 2014-09-02 15:16:52   Male     NA              5&#39;7</span></span>
+<span id="cb420-6"><a href="robust-summaries.html#cb420-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 4 2014-09-02 15:16:56   Male     NA            &gt;9000</span></span>
+<span id="cb420-7"><a href="robust-summaries.html#cb420-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 5 2014-09-02 15:16:56   Male     NA             5&#39;7&quot;</span></span>
+<span id="cb420-8"><a href="robust-summaries.html#cb420-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 6 2014-09-02 15:17:09 Female     NA             5&#39;3&quot;</span></span></code></pre></div>
+<p>Algunos estudiantes indicaron sus alturas usando pies y pulgadas en lugar de solo pulgadas. Otros usaron centímetros y otros solo estaban “trolleando”. Por ahora eliminaremos estas entradas:</p>
+<div class="sourceCode" id="cb421"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb421-1"><a href="robust-summaries.html#cb421-1" aria-hidden="true" tabindex="-1"></a>reported_heights <span class="ot">&lt;-</span> <span class="fu">filter</span>(reported_heights, <span class="sc">!</span><span class="fu">is.na</span>(height))</span></code></pre></div>
 <p>Si calculamos el promedio y la desviación estándar, observamos que obtenemos resultados extraños. El promedio y la desviación estándar son diferentes de la mediana y del MAD:</p>
-<div class="sourceCode" id="cb421"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb421-1"><a href="robust-summaries.html#cb421-1" aria-hidden="true" tabindex="-1"></a>reported_heights <span class="sc">%&gt;%</span></span>
-<span id="cb421-2"><a href="robust-summaries.html#cb421-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(sex) <span class="sc">%&gt;%</span></span>
-<span id="cb421-3"><a href="robust-summaries.html#cb421-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="at">average =</span> <span class="fu">mean</span>(height), <span class="at">sd =</span> <span class="fu">sd</span>(height),</span>
-<span id="cb421-4"><a href="robust-summaries.html#cb421-4" aria-hidden="true" tabindex="-1"></a>            <span class="at">median =</span> <span class="fu">median</span>(height), <span class="at">MAD =</span> <span class="fu">mad</span>(height))</span>
-<span id="cb421-5"><a href="robust-summaries.html#cb421-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # A tibble: 2 x 5</span></span>
-<span id="cb421-6"><a href="robust-summaries.html#cb421-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   sex    average    sd median   MAD</span></span>
-<span id="cb421-7"><a href="robust-summaries.html#cb421-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   &lt;chr&gt;    &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt; &lt;dbl&gt;</span></span>
-<span id="cb421-8"><a href="robust-summaries.html#cb421-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1 Female    63.4  27.9   64.2  4.05</span></span>
-<span id="cb421-9"><a href="robust-summaries.html#cb421-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2 Male     103.  530.    70    4.45</span></span></code></pre></div>
+<div class="sourceCode" id="cb422"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb422-1"><a href="robust-summaries.html#cb422-1" aria-hidden="true" tabindex="-1"></a>reported_heights <span class="sc">|&gt;</span></span>
+<span id="cb422-2"><a href="robust-summaries.html#cb422-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(sex) <span class="sc">|&gt;</span></span>
+<span id="cb422-3"><a href="robust-summaries.html#cb422-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="at">average =</span> <span class="fu">mean</span>(height), <span class="at">sd =</span> <span class="fu">sd</span>(height),</span>
+<span id="cb422-4"><a href="robust-summaries.html#cb422-4" aria-hidden="true" tabindex="-1"></a>            <span class="at">median =</span> <span class="fu">median</span>(height), <span class="at">MAD =</span> <span class="fu">mad</span>(height))</span>
+<span id="cb422-5"><a href="robust-summaries.html#cb422-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # A tibble: 2 × 5</span></span>
+<span id="cb422-6"><a href="robust-summaries.html#cb422-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   sex    average    sd median   MAD</span></span>
+<span id="cb422-7"><a href="robust-summaries.html#cb422-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   &lt;chr&gt;    &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt; &lt;dbl&gt;</span></span>
+<span id="cb422-8"><a href="robust-summaries.html#cb422-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1 Female    63.4  27.9   64.2  4.05</span></span>
+<span id="cb422-9"><a href="robust-summaries.html#cb422-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2 Male     103.  530.    70    4.45</span></span></code></pre></div>
 <p>Esto sugiere que tenemos valores atípicos, lo que se confirma creando un diagrama de caja:</p>
 <p><img src="libro_files/figure-html/height-outlier-ggplot-1.png" width="70%" style="display: block; margin: auto;" /></p>
 <p>Vemos algunos valores bastante extremos. Para ver cuáles son estos valores, podemos rápidamente mirar los valores más grandes utilizando la función <code>arrange</code>:</p>
-<div class="sourceCode" id="cb422"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb422-1"><a href="robust-summaries.html#cb422-1" aria-hidden="true" tabindex="-1"></a>reported_heights <span class="sc">%&gt;%</span> <span class="fu">arrange</span>(<span class="fu">desc</span>(height)) <span class="sc">%&gt;%</span> <span class="fu">top_n</span>(<span class="dv">10</span>, height)</span>
-<span id="cb422-2"><a href="robust-summaries.html#cb422-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;             time_stamp    sex height original_heights</span></span>
-<span id="cb422-3"><a href="robust-summaries.html#cb422-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1  2014-09-03 23:55:37   Male  11111            11111</span></span>
-<span id="cb422-4"><a href="robust-summaries.html#cb422-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2  2016-04-10 22:45:49   Male  10000            10000</span></span>
-<span id="cb422-5"><a href="robust-summaries.html#cb422-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 3  2015-08-10 03:10:01   Male    684              684</span></span>
-<span id="cb422-6"><a href="robust-summaries.html#cb422-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 4  2015-02-27 18:05:06   Male    612              612</span></span>
-<span id="cb422-7"><a href="robust-summaries.html#cb422-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 5  2014-09-02 15:16:41   Male    511              511</span></span>
-<span id="cb422-8"><a href="robust-summaries.html#cb422-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 6  2014-09-07 20:53:43   Male    300              300</span></span>
-<span id="cb422-9"><a href="robust-summaries.html#cb422-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 7  2014-11-28 12:18:40   Male    214              214</span></span>
-<span id="cb422-10"><a href="robust-summaries.html#cb422-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 8  2017-04-03 16:16:57   Male    210              210</span></span>
-<span id="cb422-11"><a href="robust-summaries.html#cb422-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 9  2015-11-24 10:39:45   Male    192              192</span></span>
-<span id="cb422-12"><a href="robust-summaries.html#cb422-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 10 2014-12-26 10:00:12   Male    190              190</span></span>
-<span id="cb422-13"><a href="robust-summaries.html#cb422-13" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 11 2016-11-06 10:21:02 Female    190              190</span></span></code></pre></div>
+<div class="sourceCode" id="cb423"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb423-1"><a href="robust-summaries.html#cb423-1" aria-hidden="true" tabindex="-1"></a>reported_heights <span class="sc">|&gt;</span> <span class="fu">arrange</span>(<span class="fu">desc</span>(height)) <span class="sc">|&gt;</span> <span class="fu">top_n</span>(<span class="dv">10</span>, height)</span>
+<span id="cb423-2"><a href="robust-summaries.html#cb423-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;             time_stamp    sex height original_heights</span></span>
+<span id="cb423-3"><a href="robust-summaries.html#cb423-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1  2014-09-03 23:55:37   Male  11111            11111</span></span>
+<span id="cb423-4"><a href="robust-summaries.html#cb423-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2  2016-04-10 22:45:49   Male  10000            10000</span></span>
+<span id="cb423-5"><a href="robust-summaries.html#cb423-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 3  2015-08-10 03:10:01   Male    684              684</span></span>
+<span id="cb423-6"><a href="robust-summaries.html#cb423-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 4  2015-02-27 18:05:06   Male    612              612</span></span>
+<span id="cb423-7"><a href="robust-summaries.html#cb423-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 5  2014-09-02 15:16:41   Male    511              511</span></span>
+<span id="cb423-8"><a href="robust-summaries.html#cb423-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 6  2014-09-07 20:53:43   Male    300              300</span></span>
+<span id="cb423-9"><a href="robust-summaries.html#cb423-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 7  2014-11-28 12:18:40   Male    214              214</span></span>
+<span id="cb423-10"><a href="robust-summaries.html#cb423-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 8  2017-04-03 16:16:57   Male    210              210</span></span>
+<span id="cb423-11"><a href="robust-summaries.html#cb423-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 9  2015-11-24 10:39:45   Male    192              192</span></span>
+<span id="cb423-12"><a href="robust-summaries.html#cb423-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 10 2014-12-26 10:00:12   Male    190              190</span></span>
+<span id="cb423-13"><a href="robust-summaries.html#cb423-13" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 11 2016-11-06 10:21:02 Female    190              190</span></span></code></pre></div>
 <p>Las primeras siete entradas parecen errores extraños. Sin embargo, las siguientes entradas parecen haber sido ingresadas en centímetros en lugar de pulgadas. Dado que 184cm es equivalente a seis pies de altura, sospechamos que 184 realmente significa 72 pulgadas.</p>
 <p>Podemos revisar todas las respuestas sin sentido examinando los datos que Tukey considera <em>far out</em> o <em>extremos</em>:</p>
-<div class="sourceCode" id="cb423"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb423-1"><a href="robust-summaries.html#cb423-1" aria-hidden="true" tabindex="-1"></a>whisker <span class="ot">&lt;-</span> <span class="dv">3</span><span class="sc">*</span><span class="fu">IQR</span>(reported_heights<span class="sc">$</span>height)</span>
-<span id="cb423-2"><a href="robust-summaries.html#cb423-2" aria-hidden="true" tabindex="-1"></a>max_height <span class="ot">&lt;-</span> <span class="fu">quantile</span>(reported_heights<span class="sc">$</span>height, .<span class="dv">75</span>) <span class="sc">+</span> whisker</span>
-<span id="cb423-3"><a href="robust-summaries.html#cb423-3" aria-hidden="true" tabindex="-1"></a>min_height <span class="ot">&lt;-</span> <span class="fu">quantile</span>(reported_heights<span class="sc">$</span>height, .<span class="dv">25</span>) <span class="sc">-</span> whisker</span>
-<span id="cb423-4"><a href="robust-summaries.html#cb423-4" aria-hidden="true" tabindex="-1"></a>reported_heights <span class="sc">%&gt;%</span></span>
-<span id="cb423-5"><a href="robust-summaries.html#cb423-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="sc">!</span><span class="fu">between</span>(height, min_height, max_height)) <span class="sc">%&gt;%</span></span>
-<span id="cb423-6"><a href="robust-summaries.html#cb423-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(original_heights) <span class="sc">%&gt;%</span></span>
-<span id="cb423-7"><a href="robust-summaries.html#cb423-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">head</span>(<span class="at">n=</span><span class="dv">10</span>) <span class="sc">%&gt;%</span> <span class="fu">pull</span>(original_heights)</span>
-<span id="cb423-8"><a href="robust-summaries.html#cb423-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  [1] &quot;6&quot;     &quot;5.3&quot;   &quot;511&quot;   &quot;6&quot;     &quot;2&quot;     &quot;5.25&quot;  &quot;5.5&quot;   &quot;11111&quot;</span></span>
-<span id="cb423-9"><a href="robust-summaries.html#cb423-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  [9] &quot;6&quot;     &quot;6.5&quot;</span></span></code></pre></div>
+<div class="sourceCode" id="cb424"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb424-1"><a href="robust-summaries.html#cb424-1" aria-hidden="true" tabindex="-1"></a>whisker <span class="ot">&lt;-</span> <span class="dv">3</span><span class="sc">*</span><span class="fu">IQR</span>(reported_heights<span class="sc">$</span>height)</span>
+<span id="cb424-2"><a href="robust-summaries.html#cb424-2" aria-hidden="true" tabindex="-1"></a>max_height <span class="ot">&lt;-</span> <span class="fu">quantile</span>(reported_heights<span class="sc">$</span>height, .<span class="dv">75</span>) <span class="sc">+</span> whisker</span>
+<span id="cb424-3"><a href="robust-summaries.html#cb424-3" aria-hidden="true" tabindex="-1"></a>min_height <span class="ot">&lt;-</span> <span class="fu">quantile</span>(reported_heights<span class="sc">$</span>height, .<span class="dv">25</span>) <span class="sc">-</span> whisker</span>
+<span id="cb424-4"><a href="robust-summaries.html#cb424-4" aria-hidden="true" tabindex="-1"></a>reported_heights <span class="sc">|&gt;</span></span>
+<span id="cb424-5"><a href="robust-summaries.html#cb424-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="sc">!</span><span class="fu">between</span>(height, min_height, max_height)) <span class="sc">|&gt;</span></span>
+<span id="cb424-6"><a href="robust-summaries.html#cb424-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(original_heights) <span class="sc">|&gt;</span></span>
+<span id="cb424-7"><a href="robust-summaries.html#cb424-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">head</span>(<span class="at">n=</span><span class="dv">10</span>) <span class="sc">|&gt;</span> <span class="fu">pull</span>(original_heights)</span>
+<span id="cb424-8"><a href="robust-summaries.html#cb424-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  [1] &quot;6&quot;     &quot;5.3&quot;   &quot;511&quot;   &quot;6&quot;     &quot;2&quot;     &quot;5.25&quot;  &quot;5.5&quot;   &quot;11111&quot;</span></span>
+<span id="cb424-9"><a href="robust-summaries.html#cb424-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  [9] &quot;6&quot;     &quot;6.5&quot;</span></span></code></pre></div>
 <p>Al revisar estas alturas cuidadosamente, vemos dos errores comunes: entradas en centímetros, que resultan ser demasiado grandes, y entradas del tipo <code>x.y</code> con <code>x</code> e <code>y</code> representando pies y pulgadas respectivamente, que resultan ser demasiado pequeñas. Algunos de los valores aún más pequeños, como 1.6, podrían ser entradas en metros.</p>
 <p>En la parte de <em>wrangling</em> de datos de este libro, aprenderemos técnicas para corregir estos valores y convertirlos en pulgadas. Aquí pudimos detectar este problema mediante una cuidadosa exploración de los datos para descubrir problemas con ellos: el primer paso en la gran mayoría de los proyectos de ciencia de datos.</p>
 
@@ -1207,7 +1206,6 @@ de los datos caen en este intervalo. Esto se traduce en aproximadamente 2 en un 
     </div>
   </div>
 <script src="libs/gitbook-2.6.7/js/app.min.js"></script>
-<script src="libs/gitbook-2.6.7/js/lunr.js"></script>
 <script src="libs/gitbook-2.6.7/js/clipboard.min.js"></script>
 <script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
 <script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
@@ -1247,6 +1245,10 @@ gitbook.start({
 "text": null
 },
 "download": ["libro.pdf"],
+"search": {
+"engine": "fuse",
+"options": null
+},
 "toc": {
 "collapse": "section"
 }

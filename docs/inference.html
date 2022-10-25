@@ -6,11 +6,10 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <title>Capítulo 15 Inferencia estadística | Introducción a la ciencia de datos</title>
   <meta name="description" content="Este libro presenta conceptos y destrezas que les ayudarán abordar los retos de situaciones actuales del análisis de datos. Cubre conceptos de probabilidad, inferencia estadística, regresión lineal y machine learning. Además, les permitirá desarrollar destrezas como la programación R, el wrangling de datos con dplyr, la visualización de datos con ggplot2, la organización de archivos con Shell de UNIX / Linux, el control de versiones con GitHub y la preparación de documentos reproducibles con R markdown." />
-  <meta name="generator" content="bookdown 0.22 and GitBook 2.6.7" />
+  <meta name="generator" content="bookdown 0.27 and GitBook 2.6.7" />
 
   <meta property="og:title" content="Capítulo 15 Inferencia estadística | Introducción a la ciencia de datos" />
   <meta property="og:type" content="book" />
-  
   
   <meta property="og:description" content="Este libro presenta conceptos y destrezas que les ayudarán abordar los retos de situaciones actuales del análisis de datos. Cubre conceptos de probabilidad, inferencia estadística, regresión lineal y machine learning. Además, les permitirá desarrollar destrezas como la programación R, el wrangling de datos con dplyr, la visualización de datos con ggplot2, la organización de archivos con Shell de UNIX / Linux, el control de versiones con GitHub y la preparación de documentos reproducibles con R markdown." />
   
@@ -24,7 +23,7 @@
 <meta name="author" content="Rafael A. Irizarry" />
 
 
-<meta name="date" content="2021-07-03" />
+<meta name="date" content="2022-10-25" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -33,8 +32,8 @@
   
 <link rel="prev" href="variables-aleatorias.html"/>
 <link rel="next" href="models.html"/>
-<script src="libs/header-attrs-2.9/header-attrs.js"></script>
-<script src="libs/jquery-2.2.3/jquery.min.js"></script>
+<script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
 <link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
 <link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
@@ -50,9 +49,9 @@
 
 
 
-
-<link href="libs/anchor-sections-1.0.1/anchor-sections.css" rel="stylesheet" />
-<script src="libs/anchor-sections-1.0.1/anchor-sections.js"></script>
+<link href="libs/anchor-sections-1.1.0/anchor-sections.css" rel="stylesheet" />
+<link href="libs/anchor-sections-1.1.0/anchor-sections-hash.css" rel="stylesheet" />
+<script src="libs/anchor-sections-1.1.0/anchor-sections.js"></script>
 <script src="libs/kePrint-0.0.1/kePrint.js"></script>
 <link href="libs/lightable-0.0.1/lightable.css" rel="stylesheet" />
 
@@ -254,7 +253,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="4.3.3" data-path="tidyverse.html"><a href="tidyverse.html#cómo-seleccionar-columnas-con-select"><i class="fa fa-check"></i><b>4.3.3</b> Cómo seleccionar columnas con <code>select</code></a></li>
 </ul></li>
 <li class="chapter" data-level="4.4" data-path="tidyverse.html"><a href="tidyverse.html#ejercicios-9"><i class="fa fa-check"></i><b>4.4</b> Ejercicios</a></li>
-<li class="chapter" data-level="4.5" data-path="tidyverse.html"><a href="tidyverse.html#el-pipe"><i class="fa fa-check"></i><b>4.5</b> El <em>pipe</em>: <code>%&gt;%</code></a></li>
+<li class="chapter" data-level="4.5" data-path="tidyverse.html"><a href="tidyverse.html#el-pipe"><i class="fa fa-check"></i><b>4.5</b> El <em>pipe</em>: <code>|&gt;</code></a></li>
 <li class="chapter" data-level="4.6" data-path="tidyverse.html"><a href="tidyverse.html#ejercicios-10"><i class="fa fa-check"></i><b>4.6</b> Ejercicios</a></li>
 <li class="chapter" data-level="4.7" data-path="tidyverse.html"><a href="tidyverse.html#cómo-resumir-datos"><i class="fa fa-check"></i><b>4.7</b> Cómo resumir datos</a>
 <ul>
@@ -1025,13 +1024,13 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
           <div class="page-inner">
 
             <section class="normal" id="section-">
-<div id="inference" class="section level1" number="15">
-<h1><span class="header-section-number">Capítulo 15</span> Inferencia estadística</h1>
+<div id="inference" class="section level1 hasAnchor" number="15">
+<h1><span class="header-section-number">Capítulo 15</span> Inferencia estadística<a href="inference.html#inference" class="anchor-section" aria-label="Anchor link to header"></a></h1>
 <p>En el Capítulo <a href="models.html#models">16</a>, describiremos, con cierto detalle, cómo los agregadores de encuestas, como FiveThirtyEight, usan los datos para predecir los resultados de las elecciones. Para entender cómo lo hacen, primero debemos aprender los conceptos básicos de la <em>inferencia estadística</em>, la parte de la estadística que ayuda a distinguir los patrones reales de esos que surgen del azar. La inferencia estadística es un tema amplio y aquí repasaremos los conceptos básicos utilizando las encuestas como un ejemplo motivador. Para describir los conceptos, complementamos las fórmulas matemáticas con simulaciones Monte Carlo y el código R.</p>
-<div id="encuestas" class="section level2" number="15.1">
-<h2><span class="header-section-number">15.1</span> Encuestas</h2>
+<div id="encuestas" class="section level2 hasAnchor" number="15.1">
+<h2><span class="header-section-number">15.1</span> Encuestas<a href="inference.html#encuestas" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>Las encuestas de opinión se han llevado a cabo desde el siglo XIX. El objetivo general es describir las opiniones de una población específica sobre un set particular de temas. Recientemente, estas encuestas han sido mas notables durante las elecciones presidenciales en EE.UU. Las encuestas son útiles cuando entrevistar a cada miembro de una población particular es logísticamente imposible. La estrategia general es entrevistar a un grupo más pequeño elegido al azar y luego inferir las opiniones de toda la población a partir de las opiniones del grupo más pequeño. La teoría estadística que se usa para justificar el proceso se conoce como <em>inferencia</em> y es el tema principal de este capítulo.</p>
-<p>Quizás las encuestas de opinión más conocidas son esas realizadas para determinar el candidato favorito de los votantes en una elección determinada. Los estrategas políticos hacen uso extensivo de las encuestas para decidir, entre otras cosas, cómo invertir recursos. Por ejemplo, es posible que quieran saber en qué regiones geográficas enfocar sus esfuerzos de “sacar el voto.”</p>
+<p>Quizás las encuestas de opinión más conocidas son esas realizadas para determinar el candidato favorito de los votantes en una elección determinada. Los estrategas políticos hacen uso extensivo de las encuestas para decidir, entre otras cosas, cómo invertir recursos. Por ejemplo, es posible que quieran saber en qué regiones geográficas enfocar sus esfuerzos de “sacar el voto”.</p>
 <p>Las elecciones son un caso particularmente interesante de encuestas de opinión porque la opinión real de toda la población se revela el día de las elecciones. Por supuesto, cuesta millones de dólares realizar una elección real, lo que hace que las encuentas sean una estrategia efectiva para aquellos que quieren pronosticar los resultados.</p>
 <p>Aunque típicamente los resultados de estas encuestas se mantienen privados, las organizaciones de noticias realizan encuestas similares porque los resultados tienden a ser de interés público y los datos se hacen públicos. Eventualmente estaremos analizando tales datos.</p>
 <p>Real Clear Politics<a href="#fn60" class="footnote-ref" id="fnref60"><sup>60</sup></a> es un ejemplo de un agregador de noticias que organiza y publica resultados de encuestas. Por ejemplo, presentan los siguientes resultados de las encuestas que ofrecen estimados del voto popular para las elecciones presidenciales del 2016<a href="#fn61" class="footnote-ref" id="fnref61"><sup>61</sup></a>:</p>
@@ -1064,33 +1063,10 @@ Spread
 <tbody>
 <tr>
 <td style="text-align:left;">
-Final Results
+RCP Average
 </td>
 <td style="text-align:left;">
-–
-</td>
-<td style="text-align:left;">
-–
-</td>
-<td style="text-align:left;">
-–
-</td>
-<td style="text-align:right;">
-48.2
-</td>
-<td style="text-align:right;">
-46.1
-</td>
-<td style="text-align:left;">
-Clinton +2.1
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-RCP Average
-</td>
-<td style="text-align:left;">
-11/1 - 11/7
+10/31 - 11/7
 </td>
 <td style="text-align:left;">
 –
@@ -1099,13 +1075,13 @@ RCP Average
 –
 </td>
 <td style="text-align:right;">
-46.8
+47.2
 </td>
 <td style="text-align:right;">
-43.6
+44.3
 </td>
 <td style="text-align:left;">
-Clinton +3.2
+Clinton +2.9
 </td>
 </tr>
 <tr>
@@ -1133,29 +1109,6 @@ Clinton +3
 </tr>
 <tr>
 <td style="text-align:left;">
-IBD
-</td>
-<td style="text-align:left;">
-11/4 - 11/7
-</td>
-<td style="text-align:left;">
-1107 LV
-</td>
-<td style="text-align:left;">
-3.1
-</td>
-<td style="text-align:right;">
-43.0
-</td>
-<td style="text-align:right;">
-42.0
-</td>
-<td style="text-align:left;">
-Clinton +1
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
 Economist
 </td>
 <td style="text-align:left;">
@@ -1179,25 +1132,25 @@ Clinton +4
 </tr>
 <tr>
 <td style="text-align:left;">
-LA Times
+IBD
 </td>
 <td style="text-align:left;">
-11/1 - 11/7
+11/3 - 11/6
 </td>
 <td style="text-align:left;">
-2935 LV
+1026 LV
 </td>
 <td style="text-align:left;">
-4.5
+3.1
 </td>
 <td style="text-align:right;">
-44.0
+43.0
 </td>
 <td style="text-align:right;">
-47.0
+42.0
 </td>
 <td style="text-align:left;">
-Trump +3
+Clinton +1
 </td>
 </tr>
 <tr>
@@ -1271,29 +1224,6 @@ Clinton +6
 </tr>
 <tr>
 <td style="text-align:left;">
-NBC News
-</td>
-<td style="text-align:left;">
-11/3 - 11/5
-</td>
-<td style="text-align:left;">
-1282 LV
-</td>
-<td style="text-align:left;">
-2.7
-</td>
-<td style="text-align:right;">
-48.0
-</td>
-<td style="text-align:right;">
-43.0
-</td>
-<td style="text-align:left;">
-Clinton +5
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
 CBS News
 </td>
 <td style="text-align:left;">
@@ -1317,25 +1247,140 @@ Clinton +4
 </tr>
 <tr>
 <td style="text-align:left;">
+LA Times
+</td>
+<td style="text-align:left;">
+10/31 - 11/6
+</td>
+<td style="text-align:left;">
+2935 LV
+</td>
+<td style="text-align:left;">
+4.5
+</td>
+<td style="text-align:right;">
+43.0
+</td>
+<td style="text-align:right;">
+48.0
+</td>
+<td style="text-align:left;">
+Trump +5
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+NBC News
+</td>
+<td style="text-align:left;">
+11/3 - 11/5
+</td>
+<td style="text-align:left;">
+1282 LV
+</td>
+<td style="text-align:left;">
+2.7
+</td>
+<td style="text-align:right;">
+48.0
+</td>
+<td style="text-align:right;">
+43.0
+</td>
+<td style="text-align:left;">
+Clinton +5
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+NBC News
+</td>
+<td style="text-align:left;">
+10/31 - 11/6
+</td>
+<td style="text-align:left;">
+30145 LV
+</td>
+<td style="text-align:left;">
+1.0
+</td>
+<td style="text-align:right;">
+51.0
+</td>
+<td style="text-align:right;">
+44.0
+</td>
+<td style="text-align:left;">
+Clinton +7
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+McClatchy
+</td>
+<td style="text-align:left;">
+11/1 - 11/3
+</td>
+<td style="text-align:left;">
+940 LV
+</td>
+<td style="text-align:left;">
+3.2
+</td>
+<td style="text-align:right;">
+46.0
+</td>
+<td style="text-align:right;">
+44.0
+</td>
+<td style="text-align:left;">
+Clinton +2
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
 Reuters
 </td>
 <td style="text-align:left;">
-11/2 - 11/6
+10/31 - 11/4
 </td>
 <td style="text-align:left;">
-2196 LV
+2244 LV
 </td>
 <td style="text-align:left;">
-2.3
+2.2
 </td>
 <td style="text-align:right;">
 44.0
 </td>
 <td style="text-align:right;">
-39.0
+40.0
 </td>
 <td style="text-align:left;">
-Clinton +5
+Clinton +4
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+GravisGravis
+</td>
+<td style="text-align:left;">
+10/31 - 10/31
+</td>
+<td style="text-align:left;">
+5360 RV
+</td>
+<td style="text-align:left;">
+1.3
+</td>
+<td style="text-align:right;">
+50.0
+</td>
+<td style="text-align:right;">
+50.0
+</td>
+<td style="text-align:left;">
+Tie
 </td>
 </tr>
 </tbody>
@@ -1345,47 +1390,47 @@ Clinton +5
 <p>Por ahora, hagamos algunas observaciones sobre la tabla anterior. Primero, tengan en cuenta que las diferentes encuestas, todas tomadas días antes de las elecciones, informan una <em>diferencia</em> (<em>spread</em> en inglés) diferente: la diferencia estimada entre el apoyo a los dos candidatos. Observen también que la diferencia indicada ronda en torno a lo que acabó siendo el resultado real: Clinton ganó el voto popular por 2.1%. También vemos una columna titulada <strong>MoE</strong> que significa <em>margen de error</em> (<em>margin of error</em> en inglés).</p>
 <p>En esta sección, mostraremos cómo se pueden aplicar los conceptos de probabilidad que aprendimos en capítulos anteriores para desarrollar enfoques estadísticos que hacen de las encuestas una herramienta eficaz. Estudiaremos los conceptos estadísticos necesarios para definir <em>estimadores</em> y <em>márgenes de errores</em>, y mostraremos cómo podemos usar estos para pronosticar resultados finales relativamente precisos y también proveer un estimador de la precisión de nuestro pronóstico. Una vez que aprendamos esto, podremos entender dos conceptos que son ubicuos en la ciencia de datos: <em>intervalos de confianza</em> y <em>valores-p</em>. Finalmente, para comprender las declaraciones probabilísticas sobre la probabilidad de que un candidato gane, tendremos que aprender sobre los modelos bayesianos. En las secciones finales, lo reunimos todo para recrear la versión simplificada del modelo de FiveThirtyEight y aplicarlo a las elecciones presidenciales del 2016.</p>
 <p>Comenzamos conectando la teoría de probabilidad con la tarea de usar encuestas para aprender sobre una población.</p>
-<div id="el-modelo-de-muestreo-para-encuestas" class="section level3" number="15.1.1">
-<h3><span class="header-section-number">15.1.1</span> El modelo de muestreo para encuestas</h3>
+<div id="el-modelo-de-muestreo-para-encuestas" class="section level3 hasAnchor" number="15.1.1">
+<h3><span class="header-section-number">15.1.1</span> El modelo de muestreo para encuestas<a href="inference.html#el-modelo-de-muestreo-para-encuestas" class="anchor-section" aria-label="Anchor link to header"></a></h3>
 <p>Para ayudarnos a entender la conexión entre las encuestas y lo que hemos aprendido, vamos a construir una situación similar a la que enfrentan los encuestadores. Para imitar el desafío que enfrentan en términos de competir con otros encuestadores para la atención de los medios, utilizaremos una urna llena de cuentas para representar a los votantes y fingiremos que estamos compitiendo por un premio de 25 dólares. El desafío es adivinar la diferencia entre la proporción de cuentas azules y de cuentas rojas en esta urna (en este caso, un frasco de pepinillos):</p>
 <p><img src="inference/img/urn.jpg" width="30%" style="display: block; margin: auto;" /></p>
 <p>Antes de hacer una predicción, pueden tomar una muestra (con reemplazo) de la urna. Para imitar el hecho de que realizar encuestas es costoso, les cuesta $0.10 cada vez que escojen una cuenta. Por lo tanto, si el tamaño de su muestra es 250 y ganan, ni ganarán ni perderán ya que acabarían pagando $25 por un premio de $25. Su entrada en la competencia puede ser un intervalo. Si el intervalo que someten contiene la proporción real, obtienen la mitad de lo que pagaron y pasan a la segunda fase de la competencia. En la segunda fase, la entrada con el intervalo más pequeño será la ganadora.</p>
 <p>El paquete <strong>dslabs</strong> incluye una función que muestra un sorteo aleatorio de esta urna:</p>
-<div class="sourceCode" id="cb528"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb528-1"><a href="inference.html#cb528-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
-<span id="cb528-2"><a href="inference.html#cb528-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dslabs)</span>
-<span id="cb528-3"><a href="inference.html#cb528-3" aria-hidden="true" tabindex="-1"></a><span class="fu">take_poll</span>(<span class="dv">25</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb529"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb529-1"><a href="inference.html#cb529-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb529-2"><a href="inference.html#cb529-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dslabs)</span>
+<span id="cb529-3"><a href="inference.html#cb529-3" aria-hidden="true" tabindex="-1"></a><span class="fu">take_poll</span>(<span class="dv">25</span>)</span></code></pre></div>
 <p><img src="libro_files/figure-html/first-simulated-poll-1.png" width="70%" style="display: block; margin: auto;" /></p>
 <p>Piensen en cómo construirían su intervalo según los datos que se muestran arriba.</p>
 <p>Acabamos de describir un modelo de muestreo sencillo para encuestas de opinión. Las cuentas dentro de la urna representan a las personas que votarán el día de las elecciones. Los que votarán por el candidato republicano están representados con cuentas rojas y los demócratas con cuentas azules. Para simplificar, suponemos que no hay otros colores. Es decir, que solo hay dos partidos: republicano y demócrata.</p>
 </div>
 </div>
-<div id="poblaciones-muestras-parámetros-y-estimadores" class="section level2" number="15.2">
-<h2><span class="header-section-number">15.2</span> Poblaciones, muestras, parámetros y estimadores</h2>
+<div id="poblaciones-muestras-parámetros-y-estimadores" class="section level2 hasAnchor" number="15.2">
+<h2><span class="header-section-number">15.2</span> Poblaciones, muestras, parámetros y estimadores<a href="inference.html#poblaciones-muestras-parámetros-y-estimadores" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>Queremos predecir la proporción de cuentas azules en la urna. Llamemos a esta cantidad <span class="math inline">\(p\)</span>, que luego nos dice la proporción de cuentas rojas <span class="math inline">\(1-p\)</span> y la diferencia <span class="math inline">\(p - (1-p)\)</span>, que se simplifica a <span class="math inline">\(2p - 1\)</span>.</p>
 <p>En los libros de texto estadísticos, las cuentas en la urna se llaman la <em>población</em>. La proporción de cuentas azules en la población <span class="math inline">\(p\)</span> se llama un <em>parámetro</em>. Las 25 cuentas que vemos en el gráfico anterior se llaman la <em>muestra</em>. La tarea de la inferencia estadística es predecir el parámetro <span class="math inline">\(p\)</span> utilizando los datos observados en la muestra.</p>
 <p>¿Podemos hacer esto con las 25 observaciones anteriores? Ciertamente es informativo. Por ejemplo, dado que vemos 13 cuentas rojas y 12 azules, es poco probable que <span class="math inline">\(p\)</span> &gt; .9 o <span class="math inline">\(p\)</span> &lt;.1. ¿Pero estamos listos para predecir con certeza que hay más cuentas rojas que azules en el frasco?</p>
 <p>Queremos construir un estimador de <span class="math inline">\(p\)</span> utilizando solo la información que observamos. Un estimador se debe considerar un resumen de los datos observados que consideramos informativos sobre el parámetro de interés. Parece intuitivo pensar que la proporción de cuentas azules en la muestra <span class="math inline">\(0.48\)</span> debe estar al menos relacionado con la proporción real <span class="math inline">\(p\)</span>. ¿Pero entonces predecimos que <span class="math inline">\(p\)</span> es 0.48? Primero, recuerden que la proporción muestral es una variable aleatoria. Si ejecutamos el comando <code>take_poll(25)</code> cuatro veces, obtenemos una respuesta diferente cada vez, ya que la proporción muestral es una variable aleatoria.</p>
 <p><img src="libro_files/figure-html/four-simulated-polls-1.png" width="70%" style="display: block; margin: auto;" /></p>
 <p>Tengan en cuenta que en las cuatro muestras aleatorias de arriba, las proporciones de la muestra varían de 0.44 a 0.60. Al describir la distribución de esta variable aleatoria, podremos obtener información sobre cuán buena es este estimador y cómo mejorarla.</p>
-<div id="el-promedio-de-la-muestra" class="section level3" number="15.2.1">
-<h3><span class="header-section-number">15.2.1</span> El promedio de la muestra</h3>
+<div id="el-promedio-de-la-muestra" class="section level3 hasAnchor" number="15.2.1">
+<h3><span class="header-section-number">15.2.1</span> El promedio de la muestra<a href="inference.html#el-promedio-de-la-muestra" class="anchor-section" aria-label="Anchor link to header"></a></h3>
 <p>La realización de una encuesta de opinión se modela como la toma de una muestra aleatoria de una urna. Estamos proponiendo el uso de la proporción de cuentas azules en nuestra muestra como un estimador del parámetro <span class="math inline">\(p\)</span>. Una vez que tengamos este estimador, podemos reportar fácilmente un estimador para la diferencia <span class="math inline">\(2p-1\)</span>, pero, para simplificar, ilustraremos los conceptos para estimar <span class="math inline">\(p\)</span>. Usaremos nuestro conocimiento de probabilidad para defender nuestro uso de la proporción muestral y cuantificaremos cuán cerca creemos que está de la proporción poblacional <span class="math inline">\(p\)</span>.</p>
 <p>Comenzamos definiendo la variable aleatoria <span class="math inline">\(X\)</span> como: <span class="math inline">\(X=1\)</span> si elegimos una cuenta azul al azar y <span class="math inline">\(X=0\)</span> si es roja. Esto implica que la población es una lista de 0s y 1s. Si muestramos <span class="math inline">\(N\)</span> cuentas, entonces el promedio de los sorteos <span class="math inline">\(X_1, \dots, X_N\)</span> es equivalente a la proporción de cuentas azules en nuestra muestra. Esto es porque sumar las <span class="math inline">\(X\)</span>s es equivalente a contar las cuentas azules y dividir esta suma por el total <span class="math inline">\(N\)</span> a calcular una proporción. Usamos el símbolo <span class="math inline">\(\bar{X}\)</span> para representar este promedio. En general, en los libros de texto de estadísticas, una barra en la parte superior de un símbolo significa el promedio. La teoría que acabamos de aprender sobre la suma de los sorteos es útil porque el promedio es una suma de sorteos multiplicada por la constante <span class="math inline">\(1/N\)</span>:</p>
 <p><span class="math display">\[\bar{X} = 1/N \times \sum_{i=1}^N X_i\]</span></p>
 <p>Para simplificar, supongan que los sorteos son independientes: después de ver cada cuenta muestreada, la devolvemos a la urna. En este caso, ¿qué sabemos sobre la distribución de la suma de los sorteos? Primero, sabemos que el valor esperado de la suma de los sorteos es <span class="math inline">\(N\)</span> veces el promedio de los valores en la urna. Además, sabemos que el promedio de los 0s y 1s en la urna debe ser <span class="math inline">\(p\)</span>, la proporción de cuentas azules.</p>
 <p>Aquí encontramos una diferencia importante con lo que hicimos en el capítulo de probabilidad: no sabemos qué hay en la urna. Sabemos que hay cuentas azules y rojas, pero no sabemos cuántas de cada una. Esto es lo que queremos descubrir: estamos tratando de <strong>estimar</strong> <span class="math inline">\(p\)</span>.</p>
 </div>
-<div id="parámetros" class="section level3" number="15.2.2">
-<h3><span class="header-section-number">15.2.2</span> Parámetros</h3>
+<div id="parámetros" class="section level3 hasAnchor" number="15.2.2">
+<h3><span class="header-section-number">15.2.2</span> Parámetros<a href="inference.html#parámetros" class="anchor-section" aria-label="Anchor link to header"></a></h3>
 <p>Al igual que usamos variables para definir las cantidades desconocidas en los sistemas de ecuaciones, en la inferencia estadística definimos <em>parámetros</em> para definir los componentes desconocidos de nuestros modelos. En el modelo de urna que estamos utilizando para imitar una encuesta de opinión, no sabemos la proporción de cuentas azules en la urna. Definimos los parametros <span class="math inline">\(p\)</span> para representar esta cantidad. <span class="math inline">\(p\)</span> es el promedio de la urna porque si tomamos el promedio de 1s (azul) y 0s (rojo), obtenemos la proporción de cuentas azules. Dado que nuestro objetivo principal es descubrir qué es <span class="math inline">\(p\)</span>, vamos a estimar este parámetro.</p>
 <p>Las ideas presentadas aquí sobre cómo estimar los parámetros y proveer información sobre cuán buenos son estos estimadores, se extrapolan a muchas tareas de la ciencia de datos. Por ejemplo, es posible que queramos saber: ¿cuánto más mejora la salud de los pacientes que reciben un tratamiento comparado a un grupo control? Podemos preguntarnos, ¿cuáles son los efectos de fumar en la salud de una población? ¿Cuáles son las diferencias entre grupos raciales de disparos mortales por parte de la policía? ¿Cuál es la tasa de cambio en esperanza de vida en Estados Unidos durante los últimos 10 años? Todas estas preguntas se pueden considerar como una tarea de estimar un parámetro de una muestra.</p>
 </div>
-<div id="encuesta-versus-pronóstico" class="section level3" number="15.2.3">
-<h3><span class="header-section-number">15.2.3</span> Encuesta versus pronóstico</h3>
+<div id="encuesta-versus-pronóstico" class="section level3 hasAnchor" number="15.2.3">
+<h3><span class="header-section-number">15.2.3</span> Encuesta versus pronóstico<a href="inference.html#encuesta-versus-pronóstico" class="anchor-section" aria-label="Anchor link to header"></a></h3>
 <p>Antes de continuar, hagamos una aclaración importante relacionada con el problema práctico de pronosticar las elecciones. Si se realiza una encuesta cuatro meses antes de las elecciones, se estima la <span class="math inline">\(p\)</span> para ese momento y no para el día de las elecciones. La <span class="math inline">\(p\)</span> para la noche de las elecciones podría ser diferente ya que las opiniones de las personas fluctúan a través del tiempo. Las encuestas realizadas la noche anterior a las elecciones tienden a ser las más precisas ya que las opiniones no cambian tanto en un día. Sin embargo, los pronosticadores intentan crear herramientas que modelan cómo las opiniones varían a lo largo del tiempo e intentan predecir los resultados de la noche de elecciones tomando en cuenta el hecho de que las opiniones fluctúan. Describiremos algunos enfoques para hacer esto en una sección posterior.</p>
 </div>
-<div id="propiedades-de-nuestro-estimador-valor-esperado-y-error-estándar" class="section level3" number="15.2.4">
-<h3><span class="header-section-number">15.2.4</span> Propiedades de nuestro estimador: valor esperado y error estándar</h3>
+<div id="propiedades-de-nuestro-estimador-valor-esperado-y-error-estándar" class="section level3 hasAnchor" number="15.2.4">
+<h3><span class="header-section-number">15.2.4</span> Propiedades de nuestro estimador: valor esperado y error estándar<a href="inference.html#propiedades-de-nuestro-estimador-valor-esperado-y-error-estándar" class="anchor-section" aria-label="Anchor link to header"></a></h3>
 <p>Para comprender cuán bueno es nuestro estimador, describiremos las propiedades estadísticas de la variable aleatoria definida anteriormente: la proporción muestral <span class="math inline">\(\bar{X}\)</span>. Recuerden que <span class="math inline">\(\bar{X}\)</span> es la suma de los sorteos independientes, por lo que aplican las reglas que cubrimos en el capítulo de probabilidad.</p>
 <p>Usando lo que ya hemos aprendido, el valor esperado de la suma <span class="math inline">\(N\bar{X}\)</span> es <span class="math inline">\(N \times\)</span> el promedio de la urna, <span class="math inline">\(p\)</span>. Entonces, dividir por la constante no aleatoria <span class="math inline">\(N\)</span> nos da que el valor esperado del promedio <span class="math inline">\(\bar{X}\)</span> es <span class="math inline">\(p\)</span>. Podemos escribirlo usando nuestra notación matemática:</p>
 <p><span class="math display">\[
@@ -1400,13 +1445,13 @@ Clinton +5
 <p>Un problema es que no sabemos <span class="math inline">\(p\)</span>, por lo que no podemos calcular el error estándar. Sin embargo, para fines ilustrativos, supongan que <span class="math inline">\(p=0.51\)</span> y grafiquemos el error estándar versus el tamaño de la muestra <span class="math inline">\(N\)</span>:</p>
 <p><img src="libro_files/figure-html/standard-error-versus-sample-size-1.png" width="70%" style="display: block; margin: auto;" /></p>
 <p>Del gráfico vemos que necesitaríamos una encuesta de más de 10,000 personas para obtener un error estándar tan bajo. Raras veces vemos encuestas de este tamaño debido en parte a los costos. De la tabla de Real Clear Politics, aprendemos que los tamaños de muestra en las encuestas de opinión oscilan entre 500-3,500 personas. Para un tamaño de muestra de 1,000 y <span class="math inline">\(p=0.51\)</span>, el error estándar es:</p>
-<div class="sourceCode" id="cb529"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb529-1"><a href="inference.html#cb529-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sqrt</span>(p<span class="sc">*</span>(<span class="dv">1</span><span class="sc">-</span>p))<span class="sc">/</span><span class="fu">sqrt</span>(<span class="dv">1000</span>)</span>
-<span id="cb529-2"><a href="inference.html#cb529-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] 0.0158</span></span></code></pre></div>
+<div class="sourceCode" id="cb530"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb530-1"><a href="inference.html#cb530-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sqrt</span>(p<span class="sc">*</span>(<span class="dv">1</span><span class="sc">-</span>p))<span class="sc">/</span><span class="fu">sqrt</span>(<span class="dv">1000</span>)</span>
+<span id="cb530-2"><a href="inference.html#cb530-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] 0.0158</span></span></code></pre></div>
 <p>o 1.5 puntos porcentuales. Entonces, incluso con grandes encuestas, para elecciones cerradas, <span class="math inline">\(\bar{X}\)</span> puede llevarnos por mal camino si no nos damos cuenta de que es una variable aleatoria. Sin embargo, podemos decir más sobre cuán cerca nos acercamos con el <span class="math inline">\(p\)</span> y los hacemos en la Sección <a href="inference.html#clt">15.4</a>.</p>
 </div>
 </div>
-<div id="ejercicios-26" class="section level2" number="15.3">
-<h2><span class="header-section-number">15.3</span> Ejercicios</h2>
+<div id="ejercicios-26" class="section level2 hasAnchor" number="15.3">
+<h2><span class="header-section-number">15.3</span> Ejercicios<a href="inference.html#ejercicios-26" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>1. Suponga que sondea una población en la que una proporción <span class="math inline">\(p\)</span> de los votantes son demócratas y <span class="math inline">\(1-p\)</span> son republicanos. Su tamaño de muestra es <span class="math inline">\(N=25\)</span>. Considere la variable aleatoria <span class="math inline">\(S\)</span> que es el <strong>total</strong> número de demócratas en su muestra. ¿Cuál es el valor esperado de esta variable aleatoria? Sugerencia: es una función de <span class="math inline">\(p\)</span>.</p>
 <p>2. ¿Cuál es el error estándar de <span class="math inline">\(S\)</span>? Sugerencia: es una función de <span class="math inline">\(p\)</span>.</p>
 <p>3. Considere la variable aleatoria <span class="math inline">\(S/N\)</span>. Esta es equivalente al promedio de la muestra, que hemos estado denotando como <span class="math inline">\(\bar{X}\)</span>. ¿Cuál es el valor esperado de la <span class="math inline">\(\bar{X}\)</span>? Sugerencia: es una función de <span class="math inline">\(p\)</span>.</p>
@@ -1425,8 +1470,8 @@ Clinton +5
 </ol>
 
 </div>
-<div id="clt" class="section level2" number="15.4">
-<h2><span class="header-section-number">15.4</span> Teorema del límite central en la práctica</h2>
+<div id="clt" class="section level2 hasAnchor" number="15.4">
+<h2><span class="header-section-number">15.4</span> Teorema del límite central en la práctica<a href="inference.html#clt" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>El teorema del límite central (CLT) nos dice que la función de distribución para una suma de sorteos es aproximadamente normal. También aprendimos que dividir una variable aleatoria normalmente distribuida por una constante también es una variable normalmente distribuida. Esto implica que la distribución de <span class="math inline">\(\bar{X}\)</span> es aproximadamente normal.</p>
 <p>En resumen, determinamos que <span class="math inline">\(\bar{X}\)</span> tiene una distribución aproximadamente normal con valor esperado <span class="math inline">\(p\)</span> y error estándar <span class="math inline">\(\sqrt{p(1-p)/N}\)</span>.</p>
 <p>Ahora, ¿cómo nos ayuda esto? Supongan que queremos saber cuál es la probabilidad de que estamos a 1% de <span class="math inline">\(p\)</span>. Básicamente estamos preguntando cuánto es:</p>
@@ -1448,17 +1493,17 @@ que es lo mismo que:</p>
 \]</span>
 En los libros de texto de estadísticas, usamos un sombrerito para denotar estimadores. El estimador se puede construir utilizando los datos observados y <span class="math inline">\(N\)</span>.</p>
 <p>Ahora continuamos con nuestro cálculo, pero dividiendo por <span class="math inline">\(\hat{\mbox{SE}}(\bar{X})=\sqrt{\bar{X}(1-\bar{X})/N})\)</span>. En nuestra primera muestra teníamos 12 azules y 13 rojos así que <span class="math inline">\(\bar{X} = 0.48\)</span> y nuestro estimador del error estándar es:</p>
-<div class="sourceCode" id="cb530"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb530-1"><a href="inference.html#cb530-1" aria-hidden="true" tabindex="-1"></a>x_hat <span class="ot">&lt;-</span> <span class="fl">0.48</span></span>
-<span id="cb530-2"><a href="inference.html#cb530-2" aria-hidden="true" tabindex="-1"></a>se <span class="ot">&lt;-</span> <span class="fu">sqrt</span>(x_hat<span class="sc">*</span>(<span class="dv">1</span><span class="sc">-</span>x_hat)<span class="sc">/</span><span class="dv">25</span>)</span>
-<span id="cb530-3"><a href="inference.html#cb530-3" aria-hidden="true" tabindex="-1"></a>se</span>
-<span id="cb530-4"><a href="inference.html#cb530-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] 0.0999</span></span></code></pre></div>
+<div class="sourceCode" id="cb531"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb531-1"><a href="inference.html#cb531-1" aria-hidden="true" tabindex="-1"></a>x_hat <span class="ot">&lt;-</span> <span class="fl">0.48</span></span>
+<span id="cb531-2"><a href="inference.html#cb531-2" aria-hidden="true" tabindex="-1"></a>se <span class="ot">&lt;-</span> <span class="fu">sqrt</span>(x_hat<span class="sc">*</span>(<span class="dv">1</span><span class="sc">-</span>x_hat)<span class="sc">/</span><span class="dv">25</span>)</span>
+<span id="cb531-3"><a href="inference.html#cb531-3" aria-hidden="true" tabindex="-1"></a>se</span>
+<span id="cb531-4"><a href="inference.html#cb531-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] 0.0999</span></span></code></pre></div>
 <p>Y ahora podemos responder a la pregunta sobre la probabilidad de estar cerca de <span class="math inline">\(p\)</span>. La respuesta es:</p>
-<div class="sourceCode" id="cb531"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb531-1"><a href="inference.html#cb531-1" aria-hidden="true" tabindex="-1"></a><span class="fu">pnorm</span>(<span class="fl">0.01</span><span class="sc">/</span>se) <span class="sc">-</span> <span class="fu">pnorm</span>(<span class="sc">-</span><span class="fl">0.01</span><span class="sc">/</span>se)</span>
-<span id="cb531-2"><a href="inference.html#cb531-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] 0.0797</span></span></code></pre></div>
+<div class="sourceCode" id="cb532"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb532-1"><a href="inference.html#cb532-1" aria-hidden="true" tabindex="-1"></a><span class="fu">pnorm</span>(<span class="fl">0.01</span><span class="sc">/</span>se) <span class="sc">-</span> <span class="fu">pnorm</span>(<span class="sc">-</span><span class="fl">0.01</span><span class="sc">/</span>se)</span>
+<span id="cb532-2"><a href="inference.html#cb532-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] 0.0797</span></span></code></pre></div>
 <p>Por lo tanto, existe una pequeña posibilidad de que estamos cerca. Una encuesta de solo <span class="math inline">\(N=25\)</span> personas no es realmente muy útil, al menos no para una elección cerrada.</p>
 <p>Anteriormente mencionamos el <em>margen de error</em>. Ahora podemos definirlo porque es simplemente dos veces el error estándar, que ahora podemos estimar. En nuestro caso es:</p>
-<div class="sourceCode" id="cb532"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb532-1"><a href="inference.html#cb532-1" aria-hidden="true" tabindex="-1"></a><span class="fl">1.96</span><span class="sc">*</span>se</span>
-<span id="cb532-2"><a href="inference.html#cb532-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] 0.196</span></span></code></pre></div>
+<div class="sourceCode" id="cb533"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb533-1"><a href="inference.html#cb533-1" aria-hidden="true" tabindex="-1"></a><span class="fl">1.96</span><span class="sc">*</span>se</span>
+<span id="cb533-2"><a href="inference.html#cb533-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] 0.196</span></span></code></pre></div>
 <p>¿Por qué multiplicamos por 1.96? Porque si preguntan cuál es la probabilidad de que estemos dentro de 1.96 errores estándar de <span class="math inline">\(p\)</span>, obtenemos:</p>
 <p><span class="math display">\[
 \mbox{Pr}\left(Z \leq \, 1.96\,\mbox{SE}(\bar{X})/ \mbox{SE}(\bar{X}) \right) -
@@ -1470,61 +1515,61 @@ que es:</p>
 \mbox{Pr}\left(Z \leq - 1.96\right)
 \]</span></p>
 <p>que sabemos es aproximadamente 95%:</p>
-<div class="sourceCode" id="cb533"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb533-1"><a href="inference.html#cb533-1" aria-hidden="true" tabindex="-1"></a><span class="fu">pnorm</span>(<span class="fl">1.96</span>)<span class="sc">-</span><span class="fu">pnorm</span>(<span class="sc">-</span><span class="fl">1.96</span>)</span>
-<span id="cb533-2"><a href="inference.html#cb533-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] 0.95</span></span></code></pre></div>
+<div class="sourceCode" id="cb534"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb534-1"><a href="inference.html#cb534-1" aria-hidden="true" tabindex="-1"></a><span class="fu">pnorm</span>(<span class="fl">1.96</span>)<span class="sc">-</span><span class="fu">pnorm</span>(<span class="sc">-</span><span class="fl">1.96</span>)</span>
+<span id="cb534-2"><a href="inference.html#cb534-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] 0.95</span></span></code></pre></div>
 <p>Por lo tanto, hay un 95% de probabilidad de que <span class="math inline">\(\bar{X}\)</span> estará dentro <span class="math inline">\(1.96\times \hat{SE}(\bar{X})\)</span>, en nuestro caso aproximadamente dentro de 0.2, de <span class="math inline">\(p\)</span>. Tengan en cuenta que el 95% es una elección arbitraria y, a veces, se utilizan otros porcentajes, pero es el valor más utilizado para definir el margen de error. A menudo redondeamos 1.96 a 2 para simplificar la presentación.</p>
 <p>En resumen, el CLT nos dice que nuestra encuesta que se basa en un tamaño de muestra de <span class="math inline">\(25\)</span> no es muy útil. Efectivamente no aprendemos mucho cuando el margen de error es tan grande. Lo único que realmente podemos decir es que el voto popular no se ganará por un margen amplio. Esta es la razón por la cual los encuestadores tienden a usar tamaños de muestra más grandes.</p>
 <p>En la tabla anterior, vemos que los tamaños de muestra típicos oscilan entre 700 y 3500. Para ver cómo esto nos da un resultado mucho más práctico, noten que si hubiéramos obtenido un <span class="math inline">\(\bar{X}\)</span>= 0.48 con un tamaño de muestra de 2,000, nuestro error estándar <span class="math inline">\(\hat{\mbox{SE}}(\bar{X})\)</span> habría sido 0.011. Entonces nuestro resultado es un estimador de <code>48</code>% con un margen de error de 2%. En este caso, el resultado es mucho más informativo y nos haría pensar que hay más cuentas rojas que azules. Recuerden, sin embargo, que esto es hipotético. No hicimos una encuesta de 2,000 ya que no queremos dañar el concurso.</p>
-<div id="una-simulación-monte-carlo" class="section level3" number="15.4.1">
-<h3><span class="header-section-number">15.4.1</span> Una simulación Monte Carlo</h3>
+<div id="una-simulación-monte-carlo" class="section level3 hasAnchor" number="15.4.1">
+<h3><span class="header-section-number">15.4.1</span> Una simulación Monte Carlo<a href="inference.html#una-simulación-monte-carlo" class="anchor-section" aria-label="Anchor link to header"></a></h3>
 <p>Supongan que queremos usar una simulación Monte Carlo para corroborar las herramientas que hemos construido utilizando la teoría de la probabilidad. Para crear la simulación, escribiríamos código como este:</p>
-<div class="sourceCode" id="cb534"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb534-1"><a href="inference.html#cb534-1" aria-hidden="true" tabindex="-1"></a>B <span class="ot">&lt;-</span> <span class="dv">10000</span></span>
-<span id="cb534-2"><a href="inference.html#cb534-2" aria-hidden="true" tabindex="-1"></a>N <span class="ot">&lt;-</span> <span class="dv">1000</span></span>
-<span id="cb534-3"><a href="inference.html#cb534-3" aria-hidden="true" tabindex="-1"></a>x_hat <span class="ot">&lt;-</span> <span class="fu">replicate</span>(B, {</span>
-<span id="cb534-4"><a href="inference.html#cb534-4" aria-hidden="true" tabindex="-1"></a>  x <span class="ot">&lt;-</span> <span class="fu">sample</span>(<span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">1</span>), <span class="at">size =</span> N, <span class="at">replace =</span> <span class="cn">TRUE</span>, <span class="at">prob =</span> <span class="fu">c</span>(<span class="dv">1</span><span class="sc">-</span>p, p))</span>
-<span id="cb534-5"><a href="inference.html#cb534-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mean</span>(x)</span>
-<span id="cb534-6"><a href="inference.html#cb534-6" aria-hidden="true" tabindex="-1"></a>})</span></code></pre></div>
+<div class="sourceCode" id="cb535"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb535-1"><a href="inference.html#cb535-1" aria-hidden="true" tabindex="-1"></a>B <span class="ot">&lt;-</span> <span class="dv">10000</span></span>
+<span id="cb535-2"><a href="inference.html#cb535-2" aria-hidden="true" tabindex="-1"></a>N <span class="ot">&lt;-</span> <span class="dv">1000</span></span>
+<span id="cb535-3"><a href="inference.html#cb535-3" aria-hidden="true" tabindex="-1"></a>x_hat <span class="ot">&lt;-</span> <span class="fu">replicate</span>(B, {</span>
+<span id="cb535-4"><a href="inference.html#cb535-4" aria-hidden="true" tabindex="-1"></a>  x <span class="ot">&lt;-</span> <span class="fu">sample</span>(<span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">1</span>), <span class="at">size =</span> N, <span class="at">replace =</span> <span class="cn">TRUE</span>, <span class="at">prob =</span> <span class="fu">c</span>(<span class="dv">1</span><span class="sc">-</span>p, p))</span>
+<span id="cb535-5"><a href="inference.html#cb535-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mean</span>(x)</span>
+<span id="cb535-6"><a href="inference.html#cb535-6" aria-hidden="true" tabindex="-1"></a>})</span></code></pre></div>
 <p>El problema es, por supuesto, que no sabemos <code>p</code>. Podríamos construir una urna como la que se muestra arriba y ejecutar una simulación analógica (sin una computadora). Nos tomaría mucho tiempo, pero podríamos tomar 10,000 muestras, contar las cuentas y registrar las proporciones de azul. Podemos usar la función <code>take_poll(n=1000)</code> en lugar de escoger de una urna real, pero todavía tomaría tiempo contar las cuentas y registrar los resultados.</p>
 <p>Por lo tanto, algo que hacemos para corroborar los resultados teóricos es elegir uno o varios valores de <code>p</code> y ejecutar las simulaciones. Vamos a configurar <code>p=0.45</code>. Entonces podemos simular una encuesta:</p>
-<div class="sourceCode" id="cb535"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb535-1"><a href="inference.html#cb535-1" aria-hidden="true" tabindex="-1"></a>p <span class="ot">&lt;-</span> <span class="fl">0.45</span></span>
-<span id="cb535-2"><a href="inference.html#cb535-2" aria-hidden="true" tabindex="-1"></a>N <span class="ot">&lt;-</span> <span class="dv">1000</span></span>
-<span id="cb535-3"><a href="inference.html#cb535-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb535-4"><a href="inference.html#cb535-4" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="fu">sample</span>(<span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">1</span>), <span class="at">size =</span> N, <span class="at">replace =</span> <span class="cn">TRUE</span>, <span class="at">prob =</span> <span class="fu">c</span>(<span class="dv">1</span><span class="sc">-</span>p, p))</span>
-<span id="cb535-5"><a href="inference.html#cb535-5" aria-hidden="true" tabindex="-1"></a>x_hat <span class="ot">&lt;-</span> <span class="fu">mean</span>(x)</span></code></pre></div>
+<div class="sourceCode" id="cb536"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb536-1"><a href="inference.html#cb536-1" aria-hidden="true" tabindex="-1"></a>p <span class="ot">&lt;-</span> <span class="fl">0.45</span></span>
+<span id="cb536-2"><a href="inference.html#cb536-2" aria-hidden="true" tabindex="-1"></a>N <span class="ot">&lt;-</span> <span class="dv">1000</span></span>
+<span id="cb536-3"><a href="inference.html#cb536-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb536-4"><a href="inference.html#cb536-4" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="fu">sample</span>(<span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">1</span>), <span class="at">size =</span> N, <span class="at">replace =</span> <span class="cn">TRUE</span>, <span class="at">prob =</span> <span class="fu">c</span>(<span class="dv">1</span><span class="sc">-</span>p, p))</span>
+<span id="cb536-5"><a href="inference.html#cb536-5" aria-hidden="true" tabindex="-1"></a>x_hat <span class="ot">&lt;-</span> <span class="fu">mean</span>(x)</span></code></pre></div>
 <p>En esta muestra particular, nuestro estimador es <code>x_hat</code>. Podemos usar ese código para hacer una simulación Monte Carlo:</p>
-<div class="sourceCode" id="cb536"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb536-1"><a href="inference.html#cb536-1" aria-hidden="true" tabindex="-1"></a>B <span class="ot">&lt;-</span> <span class="dv">10000</span></span>
-<span id="cb536-2"><a href="inference.html#cb536-2" aria-hidden="true" tabindex="-1"></a>x_hat <span class="ot">&lt;-</span> <span class="fu">replicate</span>(B, {</span>
-<span id="cb536-3"><a href="inference.html#cb536-3" aria-hidden="true" tabindex="-1"></a>  x <span class="ot">&lt;-</span> <span class="fu">sample</span>(<span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">1</span>), <span class="at">size =</span> N, <span class="at">replace =</span> <span class="cn">TRUE</span>, <span class="at">prob =</span> <span class="fu">c</span>(<span class="dv">1</span><span class="sc">-</span>p, p))</span>
-<span id="cb536-4"><a href="inference.html#cb536-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mean</span>(x)</span>
-<span id="cb536-5"><a href="inference.html#cb536-5" aria-hidden="true" tabindex="-1"></a>})</span></code></pre></div>
+<div class="sourceCode" id="cb537"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb537-1"><a href="inference.html#cb537-1" aria-hidden="true" tabindex="-1"></a>B <span class="ot">&lt;-</span> <span class="dv">10000</span></span>
+<span id="cb537-2"><a href="inference.html#cb537-2" aria-hidden="true" tabindex="-1"></a>x_hat <span class="ot">&lt;-</span> <span class="fu">replicate</span>(B, {</span>
+<span id="cb537-3"><a href="inference.html#cb537-3" aria-hidden="true" tabindex="-1"></a>  x <span class="ot">&lt;-</span> <span class="fu">sample</span>(<span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">1</span>), <span class="at">size =</span> N, <span class="at">replace =</span> <span class="cn">TRUE</span>, <span class="at">prob =</span> <span class="fu">c</span>(<span class="dv">1</span><span class="sc">-</span>p, p))</span>
+<span id="cb537-4"><a href="inference.html#cb537-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mean</span>(x)</span>
+<span id="cb537-5"><a href="inference.html#cb537-5" aria-hidden="true" tabindex="-1"></a>})</span></code></pre></div>
 <p>Para repasar, la teoría nos dice que la distribución de <span class="math inline">\(\bar{X}\)</span> es aproximadamente normal, tiene valor esperado <span class="math inline">\(p=\)</span> 0.45 y error estándar <span class="math inline">\(\sqrt{p(1-p)/N}\)</span> = 0.016. La simulación confirma esto:</p>
-<div class="sourceCode" id="cb537"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb537-1"><a href="inference.html#cb537-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mean</span>(x_hat)</span>
-<span id="cb537-2"><a href="inference.html#cb537-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] 0.45</span></span>
-<span id="cb537-3"><a href="inference.html#cb537-3" aria-hidden="true" tabindex="-1"></a><span class="fu">sd</span>(x_hat)</span>
-<span id="cb537-4"><a href="inference.html#cb537-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] 0.0156</span></span></code></pre></div>
+<div class="sourceCode" id="cb538"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb538-1"><a href="inference.html#cb538-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mean</span>(x_hat)</span>
+<span id="cb538-2"><a href="inference.html#cb538-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] 0.45</span></span>
+<span id="cb538-3"><a href="inference.html#cb538-3" aria-hidden="true" tabindex="-1"></a><span class="fu">sd</span>(x_hat)</span>
+<span id="cb538-4"><a href="inference.html#cb538-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] 0.0158</span></span></code></pre></div>
 <p>Un histograma y un gráfico Q-Q confirman que la aproximación normal también es precisa:</p>
 <p><img src="libro_files/figure-html/normal-approximation-for-polls-1.png" width="100%" style="display: block; margin: auto;" /></p>
 <p>Por supuesto, en la vida real nunca podríamos realizar un experimento así porque no sabemos <span class="math inline">\(p\)</span>. Pero podríamos ejecutarlo para varios valores de <span class="math inline">\(p\)</span> y <span class="math inline">\(N\)</span> y ver que la teoría realmente funciona bien para la mayoría de los valores. Pueden hacerlo fácilmente volviendo a ejecutar el código anterior después de cambiar <code>p</code> y <code>N</code>.</p>
 </div>
-<div id="la-diferencia" class="section level3" number="15.4.2">
-<h3><span class="header-section-number">15.4.2</span> La diferencia</h3>
+<div id="la-diferencia" class="section level3 hasAnchor" number="15.4.2">
+<h3><span class="header-section-number">15.4.2</span> La diferencia<a href="inference.html#la-diferencia" class="anchor-section" aria-label="Anchor link to header"></a></h3>
 <p>El reto es predecir la diferencia, no la proporción <span class="math inline">\(p\)</span>. Sin embargo, dado que suponemos que solo hay dos partidos, sabemos que la diferencia es <span class="math inline">\(p - (1-p) = 2p - 1\)</span>. Como resultado, todo lo que hemos hecho se puede adaptar fácilmente a estimar <span class="math inline">\(2p - 1\)</span>. Una vez que tengamos nuestro estimador <span class="math inline">\(\bar{X}\)</span> y <span class="math inline">\(\hat{\mbox{SE}}(\bar{X})\)</span>, estimamos la diferencia con <span class="math inline">\(2\bar{X} - 1\)</span> y, dado que estamos multiplicando por 2, el error estándar es <span class="math inline">\(2\hat{\mbox{SE}}(\bar{X})\)</span>. Noten que restar 1 no añade variabilidad, por lo que no afecta el error estándar.</p>
 <p>Para nuestra muestra anterior de 25 artículos, nuestro <span class="math inline">\(p\)</span> estimado es <code>.48</code> con margen de error <code>.20</code> y nuestro estimador de la diferencia es <code>0.04</code> con margen de error <code>.40</code>. Nuevamente, no es un tamaño de muestra muy útil. Sin embargo, el punto es que una vez que tengamos un estimador y un error estándar para <span class="math inline">\(p\)</span>, lo tenemos para la diferencia <span class="math inline">\(2p-1\)</span>.</p>
 </div>
-<div id="sesgo-por-qué-no-realizar-una-encuesta-bien-grande" class="section level3" number="15.4.3">
-<h3><span class="header-section-number">15.4.3</span> Sesgo: ¿por qué no realizar una encuesta bien grande?</h3>
+<div id="sesgo-por-qué-no-realizar-una-encuesta-bien-grande" class="section level3 hasAnchor" number="15.4.3">
+<h3><span class="header-section-number">15.4.3</span> Sesgo: ¿por qué no realizar una encuesta bien grande?<a href="inference.html#sesgo-por-qué-no-realizar-una-encuesta-bien-grande" class="anchor-section" aria-label="Anchor link to header"></a></h3>
 <p>Para valores realistas de <span class="math inline">\(p\)</span>, digamos de 0.35 a 0.65, si realizamos una encuesta bien grande con 100,000 personas, la teoría nos dice que predeciríamos la elección perfectamente ya que el mayor margen de error posible es de alrededor de 0.3%:</p>
 <p><img src="libro_files/figure-html/standard-error-versus-p-1.png" width="70%" style="display: block; margin: auto;" /></p>
 <p>Una razón es que realizar una encuesta de este tipo es muy costosa. Otra razón posiblemente más importante es que la teoría tiene sus limitaciones. El sondeo es mucho más complicado que escoger cuentas de una urna. Algunas personas pueden mentirle a los encuestadores y otras pueden no tener teléfonos. Pero quizás la manera más importante en que una encuesta real difiere de un modelo de urna es que no sabemos con certeza quién está en nuestra población y quién no. ¿Cómo sabemos quién va a votar? ¿Todos los votantes tienen la misma posibilidad de ser encuestado? Aunque nuestro margen de error es bien pequeño, es posible que nuestro valor esperado no sea exactamente <span class="math inline">\(p\)</span>. A esto lo llamamos sesgo (<em>bias</em> en inglés). Históricamente, observamos que las encuestas están sesgadas, aunque no por mucho. El sesgo típico parece ser de aproximadamente 1-2%. Esto hace que el pronóstico de las elecciones sea un poco más interesante y hablaremos sobre cómo modelar esto en un capítulo posterior.</p>
 </div>
 </div>
-<div id="ejercicios-27" class="section level2" number="15.5">
-<h2><span class="header-section-number">15.5</span> Ejercicios</h2>
+<div id="ejercicios-27" class="section level2 hasAnchor" number="15.5">
+<h2><span class="header-section-number">15.5</span> Ejercicios<a href="inference.html#ejercicios-27" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>1. Escriba una función que modele una urna que toma la proporción de demócratas <span class="math inline">\(p\)</span> y el tamaño de la muestra <span class="math inline">\(N\)</span> como argumentos y devuelve el promedio de la muestra si los demócratas son 1s y los republicanos son 0s. Llame a la función <code>take_sample</code>.</p>
 <p>2. Ahora suponga que <code>p &lt;- 0.45</code> y que su tamaño de muestra es <span class="math inline">\(N=100\)</span>. Tome una muestra 10,000 veces y guarde el vector de <code>mean(X) - p</code> en un objeto llamado <code>errors</code>. Sugerencia: use la función que escribió para el ejercicio 1 para escribir esto en una línea de código.</p>
 <p>3. El vector <code>errors</code> contiene, para cada muestra simulada, la diferencia entre el valor real <span class="math inline">\(p\)</span> y nuestro estimador <span class="math inline">\(\bar{X}\)</span>. Nos referimos a esta diferencia como el <em>error</em>. Calcule el promedio y haga un histograma de los errores generados en la simulación Monte Carlo y seleccione cuál de las siguientes opciones describe mejor sus distribuciones:</p>
-<div class="sourceCode" id="cb538"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb538-1"><a href="inference.html#cb538-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mean</span>(errors)</span>
-<span id="cb538-2"><a href="inference.html#cb538-2" aria-hidden="true" tabindex="-1"></a><span class="fu">hist</span>(errors)</span></code></pre></div>
+<div class="sourceCode" id="cb539"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb539-1"><a href="inference.html#cb539-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mean</span>(errors)</span>
+<span id="cb539-2"><a href="inference.html#cb539-2" aria-hidden="true" tabindex="-1"></a><span class="fu">hist</span>(errors)</span></code></pre></div>
 <ol style="list-style-type: lower-alpha">
 <li>Los errores son alrededor de 0.05.</li>
 <li>Los errores son todos alrededor de -0.05.</li>
@@ -1561,8 +1606,8 @@ que es:</p>
 <p>13. Suponga que está en una situación práctica y no sabe <span class="math inline">\(p\)</span>. Tome una muestra de tamaño <span class="math inline">\(N=100\)</span> y obtenga una muestra promedio de <span class="math inline">\(\bar{X} = 0.51\)</span>. ¿Cuál es la aproximación del CLT para la probabilidad de que su error sea igual o mayor que 0.01?</p>
 
 </div>
-<div id="intervalos-de-confianza" class="section level2" number="15.6">
-<h2><span class="header-section-number">15.6</span> Intervalos de confianza</h2>
+<div id="intervalos-de-confianza" class="section level2 hasAnchor" number="15.6">
+<h2><span class="header-section-number">15.6</span> Intervalos de confianza<a href="inference.html#intervalos-de-confianza" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>Los <em>intervalos de confianza</em> (<em>confidence intervals</em> en inglés) son un concepto muy útil ampliamente utilizado por los analistas de datos. Una versión de estos que vemos comúnmente proviene de la geometría <code>geom_smooth</code> de <code>ggplot</code>. Aquí tenemos un ejemplo usando un set de datos de temperatura disponible en R:</p>
 <p><img src="libro_files/figure-html/first-confidence-intervals-example-1.png" width="70%" style="display: block; margin: auto;" /></p>
 <p>En la parte sobre <em>machine learning</em>, aprenderemos cómo se forma la curva, pero por ahora consideren el área sombreada alrededor de la curva. Esto se crea utilizando el concepto de intervalos de confianza.</p>
@@ -1571,20 +1616,20 @@ que es:</p>
 <p>Podemos usar la teoría estadística que hemos aprendido para calcular la probabilidad de cualquier intervalo dado, incluyendo <span class="math inline">\(p\)</span>. Si se nos pide crear un intervalo con, digamos, una probabilidad de 95% de incluir <span class="math inline">\(p\)</span>, podemos hacer eso también. Estos se denominan intervalos de confianza de 95%.</p>
 <p>Cuando un encuestador informa un estimador y un margen de error, de alguna manera informa un intervalo de confianza de 95%. Mostremos cómo funciona esto matemáticamente.</p>
 <p>Queremos saber la probabilidad de que el intervalo <span class="math inline">\([\bar{X} - 2\hat{\mbox{SE}}(\bar{X}), \bar{X} + 2\hat{\mbox{SE}}(\bar{X})]\)</span> contenga la verdadera proporción <span class="math inline">\(p\)</span>. Primero, consideren que el inicio y el final de estos intervalos son variables aleatorias: cada vez que tomamos una muestra, cambian. Para ilustrar esto, ejecuten la simulación Monte Carlo arriba dos veces. Usamos los mismos parámetros que arriba:</p>
-<div class="sourceCode" id="cb539"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb539-1"><a href="inference.html#cb539-1" aria-hidden="true" tabindex="-1"></a>p <span class="ot">&lt;-</span> <span class="fl">0.45</span></span>
-<span id="cb539-2"><a href="inference.html#cb539-2" aria-hidden="true" tabindex="-1"></a>N <span class="ot">&lt;-</span> <span class="dv">1000</span></span></code></pre></div>
+<div class="sourceCode" id="cb540"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb540-1"><a href="inference.html#cb540-1" aria-hidden="true" tabindex="-1"></a>p <span class="ot">&lt;-</span> <span class="fl">0.45</span></span>
+<span id="cb540-2"><a href="inference.html#cb540-2" aria-hidden="true" tabindex="-1"></a>N <span class="ot">&lt;-</span> <span class="dv">1000</span></span></code></pre></div>
 <p>Y observen que el intervalo aquí:</p>
-<div class="sourceCode" id="cb540"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb540-1"><a href="inference.html#cb540-1" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="fu">sample</span>(<span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">1</span>), <span class="at">size =</span> N, <span class="at">replace =</span> <span class="cn">TRUE</span>, <span class="at">prob =</span> <span class="fu">c</span>(<span class="dv">1</span><span class="sc">-</span>p, p))</span>
-<span id="cb540-2"><a href="inference.html#cb540-2" aria-hidden="true" tabindex="-1"></a>x_hat <span class="ot">&lt;-</span> <span class="fu">mean</span>(x)</span>
-<span id="cb540-3"><a href="inference.html#cb540-3" aria-hidden="true" tabindex="-1"></a>se_hat <span class="ot">&lt;-</span> <span class="fu">sqrt</span>(x_hat <span class="sc">*</span> (<span class="dv">1</span> <span class="sc">-</span> x_hat)<span class="sc">/</span> N)</span>
-<span id="cb540-4"><a href="inference.html#cb540-4" aria-hidden="true" tabindex="-1"></a><span class="fu">c</span>(x_hat <span class="sc">-</span> <span class="fl">1.96</span> <span class="sc">*</span> se_hat, x_hat <span class="sc">+</span> <span class="fl">1.96</span> <span class="sc">*</span> se_hat)</span>
-<span id="cb540-5"><a href="inference.html#cb540-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] 0.417 0.479</span></span></code></pre></div>
-<p>es diferente de este:</p>
-<div class="sourceCode" id="cb541"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb541-1"><a href="inference.html#cb541-1" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="fu">sample</span>(<span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">1</span>), <span class="at">size=</span>N, <span class="at">replace=</span><span class="cn">TRUE</span>, <span class="at">prob=</span><span class="fu">c</span>(<span class="dv">1</span><span class="sc">-</span>p, p))</span>
+<div class="sourceCode" id="cb541"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb541-1"><a href="inference.html#cb541-1" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="fu">sample</span>(<span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">1</span>), <span class="at">size =</span> N, <span class="at">replace =</span> <span class="cn">TRUE</span>, <span class="at">prob =</span> <span class="fu">c</span>(<span class="dv">1</span><span class="sc">-</span>p, p))</span>
 <span id="cb541-2"><a href="inference.html#cb541-2" aria-hidden="true" tabindex="-1"></a>x_hat <span class="ot">&lt;-</span> <span class="fu">mean</span>(x)</span>
 <span id="cb541-3"><a href="inference.html#cb541-3" aria-hidden="true" tabindex="-1"></a>se_hat <span class="ot">&lt;-</span> <span class="fu">sqrt</span>(x_hat <span class="sc">*</span> (<span class="dv">1</span> <span class="sc">-</span> x_hat)<span class="sc">/</span> N)</span>
 <span id="cb541-4"><a href="inference.html#cb541-4" aria-hidden="true" tabindex="-1"></a><span class="fu">c</span>(x_hat <span class="sc">-</span> <span class="fl">1.96</span> <span class="sc">*</span> se_hat, x_hat <span class="sc">+</span> <span class="fl">1.96</span> <span class="sc">*</span> se_hat)</span>
-<span id="cb541-5"><a href="inference.html#cb541-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] 0.411 0.473</span></span></code></pre></div>
+<span id="cb541-5"><a href="inference.html#cb541-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] 0.427 0.489</span></span></code></pre></div>
+<p>es diferente de este:</p>
+<div class="sourceCode" id="cb542"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb542-1"><a href="inference.html#cb542-1" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="fu">sample</span>(<span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">1</span>), <span class="at">size=</span>N, <span class="at">replace=</span><span class="cn">TRUE</span>, <span class="at">prob=</span><span class="fu">c</span>(<span class="dv">1</span><span class="sc">-</span>p, p))</span>
+<span id="cb542-2"><a href="inference.html#cb542-2" aria-hidden="true" tabindex="-1"></a>x_hat <span class="ot">&lt;-</span> <span class="fu">mean</span>(x)</span>
+<span id="cb542-3"><a href="inference.html#cb542-3" aria-hidden="true" tabindex="-1"></a>se_hat <span class="ot">&lt;-</span> <span class="fu">sqrt</span>(x_hat <span class="sc">*</span> (<span class="dv">1</span> <span class="sc">-</span> x_hat)<span class="sc">/</span> N)</span>
+<span id="cb542-4"><a href="inference.html#cb542-4" aria-hidden="true" tabindex="-1"></a><span class="fu">c</span>(x_hat <span class="sc">-</span> <span class="fl">1.96</span> <span class="sc">*</span> se_hat, x_hat <span class="sc">+</span> <span class="fl">1.96</span> <span class="sc">*</span> se_hat)</span>
+<span id="cb542-5"><a href="inference.html#cb542-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] 0.413 0.475</span></span></code></pre></div>
 <p>Sigan muestreando y creando intervalos y verán la variación aleatoria.</p>
 <p>Para determinar la probabilidad de que el intervalo incluya <span class="math inline">\(p\)</span>, necesitamos calcular esto:
 <span class="math display">\[
@@ -1599,57 +1644,57 @@ que es:</p>
 \mbox{Pr}\left(-1.96 \leq Z \leq 1.96\right)
 \]</span></p>
 <p>que podemos calcular rápidamente usando:</p>
-<div class="sourceCode" id="cb542"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb542-1"><a href="inference.html#cb542-1" aria-hidden="true" tabindex="-1"></a><span class="fu">pnorm</span>(<span class="fl">1.96</span>) <span class="sc">-</span> <span class="fu">pnorm</span>(<span class="sc">-</span><span class="fl">1.96</span>)</span>
-<span id="cb542-2"><a href="inference.html#cb542-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] 0.95</span></span></code></pre></div>
+<div class="sourceCode" id="cb543"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb543-1"><a href="inference.html#cb543-1" aria-hidden="true" tabindex="-1"></a><span class="fu">pnorm</span>(<span class="fl">1.96</span>) <span class="sc">-</span> <span class="fu">pnorm</span>(<span class="sc">-</span><span class="fl">1.96</span>)</span>
+<span id="cb543-2"><a href="inference.html#cb543-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] 0.95</span></span></code></pre></div>
 <p>demostrando que tenemos una probabilidad de 95%.</p>
 <p>Si queremos tener una probabilidad más grande, digamos 99%, necesitamos multiplicar por cualquier <code>z</code> que cumpla lo siguiente:</p>
 <p><span class="math display">\[
 \mbox{Pr}\left(-z \leq Z \leq z\right) = 0.99
 \]</span></p>
 <p>Utilizando:</p>
-<div class="sourceCode" id="cb543"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb543-1"><a href="inference.html#cb543-1" aria-hidden="true" tabindex="-1"></a>z <span class="ot">&lt;-</span> <span class="fu">qnorm</span>(<span class="fl">0.995</span>)</span>
-<span id="cb543-2"><a href="inference.html#cb543-2" aria-hidden="true" tabindex="-1"></a>z</span>
-<span id="cb543-3"><a href="inference.html#cb543-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] 2.58</span></span></code></pre></div>
+<div class="sourceCode" id="cb544"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb544-1"><a href="inference.html#cb544-1" aria-hidden="true" tabindex="-1"></a>z <span class="ot">&lt;-</span> <span class="fu">qnorm</span>(<span class="fl">0.995</span>)</span>
+<span id="cb544-2"><a href="inference.html#cb544-2" aria-hidden="true" tabindex="-1"></a>z</span>
+<span id="cb544-3"><a href="inference.html#cb544-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] 2.58</span></span></code></pre></div>
 <p>lograremos esto porque por definición <code>pnorm(qnorm(0.995))</code> es 0.995 y por simetría <code>pnorm(1-qnorm(0.995))</code> es 1 - 0.995. Como consecuencia, tenemos que:</p>
-<div class="sourceCode" id="cb544"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb544-1"><a href="inference.html#cb544-1" aria-hidden="true" tabindex="-1"></a><span class="fu">pnorm</span>(z) <span class="sc">-</span> <span class="fu">pnorm</span>(<span class="sc">-</span>z)</span>
-<span id="cb544-2"><a href="inference.html#cb544-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] 0.99</span></span></code></pre></div>
+<div class="sourceCode" id="cb545"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb545-1"><a href="inference.html#cb545-1" aria-hidden="true" tabindex="-1"></a><span class="fu">pnorm</span>(z) <span class="sc">-</span> <span class="fu">pnorm</span>(<span class="sc">-</span>z)</span>
+<span id="cb545-2"><a href="inference.html#cb545-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] 0.99</span></span></code></pre></div>
 <p>es <code>0.995 - 0.005 = 0.99</code>. Podemos usar este enfoque para cualquier proporción <span class="math inline">\(p\)</span>: nosotros fijamos <code>z = qnorm(1 - (1 - p)/2)</code> porque <span class="math inline">\(1 - (1 - p)/2 - (1 - p)/2 = p\)</span>.</p>
 <p>Entonces, por ejemplo, para <span class="math inline">\(p=0.95\)</span>, <span class="math inline">\(1 - (1-p)/2 = 0.975\)</span> y obtenemos el 1.96 que hemos estado usando:</p>
-<div class="sourceCode" id="cb545"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb545-1"><a href="inference.html#cb545-1" aria-hidden="true" tabindex="-1"></a><span class="fu">qnorm</span>(<span class="fl">0.975</span>)</span>
-<span id="cb545-2"><a href="inference.html#cb545-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] 1.96</span></span></code></pre></div>
-<div id="una-simulación-monte-carlo-1" class="section level3" number="15.6.1">
-<h3><span class="header-section-number">15.6.1</span> Una simulación Monte Carlo</h3>
+<div class="sourceCode" id="cb546"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb546-1"><a href="inference.html#cb546-1" aria-hidden="true" tabindex="-1"></a><span class="fu">qnorm</span>(<span class="fl">0.975</span>)</span>
+<span id="cb546-2"><a href="inference.html#cb546-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] 1.96</span></span></code></pre></div>
+<div id="una-simulación-monte-carlo-1" class="section level3 hasAnchor" number="15.6.1">
+<h3><span class="header-section-number">15.6.1</span> Una simulación Monte Carlo<a href="inference.html#una-simulación-monte-carlo-1" class="anchor-section" aria-label="Anchor link to header"></a></h3>
 <p>Podemos ejecutar una simulación Monte Carlo para confirmar que, de hecho, un intervalo de confianza de 95% incluye <span class="math inline">\(p\)</span> 95% del tiempo.</p>
-<div class="sourceCode" id="cb546"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb546-1"><a href="inference.html#cb546-1" aria-hidden="true" tabindex="-1"></a>N <span class="ot">&lt;-</span> <span class="dv">1000</span></span>
-<span id="cb546-2"><a href="inference.html#cb546-2" aria-hidden="true" tabindex="-1"></a>B <span class="ot">&lt;-</span> <span class="dv">10000</span></span>
-<span id="cb546-3"><a href="inference.html#cb546-3" aria-hidden="true" tabindex="-1"></a>inside <span class="ot">&lt;-</span> <span class="fu">replicate</span>(B, {</span>
-<span id="cb546-4"><a href="inference.html#cb546-4" aria-hidden="true" tabindex="-1"></a>  x <span class="ot">&lt;-</span> <span class="fu">sample</span>(<span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">1</span>), <span class="at">size =</span> N, <span class="at">replace =</span> <span class="cn">TRUE</span>, <span class="at">prob =</span> <span class="fu">c</span>(<span class="dv">1</span><span class="sc">-</span>p, p))</span>
-<span id="cb546-5"><a href="inference.html#cb546-5" aria-hidden="true" tabindex="-1"></a>  x_hat <span class="ot">&lt;-</span> <span class="fu">mean</span>(x)</span>
-<span id="cb546-6"><a href="inference.html#cb546-6" aria-hidden="true" tabindex="-1"></a>  se_hat <span class="ot">&lt;-</span> <span class="fu">sqrt</span>(x_hat <span class="sc">*</span> (<span class="dv">1</span> <span class="sc">-</span> x_hat)<span class="sc">/</span> N)</span>
-<span id="cb546-7"><a href="inference.html#cb546-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">between</span>(p, x_hat <span class="sc">-</span> <span class="fl">1.96</span> <span class="sc">*</span> se_hat, x_hat <span class="sc">+</span> <span class="fl">1.96</span> <span class="sc">*</span> se_hat)</span>
-<span id="cb546-8"><a href="inference.html#cb546-8" aria-hidden="true" tabindex="-1"></a>})</span>
-<span id="cb546-9"><a href="inference.html#cb546-9" aria-hidden="true" tabindex="-1"></a><span class="fu">mean</span>(inside)</span>
-<span id="cb546-10"><a href="inference.html#cb546-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] 0.948</span></span></code></pre></div>
+<div class="sourceCode" id="cb547"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb547-1"><a href="inference.html#cb547-1" aria-hidden="true" tabindex="-1"></a>N <span class="ot">&lt;-</span> <span class="dv">1000</span></span>
+<span id="cb547-2"><a href="inference.html#cb547-2" aria-hidden="true" tabindex="-1"></a>B <span class="ot">&lt;-</span> <span class="dv">10000</span></span>
+<span id="cb547-3"><a href="inference.html#cb547-3" aria-hidden="true" tabindex="-1"></a>inside <span class="ot">&lt;-</span> <span class="fu">replicate</span>(B, {</span>
+<span id="cb547-4"><a href="inference.html#cb547-4" aria-hidden="true" tabindex="-1"></a>  x <span class="ot">&lt;-</span> <span class="fu">sample</span>(<span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">1</span>), <span class="at">size =</span> N, <span class="at">replace =</span> <span class="cn">TRUE</span>, <span class="at">prob =</span> <span class="fu">c</span>(<span class="dv">1</span><span class="sc">-</span>p, p))</span>
+<span id="cb547-5"><a href="inference.html#cb547-5" aria-hidden="true" tabindex="-1"></a>  x_hat <span class="ot">&lt;-</span> <span class="fu">mean</span>(x)</span>
+<span id="cb547-6"><a href="inference.html#cb547-6" aria-hidden="true" tabindex="-1"></a>  se_hat <span class="ot">&lt;-</span> <span class="fu">sqrt</span>(x_hat <span class="sc">*</span> (<span class="dv">1</span> <span class="sc">-</span> x_hat)<span class="sc">/</span> N)</span>
+<span id="cb547-7"><a href="inference.html#cb547-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">between</span>(p, x_hat <span class="sc">-</span> <span class="fl">1.96</span> <span class="sc">*</span> se_hat, x_hat <span class="sc">+</span> <span class="fl">1.96</span> <span class="sc">*</span> se_hat)</span>
+<span id="cb547-8"><a href="inference.html#cb547-8" aria-hidden="true" tabindex="-1"></a>})</span>
+<span id="cb547-9"><a href="inference.html#cb547-9" aria-hidden="true" tabindex="-1"></a><span class="fu">mean</span>(inside)</span>
+<span id="cb547-10"><a href="inference.html#cb547-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] 0.948</span></span></code></pre></div>
 <p>El siguiente gráfico muestra los primeros 100 intervalos de confianza. En este caso, creamos la simulación para que la línea negra denote el parámetro que estamos tratando de estimar:</p>
 <p><img src="libro_files/figure-html/confidence-interval-coverage-1.png" width="70%" style="display: block; margin: auto;" /></p>
 </div>
-<div id="el-idioma-correcto" class="section level3" number="15.6.2">
-<h3><span class="header-section-number">15.6.2</span> El idioma correcto</h3>
+<div id="el-idioma-correcto" class="section level3 hasAnchor" number="15.6.2">
+<h3><span class="header-section-number">15.6.2</span> El idioma correcto<a href="inference.html#el-idioma-correcto" class="anchor-section" aria-label="Anchor link to header"></a></h3>
 <p>Al usar la teoría que describimos anteriormente, es importante recordar que los intervalos son aleatorios, no <span class="math inline">\(p\)</span>. En el gráfico anterior, podemos ver los intervalos aleatorios moviéndose. En cambio, la proporción de cuentas azules en la urna, <span class="math inline">\(p\)</span>, representada por la línea vertical, no se mueve. Entonces el 95% se refiere a la probabilidad de que este intervalo aleatorio caiga encima de <span class="math inline">\(p\)</span>. Decir que <span class="math inline">\(p\)</span> tiene una probabilidad de 95% de estar entre esto y eso es técnicamente una declaración incorrecta porque <span class="math inline">\(p\)</span> no es aleatorio.</p>
 </div>
 </div>
-<div id="ejercicios-28" class="section level2" number="15.7">
-<h2><span class="header-section-number">15.7</span> Ejercicios</h2>
+<div id="ejercicios-28" class="section level2 hasAnchor" number="15.7">
+<h2><span class="header-section-number">15.7</span> Ejercicios<a href="inference.html#ejercicios-28" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>Para estos ejercicios, utilizaremos encuestas reales de las elecciones del 2016. Puede cargar los datos del paquete <strong>dslabs</strong>.</p>
-<div class="sourceCode" id="cb547"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb547-1"><a href="inference.html#cb547-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dslabs)</span>
-<span id="cb547-2"><a href="inference.html#cb547-2" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(<span class="st">&quot;polls_us_election_2016&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb548"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb548-1"><a href="inference.html#cb548-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dslabs)</span>
+<span id="cb548-2"><a href="inference.html#cb548-2" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(<span class="st">&quot;polls_us_election_2016&quot;</span>)</span></code></pre></div>
 <p>Específicamente, utilizaremos todas las encuestas nacionales que acabaron dentro de una semana antes de las elecciones.</p>
-<div class="sourceCode" id="cb548"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb548-1"><a href="inference.html#cb548-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
-<span id="cb548-2"><a href="inference.html#cb548-2" aria-hidden="true" tabindex="-1"></a>polls <span class="ot">&lt;-</span> polls_us_election_2016 <span class="sc">%&gt;%</span></span>
-<span id="cb548-3"><a href="inference.html#cb548-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(enddate <span class="sc">&gt;=</span> <span class="st">&quot;2016-10-31&quot;</span> <span class="sc">&amp;</span> state <span class="sc">==</span> <span class="st">&quot;U.S.&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb549"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb549-1"><a href="inference.html#cb549-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb549-2"><a href="inference.html#cb549-2" aria-hidden="true" tabindex="-1"></a>polls <span class="ot">&lt;-</span> polls_us_election_2016 <span class="sc">|&gt;</span></span>
+<span id="cb549-3"><a href="inference.html#cb549-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(enddate <span class="sc">&gt;=</span> <span class="st">&quot;2016-10-31&quot;</span> <span class="sc">&amp;</span> state <span class="sc">==</span> <span class="st">&quot;U.S.&quot;</span>)</span></code></pre></div>
 <p>1. Para la primera encuesta, puede obtener el tamaño de las muestras y el porcentaje estimado para Clinton con:</p>
-<div class="sourceCode" id="cb549"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb549-1"><a href="inference.html#cb549-1" aria-hidden="true" tabindex="-1"></a>N <span class="ot">&lt;-</span> polls<span class="sc">$</span>samplesize[<span class="dv">1</span>]</span>
-<span id="cb549-2"><a href="inference.html#cb549-2" aria-hidden="true" tabindex="-1"></a>x_hat <span class="ot">&lt;-</span> polls<span class="sc">$</span>rawpoll_clinton[<span class="dv">1</span>]<span class="sc">/</span><span class="dv">100</span></span></code></pre></div>
+<div class="sourceCode" id="cb550"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb550-1"><a href="inference.html#cb550-1" aria-hidden="true" tabindex="-1"></a>N <span class="ot">&lt;-</span> polls<span class="sc">$</span>samplesize[<span class="dv">1</span>]</span>
+<span id="cb550-2"><a href="inference.html#cb550-2" aria-hidden="true" tabindex="-1"></a>x_hat <span class="ot">&lt;-</span> polls<span class="sc">$</span>rawpoll_clinton[<span class="dv">1</span>]<span class="sc">/</span><span class="dv">100</span></span></code></pre></div>
 <p>Suponga que solo hay dos candidatos. Construya un intervalo de confianza de 95% para la proporción <span class="math inline">\(p\)</span> observada la noche de elecciones.</p>
 <p>2. Ahora use <strong>dplyr</strong> para añadir dos columnas al objeto <code>poll</code>, llámelas <code>lower</code> y <code>upper</code>, para representar el intervalo de confianza. Luego use <code>select</code> para mostrar los variables <code>pollster</code>, <code>enddate</code>, <code>x_hat</code>,<code>lower</code>, <code>upper</code>. Sugerencia: defina columnas temporeras <code>x_hat</code> y <code>se_hat</code>.</p>
 <p>3. El conteo final para el voto popular fue Clinton 48.2% y Trump 46.1%. Agregue una columna, llámela <code>hit</code>, a la tabla anterior que indica si el intervalo de confianza incluía la proporción verdadera <span class="math inline">\(p=0.482\)</span> o no.</p>
@@ -1657,28 +1702,28 @@ que es:</p>
 <p>5. Si estos intervalos de confianza se construyen correctamente y la teoría se sostiene, ¿qué proporción debería incluir <span class="math inline">\(p\)</span>?</p>
 <p>6. De estas encuestas, una proporción menor de lo esperado resulta en intervalos de confianza que contienen <span class="math inline">\(p\)</span>. Si examina la tabla cuidadosamente, verá que la mayoría de las encuestas que no incluyen <span class="math inline">\(p\)</span> están subestimando. La razón es que hay votantes indecisos, las personas encuestadas que aún no saben por quién votarán o no quieren decir. Debido a que históricamente los indecisos se dividen igualmente entre los dos candidatos principales el día de las elecciones, es más informativo estimar la variabilidad o la diferencia entre la proporción de dos candidatos <span class="math inline">\(d\)</span>, que en esta elección fue <span class="math inline">\(0. 482 - 0.461 = 0.021\)</span>.
 Suponga que solo hay dos partidos y que <span class="math inline">\(d = 2p - 1\)</span>, redefina <code>polls</code> como se hace abajo y repita el ejercicio 1, pero para la diferencia.</p>
-<div class="sourceCode" id="cb550"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb550-1"><a href="inference.html#cb550-1" aria-hidden="true" tabindex="-1"></a>polls <span class="ot">&lt;-</span> polls_us_election_2016 <span class="sc">%&gt;%</span></span>
-<span id="cb550-2"><a href="inference.html#cb550-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(enddate <span class="sc">&gt;=</span> <span class="st">&quot;2016-10-31&quot;</span> <span class="sc">&amp;</span> state <span class="sc">==</span> <span class="st">&quot;U.S.&quot;</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb550-3"><a href="inference.html#cb550-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">d_hat =</span> rawpoll_clinton<span class="sc">/</span> <span class="dv">100</span> <span class="sc">-</span> rawpoll_trump<span class="sc">/</span> <span class="dv">100</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb551"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb551-1"><a href="inference.html#cb551-1" aria-hidden="true" tabindex="-1"></a>polls <span class="ot">&lt;-</span> polls_us_election_2016 <span class="sc">|&gt;</span></span>
+<span id="cb551-2"><a href="inference.html#cb551-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(enddate <span class="sc">&gt;=</span> <span class="st">&quot;2016-10-31&quot;</span> <span class="sc">&amp;</span> state <span class="sc">==</span> <span class="st">&quot;U.S.&quot;</span>) <span class="sc">|&gt;</span></span>
+<span id="cb551-3"><a href="inference.html#cb551-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">d_hat =</span> rawpoll_clinton<span class="sc">/</span> <span class="dv">100</span> <span class="sc">-</span> rawpoll_trump<span class="sc">/</span> <span class="dv">100</span>)</span></code></pre></div>
 <p>7. Ahora repita el ejercicio 3, pero para la diferencia.</p>
 <p>8. Ahora repita el ejercicio 4, pero para la diferencia.</p>
 <p>9. Aunque la proporción de intervalos de confianza aumenta sustancialmente, sigue siendo menor que 0.95. En el próximo capítulo, aprendemos la razón de esto. Para motivar esto, haga un gráfico del error, la diferencia entre el estimador de cada encuesta y la diferencia real <span class="math inline">\(d=0.021\)</span>. Estratifique por encuestador.</p>
 <p>10. Vuelva a hacer el gráfico que hizo para el ejercicio 9, pero solo para los encuestadores que tomaron cinco o más encuestas.</p>
 </div>
-<div id="poder" class="section level2" number="15.8">
-<h2><span class="header-section-number">15.8</span> Poder</h2>
+<div id="poder" class="section level2 hasAnchor" number="15.8">
+<h2><span class="header-section-number">15.8</span> Poder<a href="inference.html#poder" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>Los encuestadores no se consideran exitosos al proveer intervalos de confianza correctos, sino al predecir quién ganará. Cuando tomamos un tamaño de muestra de 25 cuentas, el intervalo de confianza para la diferencia:</p>
-<div class="sourceCode" id="cb551"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb551-1"><a href="inference.html#cb551-1" aria-hidden="true" tabindex="-1"></a>N <span class="ot">&lt;-</span> <span class="dv">25</span></span>
-<span id="cb551-2"><a href="inference.html#cb551-2" aria-hidden="true" tabindex="-1"></a>x_hat <span class="ot">&lt;-</span> <span class="fl">0.48</span></span>
-<span id="cb551-3"><a href="inference.html#cb551-3" aria-hidden="true" tabindex="-1"></a>(<span class="dv">2</span> <span class="sc">*</span> x_hat <span class="sc">-</span> <span class="dv">1</span>) <span class="sc">+</span> <span class="fu">c</span>(<span class="sc">-</span><span class="fl">1.96</span>, <span class="fl">1.96</span>) <span class="sc">*</span> <span class="dv">2</span> <span class="sc">*</span> <span class="fu">sqrt</span>(x_hat <span class="sc">*</span> (<span class="dv">1</span> <span class="sc">-</span> x_hat)<span class="sc">/</span> N)</span>
-<span id="cb551-4"><a href="inference.html#cb551-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] -0.432  0.352</span></span></code></pre></div>
+<div class="sourceCode" id="cb552"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb552-1"><a href="inference.html#cb552-1" aria-hidden="true" tabindex="-1"></a>N <span class="ot">&lt;-</span> <span class="dv">25</span></span>
+<span id="cb552-2"><a href="inference.html#cb552-2" aria-hidden="true" tabindex="-1"></a>x_hat <span class="ot">&lt;-</span> <span class="fl">0.48</span></span>
+<span id="cb552-3"><a href="inference.html#cb552-3" aria-hidden="true" tabindex="-1"></a>(<span class="dv">2</span> <span class="sc">*</span> x_hat <span class="sc">-</span> <span class="dv">1</span>) <span class="sc">+</span> <span class="fu">c</span>(<span class="sc">-</span><span class="fl">1.96</span>, <span class="fl">1.96</span>) <span class="sc">*</span> <span class="dv">2</span> <span class="sc">*</span> <span class="fu">sqrt</span>(x_hat <span class="sc">*</span> (<span class="dv">1</span> <span class="sc">-</span> x_hat)<span class="sc">/</span> N)</span>
+<span id="cb552-4"><a href="inference.html#cb552-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] -0.432  0.352</span></span></code></pre></div>
 <p>incluye 0. Si esto fuera una encuesta y nos viéramos obligados a hacer una declaración, tendríamos que decir que ambos resultados son probables.</p>
 <p>Un problema con los resultados de nuestra encuesta es que, dado el tamaño de la muestra y el valor de <span class="math inline">\(p\)</span>, tendríamos que sacrificar la probabilidad de una predicción incorrecta para crear un intervalo que no incluya 0.</p>
 <p>Esto no significa que la elección está cerrada. Solo significa que tenemos un tamaño de muestra pequeño. En los libros de texto estadísticos esto se llama falta de <em>poder</em>. En el contexto de las encuestas, el <em>poder</em> es la probabilidad de detectar diferencias que no sean 0.</p>
 <p>Al aumentar el tamaño de nuestra muestra, disminuimos nuestro error estándar y, por lo tanto, tenemos muchas más posibilidades de detectar la dirección de la diferencia.</p>
 </div>
-<div id="valores-p" class="section level2" number="15.9">
-<h2><span class="header-section-number">15.9</span> valores-p</h2>
+<div id="valores-p" class="section level2 hasAnchor" number="15.9">
+<h2><span class="header-section-number">15.9</span> valores-p<a href="inference.html#valores-p" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>Los <em>valores-p</em> (<em>p-values</em> en inglés) son ubicuos en la literatura científica. Están relacionados con los intervalos de confianza, por lo que presentamos el concepto aquí.</p>
 <p>Consideremos las cuentas azules y rojas. Supongan que, en lugar de querer un estimador de la diferencia o de la proporción de azul, solo nos interesa la pregunta: ¿hay más cuentas azules o cuentas rojas? Queremos saber si la diferencia <span class="math inline">\(2p-1 &gt; 0\)</span>.</p>
 <p>Digamos que tomamos una muestra aleatoria de <span class="math inline">\(N=100\)</span> y observamos <span class="math inline">\(52\)</span> cuentas azules, lo que nos da <span class="math inline">\(2\bar{X}-1=0.04\)</span>. Esto parece estar apuntando a la existencia de más cuentas azules que rojas ya que 0.04 es mayor que 0. Sin embargo, como científicos de datos, debemos ser escépticos. Sabemos que el azar afecta este proceso y podríamos obtener un 52 incluso cuando la diferencia real es 0. Llamamos a la suposición de que la diferencia es <span class="math inline">\(2p-1=0\)</span> una <em>hipótesis nula</em>. La hipótesis nula es la hipótesis del escéptico. Hemos observado una variable aleatoria <span class="math inline">\(2\bar{X}-1 = 0.04\)</span> y el valor-p es la respuesta a la pregunta: ¿cuán probable es ver un valor tan grande, cuando la hipótesis nula es cierta? Entonces escribimos:</p>
@@ -1689,57 +1734,57 @@ Suponga que solo hay dos partidos y que <span class="math inline">\(d = 2p - 1\)
 \]</span></p>
 <p>es normal unitaria. Por lo tanto, podemos calcular la probabilidad anterior, que es el valor-p.</p>
 <p><span class="math display">\[\mbox{Pr}\left(\sqrt{N}\frac{\mid \bar{X} - 0.5\mid}{\sqrt{0.5(1-0.5)}} &gt; \sqrt{N} \frac{0.02}{ \sqrt{0.5(1-0.5)}}\right)\]</span></p>
-<div class="sourceCode" id="cb552"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb552-1"><a href="inference.html#cb552-1" aria-hidden="true" tabindex="-1"></a>N <span class="ot">&lt;-</span> <span class="dv">100</span></span>
-<span id="cb552-2"><a href="inference.html#cb552-2" aria-hidden="true" tabindex="-1"></a>z <span class="ot">&lt;-</span> <span class="fu">sqrt</span>(N)<span class="sc">*</span><span class="fl">0.02</span><span class="sc">/</span><span class="fl">0.5</span></span>
-<span id="cb552-3"><a href="inference.html#cb552-3" aria-hidden="true" tabindex="-1"></a><span class="dv">1</span> <span class="sc">-</span> (<span class="fu">pnorm</span>(z) <span class="sc">-</span> <span class="fu">pnorm</span>(<span class="sc">-</span>z))</span>
-<span id="cb552-4"><a href="inference.html#cb552-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] 0.689</span></span></code></pre></div>
+<div class="sourceCode" id="cb553"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb553-1"><a href="inference.html#cb553-1" aria-hidden="true" tabindex="-1"></a>N <span class="ot">&lt;-</span> <span class="dv">100</span></span>
+<span id="cb553-2"><a href="inference.html#cb553-2" aria-hidden="true" tabindex="-1"></a>z <span class="ot">&lt;-</span> <span class="fu">sqrt</span>(N)<span class="sc">*</span><span class="fl">0.02</span><span class="sc">/</span><span class="fl">0.5</span></span>
+<span id="cb553-3"><a href="inference.html#cb553-3" aria-hidden="true" tabindex="-1"></a><span class="dv">1</span> <span class="sc">-</span> (<span class="fu">pnorm</span>(z) <span class="sc">-</span> <span class="fu">pnorm</span>(<span class="sc">-</span>z))</span>
+<span id="cb553-4"><a href="inference.html#cb553-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] 0.689</span></span></code></pre></div>
 <p>En este caso, existe una gran posibilidad de ver 52 o más bajo la hipótesis nula.</p>
 <p>Tengan en cuenta que existe una conexión entre los valores-p y los intervalos de confianza. Si un intervalo de confianza de 95% de la diferencia no incluye 0, sabemos que el valor-p tiene que ser menor que 0.05.</p>
 <p>Para aprender más sobre los valores-p, pueden consultar cualquier libro de texto de estadísticas. Sin embargo, en general, preferimos resumir nuestros resultados con intervalos de confianza en vez de valores-p, ya que nos da una idea del tamaño del estimador. Si solo informamos el valor-p, no proveemos información sobre la importancia del hallazgo en el contexto del problema.</p>
 
 </div>
-<div id="association-tests" class="section level2" number="15.10">
-<h2><span class="header-section-number">15.10</span> Pruebas de asociación</h2>
+<div id="association-tests" class="section level2 hasAnchor" number="15.10">
+<h2><span class="header-section-number">15.10</span> Pruebas de asociación<a href="inference.html#association-tests" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>Las pruebas estadísticas que hemos estudiado hasta ahora no incluyen varios tipos de datos. Específicamente, no hemos discutido la inferencia para datos binarios, categóricos y ordinales. Para dar un ejemplo muy específico, consideren el siguiente estudio de caso.</p>
 <p>Una publicación del 2014 de PNAS<a href="#fn62" class="footnote-ref" id="fnref62"><sup>62</sup></a> analizó las tasas de éxito de las agencias de financiamiento en los Países Bajos y concluyó que:</p>
 <blockquote>
 <p>los resultados revelan un sesgo de género que favorece a los hombres solicitantes sobre las mujeres solicitantes en la priorización de sus evaluaciones de “calidad de investigador” (pero no de “calidad de propuesta”), así como en el uso del lenguaje en los materiales de instrucción y de evaluación.</p>
 </blockquote>
 <p>La evidencia principal de esta conclusión se reduce a una comparación de los porcentajes. La Tabla S1 en el documento incluye la información que necesitamos. Aquí están las tres columnas que muestran los resultados generales:</p>
-<div class="sourceCode" id="cb553"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb553-1"><a href="inference.html#cb553-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
-<span id="cb553-2"><a href="inference.html#cb553-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dslabs)</span>
-<span id="cb553-3"><a href="inference.html#cb553-3" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(<span class="st">&quot;research_funding_rates&quot;</span>)</span>
-<span id="cb553-4"><a href="inference.html#cb553-4" aria-hidden="true" tabindex="-1"></a>research_funding_rates <span class="sc">%&gt;%</span> <span class="fu">select</span>(discipline, applications_total,</span>
-<span id="cb553-5"><a href="inference.html#cb553-5" aria-hidden="true" tabindex="-1"></a>                                  success_rates_total) <span class="sc">%&gt;%</span> <span class="fu">head</span>()</span>
-<span id="cb553-6"><a href="inference.html#cb553-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;           discipline applications_total success_rates_total</span></span>
-<span id="cb553-7"><a href="inference.html#cb553-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1  Chemical sciences                122                26.2</span></span>
-<span id="cb553-8"><a href="inference.html#cb553-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2  Physical sciences                174                20.1</span></span>
-<span id="cb553-9"><a href="inference.html#cb553-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 3            Physics                 76                26.3</span></span>
-<span id="cb553-10"><a href="inference.html#cb553-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 4         Humanities                396                16.4</span></span>
-<span id="cb553-11"><a href="inference.html#cb553-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 5 Technical sciences                251                17.1</span></span>
-<span id="cb553-12"><a href="inference.html#cb553-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 6  Interdisciplinary                183                15.8</span></span></code></pre></div>
+<div class="sourceCode" id="cb554"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb554-1"><a href="inference.html#cb554-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb554-2"><a href="inference.html#cb554-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dslabs)</span>
+<span id="cb554-3"><a href="inference.html#cb554-3" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(<span class="st">&quot;research_funding_rates&quot;</span>)</span>
+<span id="cb554-4"><a href="inference.html#cb554-4" aria-hidden="true" tabindex="-1"></a>research_funding_rates <span class="sc">|&gt;</span> <span class="fu">select</span>(discipline, applications_total,</span>
+<span id="cb554-5"><a href="inference.html#cb554-5" aria-hidden="true" tabindex="-1"></a>                                  success_rates_total) <span class="sc">|&gt;</span> <span class="fu">head</span>()</span>
+<span id="cb554-6"><a href="inference.html#cb554-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;           discipline applications_total success_rates_total</span></span>
+<span id="cb554-7"><a href="inference.html#cb554-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1  Chemical sciences                122                26.2</span></span>
+<span id="cb554-8"><a href="inference.html#cb554-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2  Physical sciences                174                20.1</span></span>
+<span id="cb554-9"><a href="inference.html#cb554-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 3            Physics                 76                26.3</span></span>
+<span id="cb554-10"><a href="inference.html#cb554-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 4         Humanities                396                16.4</span></span>
+<span id="cb554-11"><a href="inference.html#cb554-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 5 Technical sciences                251                17.1</span></span>
+<span id="cb554-12"><a href="inference.html#cb554-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 6  Interdisciplinary                183                15.8</span></span></code></pre></div>
 <p>Tenemos estos valores para cada género:</p>
-<div class="sourceCode" id="cb554"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb554-1"><a href="inference.html#cb554-1" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(research_funding_rates)</span>
-<span id="cb554-2"><a href="inference.html#cb554-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  [1] &quot;discipline&quot;          &quot;applications_total&quot;  &quot;applications_men&quot;   </span></span>
-<span id="cb554-3"><a href="inference.html#cb554-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  [4] &quot;applications_women&quot;  &quot;awards_total&quot;        &quot;awards_men&quot;         </span></span>
-<span id="cb554-4"><a href="inference.html#cb554-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  [7] &quot;awards_women&quot;        &quot;success_rates_total&quot; &quot;success_rates_men&quot;  </span></span>
-<span id="cb554-5"><a href="inference.html#cb554-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [10] &quot;success_rates_women&quot;</span></span></code></pre></div>
+<div class="sourceCode" id="cb555"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb555-1"><a href="inference.html#cb555-1" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(research_funding_rates)</span>
+<span id="cb555-2"><a href="inference.html#cb555-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  [1] &quot;discipline&quot;          &quot;applications_total&quot;  &quot;applications_men&quot;   </span></span>
+<span id="cb555-3"><a href="inference.html#cb555-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  [4] &quot;applications_women&quot;  &quot;awards_total&quot;        &quot;awards_men&quot;         </span></span>
+<span id="cb555-4"><a href="inference.html#cb555-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  [7] &quot;awards_women&quot;        &quot;success_rates_total&quot; &quot;success_rates_men&quot;  </span></span>
+<span id="cb555-5"><a href="inference.html#cb555-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [10] &quot;success_rates_women&quot;</span></span></code></pre></div>
 <p>Podemos calcular el total de los que tuvieron éxito y el total de los que no lo tuvieron de la siguiente manera:</p>
-<div class="sourceCode" id="cb555"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb555-1"><a href="inference.html#cb555-1" aria-hidden="true" tabindex="-1"></a>totals <span class="ot">&lt;-</span> research_funding_rates <span class="sc">%&gt;%</span></span>
-<span id="cb555-2"><a href="inference.html#cb555-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="sc">-</span>discipline) <span class="sc">%&gt;%</span></span>
-<span id="cb555-3"><a href="inference.html#cb555-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize_all</span>(sum) <span class="sc">%&gt;%</span></span>
-<span id="cb555-4"><a href="inference.html#cb555-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="at">yes_men =</span> awards_men,</span>
-<span id="cb555-5"><a href="inference.html#cb555-5" aria-hidden="true" tabindex="-1"></a>            <span class="at">no_men =</span> applications_men <span class="sc">-</span> awards_men,</span>
-<span id="cb555-6"><a href="inference.html#cb555-6" aria-hidden="true" tabindex="-1"></a>            <span class="at">yes_women =</span> awards_women,</span>
-<span id="cb555-7"><a href="inference.html#cb555-7" aria-hidden="true" tabindex="-1"></a>            <span class="at">no_women =</span> applications_women <span class="sc">-</span> awards_women)</span></code></pre></div>
+<div class="sourceCode" id="cb556"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb556-1"><a href="inference.html#cb556-1" aria-hidden="true" tabindex="-1"></a>totals <span class="ot">&lt;-</span> research_funding_rates <span class="sc">|&gt;</span></span>
+<span id="cb556-2"><a href="inference.html#cb556-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="sc">-</span>discipline) <span class="sc">|&gt;</span></span>
+<span id="cb556-3"><a href="inference.html#cb556-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize_all</span>(sum) <span class="sc">|&gt;</span></span>
+<span id="cb556-4"><a href="inference.html#cb556-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="at">yes_men =</span> awards_men,</span>
+<span id="cb556-5"><a href="inference.html#cb556-5" aria-hidden="true" tabindex="-1"></a>            <span class="at">no_men =</span> applications_men <span class="sc">-</span> awards_men,</span>
+<span id="cb556-6"><a href="inference.html#cb556-6" aria-hidden="true" tabindex="-1"></a>            <span class="at">yes_women =</span> awards_women,</span>
+<span id="cb556-7"><a href="inference.html#cb556-7" aria-hidden="true" tabindex="-1"></a>            <span class="at">no_women =</span> applications_women <span class="sc">-</span> awards_women)</span></code></pre></div>
 <p>Entonces vemos que un mayor porcentaje de hombres que mujeres recibieron premios:</p>
-<div class="sourceCode" id="cb556"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb556-1"><a href="inference.html#cb556-1" aria-hidden="true" tabindex="-1"></a>totals <span class="sc">%&gt;%</span> <span class="fu">summarize</span>(<span class="at">percent_men =</span> yes_men<span class="sc">/</span>(yes_men<span class="sc">+</span>no_men),</span>
-<span id="cb556-2"><a href="inference.html#cb556-2" aria-hidden="true" tabindex="-1"></a>                     <span class="at">percent_women =</span> yes_women<span class="sc">/</span>(yes_women<span class="sc">+</span>no_women))</span>
-<span id="cb556-3"><a href="inference.html#cb556-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   percent_men percent_women</span></span>
-<span id="cb556-4"><a href="inference.html#cb556-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1       0.177         0.149</span></span></code></pre></div>
+<div class="sourceCode" id="cb557"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb557-1"><a href="inference.html#cb557-1" aria-hidden="true" tabindex="-1"></a>totals <span class="sc">|&gt;</span> <span class="fu">summarize</span>(<span class="at">percent_men =</span> yes_men<span class="sc">/</span>(yes_men<span class="sc">+</span>no_men),</span>
+<span id="cb557-2"><a href="inference.html#cb557-2" aria-hidden="true" tabindex="-1"></a>                     <span class="at">percent_women =</span> yes_women<span class="sc">/</span>(yes_women<span class="sc">+</span>no_women))</span>
+<span id="cb557-3"><a href="inference.html#cb557-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   percent_men percent_women</span></span>
+<span id="cb557-4"><a href="inference.html#cb557-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1       0.177         0.149</span></span></code></pre></div>
 <p>Pero, ¿esto se debe solo a la variabilidad aleatoria? Aquí aprenderemos a llevar a cabo inferencia estadística para este tipo de datos.</p>
-<div id="lady-tasting-tea" class="section level3" number="15.10.1">
-<h3><span class="header-section-number">15.10.1</span> Lady Tasting Tea</h3>
+<div id="lady-tasting-tea" class="section level3 hasAnchor" number="15.10.1">
+<h3><span class="header-section-number">15.10.1</span> Lady Tasting Tea<a href="inference.html#lady-tasting-tea" class="anchor-section" aria-label="Anchor link to header"></a></h3>
 <p>R.A. Fisher<a href="#fn63" class="footnote-ref" id="fnref63"><sup>63</sup></a> fue uno de los primeros en formalizar las pruebas de hipótesis. El “Lady Tasting Tea” es uno de los ejemplos más famosos.</p>
 <p>La historia es la siguiente: una conocida de Fisher insistió que ella podía detectar si añadían leche antes o después de verter el té. Fisher se mostró escéptico. Diseñó un experimento para probar esta afirmación. Él le dio cuatro pares de tazas de té. Cada par incluía una taza con leche vertida primero y la otra después del té. El orden era aleatorio. La hipótesis nula aquí es que ella está adivinando. Fisher dedujo la distribución del número de selecciones correctas suponiendo que las elecciones eran aleatorias e independientes.</p>
 <p>Como ejemplo, supongan que la amiga escogió 3 de 4 correctamente. ¿Creemos que ella tiene una habilidad especial? La pregunta básica que hacemos es: si ella realmente está adivinando, ¿cuáles son las posibilidades de que ella saque 3 o más correctas? Tal como lo hemos hecho antes, podemos calcular una probabilidad bajo la hipótesis nula de que ella está adivinando 4 con leche vertida primero y 4 después. Bajo esta hipótesis nula, podemos pensar en este ejemplo particular como sacar 4 cuentas de una urna con 4 cuentas azules (respuesta correcta) y 4 cuentas rojas (respuesta incorrecta). Recuerden, ella sabe que hay cuatro tasas con leche antes del té y cuatro con leche después.</p>
@@ -1748,75 +1793,75 @@ Suponga que solo hay dos partidos y que <span class="math inline">\(d = 2p - 1\)
 Por lo tanto, la posibilidad de observar un 3 o algo más extremo,
 bajo la hipótesis nula, es <span class="math inline">\(\approx 0.24\)</span>. Este es el valor-p. El procedimiento que produjo este valor-p se llama la <em>prueba exacta de Fisher</em> (<em>Fisher’s exact test</em> en inglés) y utiliza la <em>distribución hipergeométrica</em>.</p>
 </div>
-<div id="tablas-2x2" class="section level3" number="15.10.2">
-<h3><span class="header-section-number">15.10.2</span> Tablas 2x2</h3>
+<div id="tablas-2x2" class="section level3 hasAnchor" number="15.10.2">
+<h3><span class="header-section-number">15.10.2</span> Tablas 2x2<a href="inference.html#tablas-2x2" class="anchor-section" aria-label="Anchor link to header"></a></h3>
 <p>Los datos del experimento generalmente se resumen en una tabla como esta:</p>
-<div class="sourceCode" id="cb557"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb557-1"><a href="inference.html#cb557-1" aria-hidden="true" tabindex="-1"></a>tab <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="fu">c</span>(<span class="dv">3</span>,<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">3</span>),<span class="dv">2</span>,<span class="dv">2</span>)</span>
-<span id="cb557-2"><a href="inference.html#cb557-2" aria-hidden="true" tabindex="-1"></a><span class="fu">rownames</span>(tab)<span class="ot">&lt;-</span><span class="fu">c</span>(<span class="st">&quot;Poured Before&quot;</span>,<span class="st">&quot;Poured After&quot;</span>)</span>
-<span id="cb557-3"><a href="inference.html#cb557-3" aria-hidden="true" tabindex="-1"></a><span class="fu">colnames</span>(tab)<span class="ot">&lt;-</span><span class="fu">c</span>(<span class="st">&quot;Guessed before&quot;</span>,<span class="st">&quot;Guessed after&quot;</span>)</span>
-<span id="cb557-4"><a href="inference.html#cb557-4" aria-hidden="true" tabindex="-1"></a>tab</span>
-<span id="cb557-5"><a href="inference.html#cb557-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;               Guessed before Guessed after</span></span>
-<span id="cb557-6"><a href="inference.html#cb557-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Poured Before              3             1</span></span>
-<span id="cb557-7"><a href="inference.html#cb557-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Poured After               1             3</span></span></code></pre></div>
+<div class="sourceCode" id="cb558"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb558-1"><a href="inference.html#cb558-1" aria-hidden="true" tabindex="-1"></a>tab <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="fu">c</span>(<span class="dv">3</span>,<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">3</span>),<span class="dv">2</span>,<span class="dv">2</span>)</span>
+<span id="cb558-2"><a href="inference.html#cb558-2" aria-hidden="true" tabindex="-1"></a><span class="fu">rownames</span>(tab)<span class="ot">&lt;-</span><span class="fu">c</span>(<span class="st">&quot;Poured Before&quot;</span>,<span class="st">&quot;Poured After&quot;</span>)</span>
+<span id="cb558-3"><a href="inference.html#cb558-3" aria-hidden="true" tabindex="-1"></a><span class="fu">colnames</span>(tab)<span class="ot">&lt;-</span><span class="fu">c</span>(<span class="st">&quot;Guessed before&quot;</span>,<span class="st">&quot;Guessed after&quot;</span>)</span>
+<span id="cb558-4"><a href="inference.html#cb558-4" aria-hidden="true" tabindex="-1"></a>tab</span>
+<span id="cb558-5"><a href="inference.html#cb558-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;               Guessed before Guessed after</span></span>
+<span id="cb558-6"><a href="inference.html#cb558-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Poured Before              3             1</span></span>
+<span id="cb558-7"><a href="inference.html#cb558-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Poured After               1             3</span></span></code></pre></div>
 <p>que se conoce como una tabla 2x2. Para cada una de las cuatro combinaciones que se pueden obtener con un par de variables binarias, la tabla muestra los recuentos observados para cada ocurrencia.</p>
 <p>La función <code>fisher.test</code> realiza los cálculos de inferencia anteriores:</p>
-<div class="sourceCode" id="cb558"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb558-1"><a href="inference.html#cb558-1" aria-hidden="true" tabindex="-1"></a><span class="fu">fisher.test</span>(tab, <span class="at">alternative=</span><span class="st">&quot;greater&quot;</span>)<span class="sc">$</span>p.value</span>
-<span id="cb558-2"><a href="inference.html#cb558-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] 0.243</span></span></code></pre></div>
+<div class="sourceCode" id="cb559"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb559-1"><a href="inference.html#cb559-1" aria-hidden="true" tabindex="-1"></a><span class="fu">fisher.test</span>(tab, <span class="at">alternative=</span><span class="st">&quot;greater&quot;</span>)<span class="sc">$</span>p.value</span>
+<span id="cb559-2"><a href="inference.html#cb559-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] 0.243</span></span></code></pre></div>
 </div>
-<div id="prueba-de-chi-cuadrado" class="section level3" number="15.10.3">
-<h3><span class="header-section-number">15.10.3</span> Prueba de chi-cuadrado</h3>
-<p>En cierto sentido, nuestro ejemplo de tasas de financiamiento es parecido al de “Lady Tasting Tea.” Sin embargo, en el ejemplo de “Lady Tasting Tea,” el número de cuentas azules y rojas se fija experimentalmente y el número de respuestas dadas para cada categoría también. Esto se debe a que Fisher se aseguró de que se vertieran cuatro tazas con leche antes del té y cuatro tazas con leche después del té y la señora lo sabía, por lo que las respuestas también tendrían que incluir cuatro antes y cuatro después. Si este es el caso, la suma de las filas y la suma de las columnas son fijas. Esto define restricciones sobre las posibles formas en que podemos llenar la tabla 2x2 y también nos permite usar la distribución hipergeométrica. En general, este no es el caso. No obstante, hay otro enfoque, la prueba de chi-cuadrado, que se describe a continuación.</p>
+<div id="prueba-de-chi-cuadrado" class="section level3 hasAnchor" number="15.10.3">
+<h3><span class="header-section-number">15.10.3</span> Prueba de chi-cuadrado<a href="inference.html#prueba-de-chi-cuadrado" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>En cierto sentido, nuestro ejemplo de tasas de financiamiento es parecido al de “Lady Tasting Tea”. Sin embargo, en el ejemplo de “Lady Tasting Tea”, el número de cuentas azules y rojas se fija experimentalmente y el número de respuestas dadas para cada categoría también. Esto se debe a que Fisher se aseguró de que se vertieran cuatro tazas con leche antes del té y cuatro tazas con leche después del té y la señora lo sabía, por lo que las respuestas también tendrían que incluir cuatro antes y cuatro después. Si este es el caso, la suma de las filas y la suma de las columnas son fijas. Esto define restricciones sobre las posibles formas en que podemos llenar la tabla 2x2 y también nos permite usar la distribución hipergeométrica. En general, este no es el caso. No obstante, hay otro enfoque, la prueba de chi-cuadrado, que se describe a continuación.</p>
 <p>Imaginen que tenemos 290, 1,345, 177, 1,011 solicitantes, algunos son hombres y otros son mujeres y algunos reciben financiamiento, mientras que otros no. Vimos que las tasas de éxito para hombres y mujeres eran:</p>
-<div class="sourceCode" id="cb559"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb559-1"><a href="inference.html#cb559-1" aria-hidden="true" tabindex="-1"></a>totals <span class="sc">%&gt;%</span> <span class="fu">summarize</span>(<span class="at">percent_men =</span> yes_men<span class="sc">/</span>(yes_men<span class="sc">+</span>no_men),</span>
-<span id="cb559-2"><a href="inference.html#cb559-2" aria-hidden="true" tabindex="-1"></a>                     <span class="at">percent_women =</span> yes_women<span class="sc">/</span>(yes_women<span class="sc">+</span>no_women))</span>
-<span id="cb559-3"><a href="inference.html#cb559-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   percent_men percent_women</span></span>
-<span id="cb559-4"><a href="inference.html#cb559-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1       0.177         0.149</span></span></code></pre></div>
+<div class="sourceCode" id="cb560"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb560-1"><a href="inference.html#cb560-1" aria-hidden="true" tabindex="-1"></a>totals <span class="sc">|&gt;</span> <span class="fu">summarize</span>(<span class="at">percent_men =</span> yes_men<span class="sc">/</span>(yes_men<span class="sc">+</span>no_men),</span>
+<span id="cb560-2"><a href="inference.html#cb560-2" aria-hidden="true" tabindex="-1"></a>                     <span class="at">percent_women =</span> yes_women<span class="sc">/</span>(yes_women<span class="sc">+</span>no_women))</span>
+<span id="cb560-3"><a href="inference.html#cb560-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   percent_men percent_women</span></span>
+<span id="cb560-4"><a href="inference.html#cb560-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1       0.177         0.149</span></span></code></pre></div>
 <p>respectivamente. ¿Volveríamos a ver esto si asignamos fondos al azar usando como tasa la tasa general?</p>
-<div class="sourceCode" id="cb560"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb560-1"><a href="inference.html#cb560-1" aria-hidden="true" tabindex="-1"></a>rate <span class="ot">&lt;-</span> totals <span class="sc">%&gt;%</span></span>
-<span id="cb560-2"><a href="inference.html#cb560-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="at">percent_total =</span></span>
-<span id="cb560-3"><a href="inference.html#cb560-3" aria-hidden="true" tabindex="-1"></a>              (yes_men <span class="sc">+</span> yes_women)<span class="sc">/</span></span>
-<span id="cb560-4"><a href="inference.html#cb560-4" aria-hidden="true" tabindex="-1"></a>              (yes_men <span class="sc">+</span> no_men <span class="sc">+</span>yes_women <span class="sc">+</span> no_women)) <span class="sc">%&gt;%</span></span>
-<span id="cb560-5"><a href="inference.html#cb560-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pull</span>(percent_total)</span>
-<span id="cb560-6"><a href="inference.html#cb560-6" aria-hidden="true" tabindex="-1"></a>rate</span>
-<span id="cb560-7"><a href="inference.html#cb560-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] 0.165</span></span></code></pre></div>
+<div class="sourceCode" id="cb561"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb561-1"><a href="inference.html#cb561-1" aria-hidden="true" tabindex="-1"></a>rate <span class="ot">&lt;-</span> totals <span class="sc">|&gt;</span></span>
+<span id="cb561-2"><a href="inference.html#cb561-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="at">percent_total =</span></span>
+<span id="cb561-3"><a href="inference.html#cb561-3" aria-hidden="true" tabindex="-1"></a>              (yes_men <span class="sc">+</span> yes_women)<span class="sc">/</span></span>
+<span id="cb561-4"><a href="inference.html#cb561-4" aria-hidden="true" tabindex="-1"></a>              (yes_men <span class="sc">+</span> no_men <span class="sc">+</span>yes_women <span class="sc">+</span> no_women)) <span class="sc">|&gt;</span></span>
+<span id="cb561-5"><a href="inference.html#cb561-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pull</span>(percent_total)</span>
+<span id="cb561-6"><a href="inference.html#cb561-6" aria-hidden="true" tabindex="-1"></a>rate</span>
+<span id="cb561-7"><a href="inference.html#cb561-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] 0.165</span></span></code></pre></div>
 <p>La prueba de chi-cuadrado responde a esta pregunta. El primer paso es crear la tabla de datos 2x2:</p>
-<div class="sourceCode" id="cb561"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb561-1"><a href="inference.html#cb561-1" aria-hidden="true" tabindex="-1"></a>two_by_two <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">awarded =</span> <span class="fu">c</span>(<span class="st">&quot;no&quot;</span>, <span class="st">&quot;yes&quot;</span>),</span>
-<span id="cb561-2"><a href="inference.html#cb561-2" aria-hidden="true" tabindex="-1"></a>                         <span class="at">men =</span> <span class="fu">c</span>(totals<span class="sc">$</span>no_men, totals<span class="sc">$</span>yes_men),</span>
-<span id="cb561-3"><a href="inference.html#cb561-3" aria-hidden="true" tabindex="-1"></a>                         <span class="at">women =</span> <span class="fu">c</span>(totals<span class="sc">$</span>no_women, totals<span class="sc">$</span>yes_women))</span>
-<span id="cb561-4"><a href="inference.html#cb561-4" aria-hidden="true" tabindex="-1"></a>two_by_two</span>
-<span id="cb561-5"><a href="inference.html#cb561-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   awarded  men women</span></span>
-<span id="cb561-6"><a href="inference.html#cb561-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1      no 1345  1011</span></span>
-<span id="cb561-7"><a href="inference.html#cb561-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2     yes  290   177</span></span></code></pre></div>
+<div class="sourceCode" id="cb562"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb562-1"><a href="inference.html#cb562-1" aria-hidden="true" tabindex="-1"></a>two_by_two <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">awarded =</span> <span class="fu">c</span>(<span class="st">&quot;no&quot;</span>, <span class="st">&quot;yes&quot;</span>),</span>
+<span id="cb562-2"><a href="inference.html#cb562-2" aria-hidden="true" tabindex="-1"></a>                         <span class="at">men =</span> <span class="fu">c</span>(totals<span class="sc">$</span>no_men, totals<span class="sc">$</span>yes_men),</span>
+<span id="cb562-3"><a href="inference.html#cb562-3" aria-hidden="true" tabindex="-1"></a>                         <span class="at">women =</span> <span class="fu">c</span>(totals<span class="sc">$</span>no_women, totals<span class="sc">$</span>yes_women))</span>
+<span id="cb562-4"><a href="inference.html#cb562-4" aria-hidden="true" tabindex="-1"></a>two_by_two</span>
+<span id="cb562-5"><a href="inference.html#cb562-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   awarded  men women</span></span>
+<span id="cb562-6"><a href="inference.html#cb562-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1      no 1345  1011</span></span>
+<span id="cb562-7"><a href="inference.html#cb562-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2     yes  290   177</span></span></code></pre></div>
 <p>La idea general de la prueba de chi-cuadrado es comparar esta tabla 2x2 con lo que esperamos ver, que sería:</p>
-<div class="sourceCode" id="cb562"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb562-1"><a href="inference.html#cb562-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data.frame</span>(<span class="at">awarded =</span> <span class="fu">c</span>(<span class="st">&quot;no&quot;</span>, <span class="st">&quot;yes&quot;</span>),</span>
-<span id="cb562-2"><a href="inference.html#cb562-2" aria-hidden="true" tabindex="-1"></a>           <span class="at">men =</span> (totals<span class="sc">$</span>no_men <span class="sc">+</span> totals<span class="sc">$</span>yes_men) <span class="sc">*</span> <span class="fu">c</span>(<span class="dv">1</span> <span class="sc">-</span> rate, rate),</span>
-<span id="cb562-3"><a href="inference.html#cb562-3" aria-hidden="true" tabindex="-1"></a>           <span class="at">women =</span> (totals<span class="sc">$</span>no_women <span class="sc">+</span> totals<span class="sc">$</span>yes_women) <span class="sc">*</span> <span class="fu">c</span>(<span class="dv">1</span> <span class="sc">-</span> rate, rate))</span>
-<span id="cb562-4"><a href="inference.html#cb562-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   awarded  men women</span></span>
-<span id="cb562-5"><a href="inference.html#cb562-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1      no 1365   991</span></span>
-<span id="cb562-6"><a href="inference.html#cb562-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2     yes  270   197</span></span></code></pre></div>
+<div class="sourceCode" id="cb563"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb563-1"><a href="inference.html#cb563-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data.frame</span>(<span class="at">awarded =</span> <span class="fu">c</span>(<span class="st">&quot;no&quot;</span>, <span class="st">&quot;yes&quot;</span>),</span>
+<span id="cb563-2"><a href="inference.html#cb563-2" aria-hidden="true" tabindex="-1"></a>           <span class="at">men =</span> (totals<span class="sc">$</span>no_men <span class="sc">+</span> totals<span class="sc">$</span>yes_men) <span class="sc">*</span> <span class="fu">c</span>(<span class="dv">1</span> <span class="sc">-</span> rate, rate),</span>
+<span id="cb563-3"><a href="inference.html#cb563-3" aria-hidden="true" tabindex="-1"></a>           <span class="at">women =</span> (totals<span class="sc">$</span>no_women <span class="sc">+</span> totals<span class="sc">$</span>yes_women) <span class="sc">*</span> <span class="fu">c</span>(<span class="dv">1</span> <span class="sc">-</span> rate, rate))</span>
+<span id="cb563-4"><a href="inference.html#cb563-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   awarded  men women</span></span>
+<span id="cb563-5"><a href="inference.html#cb563-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1      no 1365   991</span></span>
+<span id="cb563-6"><a href="inference.html#cb563-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2     yes  270   197</span></span></code></pre></div>
 <p>Podemos ver que más hombres y menos mujeres de lo esperado recibieron fondos. Sin embargo, bajo la hipótesis nula, estas observaciones son variables aleatorias. La prueba de chi-cuadrado nos dice cuán probable es ver una desviación así de grande o más grande. Esta prueba utiliza un resultado asintótico, similar al CLT, relacionado con las sumas de resultados binarios independientes. La función <code>chisq.test</code> de R toma una tabla 2x2 y devuelve los resultados de la prueba:</p>
-<div class="sourceCode" id="cb563"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb563-1"><a href="inference.html#cb563-1" aria-hidden="true" tabindex="-1"></a>chisq_test <span class="ot">&lt;-</span> two_by_two <span class="sc">%&gt;%</span> <span class="fu">select</span>(<span class="sc">-</span>awarded) <span class="sc">%&gt;%</span> <span class="fu">chisq.test</span>()</span></code></pre></div>
+<div class="sourceCode" id="cb564"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb564-1"><a href="inference.html#cb564-1" aria-hidden="true" tabindex="-1"></a>chisq_test <span class="ot">&lt;-</span> two_by_two <span class="sc">|&gt;</span> <span class="fu">select</span>(<span class="sc">-</span>awarded) <span class="sc">|&gt;</span> <span class="fu">chisq.test</span>()</span></code></pre></div>
 <p>Vemos que el valor-p es 0.0509:</p>
-<div class="sourceCode" id="cb564"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb564-1"><a href="inference.html#cb564-1" aria-hidden="true" tabindex="-1"></a>chisq_test<span class="sc">$</span>p.value</span>
-<span id="cb564-2"><a href="inference.html#cb564-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] 0.0509</span></span></code></pre></div>
+<div class="sourceCode" id="cb565"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb565-1"><a href="inference.html#cb565-1" aria-hidden="true" tabindex="-1"></a>chisq_test<span class="sc">$</span>p.value</span>
+<span id="cb565-2"><a href="inference.html#cb565-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] 0.0509</span></span></code></pre></div>
 </div>
-<div id="odds-ratio" class="section level3" number="15.10.4">
-<h3><span class="header-section-number">15.10.4</span> Riesgo relativo</h3>
+<div id="odds-ratio" class="section level3 hasAnchor" number="15.10.4">
+<h3><span class="header-section-number">15.10.4</span> Riesgo relativo<a href="inference.html#odds-ratio" class="anchor-section" aria-label="Anchor link to header"></a></h3>
 <p>Un resumen estadístico informativo para tablas 2x2 es el <em>riesgo relativo</em> (<em>odds ratio</em> en inglés). Definan las dos variables como <span class="math inline">\(X = 1\)</span> si eres hombre y 0 de lo contrario, e <span class="math inline">\(Y=1\)</span> si recibe financiamiento y 0 de lo contrario. Las probabilidades de obtener fondos si eres hombre se definen así:</p>
 <p><span class="math display">\[\mbox{Pr}(Y=1 \mid X=1)/ \mbox{Pr}(Y=0 \mid X=1)\]</span></p>
 <p>y se pueden calcular así:</p>
-<div class="sourceCode" id="cb565"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb565-1"><a href="inference.html#cb565-1" aria-hidden="true" tabindex="-1"></a>odds_men <span class="ot">&lt;-</span> <span class="fu">with</span>(two_by_two, (men[<span class="dv">2</span>]<span class="sc">/</span><span class="fu">sum</span>(men))<span class="sc">/</span> (men[<span class="dv">1</span>]<span class="sc">/</span><span class="fu">sum</span>(men)))</span>
-<span id="cb565-2"><a href="inference.html#cb565-2" aria-hidden="true" tabindex="-1"></a>odds_men</span>
-<span id="cb565-3"><a href="inference.html#cb565-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] 0.216</span></span></code></pre></div>
+<div class="sourceCode" id="cb566"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb566-1"><a href="inference.html#cb566-1" aria-hidden="true" tabindex="-1"></a>odds_men <span class="ot">&lt;-</span> <span class="fu">with</span>(two_by_two, (men[<span class="dv">2</span>]<span class="sc">/</span><span class="fu">sum</span>(men))<span class="sc">/</span> (men[<span class="dv">1</span>]<span class="sc">/</span><span class="fu">sum</span>(men)))</span>
+<span id="cb566-2"><a href="inference.html#cb566-2" aria-hidden="true" tabindex="-1"></a>odds_men</span>
+<span id="cb566-3"><a href="inference.html#cb566-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] 0.216</span></span></code></pre></div>
 <p>Y las probabilidades de recibir financiamiento si eres mujer son:</p>
 <p><span class="math display">\[\mbox{Pr}(Y=1 \mid X=0)/ \mbox{Pr}(Y=0 \mid X=0)\]</span></p>
 <p>y se pueden calcular así:</p>
-<div class="sourceCode" id="cb566"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb566-1"><a href="inference.html#cb566-1" aria-hidden="true" tabindex="-1"></a>odds_women <span class="ot">&lt;-</span> <span class="fu">with</span>(two_by_two, (women[<span class="dv">2</span>]<span class="sc">/</span><span class="fu">sum</span>(women))<span class="sc">/</span> (women[<span class="dv">1</span>]<span class="sc">/</span><span class="fu">sum</span>(women)))</span>
-<span id="cb566-2"><a href="inference.html#cb566-2" aria-hidden="true" tabindex="-1"></a>odds_women</span>
-<span id="cb566-3"><a href="inference.html#cb566-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] 0.175</span></span></code></pre></div>
+<div class="sourceCode" id="cb567"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb567-1"><a href="inference.html#cb567-1" aria-hidden="true" tabindex="-1"></a>odds_women <span class="ot">&lt;-</span> <span class="fu">with</span>(two_by_two, (women[<span class="dv">2</span>]<span class="sc">/</span><span class="fu">sum</span>(women))<span class="sc">/</span> (women[<span class="dv">1</span>]<span class="sc">/</span><span class="fu">sum</span>(women)))</span>
+<span id="cb567-2"><a href="inference.html#cb567-2" aria-hidden="true" tabindex="-1"></a>odds_women</span>
+<span id="cb567-3"><a href="inference.html#cb567-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] 0.175</span></span></code></pre></div>
 <p>El riesgo relativo es la razón de estas dos probabilidades: ¿cuántas veces más grandes son las probabilidades para los hombres que para las mujeres?</p>
-<div class="sourceCode" id="cb567"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb567-1"><a href="inference.html#cb567-1" aria-hidden="true" tabindex="-1"></a>odds_men<span class="sc">/</span> odds_women</span>
-<span id="cb567-2"><a href="inference.html#cb567-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] 1.23</span></span></code></pre></div>
+<div class="sourceCode" id="cb568"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb568-1"><a href="inference.html#cb568-1" aria-hidden="true" tabindex="-1"></a>odds_men<span class="sc">/</span> odds_women</span>
+<span id="cb568-2"><a href="inference.html#cb568-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] 1.23</span></span></code></pre></div>
 A menudo vemos tablas de 2x2 escritas usando <span class="math inline">\(a\)</span>, <span class="math inline">\(b\)</span>, <span class="math inline">\(c\)</span>, y <span class="math inline">\(d\)</span> como en la siguiente tabla. En este caso, el riesgo relativo es <span class="math inline">\(\frac{a/c}{b/d}\)</span> que es equivalente a <span class="math inline">\((ad)/ (bc)\)</span>.
 <table class="table table-striped" style="width: auto !important; margin-left: auto; margin-right: auto;">
 <thead>
@@ -1857,8 +1902,8 @@ d
 </tbody>
 </table>
 </div>
-<div id="intervalos-de-confianza-para-el-riesgo-relativo" class="section level3" number="15.10.5">
-<h3><span class="header-section-number">15.10.5</span> Intervalos de confianza para el riesgo relativo</h3>
+<div id="intervalos-de-confianza-para-el-riesgo-relativo" class="section level3 hasAnchor" number="15.10.5">
+<h3><span class="header-section-number">15.10.5</span> Intervalos de confianza para el riesgo relativo<a href="inference.html#intervalos-de-confianza-para-el-riesgo-relativo" class="anchor-section" aria-label="Anchor link to header"></a></h3>
 <p>Calcular intervalos de confianza para el riesgo relativo no es matemáticamente sencillo. A diferencia de otras estadísticas, para las cuales podemos derivar aproximaciones útiles de sus distribuciones, el riesgo relativo no es solo una razón, sino una razón de razones. Por lo tanto, no hay una forma sencilla de utilizar, por ejemplo, el CLT.</p>
 <p>Sin embargo, la teoría estadística nos dice que cuando las cuatro entradas de la tabla 2x2 son lo suficientemente grandes, entonces el logaritmo del riesgo relativo es aproximadamente normal con error estándar:</p>
 <p><span class="math display">\[
@@ -1870,35 +1915,36 @@ d
 \]</span></p>
 <p>Exponenciando estos dos números podemos construir un intervalo de confianza del riesgo relativo.</p>
 <p>Usando R, podemos calcular este intervalo de confianza de la siguiente manera:</p>
-<div class="sourceCode" id="cb568"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb568-1"><a href="inference.html#cb568-1" aria-hidden="true" tabindex="-1"></a>log_or <span class="ot">&lt;-</span> <span class="fu">log</span>(odds_men<span class="sc">/</span> odds_women)</span>
-<span id="cb568-2"><a href="inference.html#cb568-2" aria-hidden="true" tabindex="-1"></a>se <span class="ot">&lt;-</span> two_by_two <span class="sc">%&gt;%</span> <span class="fu">select</span>(<span class="sc">-</span>awarded) <span class="sc">%&gt;%</span></span>
-<span id="cb568-3"><a href="inference.html#cb568-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="at">se =</span> <span class="fu">sqrt</span>(<span class="fu">sum</span>(<span class="dv">1</span><span class="sc">/</span>men) <span class="sc">+</span> <span class="fu">sum</span>(<span class="dv">1</span><span class="sc">/</span>women))) <span class="sc">%&gt;%</span></span>
-<span id="cb568-4"><a href="inference.html#cb568-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pull</span>(se)</span>
-<span id="cb568-5"><a href="inference.html#cb568-5" aria-hidden="true" tabindex="-1"></a>ci <span class="ot">&lt;-</span> log_or <span class="sc">+</span> <span class="fu">c</span>(<span class="sc">-</span><span class="dv">1</span>,<span class="dv">1</span>) <span class="sc">*</span> <span class="fu">qnorm</span>(<span class="fl">0.975</span>) <span class="sc">*</span> se</span></code></pre></div>
+<div class="sourceCode" id="cb569"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb569-1"><a href="inference.html#cb569-1" aria-hidden="true" tabindex="-1"></a>log_or <span class="ot">&lt;-</span> <span class="fu">log</span>(odds_men<span class="sc">/</span> odds_women)</span>
+<span id="cb569-2"><a href="inference.html#cb569-2" aria-hidden="true" tabindex="-1"></a>se <span class="ot">&lt;-</span> two_by_two <span class="sc">|&gt;</span> <span class="fu">select</span>(<span class="sc">-</span>awarded) <span class="sc">|&gt;</span></span>
+<span id="cb569-3"><a href="inference.html#cb569-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="at">se =</span> <span class="fu">sqrt</span>(<span class="fu">sum</span>(<span class="dv">1</span><span class="sc">/</span>men) <span class="sc">+</span> <span class="fu">sum</span>(<span class="dv">1</span><span class="sc">/</span>women))) <span class="sc">|&gt;</span></span>
+<span id="cb569-4"><a href="inference.html#cb569-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pull</span>(se)</span>
+<span id="cb569-5"><a href="inference.html#cb569-5" aria-hidden="true" tabindex="-1"></a>ci <span class="ot">&lt;-</span> log_or <span class="sc">+</span> <span class="fu">c</span>(<span class="sc">-</span><span class="dv">1</span>,<span class="dv">1</span>) <span class="sc">*</span> <span class="fu">qnorm</span>(<span class="fl">0.975</span>) <span class="sc">*</span> se</span></code></pre></div>
 <p>Si queremos convertirlo de nuevo a la escala de riesgo relativo, podemos exponenciar:</p>
-<div class="sourceCode" id="cb569"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb569-1"><a href="inference.html#cb569-1" aria-hidden="true" tabindex="-1"></a><span class="fu">exp</span>(ci)</span>
-<span id="cb569-2"><a href="inference.html#cb569-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] 1.00 1.51</span></span></code></pre></div>
+<div class="sourceCode" id="cb570"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb570-1"><a href="inference.html#cb570-1" aria-hidden="true" tabindex="-1"></a><span class="fu">exp</span>(ci)</span>
+<span id="cb570-2"><a href="inference.html#cb570-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] 1.00 1.51</span></span></code></pre></div>
 <p>Observen que 1 no está incluido en el intervalo de confianza, lo que significa que el valor-p es menor que 0.05. Podemos confirmar esto usando:</p>
-<div class="sourceCode" id="cb570"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb570-1"><a href="inference.html#cb570-1" aria-hidden="true" tabindex="-1"></a><span class="dv">2</span><span class="sc">*</span>(<span class="dv">1</span> <span class="sc">-</span> <span class="fu">pnorm</span>(log_or, <span class="dv">0</span>, se))</span>
-<span id="cb570-2"><a href="inference.html#cb570-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] 0.0454</span></span></code></pre></div>
+<div class="sourceCode" id="cb571"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb571-1"><a href="inference.html#cb571-1" aria-hidden="true" tabindex="-1"></a><span class="dv">2</span><span class="sc">*</span>(<span class="dv">1</span> <span class="sc">-</span> <span class="fu">pnorm</span>(log_or, <span class="dv">0</span>, se))</span>
+<span id="cb571-2"><a href="inference.html#cb571-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] 0.0454</span></span></code></pre></div>
 <p>Este es un valor-p un poco diferente al de la prueba de chi-cuadrado. Esto se debe a que estamos utilizando una aproximación asintótica diferente a la distribución nula. Para obtener más información sobre la inferencia y la teoría asintótica del riesgo relativo, consulten el libro <em>Generalized Linear Models</em> de McCullagh y Nelder.</p>
 </div>
-<div id="corrección-de-recuento-pequeño" class="section level3" number="15.10.6">
-<h3><span class="header-section-number">15.10.6</span> Corrección de recuento pequeño</h3>
+<div id="corrección-de-recuento-pequeño" class="section level3 hasAnchor" number="15.10.6">
+<h3><span class="header-section-number">15.10.6</span> Corrección de recuento pequeño<a href="inference.html#corrección-de-recuento-pequeño" class="anchor-section" aria-label="Anchor link to header"></a></h3>
 <p>Si cualquiera de las celdas de la tabla 2x2 es 0, el logaritmo del riesgo relativo es indefinido. Esto se debe a que si <span class="math inline">\(a\)</span>, <span class="math inline">\(b\)</span>, <span class="math inline">\(c\)</span> o <span class="math inline">\(d\)</span> es 0, el <span class="math inline">\(\log(\frac{ad}{bc})\)</span> es el logaritmo de 0 o tiene un 0 en el denominador. Para esta situación, es una práctica común evitar los 0 añadiendo 0.5 a cada celda. Esto se conoce como la <em>corrección de Haldane-Anscombe</em> y se ha demostrado, tanto en la práctica como en la teoría, que funciona bien.</p>
 </div>
-<div id="muestras-grandes-valores-p-pequeños" class="section level3" number="15.10.7">
-<h3><span class="header-section-number">15.10.7</span> Muestras grandes, valores-p pequeños</h3>
+<div id="muestras-grandes-valores-p-pequeños" class="section level3 hasAnchor" number="15.10.7">
+<h3><span class="header-section-number">15.10.7</span> Muestras grandes, valores-p pequeños<a href="inference.html#muestras-grandes-valores-p-pequeños" class="anchor-section" aria-label="Anchor link to header"></a></h3>
 <p>Como se mencionó anteriormente, informar solo valores-p no es una forma apropiada de informar los resultados del análisis de datos. En revistas científicas, por ejemplo, algunos estudios parecen enfatizar demasiado los valores-p. Algunos de estos estudios tienen muestras de gran tamaño e indican valores-p impresionantemente pequeños. Sin embargo, cuando uno mira de cerca los resultados, se da cuenta que los riesgos relativos son pequeños: apenas mayores que 1. En este caso, la diferencia puede que no sea <em>prácticamente significativa</em> o <em>científicamente significativa</em>.</p>
 <p>Tengan en cuenta que la relación entre el riesgo relativo y el valor-p no es una correspondencia uno-a-uno. La relacion depende del tamaño de la muestra. Por lo tanto, un valor-p muy pequeño no necesariamente significa un riesgo relativo muy grande. Observen lo que sucede con el valor-p si multiplicamos nuestra tabla 2x2 por 10, lo cual no cambia el riesgo relativo:</p>
-<div class="sourceCode" id="cb571"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb571-1"><a href="inference.html#cb571-1" aria-hidden="true" tabindex="-1"></a>two_by_two <span class="sc">%&gt;%</span> <span class="fu">select</span>(<span class="sc">-</span>awarded) <span class="sc">%&gt;%</span></span>
-<span id="cb571-2"><a href="inference.html#cb571-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">men =</span> men<span class="sc">*</span><span class="dv">10</span>, <span class="at">women =</span> women<span class="sc">*</span><span class="dv">10</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb571-3"><a href="inference.html#cb571-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">chisq.test</span>() <span class="sc">%&gt;%</span> .<span class="sc">$</span>p.value</span>
-<span id="cb571-4"><a href="inference.html#cb571-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] 2.63e-10</span></span></code></pre></div>
+<div class="sourceCode" id="cb572"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb572-1"><a href="inference.html#cb572-1" aria-hidden="true" tabindex="-1"></a>two_by_two_x_10 <span class="ot">&lt;-</span> two_by_two <span class="sc">|&gt;</span> </span>
+<span id="cb572-2"><a href="inference.html#cb572-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="sc">-</span>awarded) <span class="sc">|&gt;</span></span>
+<span id="cb572-3"><a href="inference.html#cb572-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">men =</span> men<span class="sc">*</span><span class="dv">10</span>, <span class="at">women =</span> women<span class="sc">*</span><span class="dv">10</span>) </span>
+<span id="cb572-4"><a href="inference.html#cb572-4" aria-hidden="true" tabindex="-1"></a><span class="fu">chisq.test</span>(two_by_two_x_10)<span class="sc">$</span>p.value</span>
+<span id="cb572-5"><a href="inference.html#cb572-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] 2.63e-10</span></span></code></pre></div>
 </div>
 </div>
-<div id="ejercicios-29" class="section level2" number="15.11">
-<h2><span class="header-section-number">15.11</span> Ejercicios</h2>
+<div id="ejercicios-29" class="section level2 hasAnchor" number="15.11">
+<h2><span class="header-section-number">15.11</span> Ejercicios<a href="inference.html#ejercicios-29" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>1. Una atleta famosa tiene una carrera impresionante, ganando 70% de los 500 partidos de su carrera. Sin embargo, critican a esta atleta porque en eventos importantes, como los Juegos Olímpicos, tiene un récord perdedor de 8 victorias y 9 derrotas. Realice una prueba de chi-cuadrado para determinar si este récord se debe simplemente al azar en vez de no competir bien bajo presión.</p>
 <p>2. ¿Por qué usamos la prueba de chi-cuadrado en lugar de la prueba exacta de Fisher en el ejercicio anterior?</p>
 <ol style="list-style-type: lower-alpha">
@@ -1938,7 +1984,6 @@ d
     </div>
   </div>
 <script src="libs/gitbook-2.6.7/js/app.min.js"></script>
-<script src="libs/gitbook-2.6.7/js/lunr.js"></script>
 <script src="libs/gitbook-2.6.7/js/clipboard.min.js"></script>
 <script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
 <script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
@@ -1978,6 +2023,10 @@ gitbook.start({
 "text": null
 },
 "download": ["libro.pdf"],
+"search": {
+"engine": "fuse",
+"options": null
+},
 "toc": {
 "collapse": "section"
 }

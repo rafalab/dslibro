@@ -6,11 +6,10 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <title>Capítulo 34 Agrupación | Introducción a la ciencia de datos</title>
   <meta name="description" content="Este libro presenta conceptos y destrezas que les ayudarán abordar los retos de situaciones actuales del análisis de datos. Cubre conceptos de probabilidad, inferencia estadística, regresión lineal y machine learning. Además, les permitirá desarrollar destrezas como la programación R, el wrangling de datos con dplyr, la visualización de datos con ggplot2, la organización de archivos con Shell de UNIX / Linux, el control de versiones con GitHub y la preparación de documentos reproducibles con R markdown." />
-  <meta name="generator" content="bookdown 0.22 and GitBook 2.6.7" />
+  <meta name="generator" content="bookdown 0.27 and GitBook 2.6.7" />
 
   <meta property="og:title" content="Capítulo 34 Agrupación | Introducción a la ciencia de datos" />
   <meta property="og:type" content="book" />
-  
   
   <meta property="og:description" content="Este libro presenta conceptos y destrezas que les ayudarán abordar los retos de situaciones actuales del análisis de datos. Cubre conceptos de probabilidad, inferencia estadística, regresión lineal y machine learning. Además, les permitirá desarrollar destrezas como la programación R, el wrangling de datos con dplyr, la visualización de datos con ggplot2, la organización de archivos con Shell de UNIX / Linux, el control de versiones con GitHub y la preparación de documentos reproducibles con R markdown." />
   
@@ -24,7 +23,7 @@
 <meta name="author" content="Rafael A. Irizarry" />
 
 
-<meta name="date" content="2021-07-03" />
+<meta name="date" content="2022-10-25" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -33,8 +32,8 @@
   
 <link rel="prev" href="sets-grandes-de-datos.html"/>
 <link rel="next" href="introducción-a-las-herramientas-de-productividad.html"/>
-<script src="libs/header-attrs-2.9/header-attrs.js"></script>
-<script src="libs/jquery-2.2.3/jquery.min.js"></script>
+<script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
 <link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
 <link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
@@ -50,9 +49,9 @@
 
 
 
-
-<link href="libs/anchor-sections-1.0.1/anchor-sections.css" rel="stylesheet" />
-<script src="libs/anchor-sections-1.0.1/anchor-sections.js"></script>
+<link href="libs/anchor-sections-1.1.0/anchor-sections.css" rel="stylesheet" />
+<link href="libs/anchor-sections-1.1.0/anchor-sections-hash.css" rel="stylesheet" />
+<script src="libs/anchor-sections-1.1.0/anchor-sections.js"></script>
 <script src="libs/kePrint-0.0.1/kePrint.js"></script>
 <link href="libs/lightable-0.0.1/lightable.css" rel="stylesheet" />
 
@@ -254,7 +253,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="4.3.3" data-path="tidyverse.html"><a href="tidyverse.html#cómo-seleccionar-columnas-con-select"><i class="fa fa-check"></i><b>4.3.3</b> Cómo seleccionar columnas con <code>select</code></a></li>
 </ul></li>
 <li class="chapter" data-level="4.4" data-path="tidyverse.html"><a href="tidyverse.html#ejercicios-9"><i class="fa fa-check"></i><b>4.4</b> Ejercicios</a></li>
-<li class="chapter" data-level="4.5" data-path="tidyverse.html"><a href="tidyverse.html#el-pipe"><i class="fa fa-check"></i><b>4.5</b> El <em>pipe</em>: <code>%&gt;%</code></a></li>
+<li class="chapter" data-level="4.5" data-path="tidyverse.html"><a href="tidyverse.html#el-pipe"><i class="fa fa-check"></i><b>4.5</b> El <em>pipe</em>: <code>|&gt;</code></a></li>
 <li class="chapter" data-level="4.6" data-path="tidyverse.html"><a href="tidyverse.html#ejercicios-10"><i class="fa fa-check"></i><b>4.6</b> Ejercicios</a></li>
 <li class="chapter" data-level="4.7" data-path="tidyverse.html"><a href="tidyverse.html#cómo-resumir-datos"><i class="fa fa-check"></i><b>4.7</b> Cómo resumir datos</a>
 <ul>
@@ -1025,61 +1024,61 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
           <div class="page-inner">
 
             <section class="normal" id="section-">
-<div id="clustering" class="section level1" number="34">
-<h1><span class="header-section-number">Capítulo 34</span> Agrupación</h1>
+<div id="clustering" class="section level1 hasAnchor" number="34">
+<h1><span class="header-section-number">Capítulo 34</span> Agrupación<a href="clustering.html#clustering" class="anchor-section" aria-label="Anchor link to header"></a></h1>
 <p>Los algoritmos que hemos descrito hasta ahora son ejemplos de un enfoque general denominado <em>machine learning supervisado</em>. El nombre proviene del hecho de que usamos los resultados en un set de entrenamiento para supervisar la creación de nuestro algoritmo de predicción. Hay otro subconjunto de <em>machine learning</em> denominado <em>no supervisado</em>. En este subconjunto, no necesariamente conocemos los resultados y, en cambio, estamos interesados en descubrir grupos. Estos algoritmos también se denominan algoritmos de <em>agrupamiento</em> (<em>clustering</em> en inglés) ya que los predictores se utilizan para definir <em>grupos</em> (<em>clusters</em> en inglés).</p>
 <p>En los dos ejemplos que hemos utilizado en esta parte del libro, la agrupación no sería muy útil. En el primer ejemplo, si simplemente se nos dan las alturas, no podremos descubrir dos grupos, hombres y mujeres, porque la intersección es grande. En el segundo ejemplo, al graficar los predictores, podemos ver que descubrir los dos dígitos, 2 y 7, será retante:</p>
-<div class="sourceCode" id="cb1338"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1338-1"><a href="clustering.html#cb1338-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
-<span id="cb1338-2"><a href="clustering.html#cb1338-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dslabs)</span>
-<span id="cb1338-3"><a href="clustering.html#cb1338-3" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(<span class="st">&quot;mnist_27&quot;</span>)</span>
-<span id="cb1338-4"><a href="clustering.html#cb1338-4" aria-hidden="true" tabindex="-1"></a>mnist_27<span class="sc">$</span>train <span class="sc">%&gt;%</span> <span class="fu">qplot</span>(x_1, x_2, <span class="at">data =</span> .)</span></code></pre></div>
+<div class="sourceCode" id="cb1339"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1339-1"><a href="clustering.html#cb1339-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb1339-2"><a href="clustering.html#cb1339-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dslabs)</span>
+<span id="cb1339-3"><a href="clustering.html#cb1339-3" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(<span class="st">&quot;mnist_27&quot;</span>)</span>
+<span id="cb1339-4"><a href="clustering.html#cb1339-4" aria-hidden="true" tabindex="-1"></a>mnist_27<span class="sc">$</span>train <span class="sc">|&gt;</span> <span class="fu">qplot</span>(x_1, x_2, <span class="at">data =</span> _)</span></code></pre></div>
 <p><img src="libro_files/figure-html/mnist-27-unsupervised-1.png" width="70%" style="display: block; margin: auto;" /></p>
 <p>Sin embargo, hay aplicaciones en las que el aprendizaje no supervisado puede ser una técnica poderosa, en particular como una herramienta exploratoria.</p>
 <p>Un primer paso en cualquier algoritmo de agrupamiento es definir una distancia entre observaciones o grupos de observaciones. Luego, decidimos cómo unir las observaciones en grupos. Hay muchos algoritmos para hacer esto. Aquí presentamos dos como ejemplos: jerárquico y <em>k-means</em>.</p>
 <p>Construiremos un ejemplo sencillo basado en clasificaciones de películas. Aquí construimos rápidamente una matriz <code>x</code> que tiene calificaciones para las 50 películas con más calificaciones.</p>
-<div class="sourceCode" id="cb1339"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1339-1"><a href="clustering.html#cb1339-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(<span class="st">&quot;movielens&quot;</span>)</span>
-<span id="cb1339-2"><a href="clustering.html#cb1339-2" aria-hidden="true" tabindex="-1"></a>top <span class="ot">&lt;-</span> movielens <span class="sc">%&gt;%</span></span>
-<span id="cb1339-3"><a href="clustering.html#cb1339-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(movieId) <span class="sc">%&gt;%</span></span>
-<span id="cb1339-4"><a href="clustering.html#cb1339-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="at">n=</span><span class="fu">n</span>(), <span class="at">title =</span> <span class="fu">first</span>(title)) <span class="sc">%&gt;%</span></span>
-<span id="cb1339-5"><a href="clustering.html#cb1339-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">top_n</span>(<span class="dv">50</span>, n) <span class="sc">%&gt;%</span></span>
-<span id="cb1339-6"><a href="clustering.html#cb1339-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pull</span>(movieId)</span>
-<span id="cb1339-7"><a href="clustering.html#cb1339-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1339-8"><a href="clustering.html#cb1339-8" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> movielens <span class="sc">%&gt;%</span></span>
-<span id="cb1339-9"><a href="clustering.html#cb1339-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(movieId <span class="sc">%in%</span> top) <span class="sc">%&gt;%</span></span>
-<span id="cb1339-10"><a href="clustering.html#cb1339-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(userId) <span class="sc">%&gt;%</span></span>
-<span id="cb1339-11"><a href="clustering.html#cb1339-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="fu">n</span>() <span class="sc">&gt;=</span> <span class="dv">25</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb1339-12"><a href="clustering.html#cb1339-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ungroup</span>() <span class="sc">%&gt;%</span></span>
-<span id="cb1339-13"><a href="clustering.html#cb1339-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(title, userId, rating) <span class="sc">%&gt;%</span></span>
-<span id="cb1339-14"><a href="clustering.html#cb1339-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">spread</span>(userId, rating)</span>
-<span id="cb1339-15"><a href="clustering.html#cb1339-15" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1339-16"><a href="clustering.html#cb1339-16" aria-hidden="true" tabindex="-1"></a>row_names <span class="ot">&lt;-</span> <span class="fu">str_remove</span>(x<span class="sc">$</span>title, <span class="st">&quot;: Episode&quot;</span>) <span class="sc">%&gt;%</span> <span class="fu">str_trunc</span>(<span class="dv">20</span>)</span>
-<span id="cb1339-17"><a href="clustering.html#cb1339-17" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> x[,<span class="sc">-</span><span class="dv">1</span>] <span class="sc">%&gt;%</span> <span class="fu">as.matrix</span>()</span>
-<span id="cb1339-18"><a href="clustering.html#cb1339-18" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="fu">sweep</span>(x, <span class="dv">2</span>, <span class="fu">colMeans</span>(x, <span class="at">na.rm =</span> <span class="cn">TRUE</span>))</span>
-<span id="cb1339-19"><a href="clustering.html#cb1339-19" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="fu">sweep</span>(x, <span class="dv">1</span>, <span class="fu">rowMeans</span>(x, <span class="at">na.rm =</span> <span class="cn">TRUE</span>))</span>
-<span id="cb1339-20"><a href="clustering.html#cb1339-20" aria-hidden="true" tabindex="-1"></a><span class="fu">rownames</span>(x) <span class="ot">&lt;-</span> row_names</span></code></pre></div>
+<div class="sourceCode" id="cb1340"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1340-1"><a href="clustering.html#cb1340-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(<span class="st">&quot;movielens&quot;</span>)</span>
+<span id="cb1340-2"><a href="clustering.html#cb1340-2" aria-hidden="true" tabindex="-1"></a>top <span class="ot">&lt;-</span> movielens <span class="sc">|&gt;</span></span>
+<span id="cb1340-3"><a href="clustering.html#cb1340-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(movieId) <span class="sc">|&gt;</span></span>
+<span id="cb1340-4"><a href="clustering.html#cb1340-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="at">n=</span><span class="fu">n</span>(), <span class="at">title =</span> <span class="fu">first</span>(title)) <span class="sc">|&gt;</span></span>
+<span id="cb1340-5"><a href="clustering.html#cb1340-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">top_n</span>(<span class="dv">50</span>, n) <span class="sc">|&gt;</span></span>
+<span id="cb1340-6"><a href="clustering.html#cb1340-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pull</span>(movieId)</span>
+<span id="cb1340-7"><a href="clustering.html#cb1340-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1340-8"><a href="clustering.html#cb1340-8" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> movielens <span class="sc">|&gt;</span></span>
+<span id="cb1340-9"><a href="clustering.html#cb1340-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(movieId <span class="sc">%in%</span> top) <span class="sc">|&gt;</span></span>
+<span id="cb1340-10"><a href="clustering.html#cb1340-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(userId) <span class="sc">|&gt;</span></span>
+<span id="cb1340-11"><a href="clustering.html#cb1340-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="fu">n</span>() <span class="sc">&gt;=</span> <span class="dv">25</span>) <span class="sc">|&gt;</span></span>
+<span id="cb1340-12"><a href="clustering.html#cb1340-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ungroup</span>() <span class="sc">|&gt;</span></span>
+<span id="cb1340-13"><a href="clustering.html#cb1340-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(title, userId, rating) <span class="sc">|&gt;</span></span>
+<span id="cb1340-14"><a href="clustering.html#cb1340-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">spread</span>(userId, rating)</span>
+<span id="cb1340-15"><a href="clustering.html#cb1340-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1340-16"><a href="clustering.html#cb1340-16" aria-hidden="true" tabindex="-1"></a>row_names <span class="ot">&lt;-</span> <span class="fu">str_remove</span>(x<span class="sc">$</span>title, <span class="st">&quot;: Episode&quot;</span>) <span class="sc">|&gt;</span> <span class="fu">str_trunc</span>(<span class="dv">20</span>)</span>
+<span id="cb1340-17"><a href="clustering.html#cb1340-17" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> x[,<span class="sc">-</span><span class="dv">1</span>] <span class="sc">|&gt;</span> <span class="fu">as.matrix</span>()</span>
+<span id="cb1340-18"><a href="clustering.html#cb1340-18" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="fu">sweep</span>(x, <span class="dv">2</span>, <span class="fu">colMeans</span>(x, <span class="at">na.rm =</span> <span class="cn">TRUE</span>))</span>
+<span id="cb1340-19"><a href="clustering.html#cb1340-19" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="fu">sweep</span>(x, <span class="dv">1</span>, <span class="fu">rowMeans</span>(x, <span class="at">na.rm =</span> <span class="cn">TRUE</span>))</span>
+<span id="cb1340-20"><a href="clustering.html#cb1340-20" aria-hidden="true" tabindex="-1"></a><span class="fu">rownames</span>(x) <span class="ot">&lt;-</span> row_names</span></code></pre></div>
 <p>Queremos utilizar estos datos para averiguar si hay grupos de películas basados en las calificaciones de 139 calificadores de películas. Un primer paso es encontrar la distancia entre cada par de películas usando la función <code>dist</code>:</p>
-<div class="sourceCode" id="cb1340"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1340-1"><a href="clustering.html#cb1340-1" aria-hidden="true" tabindex="-1"></a>d <span class="ot">&lt;-</span> <span class="fu">dist</span>(x)</span></code></pre></div>
-<div id="agrupación-jerárquica" class="section level2" number="34.1">
-<h2><span class="header-section-number">34.1</span> Agrupación jerárquica</h2>
+<div class="sourceCode" id="cb1341"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1341-1"><a href="clustering.html#cb1341-1" aria-hidden="true" tabindex="-1"></a>d <span class="ot">&lt;-</span> <span class="fu">dist</span>(x)</span></code></pre></div>
+<div id="agrupación-jerárquica" class="section level2 hasAnchor" number="34.1">
+<h2><span class="header-section-number">34.1</span> Agrupación jerárquica<a href="clustering.html#agrupación-jerárquica" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>Con la distancia calculada entre cada par de películas, necesitamos un algoritmo para definir grupos a partir de estas. La agrupación jerárquica comienza definiendo cada observación como un grupo separado. Entonces, los dos grupos más cercanos se unen en un grupo de forma iterativa hasta que solo haya un grupo que incluye todas las observaciones. La función <code>hclust</code> implementa este algoritmo y toma una distancia como entrada.</p>
-<div class="sourceCode" id="cb1341"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1341-1"><a href="clustering.html#cb1341-1" aria-hidden="true" tabindex="-1"></a>h <span class="ot">&lt;-</span> <span class="fu">hclust</span>(d)</span></code></pre></div>
+<div class="sourceCode" id="cb1342"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1342-1"><a href="clustering.html#cb1342-1" aria-hidden="true" tabindex="-1"></a>h <span class="ot">&lt;-</span> <span class="fu">hclust</span>(d)</span></code></pre></div>
 <p>Podemos ver los grupos resultantes usando un <em>dendrograma</em>.</p>
-<div class="sourceCode" id="cb1342"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1342-1"><a href="clustering.html#cb1342-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(h, <span class="at">cex =</span> <span class="fl">0.65</span>, <span class="at">main =</span> <span class="st">&quot;&quot;</span>, <span class="at">xlab =</span> <span class="st">&quot;&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb1343"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1343-1"><a href="clustering.html#cb1343-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(h, <span class="at">cex =</span> <span class="fl">0.65</span>, <span class="at">main =</span> <span class="st">&quot;&quot;</span>, <span class="at">xlab =</span> <span class="st">&quot;&quot;</span>)</span></code></pre></div>
 <p><img src="libro_files/figure-html/dendrogram-1.png" width="100%" style="display: block; margin: auto;" /></p>
 <p>Para interpretar este gráfico, primero, determinamos la distancia entre dos películas encontrando la primera posición, de arriba a abajo, donde las películas se dividen en dos grupos diferentes. La altura de esta ubicación es la distancia entre estos dos grupos. Entonces, la distancia entre las películas de <em>Star Wars</em> es de 8 o menos, mientras que la distancia entre <em>Raiders of the Lost of Ark</em> y <em>Silence of the Lambs</em> es de aproximadamente 17.</p>
 <p>Para generar grupos reales, podemos hacer una de dos cosas: 1) decidir la distancia mínima necesaria para que las observaciones estén en el mismo grupo o 2) decidir la cantidad de grupos que desean y luego encontrar la distancia mínima que lo logra. La función <code>cutree</code> se puede aplicar al resultado de <code>hclust</code> para realizar cualquiera de estas dos operaciones y generar grupos.</p>
-<div class="sourceCode" id="cb1343"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1343-1"><a href="clustering.html#cb1343-1" aria-hidden="true" tabindex="-1"></a>groups <span class="ot">&lt;-</span> <span class="fu">cutree</span>(h, <span class="at">k =</span> <span class="dv">10</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb1344"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1344-1"><a href="clustering.html#cb1344-1" aria-hidden="true" tabindex="-1"></a>groups <span class="ot">&lt;-</span> <span class="fu">cutree</span>(h, <span class="at">k =</span> <span class="dv">10</span>)</span></code></pre></div>
 <p>Noten que la agrupación provee algunas ideas sobre los tipos de películas. El grupo 4 parece ser éxitos de taquilla:</p>
-<div class="sourceCode" id="cb1344"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1344-1"><a href="clustering.html#cb1344-1" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(groups)[groups<span class="sc">==</span><span class="dv">4</span>]</span>
-<span id="cb1344-2"><a href="clustering.html#cb1344-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] &quot;Apollo 13&quot;            &quot;Braveheart&quot;           &quot;Dances with Wolves&quot;  </span></span>
-<span id="cb1344-3"><a href="clustering.html#cb1344-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [4] &quot;Forrest Gump&quot;         &quot;Good Will Hunting&quot;    &quot;Saving Private Ryan&quot; </span></span>
-<span id="cb1344-4"><a href="clustering.html#cb1344-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [7] &quot;Schindler&#39;s List&quot;     &quot;Shawshank Redempt...&quot;</span></span></code></pre></div>
+<div class="sourceCode" id="cb1345"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1345-1"><a href="clustering.html#cb1345-1" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(groups)[groups<span class="sc">==</span><span class="dv">4</span>]</span>
+<span id="cb1345-2"><a href="clustering.html#cb1345-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] &quot;Apollo 13&quot;            &quot;Braveheart&quot;           &quot;Dances with Wolves&quot;  </span></span>
+<span id="cb1345-3"><a href="clustering.html#cb1345-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [4] &quot;Forrest Gump&quot;         &quot;Good Will Hunting&quot;    &quot;Saving Private Ryan&quot; </span></span>
+<span id="cb1345-4"><a href="clustering.html#cb1345-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [7] &quot;Schindler&#39;s List&quot;     &quot;Shawshank Redempt...&quot;</span></span></code></pre></div>
 <p>Y el grupo 9 parece ser películas <em>nerd</em>:</p>
-<div class="sourceCode" id="cb1345"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1345-1"><a href="clustering.html#cb1345-1" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(groups)[groups<span class="sc">==</span><span class="dv">9</span>]</span>
-<span id="cb1345-2"><a href="clustering.html#cb1345-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] &quot;Lord of the Rings...&quot; &quot;Lord of the Rings...&quot; &quot;Lord of the Rings...&quot;</span></span>
-<span id="cb1345-3"><a href="clustering.html#cb1345-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [4] &quot;Star Wars IV - A ...&quot; &quot;Star Wars V - The...&quot; &quot;Star Wars VI - Re...&quot;</span></span></code></pre></div>
+<div class="sourceCode" id="cb1346"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1346-1"><a href="clustering.html#cb1346-1" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(groups)[groups<span class="sc">==</span><span class="dv">9</span>]</span>
+<span id="cb1346-2"><a href="clustering.html#cb1346-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] &quot;Lord of the Rings...&quot; &quot;Lord of the Rings...&quot; &quot;Lord of the Rings...&quot;</span></span>
+<span id="cb1346-3"><a href="clustering.html#cb1346-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [4] &quot;Star Wars IV - A ...&quot; &quot;Star Wars V - The...&quot; &quot;Star Wars VI - Re...&quot;</span></span></code></pre></div>
 <p>Podemos cambiar el tamaño del grupo haciendo <code>k</code> más grande o <code>h</code> más pequeño. También podemos explorar los datos para ver si hay grupos de evaluadores de películas.</p>
-<div class="sourceCode" id="cb1346"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1346-1"><a href="clustering.html#cb1346-1" aria-hidden="true" tabindex="-1"></a>h_2 <span class="ot">&lt;-</span> <span class="fu">dist</span>(<span class="fu">t</span>(x)) <span class="sc">%&gt;%</span> <span class="fu">hclust</span>()</span></code></pre></div>
+<div class="sourceCode" id="cb1347"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1347-1"><a href="clustering.html#cb1347-1" aria-hidden="true" tabindex="-1"></a>h_2 <span class="ot">&lt;-</span> <span class="fu">dist</span>(<span class="fu">t</span>(x)) <span class="sc">|&gt;</span> <span class="fu">hclust</span>()</span></code></pre></div>
 <!--
 
 ```r
@@ -1089,43 +1088,43 @@ plot(h_2, cex = 0.35)
 <img src="libro_files/figure-html/dendrogram-2,%20-1.png" width="100%" style="display: block; margin: auto;" />
 -->
 </div>
-<div id="k-means" class="section level2" number="34.2">
-<h2><span class="header-section-number">34.2</span> k-means</h2>
+<div id="k-means" class="section level2 hasAnchor" number="34.2">
+<h2><span class="header-section-number">34.2</span> k-means<a href="clustering.html#k-means" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>Para usar el algoritmo de agrupamiento <em>k-means</em>, tenemos que predefinir <span class="math inline">\(k\)</span>, el número de grupos que queremos definir. El algoritmo <em>k-means</em> es iterativo. El primer paso es definir <span class="math inline">\(k\)</span> centros. Luego, cada observación se asigna al grupo con el centro más cercano a esa observación. En un segundo paso, los centros se redefinen utilizando la observación en cada grupo: los medios de columna se utilizan para definir un <em>centroide</em>. Repetimos estos dos pasos hasta que los centros converjan.</p>
 <p>La función <code>kmeans</code> incluida en base R no funciona con NAs. Con fines ilustrativos, reemplazaremos las NAs con 0s. En general, la decisión de cómo completar los datos que faltan, o si uno debería hacerlo, debe hacerse con cuidado.</p>
-<div class="sourceCode" id="cb1347"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1347-1"><a href="clustering.html#cb1347-1" aria-hidden="true" tabindex="-1"></a>x_0 <span class="ot">&lt;-</span> x</span>
-<span id="cb1347-2"><a href="clustering.html#cb1347-2" aria-hidden="true" tabindex="-1"></a>x_0[<span class="fu">is.na</span>(x_0)] <span class="ot">&lt;-</span> <span class="dv">0</span></span>
-<span id="cb1347-3"><a href="clustering.html#cb1347-3" aria-hidden="true" tabindex="-1"></a>k <span class="ot">&lt;-</span> <span class="fu">kmeans</span>(x_0, <span class="at">centers =</span> <span class="dv">10</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb1348"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1348-1"><a href="clustering.html#cb1348-1" aria-hidden="true" tabindex="-1"></a>x_0 <span class="ot">&lt;-</span> x</span>
+<span id="cb1348-2"><a href="clustering.html#cb1348-2" aria-hidden="true" tabindex="-1"></a>x_0[<span class="fu">is.na</span>(x_0)] <span class="ot">&lt;-</span> <span class="dv">0</span></span>
+<span id="cb1348-3"><a href="clustering.html#cb1348-3" aria-hidden="true" tabindex="-1"></a>k <span class="ot">&lt;-</span> <span class="fu">kmeans</span>(x_0, <span class="at">centers =</span> <span class="dv">10</span>)</span></code></pre></div>
 <p>Las asignaciones de grupos están en el componente <code>cluster</code>:</p>
-<div class="sourceCode" id="cb1348"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1348-1"><a href="clustering.html#cb1348-1" aria-hidden="true" tabindex="-1"></a>groups <span class="ot">&lt;-</span> k<span class="sc">$</span>cluster</span></code></pre></div>
+<div class="sourceCode" id="cb1349"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1349-1"><a href="clustering.html#cb1349-1" aria-hidden="true" tabindex="-1"></a>groups <span class="ot">&lt;-</span> k<span class="sc">$</span>cluster</span></code></pre></div>
 <p>Recuerden que debido a que el primer centro se elige al azar, los grupos finales son aleatorios. Imponemos cierta estabilidad al repetir la función entera varias veces y tomar el promedio de los resultados. El número de valores iniciales aleatorios para utilizar se puede asignar a través del argumento <code>nstart</code>.</p>
-<div class="sourceCode" id="cb1349"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1349-1"><a href="clustering.html#cb1349-1" aria-hidden="true" tabindex="-1"></a>k <span class="ot">&lt;-</span> <span class="fu">kmeans</span>(x_0, <span class="at">centers =</span> <span class="dv">10</span>, <span class="at">nstart =</span> <span class="dv">25</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb1350"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1350-1"><a href="clustering.html#cb1350-1" aria-hidden="true" tabindex="-1"></a>k <span class="ot">&lt;-</span> <span class="fu">kmeans</span>(x_0, <span class="at">centers =</span> <span class="dv">10</span>, <span class="at">nstart =</span> <span class="dv">25</span>)</span></code></pre></div>
 </div>
-<div id="mapas-de-calor" class="section level2" number="34.3">
-<h2><span class="header-section-number">34.3</span> Mapas de calor</h2>
+<div id="mapas-de-calor" class="section level2 hasAnchor" number="34.3">
+<h2><span class="header-section-number">34.3</span> Mapas de calor<a href="clustering.html#mapas-de-calor" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>Una poderosa herramienta de visualización para descubrir grupos o patrones en sus datos es el <em>mapa de calor</em> (<em>heatmap</em> en inglés). La idea es sencilla: graficar una imagen de su matriz de datos con colores utilizados como señal visual y con tanto las columnas como las filas ordenadas según los resultados de un algoritmo de agrupamiento. Demostraremos esto con el set de datos <code>tissue_gene_expression</code>. Escalaremos las filas de la matriz de expresión génica.</p>
 <p>El primer paso es calcular:</p>
-<div class="sourceCode" id="cb1350"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1350-1"><a href="clustering.html#cb1350-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(<span class="st">&quot;tissue_gene_expression&quot;</span>)</span>
-<span id="cb1350-2"><a href="clustering.html#cb1350-2" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="fu">sweep</span>(tissue_gene_expression<span class="sc">$</span>x, <span class="dv">2</span>, <span class="fu">colMeans</span>(tissue_gene_expression<span class="sc">$</span>x))</span>
-<span id="cb1350-3"><a href="clustering.html#cb1350-3" aria-hidden="true" tabindex="-1"></a>h_1 <span class="ot">&lt;-</span> <span class="fu">hclust</span>(<span class="fu">dist</span>(x))</span>
-<span id="cb1350-4"><a href="clustering.html#cb1350-4" aria-hidden="true" tabindex="-1"></a>h_2 <span class="ot">&lt;-</span> <span class="fu">hclust</span>(<span class="fu">dist</span>(<span class="fu">t</span>(x)))</span></code></pre></div>
+<div class="sourceCode" id="cb1351"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1351-1"><a href="clustering.html#cb1351-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(<span class="st">&quot;tissue_gene_expression&quot;</span>)</span>
+<span id="cb1351-2"><a href="clustering.html#cb1351-2" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="fu">sweep</span>(tissue_gene_expression<span class="sc">$</span>x, <span class="dv">2</span>, <span class="fu">colMeans</span>(tissue_gene_expression<span class="sc">$</span>x))</span>
+<span id="cb1351-3"><a href="clustering.html#cb1351-3" aria-hidden="true" tabindex="-1"></a>h_1 <span class="ot">&lt;-</span> <span class="fu">hclust</span>(<span class="fu">dist</span>(x))</span>
+<span id="cb1351-4"><a href="clustering.html#cb1351-4" aria-hidden="true" tabindex="-1"></a>h_2 <span class="ot">&lt;-</span> <span class="fu">hclust</span>(<span class="fu">dist</span>(<span class="fu">t</span>(x)))</span></code></pre></div>
 <p>Ahora podemos usar los resultados de esta agrupación para ordenar las filas y columnas.</p>
-<div class="sourceCode" id="cb1351"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1351-1"><a href="clustering.html#cb1351-1" aria-hidden="true" tabindex="-1"></a><span class="fu">image</span>(x[h_1<span class="sc">$</span>order, h_2<span class="sc">$</span>order])</span></code></pre></div>
+<div class="sourceCode" id="cb1352"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1352-1"><a href="clustering.html#cb1352-1" aria-hidden="true" tabindex="-1"></a><span class="fu">image</span>(x[h_1<span class="sc">$</span>order, h_2<span class="sc">$</span>order])</span></code></pre></div>
 <p>Pero hay una función, <code>heatmap</code>, que lo hace por nosotros:</p>
-<div class="sourceCode" id="cb1352"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1352-1"><a href="clustering.html#cb1352-1" aria-hidden="true" tabindex="-1"></a><span class="fu">heatmap</span>(x, <span class="at">col =</span> RColorBrewer<span class="sc">::</span><span class="fu">brewer.pal</span>(<span class="dv">11</span>, <span class="st">&quot;Spectral&quot;</span>))</span></code></pre></div>
+<div class="sourceCode" id="cb1353"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1353-1"><a href="clustering.html#cb1353-1" aria-hidden="true" tabindex="-1"></a><span class="fu">heatmap</span>(x, <span class="at">col =</span> RColorBrewer<span class="sc">::</span><span class="fu">brewer.pal</span>(<span class="dv">11</span>, <span class="st">&quot;Spectral&quot;</span>))</span></code></pre></div>
 <p>No mostramos los resultados de la función <code>heatmap</code> porque hay demasiados atributos para que el gráfico sea útil. Por lo tanto, filtramos algunas columnas y rehacemos los gráficos.</p>
 </div>
-<div id="filtrando-atributos" class="section level2" number="34.4">
-<h2><span class="header-section-number">34.4</span> Filtrando atributos</h2>
+<div id="filtrando-atributos" class="section level2 hasAnchor" number="34.4">
+<h2><span class="header-section-number">34.4</span> Filtrando atributos<a href="clustering.html#filtrando-atributos" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>Si la información sobre los grupos se incluye en unos pocos atributos, incluir todos los atributos puede agregar suficiente ruido como para que detectar grupos sea retante. Un enfoque sencillo para tratar de eliminar atributos sin información es incluir solo aquellos con alta varianza. En el ejemplo de la película, un usuario con baja variación en sus calificaciones no es realmente informativo: todas las películas le parecen iguales. Aquí hay un ejemplo de cómo podemos incluir solo los atributos con alta varianza.</p>
-<div class="sourceCode" id="cb1353"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1353-1"><a href="clustering.html#cb1353-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(matrixStats)</span>
-<span id="cb1353-2"><a href="clustering.html#cb1353-2" aria-hidden="true" tabindex="-1"></a>sds <span class="ot">&lt;-</span> <span class="fu">colSds</span>(x, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb1353-3"><a href="clustering.html#cb1353-3" aria-hidden="true" tabindex="-1"></a>o <span class="ot">&lt;-</span> <span class="fu">order</span>(sds, <span class="at">decreasing =</span> <span class="cn">TRUE</span>)[<span class="dv">1</span><span class="sc">:</span><span class="dv">25</span>]</span>
-<span id="cb1353-4"><a href="clustering.html#cb1353-4" aria-hidden="true" tabindex="-1"></a><span class="fu">heatmap</span>(x[,o], <span class="at">col =</span> RColorBrewer<span class="sc">::</span><span class="fu">brewer.pal</span>(<span class="dv">11</span>, <span class="st">&quot;Spectral&quot;</span>))</span></code></pre></div>
+<div class="sourceCode" id="cb1354"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1354-1"><a href="clustering.html#cb1354-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(matrixStats)</span>
+<span id="cb1354-2"><a href="clustering.html#cb1354-2" aria-hidden="true" tabindex="-1"></a>sds <span class="ot">&lt;-</span> <span class="fu">colSds</span>(x, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb1354-3"><a href="clustering.html#cb1354-3" aria-hidden="true" tabindex="-1"></a>o <span class="ot">&lt;-</span> <span class="fu">order</span>(sds, <span class="at">decreasing =</span> <span class="cn">TRUE</span>)[<span class="dv">1</span><span class="sc">:</span><span class="dv">25</span>]</span>
+<span id="cb1354-4"><a href="clustering.html#cb1354-4" aria-hidden="true" tabindex="-1"></a><span class="fu">heatmap</span>(x[,o], <span class="at">col =</span> RColorBrewer<span class="sc">::</span><span class="fu">brewer.pal</span>(<span class="dv">11</span>, <span class="st">&quot;Spectral&quot;</span>))</span></code></pre></div>
 <p><img src="libro_files/figure-html/heatmap-3-1.png" width="100%" style="display: block; margin: auto;" /></p>
 </div>
-<div id="ejercicios-62" class="section level2" number="34.5">
-<h2><span class="header-section-number">34.5</span> Ejercicios</h2>
+<div id="ejercicios-62" class="section level2 hasAnchor" number="34.5">
+<h2><span class="header-section-number">34.5</span> Ejercicios<a href="clustering.html#ejercicios-62" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>1. Cargue el set de datos <code>tissue_gene_expression</code>. Reste las medias de cada fila y calcule la distancia entre cada observación. Guarde el resultado en <code>d</code>.</p>
 <p>2. Haga un gráfico de agrupamiento jerárquico y agregue los tipos de tejido como etiquetas.</p>
 <p>3. Ejecute una agrupación <em>k-means</em> en los datos con <span class="math inline">\(K=7\)</span>. Haga una tabla que compara los grupos identificados con los tipos de tejidos correctos. Ejecute el algoritmo varias veces para ver cómo cambia la respuesta.</p>
@@ -1146,7 +1145,6 @@ plot(h_2, cex = 0.35)
     </div>
   </div>
 <script src="libs/gitbook-2.6.7/js/app.min.js"></script>
-<script src="libs/gitbook-2.6.7/js/lunr.js"></script>
 <script src="libs/gitbook-2.6.7/js/clipboard.min.js"></script>
 <script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
 <script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
@@ -1186,6 +1184,10 @@ gitbook.start({
 "text": null
 },
 "download": ["libro.pdf"],
+"search": {
+"engine": "fuse",
+"options": null
+},
 "toc": {
 "collapse": "section"
 }

@@ -6,11 +6,10 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <title>Capítulo 7 ggplot2 | Introducción a la ciencia de datos</title>
   <meta name="description" content="Este libro presenta conceptos y destrezas que les ayudarán abordar los retos de situaciones actuales del análisis de datos. Cubre conceptos de probabilidad, inferencia estadística, regresión lineal y machine learning. Además, les permitirá desarrollar destrezas como la programación R, el wrangling de datos con dplyr, la visualización de datos con ggplot2, la organización de archivos con Shell de UNIX / Linux, el control de versiones con GitHub y la preparación de documentos reproducibles con R markdown." />
-  <meta name="generator" content="bookdown 0.22 and GitBook 2.6.7" />
+  <meta name="generator" content="bookdown 0.27 and GitBook 2.6.7" />
 
   <meta property="og:title" content="Capítulo 7 ggplot2 | Introducción a la ciencia de datos" />
   <meta property="og:type" content="book" />
-  
   
   <meta property="og:description" content="Este libro presenta conceptos y destrezas que les ayudarán abordar los retos de situaciones actuales del análisis de datos. Cubre conceptos de probabilidad, inferencia estadística, regresión lineal y machine learning. Además, les permitirá desarrollar destrezas como la programación R, el wrangling de datos con dplyr, la visualización de datos con ggplot2, la organización de archivos con Shell de UNIX / Linux, el control de versiones con GitHub y la preparación de documentos reproducibles con R markdown." />
   
@@ -24,7 +23,7 @@
 <meta name="author" content="Rafael A. Irizarry" />
 
 
-<meta name="date" content="2021-07-03" />
+<meta name="date" content="2022-10-25" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -33,8 +32,8 @@
   
 <link rel="prev" href="introducción-a-la-visualización-de-datos.html"/>
 <link rel="next" href="distributions.html"/>
-<script src="libs/header-attrs-2.9/header-attrs.js"></script>
-<script src="libs/jquery-2.2.3/jquery.min.js"></script>
+<script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
 <link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
 <link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
@@ -50,9 +49,9 @@
 
 
 
-
-<link href="libs/anchor-sections-1.0.1/anchor-sections.css" rel="stylesheet" />
-<script src="libs/anchor-sections-1.0.1/anchor-sections.js"></script>
+<link href="libs/anchor-sections-1.1.0/anchor-sections.css" rel="stylesheet" />
+<link href="libs/anchor-sections-1.1.0/anchor-sections-hash.css" rel="stylesheet" />
+<script src="libs/anchor-sections-1.1.0/anchor-sections.js"></script>
 <script src="libs/kePrint-0.0.1/kePrint.js"></script>
 <link href="libs/lightable-0.0.1/lightable.css" rel="stylesheet" />
 
@@ -254,7 +253,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="4.3.3" data-path="tidyverse.html"><a href="tidyverse.html#cómo-seleccionar-columnas-con-select"><i class="fa fa-check"></i><b>4.3.3</b> Cómo seleccionar columnas con <code>select</code></a></li>
 </ul></li>
 <li class="chapter" data-level="4.4" data-path="tidyverse.html"><a href="tidyverse.html#ejercicios-9"><i class="fa fa-check"></i><b>4.4</b> Ejercicios</a></li>
-<li class="chapter" data-level="4.5" data-path="tidyverse.html"><a href="tidyverse.html#el-pipe"><i class="fa fa-check"></i><b>4.5</b> El <em>pipe</em>: <code>%&gt;%</code></a></li>
+<li class="chapter" data-level="4.5" data-path="tidyverse.html"><a href="tidyverse.html#el-pipe"><i class="fa fa-check"></i><b>4.5</b> El <em>pipe</em>: <code>|&gt;</code></a></li>
 <li class="chapter" data-level="4.6" data-path="tidyverse.html"><a href="tidyverse.html#ejercicios-10"><i class="fa fa-check"></i><b>4.6</b> Ejercicios</a></li>
 <li class="chapter" data-level="4.7" data-path="tidyverse.html"><a href="tidyverse.html#cómo-resumir-datos"><i class="fa fa-check"></i><b>4.7</b> Cómo resumir datos</a>
 <ul>
@@ -1025,19 +1024,19 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
           <div class="page-inner">
 
             <section class="normal" id="section-">
-<div id="ggplot2" class="section level1" number="7">
-<h1><span class="header-section-number">Capítulo 7</span> ggplot2</h1>
+<div id="ggplot2" class="section level1 hasAnchor" number="7">
+<h1><span class="header-section-number">Capítulo 7</span> ggplot2<a href="ggplot2.html#ggplot2" class="anchor-section" aria-label="Anchor link to header"></a></h1>
 <p>La visualización de datos exploratorios es quizás la mayor ventaja de R. Uno puede pasar rápidamente de la idea a los datos al gráfico con un equilibrio único de flexibilidad y facilidad. Por ejemplo, Excel puede ser más fácil que R para algunos gráficos, pero no es tan flexible. D3.js puede ser más flexible y poderoso que R, pero se tarda mucho más en generar una gráfico.</p>
 <p>A lo largo del libro, crearemos gráficos usando el paquete <strong>ggplot2</strong><a href="#fn26" class="footnote-ref" id="fnref26"><sup>26</sup></a>.</p>
-<div class="sourceCode" id="cb255"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb255-1"><a href="ggplot2.html#cb255-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
-<span id="cb255-2"><a href="ggplot2.html#cb255-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span></code></pre></div>
+<div class="sourceCode" id="cb256"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb256-1"><a href="ggplot2.html#cb256-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
+<span id="cb256-2"><a href="ggplot2.html#cb256-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span></code></pre></div>
 <p>Hay muchas opciones para graficar disponibles en R. De hecho, las capacidades para graficar que vienen con una instalación básica de R ya son bastante útiles. También hay otros paquetes para crear gráficos como <strong>grid</strong> y <strong>lattice</strong>. En este libro decidimos usar <strong>ggplot2</strong> porque divide los gráficos en componentes de una manera que le permite a los principiantes crear gráficos relativamente complejos y estéticamente agradables utilizando una sintaxis intuitiva y relativamente fácil de recordar.</p>
 <p>Una razón por la cual <strong>ggplot2</strong> es generalmente más intuitiva para los principiantes es porque usa una gramática de gráficos<a href="#fn27" class="footnote-ref" id="fnref27"><sup>27</sup></a>, el <em>gg</em> de <strong>ggplot2</strong>. Esto es análogo a la forma en que aprender gramática puede ayudar a un estudiante construir cientos de oraciones diferentes al aprender solo una pequeña cantidad de verbos, sustantivos y adjetivos, en vez de memorizar cada oración específica. Del mismo modo, al aprender una pequeña cantidad de los componentes básicos de <strong>ggplot2</strong> y de su gramática, podrán crear cientos de gráficos diferentes.</p>
 <p>Otra razón por la cual <strong>ggplot2</strong> es fácil para los principiantes es que su comportamiento por defecto se ha elegido cuidadosamente para satisfacer la gran mayoría de los casos y, además, es visualmente agradable. Como resultado, es posible crear gráficos informativos y elegantes con un código relativamente sencillo y legible.</p>
 <p>Una limitación de <strong>ggplot2</strong> es que está diseñado para trabajar exclusivamente con tablas de datos en formato <em>tidy</em> (donde las filas son observaciones y las columnas son variables). Sin embargo, un porcentaje sustancial de sets de datos con los que los principiantes trabajan están en este formato o pueden convertirse a tal. Una ventaja de este enfoque es que, con tal que nuestros datos estén <em>tidy</em>, <strong>ggplot2</strong> simplifica el código de graficar y el aprendizaje de gramática para una variedad de gráficos.</p>
-<p>Para usar <strong>ggplot2</strong>, tendrán que aprender varias funciones y argumentos. Estos son difíciles de memorizar, por lo que les recomendamos que tengan a mano la hoja de referencia de ggplot2. Pueden obtener una copia en línea<a href="#fn28" class="footnote-ref" id="fnref28"><sup>28</sup></a> o simplemente realizar una búsqueda en internet de “ggplot2 cheat sheet.”</p>
-<div id="los-componentes-de-un-gráfico" class="section level2" number="7.1">
-<h2><span class="header-section-number">7.1</span> Los componentes de un gráfico</h2>
+<p>Para usar <strong>ggplot2</strong>, tendrán que aprender varias funciones y argumentos. Estos son difíciles de memorizar, por lo que les recomendamos que tengan a mano la hoja de referencia de ggplot2. Pueden obtener una copia en línea<a href="#fn28" class="footnote-ref" id="fnref28"><sup>28</sup></a> o simplemente realizar una búsqueda en internet de “ggplot2 cheat sheet”.</p>
+<div id="los-componentes-de-un-gráfico" class="section level2 hasAnchor" number="7.1">
+<h2><span class="header-section-number">7.1</span> Los componentes de un gráfico<a href="ggplot2.html#los-componentes-de-un-gráfico" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>Construiremos un gráfico como el siguiente, que resume el set de datos de asesinatos con armas de fuego en Estados Unidos:</p>
 <p><img src="libro_files/figure-html/ggplot-example-plot-1.png" width="70%" style="display: block; margin: auto;" /></p>
 <p>Podemos ver claramente cuánto varían los estados según el tamaño de la población y el número total de asesinatos. No es sorprendente que también se observe una relación clara entre los totales de asesinatos y el tamaño de la población. Un estado que cae en la línea discontinua gris tiene la misma tasa de asesinatos que el promedio de EE. UU. Las cuatro regiones geográficas se denotan con color, que señala cómo la mayoría de los estados del sur tienen tasas de asesinatos por encima del promedio.</p>
@@ -1052,34 +1051,34 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <ul>
 <li>Los puntos están etiquetados con las abreviaturas de los estados.</li>
 <li>El rango del eje-x y el eje-y parece estar definido por el rango de los datos. Ambos están en escalas logarítmicas.</li>
-<li>Hay etiquetas, un título, una leyenda y utilizamos el estilo de la revista “The Economist.”</li>
+<li>Hay etiquetas, un título, una leyenda y utilizamos el estilo de la revista “The Economist”.</li>
 </ul>
 <p>Ahora construiremos el gráfico parte por parte. Comenzemos cargando el set de datos:</p>
-<div class="sourceCode" id="cb256"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb256-1"><a href="ggplot2.html#cb256-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dslabs)</span>
-<span id="cb256-2"><a href="ggplot2.html#cb256-2" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(murders)</span></code></pre></div>
+<div class="sourceCode" id="cb257"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb257-1"><a href="ggplot2.html#cb257-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dslabs)</span>
+<span id="cb257-2"><a href="ggplot2.html#cb257-2" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(murders)</span></code></pre></div>
 </div>
-<div id="objetos-ggplot" class="section level2" number="7.2">
-<h2><span class="header-section-number">7.2</span> Objetos <code>ggplot</code></h2>
+<div id="objetos-ggplot" class="section level2 hasAnchor" number="7.2">
+<h2><span class="header-section-number">7.2</span> Objetos <code>ggplot</code><a href="ggplot2.html#objetos-ggplot" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>El primer paso para crear un gráfico <strong>ggplot2</strong> es definir un objeto <code>ggplot</code>. Hacemos esto con la función <code>ggplot</code>, que inicializa el gráfico. Si leemos la página de ayuda para esta función, vemos que el primer argumento se usa para especificar qué datos están asociados con este objeto:</p>
-<div class="sourceCode" id="cb257"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb257-1"><a href="ggplot2.html#cb257-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">data =</span> murders)</span></code></pre></div>
+<div class="sourceCode" id="cb258"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb258-1"><a href="ggplot2.html#cb258-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">data =</span> murders)</span></code></pre></div>
 <p>También podemos <em>pipe</em> los datos como primer argumento. Entonces, esta línea de código es equivalente a la anterior:</p>
-<div class="sourceCode" id="cb258"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb258-1"><a href="ggplot2.html#cb258-1" aria-hidden="true" tabindex="-1"></a>murders <span class="sc">%&gt;%</span> <span class="fu">ggplot</span>()</span></code></pre></div>
+<div class="sourceCode" id="cb259"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb259-1"><a href="ggplot2.html#cb259-1" aria-hidden="true" tabindex="-1"></a>murders <span class="sc">|&gt;</span> <span class="fu">ggplot</span>()</span></code></pre></div>
 <p><img src="libro_files/figure-html/ggplot-example-2-1.png" width="70%" style="display: block; margin: auto;" /></p>
 <p>El código crea un gráfico, en este caso una pizarra en blanco ya que no se ha definido la geometría. La única opción de estilo que vemos es un fondo gris.</p>
 <p>Lo que sucedió es que el objeto fue creado y, debido a que no fue asignado, se evaluó automáticamente. Pero podemos asignar nuestro gráfico a un objeto, por ejemplo así:</p>
-<div class="sourceCode" id="cb259"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb259-1"><a href="ggplot2.html#cb259-1" aria-hidden="true" tabindex="-1"></a>p <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(<span class="at">data =</span> murders)</span>
-<span id="cb259-2"><a href="ggplot2.html#cb259-2" aria-hidden="true" tabindex="-1"></a><span class="fu">class</span>(p)</span>
-<span id="cb259-3"><a href="ggplot2.html#cb259-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] &quot;gg&quot;     &quot;ggplot&quot;</span></span></code></pre></div>
+<div class="sourceCode" id="cb260"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb260-1"><a href="ggplot2.html#cb260-1" aria-hidden="true" tabindex="-1"></a>p <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(<span class="at">data =</span> murders)</span>
+<span id="cb260-2"><a href="ggplot2.html#cb260-2" aria-hidden="true" tabindex="-1"></a><span class="fu">class</span>(p)</span>
+<span id="cb260-3"><a href="ggplot2.html#cb260-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] &quot;gg&quot;     &quot;ggplot&quot;</span></span></code></pre></div>
 <p>Para representar el gráfico asociado con este objeto, simplemente imprimimos el objeto <code>p</code>. Cada una de las siguientes dos líneas de código produce el mismo gráfico que vemos arriba:</p>
-<div class="sourceCode" id="cb260"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb260-1"><a href="ggplot2.html#cb260-1" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(p)</span>
-<span id="cb260-2"><a href="ggplot2.html#cb260-2" aria-hidden="true" tabindex="-1"></a>p</span></code></pre></div>
+<div class="sourceCode" id="cb261"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb261-1"><a href="ggplot2.html#cb261-1" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(p)</span>
+<span id="cb261-2"><a href="ggplot2.html#cb261-2" aria-hidden="true" tabindex="-1"></a>p</span></code></pre></div>
 </div>
-<div id="geometrías" class="section level2" number="7.3">
-<h2><span class="header-section-number">7.3</span> Geometrías</h2>
+<div id="geometrías" class="section level2 hasAnchor" number="7.3">
+<h2><span class="header-section-number">7.3</span> Geometrías<a href="ggplot2.html#geometrías" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>En <code>ggplot2</code> creamos gráficos agregando <em>capas</em> (<em>layers</em> en inglés). Las capas pueden definir geometrías, calcular estadísticas de resumen, definir qué escalas (<em>scales</em> en inglés) usar o incluso cambiar estilos. Para añadir capas, usamos el símbolo <code>+</code>. En general, una línea de código se verá así:</p>
 <blockquote>
 <blockquote>
-<p>DATOS%&gt;% <code>ggplot()</code> + CAPA 1 + CAPA 2 + … + CAPA N</p>
+<p>DATOS|&gt; <code>ggplot()</code> + CAPA 1 + CAPA 2 + … + CAPA N</p>
 </blockquote>
 </blockquote>
 <p>Usualmente, la primera capa que agregamos define la geometría. Queremos hacer un diagrama de dispersión. ¿Qué geometría debemos utilizar?</p>
@@ -1102,202 +1101,202 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 &gt; colour</code></pre>
 <p>y, como se esperaba, vemos que se requieren al menos dos argumentos: <code>x</code> e <code>y</code>.</p>
 </div>
-<div id="mapeos-estéticos" class="section level2" number="7.4">
-<h2><span class="header-section-number">7.4</span> Mapeos estéticos</h2>
+<div id="mapeos-estéticos" class="section level2 hasAnchor" number="7.4">
+<h2><span class="header-section-number">7.4</span> Mapeos estéticos<a href="ggplot2.html#mapeos-estéticos" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>Los <strong>mapeos estéticos</strong> (<em>aesthetic mappings</em> en inglés) describen cómo las propiedades de los datos se conectan con las características del gráfico, como la distancia a lo largo de un eje, el tamaño o el color. La función <code>aes</code> conecta los datos con lo que vemos en el gráfico mediante la definición de asignaciones estéticas y, por eso, será una de las funciones que más utilizarán al graficar. El resultado de la función <code>aes</code> a menudo se utiliza como argumento de una función de geometría. Este ejemplo produce un diagrama de dispersión de asesinatos totales versus población en millones:</p>
-<div class="sourceCode" id="cb262"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb262-1"><a href="ggplot2.html#cb262-1" aria-hidden="true" tabindex="-1"></a>murders <span class="sc">%&gt;%</span> <span class="fu">ggplot</span>() <span class="sc">+</span></span>
-<span id="cb262-2"><a href="ggplot2.html#cb262-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">x =</span> population<span class="sc">/</span><span class="dv">10</span><span class="sc">^</span><span class="dv">6</span>, <span class="at">y =</span> total))</span></code></pre></div>
+<div class="sourceCode" id="cb263"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb263-1"><a href="ggplot2.html#cb263-1" aria-hidden="true" tabindex="-1"></a>murders <span class="sc">|&gt;</span> <span class="fu">ggplot</span>() <span class="sc">+</span></span>
+<span id="cb263-2"><a href="ggplot2.html#cb263-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">x =</span> population<span class="sc">/</span><span class="dv">10</span><span class="sc">^</span><span class="dv">6</span>, <span class="at">y =</span> total))</span></code></pre></div>
 <p>Podemos quitar el <code>x =</code> e <code>y =</code> si quisiéramos ya que estos son el primer y el segundo argumento esperado, como se ve en la página de ayuda.</p>
 <p>En lugar de definir nuestro gráfico desde cero, podemos añadir una capa al objeto <code>p</code> que se definió anteriormente como <code>p &lt;- ggplot(data = murders)</code>:</p>
-<div class="sourceCode" id="cb263"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb263-1"><a href="ggplot2.html#cb263-1" aria-hidden="true" tabindex="-1"></a>p <span class="sc">+</span> <span class="fu">geom_point</span>(<span class="fu">aes</span>(population<span class="sc">/</span><span class="dv">10</span><span class="sc">^</span><span class="dv">6</span>, total))</span></code></pre></div>
+<div class="sourceCode" id="cb264"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb264-1"><a href="ggplot2.html#cb264-1" aria-hidden="true" tabindex="-1"></a>p <span class="sc">+</span> <span class="fu">geom_point</span>(<span class="fu">aes</span>(population<span class="sc">/</span><span class="dv">10</span><span class="sc">^</span><span class="dv">6</span>, total))</span></code></pre></div>
 <p><img src="libro_files/figure-html/ggplot-example-3-1.png" width="70%" style="display: block; margin: auto;" /></p>
 <p>La escala y las etiquetas se definen por defecto al agregar esta capa. Al igual que las funciones de <strong>dplyr</strong>, <code>aes</code> también usa los nombres de variables del componente objeto: podemos usar <code>population</code> y <code>total</code> sin tener que llamarlos como <code>murders$population</code> and <code>murders$total</code>. El comportamiento de reconocer las variables del componente de datos es específico a <code>aes</code>. Con la mayoría de las funciones, si intentan acceder a los valores de <code>population</code> o <code>total</code> fuera de <code>aes</code>, recibirán un error.</p>
 </div>
-<div id="capas" class="section level2" number="7.5">
-<h2><span class="header-section-number">7.5</span> Capas</h2>
+<div id="capas" class="section level2 hasAnchor" number="7.5">
+<h2><span class="header-section-number">7.5</span> Capas<a href="ggplot2.html#capas" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>Una segunda capa en el gráfico que queremos hacer implica añadir una etiqueta a cada punto para identificar el estado. Las funciones <code>geom_label</code> y <code>geom_text</code> nos permiten añadir texto al gráfico con o sin un rectángulo detrás del texto, respectivamente.</p>
 <p>Debido a que cada punto (cada estado en este caso) tiene una etiqueta, necesitamos un mapeo estético para hacer la conexión entre los puntos y las etiquetas. Al leer la página de ayuda, aprendemos que el mapeo entre el punto y la etiqueta se provee a través del argumento <code>label</code> de <code>aes</code>. Entonces el código se ve así:</p>
-<div class="sourceCode" id="cb264"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb264-1"><a href="ggplot2.html#cb264-1" aria-hidden="true" tabindex="-1"></a>p <span class="sc">+</span> <span class="fu">geom_point</span>(<span class="fu">aes</span>(population<span class="sc">/</span><span class="dv">10</span><span class="sc">^</span><span class="dv">6</span>, total)) <span class="sc">+</span></span>
-<span id="cb264-2"><a href="ggplot2.html#cb264-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_text</span>(<span class="fu">aes</span>(population<span class="sc">/</span><span class="dv">10</span><span class="sc">^</span><span class="dv">6</span>, total, <span class="at">label =</span> abb))</span></code></pre></div>
+<div class="sourceCode" id="cb265"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb265-1"><a href="ggplot2.html#cb265-1" aria-hidden="true" tabindex="-1"></a>p <span class="sc">+</span> <span class="fu">geom_point</span>(<span class="fu">aes</span>(population<span class="sc">/</span><span class="dv">10</span><span class="sc">^</span><span class="dv">6</span>, total)) <span class="sc">+</span></span>
+<span id="cb265-2"><a href="ggplot2.html#cb265-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_text</span>(<span class="fu">aes</span>(population<span class="sc">/</span><span class="dv">10</span><span class="sc">^</span><span class="dv">6</span>, total, <span class="at">label =</span> abb))</span></code></pre></div>
 <p><img src="libro_files/figure-html/ggplot-example-4-1.png" width="70%" style="display: block; margin: auto;" /></p>
 <p>Hemos agregado exitosamente una segunda capa al gráfico.</p>
 <p>Como ejemplo del comportamiento único de <code>aes</code> mencionado anteriormente, observen que esta llamada:</p>
-<div class="sourceCode" id="cb265"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb265-1"><a href="ggplot2.html#cb265-1" aria-hidden="true" tabindex="-1"></a>p_test <span class="ot">&lt;-</span> p <span class="sc">+</span> <span class="fu">geom_text</span>(<span class="fu">aes</span>(population<span class="sc">/</span><span class="dv">10</span><span class="sc">^</span><span class="dv">6</span>, total, <span class="at">label =</span> abb))</span></code></pre></div>
+<div class="sourceCode" id="cb266"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb266-1"><a href="ggplot2.html#cb266-1" aria-hidden="true" tabindex="-1"></a>p_test <span class="ot">&lt;-</span> p <span class="sc">+</span> <span class="fu">geom_text</span>(<span class="fu">aes</span>(population<span class="sc">/</span><span class="dv">10</span><span class="sc">^</span><span class="dv">6</span>, total, <span class="at">label =</span> abb))</span></code></pre></div>
 <p>está bien, mientras que esta llamada:</p>
-<div class="sourceCode" id="cb266"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb266-1"><a href="ggplot2.html#cb266-1" aria-hidden="true" tabindex="-1"></a>p_test <span class="ot">&lt;-</span> p <span class="sc">+</span> <span class="fu">geom_text</span>(<span class="fu">aes</span>(population<span class="sc">/</span><span class="dv">10</span><span class="sc">^</span><span class="dv">6</span>, total), <span class="at">label =</span> abb)</span></code></pre></div>
+<div class="sourceCode" id="cb267"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb267-1"><a href="ggplot2.html#cb267-1" aria-hidden="true" tabindex="-1"></a>p_test <span class="ot">&lt;-</span> p <span class="sc">+</span> <span class="fu">geom_text</span>(<span class="fu">aes</span>(population<span class="sc">/</span><span class="dv">10</span><span class="sc">^</span><span class="dv">6</span>, total), <span class="at">label =</span> abb)</span></code></pre></div>
 <p>les dará un error ya que <code>abb</code> no se encuentra porque está fuera de la función <code>aes</code>. La capa <code>geom_text</code> no sabe dónde encontrar <code>abb</code> porque es un nombre de columna y no una variable global.</p>
-<div id="cómo-probar-varios-argumentos" class="section level3" number="7.5.1">
-<h3><span class="header-section-number">7.5.1</span> Cómo probar varios argumentos</h3>
+<div id="cómo-probar-varios-argumentos" class="section level3 hasAnchor" number="7.5.1">
+<h3><span class="header-section-number">7.5.1</span> Cómo probar varios argumentos<a href="ggplot2.html#cómo-probar-varios-argumentos" class="anchor-section" aria-label="Anchor link to header"></a></h3>
 <p>Cada función de geometría tiene muchos otros argumentos además de <code>aes</code> y <code>data</code>. Estos suelen ser específicos de la función. Por ejemplo, en el gráfico que queremos hacer, los puntos son más grandes que el tamaño predeterminado. En el archivo de ayuda vemos que <code>size</code> es una estética y se puede cambiar así:</p>
-<div class="sourceCode" id="cb267"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb267-1"><a href="ggplot2.html#cb267-1" aria-hidden="true" tabindex="-1"></a>p <span class="sc">+</span> <span class="fu">geom_point</span>(<span class="fu">aes</span>(population<span class="sc">/</span><span class="dv">10</span><span class="sc">^</span><span class="dv">6</span>, total), <span class="at">size =</span> <span class="dv">3</span>) <span class="sc">+</span></span>
-<span id="cb267-2"><a href="ggplot2.html#cb267-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_text</span>(<span class="fu">aes</span>(population<span class="sc">/</span><span class="dv">10</span><span class="sc">^</span><span class="dv">6</span>, total, <span class="at">label =</span> abb))</span></code></pre></div>
+<div class="sourceCode" id="cb268"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb268-1"><a href="ggplot2.html#cb268-1" aria-hidden="true" tabindex="-1"></a>p <span class="sc">+</span> <span class="fu">geom_point</span>(<span class="fu">aes</span>(population<span class="sc">/</span><span class="dv">10</span><span class="sc">^</span><span class="dv">6</span>, total), <span class="at">size =</span> <span class="dv">3</span>) <span class="sc">+</span></span>
+<span id="cb268-2"><a href="ggplot2.html#cb268-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_text</span>(<span class="fu">aes</span>(population<span class="sc">/</span><span class="dv">10</span><span class="sc">^</span><span class="dv">6</span>, total, <span class="at">label =</span> abb))</span></code></pre></div>
 <p><img src="libro_files/figure-html/ggplot-example-5-1.png" width="70%" style="display: block; margin: auto;" /></p>
 <p><code>size</code> <strong>no</strong> es un mapeo: mientras los mapeos usan datos de observaciones específicas y necesitan estar dentro de <code>aes()</code>, las operaciones que queremos que afecten a todos los puntos de la misma manera no necesitan ser incluidas dentro <code>aes</code>.</p>
 <p>Ahora, debido a que los puntos son más grandes, es difícil ver las etiquetas. Si leemos la página de ayuda para <code>geom_text</code>, vemos que el argumento <code>nudge_x</code> mueve el texto ligeramente hacia la derecha o hacia la izquierda:</p>
-<div class="sourceCode" id="cb268"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb268-1"><a href="ggplot2.html#cb268-1" aria-hidden="true" tabindex="-1"></a>p <span class="sc">+</span> <span class="fu">geom_point</span>(<span class="fu">aes</span>(population<span class="sc">/</span><span class="dv">10</span><span class="sc">^</span><span class="dv">6</span>, total), <span class="at">size =</span> <span class="dv">3</span>) <span class="sc">+</span></span>
-<span id="cb268-2"><a href="ggplot2.html#cb268-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_text</span>(<span class="fu">aes</span>(population<span class="sc">/</span><span class="dv">10</span><span class="sc">^</span><span class="dv">6</span>, total, <span class="at">label =</span> abb), <span class="at">nudge_x =</span> <span class="fl">1.5</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb269"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb269-1"><a href="ggplot2.html#cb269-1" aria-hidden="true" tabindex="-1"></a>p <span class="sc">+</span> <span class="fu">geom_point</span>(<span class="fu">aes</span>(population<span class="sc">/</span><span class="dv">10</span><span class="sc">^</span><span class="dv">6</span>, total), <span class="at">size =</span> <span class="dv">3</span>) <span class="sc">+</span></span>
+<span id="cb269-2"><a href="ggplot2.html#cb269-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_text</span>(<span class="fu">aes</span>(population<span class="sc">/</span><span class="dv">10</span><span class="sc">^</span><span class="dv">6</span>, total, <span class="at">label =</span> abb), <span class="at">nudge_x =</span> <span class="fl">1.5</span>)</span></code></pre></div>
 <p><img src="libro_files/figure-html/ggplot-example-6-1.png" width="70%" style="display: block; margin: auto;" /></p>
 <p>Esto es preferible puesto que facilita la lectura del texto. En la Sección <a href="ggplot2.html#add-on-packages">7.11</a>, aprenderemos una mejor manera de asegurarnos de que podemos ver los puntos y las etiquetas.</p>
 </div>
 </div>
-<div id="mapeos-estéticos-globales-versus-locales" class="section level2" number="7.6">
-<h2><span class="header-section-number">7.6</span> Mapeos estéticos globales versus locales</h2>
+<div id="mapeos-estéticos-globales-versus-locales" class="section level2 hasAnchor" number="7.6">
+<h2><span class="header-section-number">7.6</span> Mapeos estéticos globales versus locales<a href="ggplot2.html#mapeos-estéticos-globales-versus-locales" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>En la línea anterior de código, definimos el mapeo <code>aes(population/10^6, total)</code> dos veces, una vez en cada geometría. Podemos evitar esto usando un mapeo estético <em>global</em> cuando definimos la pizarra en blanco que nos da el objeto <code>ggplot</code>. Recuerden que la función <code>ggplot</code> contiene un argumento que nos permite definir mapeos estéticos:</p>
-<div class="sourceCode" id="cb269"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb269-1"><a href="ggplot2.html#cb269-1" aria-hidden="true" tabindex="-1"></a><span class="fu">args</span>(ggplot)</span>
-<span id="cb269-2"><a href="ggplot2.html#cb269-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; function (data = NULL, mapping = aes(), ..., environment = parent.frame()) </span></span>
-<span id="cb269-3"><a href="ggplot2.html#cb269-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; NULL</span></span></code></pre></div>
+<div class="sourceCode" id="cb270"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb270-1"><a href="ggplot2.html#cb270-1" aria-hidden="true" tabindex="-1"></a><span class="fu">args</span>(ggplot)</span>
+<span id="cb270-2"><a href="ggplot2.html#cb270-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; function (data = NULL, mapping = aes(), ..., environment = parent.frame()) </span></span>
+<span id="cb270-3"><a href="ggplot2.html#cb270-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; NULL</span></span></code></pre></div>
 <p>Si definimos un mapeo en <code>ggplot</code>, todas las geometrías que se agregan como capas se asignarán por defecto a este mapeo. Redefinimos <code>p</code>:</p>
-<div class="sourceCode" id="cb270"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb270-1"><a href="ggplot2.html#cb270-1" aria-hidden="true" tabindex="-1"></a>p <span class="ot">&lt;-</span> murders <span class="sc">%&gt;%</span> <span class="fu">ggplot</span>(<span class="fu">aes</span>(population<span class="sc">/</span><span class="dv">10</span><span class="sc">^</span><span class="dv">6</span>, total, <span class="at">label =</span> abb))</span></code></pre></div>
+<div class="sourceCode" id="cb271"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb271-1"><a href="ggplot2.html#cb271-1" aria-hidden="true" tabindex="-1"></a>p <span class="ot">&lt;-</span> murders <span class="sc">|&gt;</span> <span class="fu">ggplot</span>(<span class="fu">aes</span>(population<span class="sc">/</span><span class="dv">10</span><span class="sc">^</span><span class="dv">6</span>, total, <span class="at">label =</span> abb))</span></code></pre></div>
 <p>y entonces podemos simplemente escribir el siguiente código para producir el gráfico anterior:</p>
-<div class="sourceCode" id="cb271"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb271-1"><a href="ggplot2.html#cb271-1" aria-hidden="true" tabindex="-1"></a>p <span class="sc">+</span> <span class="fu">geom_point</span>(<span class="at">size =</span> <span class="dv">3</span>) <span class="sc">+</span></span>
-<span id="cb271-2"><a href="ggplot2.html#cb271-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_text</span>(<span class="at">nudge_x =</span> <span class="fl">1.5</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb272"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb272-1"><a href="ggplot2.html#cb272-1" aria-hidden="true" tabindex="-1"></a>p <span class="sc">+</span> <span class="fu">geom_point</span>(<span class="at">size =</span> <span class="dv">3</span>) <span class="sc">+</span></span>
+<span id="cb272-2"><a href="ggplot2.html#cb272-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_text</span>(<span class="at">nudge_x =</span> <span class="fl">1.5</span>)</span></code></pre></div>
 <p>Mantenemos los argumentos <code>size</code> y <code>nudge_x</code> en <code>geom_point</code> y <code>geom_text</code>, respectivamente, porque solo queremos aumentar el tamaño de los puntos y ajustar la posición (<em>nudge</em> en inglés) de las etiquetas. Si ponemos esos argumentos en <code>aes</code>, entonces se aplicarán a ambos gráficos. También tengan en cuenta que la función <code>geom_point</code> no necesita un argumento <code>label</code> y por lo tanto ignora esa estética.</p>
 <p>Si es necesario, podemos anular el mapeo global definiendo un nuevo mapeo dentro de cada capa. Estas definiciones <em>locales</em> reemplazan a las <em>globales</em>. Aquí hay un ejemplo:</p>
-<div class="sourceCode" id="cb272"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb272-1"><a href="ggplot2.html#cb272-1" aria-hidden="true" tabindex="-1"></a>p <span class="sc">+</span> <span class="fu">geom_point</span>(<span class="at">size =</span> <span class="dv">3</span>) <span class="sc">+</span></span>
-<span id="cb272-2"><a href="ggplot2.html#cb272-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_text</span>(<span class="fu">aes</span>(<span class="at">x =</span> <span class="dv">10</span>, <span class="at">y =</span> <span class="dv">800</span>, <span class="at">label =</span> <span class="st">&quot;Hello there!&quot;</span>))</span></code></pre></div>
+<div class="sourceCode" id="cb273"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb273-1"><a href="ggplot2.html#cb273-1" aria-hidden="true" tabindex="-1"></a>p <span class="sc">+</span> <span class="fu">geom_point</span>(<span class="at">size =</span> <span class="dv">3</span>) <span class="sc">+</span></span>
+<span id="cb273-2"><a href="ggplot2.html#cb273-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_text</span>(<span class="fu">aes</span>(<span class="at">x =</span> <span class="dv">10</span>, <span class="at">y =</span> <span class="dv">800</span>, <span class="at">label =</span> <span class="st">&quot;Hello there!&quot;</span>))</span></code></pre></div>
 <p><img src="libro_files/figure-html/ggplot-example-8-1.png" width="70%" style="display: block; margin: auto;" /></p>
 <p>Claramente, la segunda llamada a <code>geom_text</code> no usa <code>population</code> y <code>total</code>.</p>
 </div>
-<div id="escalas" class="section level2" number="7.7">
-<h2><span class="header-section-number">7.7</span> Escalas</h2>
+<div id="escalas" class="section level2 hasAnchor" number="7.7">
+<h2><span class="header-section-number">7.7</span> Escalas<a href="ggplot2.html#escalas" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>Primero, las escalas que queremos están en escala logarítmica. Este no es el valor predeterminado, por lo que este cambio debe añadirse a través de una capa de <em>escalas</em>. Una mirada rápida a la hoja de referencia revela que la función <code>scale_x_continuous</code> nos permite controlar el comportamiento de las escalas. La usamos así:</p>
-<div class="sourceCode" id="cb273"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb273-1"><a href="ggplot2.html#cb273-1" aria-hidden="true" tabindex="-1"></a>p <span class="sc">+</span> <span class="fu">geom_point</span>(<span class="at">size =</span> <span class="dv">3</span>) <span class="sc">+</span></span>
-<span id="cb273-2"><a href="ggplot2.html#cb273-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_text</span>(<span class="at">nudge_x =</span> <span class="fl">0.05</span>) <span class="sc">+</span></span>
-<span id="cb273-3"><a href="ggplot2.html#cb273-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">trans =</span> <span class="st">&quot;log10&quot;</span>) <span class="sc">+</span></span>
-<span id="cb273-4"><a href="ggplot2.html#cb273-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">trans =</span> <span class="st">&quot;log10&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb274"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb274-1"><a href="ggplot2.html#cb274-1" aria-hidden="true" tabindex="-1"></a>p <span class="sc">+</span> <span class="fu">geom_point</span>(<span class="at">size =</span> <span class="dv">3</span>) <span class="sc">+</span></span>
+<span id="cb274-2"><a href="ggplot2.html#cb274-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_text</span>(<span class="at">nudge_x =</span> <span class="fl">0.05</span>) <span class="sc">+</span></span>
+<span id="cb274-3"><a href="ggplot2.html#cb274-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">trans =</span> <span class="st">&quot;log10&quot;</span>) <span class="sc">+</span></span>
+<span id="cb274-4"><a href="ggplot2.html#cb274-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">trans =</span> <span class="st">&quot;log10&quot;</span>)</span></code></pre></div>
 <p><img src="libro_files/figure-html/ggplot-example-9-1.png" width="70%" style="display: block; margin: auto;" /></p>
 <p>Debido a que ahora estamos en la escala logarítmica, el ajuste a la posición debe hacerse más pequeño.</p>
 <p>Esta transformación particular es tan común que <strong>ggplot2</strong> ofrece dos funciones especializadas <code>scale_x_log10</code> y <code>scale_y_log10</code>, que podemos usar para reescribir el código de esta manera:</p>
-<div class="sourceCode" id="cb274"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb274-1"><a href="ggplot2.html#cb274-1" aria-hidden="true" tabindex="-1"></a>p <span class="sc">+</span> <span class="fu">geom_point</span>(<span class="at">size =</span> <span class="dv">3</span>) <span class="sc">+</span></span>
-<span id="cb274-2"><a href="ggplot2.html#cb274-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_text</span>(<span class="at">nudge_x =</span> <span class="fl">0.05</span>) <span class="sc">+</span></span>
-<span id="cb274-3"><a href="ggplot2.html#cb274-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_log10</span>() <span class="sc">+</span></span>
-<span id="cb274-4"><a href="ggplot2.html#cb274-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_log10</span>()</span></code></pre></div>
-</div>
-<div id="etiquetas-y-títulos" class="section level2" number="7.8">
-<h2><span class="header-section-number">7.8</span> Etiquetas y títulos</h2>
-<p>Del mismo modo, la hoja de referencia revela que para cambiar las etiquetas y añadir un título, utilizamos las siguientes funciones:</p>
 <div class="sourceCode" id="cb275"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb275-1"><a href="ggplot2.html#cb275-1" aria-hidden="true" tabindex="-1"></a>p <span class="sc">+</span> <span class="fu">geom_point</span>(<span class="at">size =</span> <span class="dv">3</span>) <span class="sc">+</span></span>
 <span id="cb275-2"><a href="ggplot2.html#cb275-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_text</span>(<span class="at">nudge_x =</span> <span class="fl">0.05</span>) <span class="sc">+</span></span>
 <span id="cb275-3"><a href="ggplot2.html#cb275-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_log10</span>() <span class="sc">+</span></span>
-<span id="cb275-4"><a href="ggplot2.html#cb275-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_log10</span>() <span class="sc">+</span></span>
-<span id="cb275-5"><a href="ggplot2.html#cb275-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlab</span>(<span class="st">&quot;Populations in millions (log scale)&quot;</span>) <span class="sc">+</span></span>
-<span id="cb275-6"><a href="ggplot2.html#cb275-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ylab</span>(<span class="st">&quot;Total number of murders (log scale)&quot;</span>) <span class="sc">+</span></span>
-<span id="cb275-7"><a href="ggplot2.html#cb275-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">&quot;US Gun Murders in 2010&quot;</span>)</span></code></pre></div>
-<p><img src="libro_files/figure-html/ggplot-example-10-1.png" width="70%" style="display: block; margin: auto;" /></p>
-<p>¡Casi terminamos! Lo único que nos falta es añadir color, leyenda y cambios opcionales al estilo.</p>
+<span id="cb275-4"><a href="ggplot2.html#cb275-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_log10</span>()</span></code></pre></div>
 </div>
-<div id="categorías-como-colores" class="section level2" number="7.9">
-<h2><span class="header-section-number">7.9</span> Categorías como colores</h2>
-<p>Podemos cambiar el color de los puntos usando el argumento <code>col</code> en la función <code>geom_point</code>. Para facilitar la demostración de características nuevas, redefiniremos <code>p</code> para ser todo excepto la capa de puntos:</p>
-<div class="sourceCode" id="cb276"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb276-1"><a href="ggplot2.html#cb276-1" aria-hidden="true" tabindex="-1"></a>p <span class="ot">&lt;-</span> murders <span class="sc">%&gt;%</span> <span class="fu">ggplot</span>(<span class="fu">aes</span>(population<span class="sc">/</span><span class="dv">10</span><span class="sc">^</span><span class="dv">6</span>, total, <span class="at">label =</span> abb)) <span class="sc">+</span></span>
+<div id="etiquetas-y-títulos" class="section level2 hasAnchor" number="7.8">
+<h2><span class="header-section-number">7.8</span> Etiquetas y títulos<a href="ggplot2.html#etiquetas-y-títulos" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>Del mismo modo, la hoja de referencia revela que para cambiar las etiquetas y añadir un título, utilizamos las siguientes funciones:</p>
+<div class="sourceCode" id="cb276"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb276-1"><a href="ggplot2.html#cb276-1" aria-hidden="true" tabindex="-1"></a>p <span class="sc">+</span> <span class="fu">geom_point</span>(<span class="at">size =</span> <span class="dv">3</span>) <span class="sc">+</span></span>
 <span id="cb276-2"><a href="ggplot2.html#cb276-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_text</span>(<span class="at">nudge_x =</span> <span class="fl">0.05</span>) <span class="sc">+</span></span>
 <span id="cb276-3"><a href="ggplot2.html#cb276-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_log10</span>() <span class="sc">+</span></span>
 <span id="cb276-4"><a href="ggplot2.html#cb276-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_log10</span>() <span class="sc">+</span></span>
 <span id="cb276-5"><a href="ggplot2.html#cb276-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlab</span>(<span class="st">&quot;Populations in millions (log scale)&quot;</span>) <span class="sc">+</span></span>
 <span id="cb276-6"><a href="ggplot2.html#cb276-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ylab</span>(<span class="st">&quot;Total number of murders (log scale)&quot;</span>) <span class="sc">+</span></span>
 <span id="cb276-7"><a href="ggplot2.html#cb276-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">&quot;US Gun Murders in 2010&quot;</span>)</span></code></pre></div>
+<p><img src="libro_files/figure-html/ggplot-example-10-1.png" width="70%" style="display: block; margin: auto;" /></p>
+<p>¡Casi terminamos! Lo único que nos falta es añadir color, leyenda y cambios opcionales al estilo.</p>
+</div>
+<div id="categorías-como-colores" class="section level2 hasAnchor" number="7.9">
+<h2><span class="header-section-number">7.9</span> Categorías como colores<a href="ggplot2.html#categorías-como-colores" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>Podemos cambiar el color de los puntos usando el argumento <code>col</code> en la función <code>geom_point</code>. Para facilitar la demostración de características nuevas, redefiniremos <code>p</code> para ser todo excepto la capa de puntos:</p>
+<div class="sourceCode" id="cb277"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb277-1"><a href="ggplot2.html#cb277-1" aria-hidden="true" tabindex="-1"></a>p <span class="ot">&lt;-</span> murders <span class="sc">|&gt;</span> <span class="fu">ggplot</span>(<span class="fu">aes</span>(population<span class="sc">/</span><span class="dv">10</span><span class="sc">^</span><span class="dv">6</span>, total, <span class="at">label =</span> abb)) <span class="sc">+</span></span>
+<span id="cb277-2"><a href="ggplot2.html#cb277-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_text</span>(<span class="at">nudge_x =</span> <span class="fl">0.05</span>) <span class="sc">+</span></span>
+<span id="cb277-3"><a href="ggplot2.html#cb277-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_log10</span>() <span class="sc">+</span></span>
+<span id="cb277-4"><a href="ggplot2.html#cb277-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_log10</span>() <span class="sc">+</span></span>
+<span id="cb277-5"><a href="ggplot2.html#cb277-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlab</span>(<span class="st">&quot;Populations in millions (log scale)&quot;</span>) <span class="sc">+</span></span>
+<span id="cb277-6"><a href="ggplot2.html#cb277-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ylab</span>(<span class="st">&quot;Total number of murders (log scale)&quot;</span>) <span class="sc">+</span></span>
+<span id="cb277-7"><a href="ggplot2.html#cb277-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">&quot;US Gun Murders in 2010&quot;</span>)</span></code></pre></div>
 <p>y luego probaremos lo que sucede cuando agregamos diferentes llamadas a <code>geom_point</code>. Por ejemplo, podemos hacer que todos los puntos sean azules agregando el argumento <code>color</code>:</p>
-<div class="sourceCode" id="cb277"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb277-1"><a href="ggplot2.html#cb277-1" aria-hidden="true" tabindex="-1"></a>p <span class="sc">+</span> <span class="fu">geom_point</span>(<span class="at">size =</span> <span class="dv">3</span>, <span class="at">color =</span><span class="st">&quot;blue&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb278"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb278-1"><a href="ggplot2.html#cb278-1" aria-hidden="true" tabindex="-1"></a>p <span class="sc">+</span> <span class="fu">geom_point</span>(<span class="at">size =</span> <span class="dv">3</span>, <span class="at">color =</span><span class="st">&quot;blue&quot;</span>)</span></code></pre></div>
 <p><img src="libro_files/figure-html/ggplot-example-11-1.png" width="70%" style="display: block; margin: auto;" /></p>
 <p>Sin embargo, no queremos esto. Queremos asignar color según la región geográfica. Un buen comportamiento por defecto de <strong>ggplot2</strong> es que si asignamos una variable categórica al color, automáticamente asigna un color diferente a cada categoría, además de una leyenda.</p>
 <p>Dado que la elección del color está determinada por una característica de cada observación, este es un mapeo estético. Para asignar un color a cada punto, necesitamos usar <code>aes</code>. Usamos el siguiente código:</p>
-<div class="sourceCode" id="cb278"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb278-1"><a href="ggplot2.html#cb278-1" aria-hidden="true" tabindex="-1"></a>p <span class="sc">+</span> <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">col=</span>region), <span class="at">size =</span> <span class="dv">3</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb279"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb279-1"><a href="ggplot2.html#cb279-1" aria-hidden="true" tabindex="-1"></a>p <span class="sc">+</span> <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">col=</span>region), <span class="at">size =</span> <span class="dv">3</span>)</span></code></pre></div>
 <p><img src="libro_files/figure-html/ggplot-example-12-1.png" width="70%" style="display: block; margin: auto;" /></p>
 <p>Los mapeos <code>x</code> e <code>y</code> se heredan de esos ya definidos en <code>p</code>, así que no los redefinimos. También movemos <code>aes</code> al primer argumento, dado que ahí es donde se esperan los mapeos en esta llamada.</p>
 <p>Aquí vemos otro comportamiento útil por defecto: <strong>ggplot2</strong> automáticamente agrega una leyenda que asigna el color a la región. Si no quieren añadir esta leyenda, establecemos el argumento <code>geom_point</code> como <code>show.legend = FALSE</code>.</p>
 </div>
-<div id="anotación-formas-y-ajustes" class="section level2" number="7.10">
-<h2><span class="header-section-number">7.10</span> Anotación, formas y ajustes</h2>
+<div id="anotación-formas-y-ajustes" class="section level2 hasAnchor" number="7.10">
+<h2><span class="header-section-number">7.10</span> Anotación, formas y ajustes<a href="ggplot2.html#anotación-formas-y-ajustes" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>A menudo queremos añadir formas o anotaciones a las figuras que no se derivan directamente del mapeo estético; algunos ejemplos incluyen etiquetas, cuadros, áreas sombreadas y líneas.</p>
 <p>Aquí queremos añadir una línea que represente la tasa promedio de asesinatos en todo el país. Una vez que determinemos la tasa por millón a ser <span class="math inline">\(r\)</span>, esta línea se define por la fórmula: <span class="math inline">\(y = r x\)</span>, con <span class="math inline">\(y\)</span> y <span class="math inline">\(x\)</span> nuestros ejes: asesinatos totales y población en millones, respectivamente. En la escala logarítmica, esta línea se convierte en: <span class="math inline">\(\log(y) = \log(r) + \log(x)\)</span>. Entonces, en nuestro gráfico, es una línea con pendiente 1 e intercepto <span class="math inline">\(\log(r)\)</span>. Para calcular este valor, utilizamos nuestros conocimientos de <strong>dplyr</strong>:</p>
-<div class="sourceCode" id="cb279"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb279-1"><a href="ggplot2.html#cb279-1" aria-hidden="true" tabindex="-1"></a>r <span class="ot">&lt;-</span> murders <span class="sc">%&gt;%</span></span>
-<span id="cb279-2"><a href="ggplot2.html#cb279-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="at">rate =</span> <span class="fu">sum</span>(total)<span class="sc">/</span> <span class="fu">sum</span>(population) <span class="sc">*</span> <span class="dv">10</span><span class="sc">^</span><span class="dv">6</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb279-3"><a href="ggplot2.html#cb279-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pull</span>(rate)</span></code></pre></div>
+<div class="sourceCode" id="cb280"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb280-1"><a href="ggplot2.html#cb280-1" aria-hidden="true" tabindex="-1"></a>r <span class="ot">&lt;-</span> murders <span class="sc">|&gt;</span></span>
+<span id="cb280-2"><a href="ggplot2.html#cb280-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="at">rate =</span> <span class="fu">sum</span>(total)<span class="sc">/</span> <span class="fu">sum</span>(population) <span class="sc">*</span> <span class="dv">10</span><span class="sc">^</span><span class="dv">6</span>) <span class="sc">|&gt;</span></span>
+<span id="cb280-3"><a href="ggplot2.html#cb280-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pull</span>(rate)</span></code></pre></div>
 <p>Para añadir una línea, usamos la función <code>geom_abline</code>. <strong>ggplot2</strong> utiliza <code>ab</code> en el nombre para recordarnos que estamos suministrando el intercepto (<code>a</code>) y el pendiente (<code>b</code>). La línea predeterminada tiene pendiente 1 e intercepto 0, por lo que solo tenemos que definir el intercepto:</p>
-<div class="sourceCode" id="cb280"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb280-1"><a href="ggplot2.html#cb280-1" aria-hidden="true" tabindex="-1"></a>p <span class="sc">+</span> <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">col=</span>region), <span class="at">size =</span> <span class="dv">3</span>) <span class="sc">+</span></span>
-<span id="cb280-2"><a href="ggplot2.html#cb280-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_abline</span>(<span class="at">intercept =</span> <span class="fu">log10</span>(r))</span></code></pre></div>
+<div class="sourceCode" id="cb281"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb281-1"><a href="ggplot2.html#cb281-1" aria-hidden="true" tabindex="-1"></a>p <span class="sc">+</span> <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">col=</span>region), <span class="at">size =</span> <span class="dv">3</span>) <span class="sc">+</span></span>
+<span id="cb281-2"><a href="ggplot2.html#cb281-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_abline</span>(<span class="at">intercept =</span> <span class="fu">log10</span>(r))</span></code></pre></div>
 <p><img src="libro_files/figure-html/ggplot-example-13-1.png" width="70%" style="display: block; margin: auto;" /></p>
 <p>Aquí <code>geom_abline</code> no utiliza ninguna información del objeto de datos.</p>
 <p>Podemos cambiar el tipo de línea y el color de las líneas usando argumentos. Además, la dibujamos primero para que no tape nuestros puntos.</p>
-<div class="sourceCode" id="cb281"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb281-1"><a href="ggplot2.html#cb281-1" aria-hidden="true" tabindex="-1"></a>p <span class="ot">&lt;-</span> p <span class="sc">+</span> <span class="fu">geom_abline</span>(<span class="at">intercept =</span> <span class="fu">log10</span>(r), <span class="at">lty =</span> <span class="dv">2</span>, <span class="at">color =</span> <span class="st">&quot;darkgrey&quot;</span>) <span class="sc">+</span></span>
-<span id="cb281-2"><a href="ggplot2.html#cb281-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">col=</span>region), <span class="at">size =</span> <span class="dv">3</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb282"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb282-1"><a href="ggplot2.html#cb282-1" aria-hidden="true" tabindex="-1"></a>p <span class="ot">&lt;-</span> p <span class="sc">+</span> <span class="fu">geom_abline</span>(<span class="at">intercept =</span> <span class="fu">log10</span>(r), <span class="at">lty =</span> <span class="dv">2</span>, <span class="at">color =</span> <span class="st">&quot;darkgrey&quot;</span>) <span class="sc">+</span></span>
+<span id="cb282-2"><a href="ggplot2.html#cb282-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">col=</span>region), <span class="at">size =</span> <span class="dv">3</span>)</span></code></pre></div>
 <p>Noten que hemos redefinido <code>p</code> y usaremos esta nueva <code>p</code> a continuación y en la siguiente sección.</p>
 <p>Los gráficos por defecto creados por <strong>ggplot2</strong> ya son muy útiles. Sin embargo, con frecuencia necesitamos hacer pequeños ajustes al comportamiento predeterminado. Aunque no siempre es obvio cómo hacer esto aun con la hoja de referencia, <strong>ggplot2</strong> es muy flexible.</p>
 <p>Por ejemplo, podemos hacer cambios a la leyenda a través de la función <code>scale_color_discrete</code>. En nuestro gráfico original, la palabra <em>region</em> está en mayúscula y podemos cambiarla así:</p>
-<div class="sourceCode" id="cb282"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb282-1"><a href="ggplot2.html#cb282-1" aria-hidden="true" tabindex="-1"></a>p <span class="ot">&lt;-</span> p <span class="sc">+</span> <span class="fu">scale_color_discrete</span>(<span class="at">name =</span> <span class="st">&quot;Region&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb283"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb283-1"><a href="ggplot2.html#cb283-1" aria-hidden="true" tabindex="-1"></a>p <span class="ot">&lt;-</span> p <span class="sc">+</span> <span class="fu">scale_color_discrete</span>(<span class="at">name =</span> <span class="st">&quot;Region&quot;</span>)</span></code></pre></div>
 </div>
-<div id="add-on-packages" class="section level2" number="7.11">
-<h2><span class="header-section-number">7.11</span> Paquetes complementarios</h2>
+<div id="add-on-packages" class="section level2 hasAnchor" number="7.11">
+<h2><span class="header-section-number">7.11</span> Paquetes complementarios<a href="ggplot2.html#add-on-packages" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>El poder de <strong>ggplot2</strong> se incrementa aún más debido a la disponibilidad de paquetes adicionales. Los cambios restantes necesarios para darle los toques finales a nuestro gráfico requieren los paquetes <strong>ggthemes</strong> y <strong>ggrepel</strong>.</p>
 <p>El estilo de un gráfico <strong>ggplot2</strong> se puede cambiar usando las funciones de <code>theme</code>. Se incluyen varios temas (<em>themes</em> en inglés) como parte del paquete <strong>ggplot2</strong>. De hecho, para la mayoría de los gráficos de este libro, utilizamos una función del paquete <strong>dslabs</strong> que automáticamente establece un tema por defecto:</p>
-<div class="sourceCode" id="cb283"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb283-1"><a href="ggplot2.html#cb283-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ds_theme_set</span>()</span></code></pre></div>
+<div class="sourceCode" id="cb284"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb284-1"><a href="ggplot2.html#cb284-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ds_theme_set</span>()</span></code></pre></div>
 <p>El paquete <strong>ggthemes</strong> añade muchos otros temas, incluso el tema <code>theme_economist</code> que escogimos. Después de instalar el paquete, pueden cambiar el estilo agregando una capa como la siguiente:</p>
-<div class="sourceCode" id="cb284"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb284-1"><a href="ggplot2.html#cb284-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggthemes)</span>
-<span id="cb284-2"><a href="ggplot2.html#cb284-2" aria-hidden="true" tabindex="-1"></a>p <span class="sc">+</span> <span class="fu">theme_economist</span>()</span></code></pre></div>
+<div class="sourceCode" id="cb285"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb285-1"><a href="ggplot2.html#cb285-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggthemes)</span>
+<span id="cb285-2"><a href="ggplot2.html#cb285-2" aria-hidden="true" tabindex="-1"></a>p <span class="sc">+</span> <span class="fu">theme_economist</span>()</span></code></pre></div>
 <p>Pueden ver cómo se ven algunos de los otros temas simplemente cambiando la función. Por ejemplo, pueden probar el tema <code>theme_fivethirtyeight()</code> en vez del anterior.</p>
 <p>La diferencia final tiene que ver con la posición de las etiquetas. En nuestro gráfico, algunas de las etiquetas se superponen. El paquete de complementos <strong>ggrepel</strong> incluye una geometría que añade etiquetas a la vez que garantiza que no se superpongan entre sí. Para utilizarla, simplemente cambiamos <code>geom_text</code> a <code>geom_text_repel</code>.</p>
 </div>
-<div id="cómo-combinarlo-todo" class="section level2" number="7.12">
-<h2><span class="header-section-number">7.12</span> Cómo combinarlo todo</h2>
+<div id="cómo-combinarlo-todo" class="section level2 hasAnchor" number="7.12">
+<h2><span class="header-section-number">7.12</span> Cómo combinarlo todo<a href="ggplot2.html#cómo-combinarlo-todo" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>Ahora que hemos terminado las pruebas, podemos escribir un código que produzca nuestro gráfico deseado partiendo de cero.</p>
-<div class="sourceCode" id="cb285"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb285-1"><a href="ggplot2.html#cb285-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggthemes)</span>
-<span id="cb285-2"><a href="ggplot2.html#cb285-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggrepel)</span>
-<span id="cb285-3"><a href="ggplot2.html#cb285-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb285-4"><a href="ggplot2.html#cb285-4" aria-hidden="true" tabindex="-1"></a>r <span class="ot">&lt;-</span> murders <span class="sc">%&gt;%</span></span>
-<span id="cb285-5"><a href="ggplot2.html#cb285-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="at">rate =</span> <span class="fu">sum</span>(total)<span class="sc">/</span> <span class="fu">sum</span>(population) <span class="sc">*</span> <span class="dv">10</span><span class="sc">^</span><span class="dv">6</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb285-6"><a href="ggplot2.html#cb285-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pull</span>(rate)</span>
-<span id="cb285-7"><a href="ggplot2.html#cb285-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb285-8"><a href="ggplot2.html#cb285-8" aria-hidden="true" tabindex="-1"></a>murders <span class="sc">%&gt;%</span> <span class="fu">ggplot</span>(<span class="fu">aes</span>(population<span class="sc">/</span><span class="dv">10</span><span class="sc">^</span><span class="dv">6</span>, total, <span class="at">label =</span> abb)) <span class="sc">+</span></span>
-<span id="cb285-9"><a href="ggplot2.html#cb285-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_abline</span>(<span class="at">intercept =</span> <span class="fu">log10</span>(r), <span class="at">lty =</span> <span class="dv">2</span>, <span class="at">color =</span> <span class="st">&quot;darkgrey&quot;</span>) <span class="sc">+</span></span>
-<span id="cb285-10"><a href="ggplot2.html#cb285-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">col=</span>region), <span class="at">size =</span> <span class="dv">3</span>) <span class="sc">+</span></span>
-<span id="cb285-11"><a href="ggplot2.html#cb285-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_text_repel</span>() <span class="sc">+</span></span>
-<span id="cb285-12"><a href="ggplot2.html#cb285-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_log10</span>() <span class="sc">+</span></span>
-<span id="cb285-13"><a href="ggplot2.html#cb285-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_log10</span>() <span class="sc">+</span></span>
-<span id="cb285-14"><a href="ggplot2.html#cb285-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlab</span>(<span class="st">&quot;Populations in millions (log scale)&quot;</span>) <span class="sc">+</span></span>
-<span id="cb285-15"><a href="ggplot2.html#cb285-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ylab</span>(<span class="st">&quot;Total number of murders (log scale)&quot;</span>) <span class="sc">+</span></span>
-<span id="cb285-16"><a href="ggplot2.html#cb285-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">&quot;US Gun Murders in 2010&quot;</span>) <span class="sc">+</span></span>
-<span id="cb285-17"><a href="ggplot2.html#cb285-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_color_discrete</span>(<span class="at">name =</span> <span class="st">&quot;Region&quot;</span>) <span class="sc">+</span></span>
-<span id="cb285-18"><a href="ggplot2.html#cb285-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_economist</span>()</span></code></pre></div>
+<div class="sourceCode" id="cb286"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb286-1"><a href="ggplot2.html#cb286-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggthemes)</span>
+<span id="cb286-2"><a href="ggplot2.html#cb286-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggrepel)</span>
+<span id="cb286-3"><a href="ggplot2.html#cb286-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb286-4"><a href="ggplot2.html#cb286-4" aria-hidden="true" tabindex="-1"></a>r <span class="ot">&lt;-</span> murders <span class="sc">|&gt;</span></span>
+<span id="cb286-5"><a href="ggplot2.html#cb286-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="at">rate =</span> <span class="fu">sum</span>(total)<span class="sc">/</span> <span class="fu">sum</span>(population) <span class="sc">*</span> <span class="dv">10</span><span class="sc">^</span><span class="dv">6</span>) <span class="sc">|&gt;</span></span>
+<span id="cb286-6"><a href="ggplot2.html#cb286-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pull</span>(rate)</span>
+<span id="cb286-7"><a href="ggplot2.html#cb286-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb286-8"><a href="ggplot2.html#cb286-8" aria-hidden="true" tabindex="-1"></a>murders <span class="sc">|&gt;</span> <span class="fu">ggplot</span>(<span class="fu">aes</span>(population<span class="sc">/</span><span class="dv">10</span><span class="sc">^</span><span class="dv">6</span>, total, <span class="at">label =</span> abb)) <span class="sc">+</span></span>
+<span id="cb286-9"><a href="ggplot2.html#cb286-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_abline</span>(<span class="at">intercept =</span> <span class="fu">log10</span>(r), <span class="at">lty =</span> <span class="dv">2</span>, <span class="at">color =</span> <span class="st">&quot;darkgrey&quot;</span>) <span class="sc">+</span></span>
+<span id="cb286-10"><a href="ggplot2.html#cb286-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">col=</span>region), <span class="at">size =</span> <span class="dv">3</span>) <span class="sc">+</span></span>
+<span id="cb286-11"><a href="ggplot2.html#cb286-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_text_repel</span>() <span class="sc">+</span></span>
+<span id="cb286-12"><a href="ggplot2.html#cb286-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_log10</span>() <span class="sc">+</span></span>
+<span id="cb286-13"><a href="ggplot2.html#cb286-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_log10</span>() <span class="sc">+</span></span>
+<span id="cb286-14"><a href="ggplot2.html#cb286-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlab</span>(<span class="st">&quot;Populations in millions (log scale)&quot;</span>) <span class="sc">+</span></span>
+<span id="cb286-15"><a href="ggplot2.html#cb286-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ylab</span>(<span class="st">&quot;Total number of murders (log scale)&quot;</span>) <span class="sc">+</span></span>
+<span id="cb286-16"><a href="ggplot2.html#cb286-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">&quot;US Gun Murders in 2010&quot;</span>) <span class="sc">+</span></span>
+<span id="cb286-17"><a href="ggplot2.html#cb286-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_color_discrete</span>(<span class="at">name =</span> <span class="st">&quot;Region&quot;</span>) <span class="sc">+</span></span>
+<span id="cb286-18"><a href="ggplot2.html#cb286-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_economist</span>()</span></code></pre></div>
 <p><img src="libro_files/figure-html/final-ggplot-example-1.png" width="70%" style="display: block; margin: auto;" /></p>
 </div>
-<div id="qplot" class="section level2" number="7.13">
-<h2><span class="header-section-number">7.13</span> Gráficos rápidos con <code>qplot</code></h2>
+<div id="qplot" class="section level2 hasAnchor" number="7.13">
+<h2><span class="header-section-number">7.13</span> Gráficos rápidos con <code>qplot</code><a href="ggplot2.html#qplot" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>Hemos aprendido las técnicas eficaces <strong>ggplot2</strong> para generar visualizaciones. Sin embargo, hay casos en que sólo necesitamos un gráfico rápido de, por ejemplo, un histograma de los valores en un vector, un diagrama de dispersión de los valores en dos vectores o un diagrama de caja usando vectores categóricos y numéricos. Ya hemos demostrado cómo generar estos gráficos con <code>hist</code>, <code>plot</code> y <code>boxplot</code>. Sin embargo, si queremos ser consistentes con el estilo de ggplot, podemos usar la función <code>qplot</code>.</p>
 <p>Si tenemos valores en dos vectores como:</p>
-<div class="sourceCode" id="cb286"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb286-1"><a href="ggplot2.html#cb286-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(murders)</span>
-<span id="cb286-2"><a href="ggplot2.html#cb286-2" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="fu">log10</span>(murders<span class="sc">$</span>population)</span>
-<span id="cb286-3"><a href="ggplot2.html#cb286-3" aria-hidden="true" tabindex="-1"></a>y <span class="ot">&lt;-</span> murders<span class="sc">$</span>total</span></code></pre></div>
+<div class="sourceCode" id="cb287"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb287-1"><a href="ggplot2.html#cb287-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(murders)</span>
+<span id="cb287-2"><a href="ggplot2.html#cb287-2" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="fu">log10</span>(murders<span class="sc">$</span>population)</span>
+<span id="cb287-3"><a href="ggplot2.html#cb287-3" aria-hidden="true" tabindex="-1"></a>y <span class="ot">&lt;-</span> murders<span class="sc">$</span>total</span></code></pre></div>
 <p>y queremos hacer un diagrama de dispersión con <strong>ggplot2</strong>, tendríamos que escribir algo como:</p>
-<div class="sourceCode" id="cb287"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb287-1"><a href="ggplot2.html#cb287-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data.frame</span>(<span class="at">x =</span> x, <span class="at">y =</span> y) <span class="sc">%&gt;%</span></span>
-<span id="cb287-2"><a href="ggplot2.html#cb287-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(x, y)) <span class="sc">+</span></span>
-<span id="cb287-3"><a href="ggplot2.html#cb287-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>()</span></code></pre></div>
+<div class="sourceCode" id="cb288"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb288-1"><a href="ggplot2.html#cb288-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data.frame</span>(<span class="at">x =</span> x, <span class="at">y =</span> y) <span class="sc">|&gt;</span></span>
+<span id="cb288-2"><a href="ggplot2.html#cb288-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(x, y)) <span class="sc">+</span></span>
+<span id="cb288-3"><a href="ggplot2.html#cb288-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>()</span></code></pre></div>
 <p>Esto parece ser demasiado código para una gráfico tan sencillo. La función <code>qplot</code> sacrifica la flexibilidad ofrecida por el enfoque de <strong>ggplot2</strong>, pero nos permite rápidamente generar un gráfico.</p>
-<div class="sourceCode" id="cb288"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb288-1"><a href="ggplot2.html#cb288-1" aria-hidden="true" tabindex="-1"></a><span class="fu">qplot</span>(x, y)</span></code></pre></div>
+<div class="sourceCode" id="cb289"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb289-1"><a href="ggplot2.html#cb289-1" aria-hidden="true" tabindex="-1"></a><span class="fu">qplot</span>(x, y)</span></code></pre></div>
 <p>Aprenderemos más sobre <code>qplot</code> en la Sección <a href="distributions.html#other-geometries">8.16</a></p>
 </div>
-<div id="cuadrículas-de-gráficos" class="section level2" number="7.14">
-<h2><span class="header-section-number">7.14</span> Cuadrículas de gráficos</h2>
+<div id="cuadrículas-de-gráficos" class="section level2 hasAnchor" number="7.14">
+<h2><span class="header-section-number">7.14</span> Cuadrículas de gráficos<a href="ggplot2.html#cuadrículas-de-gráficos" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>A menudo tenemos que poner gráficos uno al lado del de otro. El paquete <strong>gridExtra</strong> nos permite hacer eso:</p>
-<div class="sourceCode" id="cb289"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb289-1"><a href="ggplot2.html#cb289-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(gridExtra)</span>
-<span id="cb289-2"><a href="ggplot2.html#cb289-2" aria-hidden="true" tabindex="-1"></a>p1 <span class="ot">&lt;-</span> <span class="fu">qplot</span>(x)</span>
-<span id="cb289-3"><a href="ggplot2.html#cb289-3" aria-hidden="true" tabindex="-1"></a>p2 <span class="ot">&lt;-</span> <span class="fu">qplot</span>(x,y)</span>
-<span id="cb289-4"><a href="ggplot2.html#cb289-4" aria-hidden="true" tabindex="-1"></a><span class="fu">grid.arrange</span>(p1, p2, <span class="at">ncol =</span> <span class="dv">2</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb290"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb290-1"><a href="ggplot2.html#cb290-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(gridExtra)</span>
+<span id="cb290-2"><a href="ggplot2.html#cb290-2" aria-hidden="true" tabindex="-1"></a>p1 <span class="ot">&lt;-</span> <span class="fu">qplot</span>(x)</span>
+<span id="cb290-3"><a href="ggplot2.html#cb290-3" aria-hidden="true" tabindex="-1"></a>p2 <span class="ot">&lt;-</span> <span class="fu">qplot</span>(x,y)</span>
+<span id="cb290-4"><a href="ggplot2.html#cb290-4" aria-hidden="true" tabindex="-1"></a><span class="fu">grid.arrange</span>(p1, p2, <span class="at">ncol =</span> <span class="dv">2</span>)</span></code></pre></div>
 <p><img src="libro_files/figure-html/gridExtra-example-1.png" width="70%" style="display: block; margin: auto;" /></p>
 </div>
-<div id="ejercicios-15" class="section level2" number="7.15">
-<h2><span class="header-section-number">7.15</span> Ejercicios</h2>
+<div id="ejercicios-15" class="section level2 hasAnchor" number="7.15">
+<h2><span class="header-section-number">7.15</span> Ejercicios<a href="ggplot2.html#ejercicios-15" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>Comience cargando los paquetes <strong>dplyr</strong> y <strong>ggplot2</strong>, así como los datos <code>murders</code> y <code>heights</code>.</p>
-<div class="sourceCode" id="cb290"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb290-1"><a href="ggplot2.html#cb290-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
-<span id="cb290-2"><a href="ggplot2.html#cb290-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
-<span id="cb290-3"><a href="ggplot2.html#cb290-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dslabs)</span>
-<span id="cb290-4"><a href="ggplot2.html#cb290-4" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(heights)</span>
-<span id="cb290-5"><a href="ggplot2.html#cb290-5" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(murders)</span></code></pre></div>
+<div class="sourceCode" id="cb291"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb291-1"><a href="ggplot2.html#cb291-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
+<span id="cb291-2"><a href="ggplot2.html#cb291-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
+<span id="cb291-3"><a href="ggplot2.html#cb291-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dslabs)</span>
+<span id="cb291-4"><a href="ggplot2.html#cb291-4" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(heights)</span>
+<span id="cb291-5"><a href="ggplot2.html#cb291-5" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(murders)</span></code></pre></div>
 <p>1. Con <strong>ggplot2</strong>, los gráficos se pueden guardar como objetos. Por ejemplo, podemos asociar un set de datos con un objeto de gráfico así:</p>
-<div class="sourceCode" id="cb291"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb291-1"><a href="ggplot2.html#cb291-1" aria-hidden="true" tabindex="-1"></a>p <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(<span class="at">data =</span> murders)</span></code></pre></div>
+<div class="sourceCode" id="cb292"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb292-1"><a href="ggplot2.html#cb292-1" aria-hidden="true" tabindex="-1"></a>p <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(<span class="at">data =</span> murders)</span></code></pre></div>
 <p>Como <code>data</code> es el primer argumento, no necesitamos explicarlo:</p>
-<div class="sourceCode" id="cb292"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb292-1"><a href="ggplot2.html#cb292-1" aria-hidden="true" tabindex="-1"></a>p <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(murders)</span></code></pre></div>
+<div class="sourceCode" id="cb293"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb293-1"><a href="ggplot2.html#cb293-1" aria-hidden="true" tabindex="-1"></a>p <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(murders)</span></code></pre></div>
 <p>y también podemos usar el <em>pipe</em>:</p>
-<div class="sourceCode" id="cb293"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb293-1"><a href="ggplot2.html#cb293-1" aria-hidden="true" tabindex="-1"></a>p <span class="ot">&lt;-</span> murders <span class="sc">%&gt;%</span> <span class="fu">ggplot</span>()</span></code></pre></div>
+<div class="sourceCode" id="cb294"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb294-1"><a href="ggplot2.html#cb294-1" aria-hidden="true" tabindex="-1"></a>p <span class="ot">&lt;-</span> murders <span class="sc">|&gt;</span> <span class="fu">ggplot</span>()</span></code></pre></div>
 <p>¿Cuál es la clase del objeto <code>p</code>?</p>
 <p>2. Recuerde que para imprimir un objeto puede usar el comando <code>print</code> o simplemente escribir el objeto. Imprima el objeto <code>p</code> definido en el ejercicio uno y describa lo que ve.</p>
 <ol style="list-style-type: lower-alpha">
@@ -1306,7 +1305,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li>Un diagrama de dispersión.</li>
 <li>Un histograma.</li>
 </ol>
-<p>3. Usando el <em>pipe</em> <code>%&gt;%</code>, cree un objeto <code>p</code> pero esta vez asociado con el set de datos <code>heights</code> en lugar del set de datos <code>murders</code>.</p>
+<p>3. Usando el <em>pipe</em> <code>|&gt;</code>, cree un objeto <code>p</code> pero esta vez asociado con el set de datos <code>heights</code> en lugar del set de datos <code>murders</code>.</p>
 <p>4. ¿Cuál es la clase del objeto <code>p</code> que acaba de crear?</p>
 <p>5. Ahora vamos a añadir una capa y las mapeos estéticos correspondientes. Para los datos de asesinatos, graficamos asesinatos totales versus tamaños de población. Explore el set de datos <code>murders</code> para recordar cuáles son los nombres de estas dos variables y escoja la respuesta correcta. <strong>Sugerencia</strong>: Mire <code>?murders</code>.</p>
 <ol style="list-style-type: lower-alpha">
@@ -1316,15 +1315,15 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li><code>murders</code> y <code>size</code></li>
 </ol>
 <p>6. Para crear el diagrama de dispersión, agregamos una capa con <code>geom_point</code>. Los mapeos estéticos requieren que definamos las variables del eje-x y del eje-y, respectivamente. Entonces el código se ve así:</p>
-<div class="sourceCode" id="cb294"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb294-1"><a href="ggplot2.html#cb294-1" aria-hidden="true" tabindex="-1"></a>murders <span class="sc">%&gt;%</span> <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> , <span class="at">y =</span> )) <span class="sc">+</span></span>
-<span id="cb294-2"><a href="ggplot2.html#cb294-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>()</span></code></pre></div>
+<div class="sourceCode" id="cb295"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb295-1"><a href="ggplot2.html#cb295-1" aria-hidden="true" tabindex="-1"></a>murders <span class="sc">|&gt;</span> <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> , <span class="at">y =</span> )) <span class="sc">+</span></span>
+<span id="cb295-2"><a href="ggplot2.html#cb295-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>()</span></code></pre></div>
 <p>excepto que tenemos que definir las dos variables <code>x</code> e <code>y</code>. Llene el espacio con los nombres correctos de las variables.</p>
 <p>7. Recuerde que si no usamos nombres de argumentos, podemos obtener el mismo gráfico si ingresamos los nombres de las variables en el orden correcto de esta manera:</p>
-<div class="sourceCode" id="cb295"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb295-1"><a href="ggplot2.html#cb295-1" aria-hidden="true" tabindex="-1"></a>murders <span class="sc">%&gt;%</span> <span class="fu">ggplot</span>(<span class="fu">aes</span>(population, total)) <span class="sc">+</span></span>
-<span id="cb295-2"><a href="ggplot2.html#cb295-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>()</span></code></pre></div>
+<div class="sourceCode" id="cb296"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb296-1"><a href="ggplot2.html#cb296-1" aria-hidden="true" tabindex="-1"></a>murders <span class="sc">|&gt;</span> <span class="fu">ggplot</span>(<span class="fu">aes</span>(population, total)) <span class="sc">+</span></span>
+<span id="cb296-2"><a href="ggplot2.html#cb296-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>()</span></code></pre></div>
 <p>Vuelva a hacer el gráfico pero ahora con total en el eje-x y población en el eje-y.</p>
 <p>8. Si en lugar de puntos queremos añadir texto, podemos usar las geometrías <code>geom_text()</code> o <code>geom_label()</code>. El siguiente código:</p>
-<div class="sourceCode" id="cb296"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb296-1"><a href="ggplot2.html#cb296-1" aria-hidden="true" tabindex="-1"></a>murders <span class="sc">%&gt;%</span> <span class="fu">ggplot</span>(<span class="fu">aes</span>(population, total)) <span class="sc">+</span> <span class="fu">geom_label</span>()</span></code></pre></div>
+<div class="sourceCode" id="cb297"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb297-1"><a href="ggplot2.html#cb297-1" aria-hidden="true" tabindex="-1"></a>murders <span class="sc">|&gt;</span> <span class="fu">ggplot</span>(<span class="fu">aes</span>(population, total)) <span class="sc">+</span> <span class="fu">geom_label</span>()</span></code></pre></div>
 <p>nos dará el mensaje de error: <code>Error: geom_label requires the following missing aesthetics: label</code></p>
 <p>¿Por qué ocurre esto?</p>
 <ol style="list-style-type: lower-alpha">
@@ -1351,9 +1350,9 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </ol>
 <p>13. Reescriba el código anterior para que el color de las etiquetas sea determinado por la región del estado.</p>
 <p>14. Ahora vamos a cambiar el eje-x a una escala logarítmica para tomar en cuenta el hecho de que la distribución de la población es asimétrica. Comencemos definiendo un objeto <code>p</code> guardando el gráfico que hemos hecho hasta ahora:</p>
-<div class="sourceCode" id="cb297"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb297-1"><a href="ggplot2.html#cb297-1" aria-hidden="true" tabindex="-1"></a>p <span class="ot">&lt;-</span> murders <span class="sc">%&gt;%</span></span>
-<span id="cb297-2"><a href="ggplot2.html#cb297-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(population, total, <span class="at">label =</span> abb, <span class="at">color =</span> region)) <span class="sc">+</span></span>
-<span id="cb297-3"><a href="ggplot2.html#cb297-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_label</span>()</span></code></pre></div>
+<div class="sourceCode" id="cb298"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb298-1"><a href="ggplot2.html#cb298-1" aria-hidden="true" tabindex="-1"></a>p <span class="ot">&lt;-</span> murders <span class="sc">|&gt;</span></span>
+<span id="cb298-2"><a href="ggplot2.html#cb298-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(population, total, <span class="at">label =</span> abb, <span class="at">color =</span> region)) <span class="sc">+</span></span>
+<span id="cb298-3"><a href="ggplot2.html#cb298-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_label</span>()</span></code></pre></div>
 <p>Para cambiar el eje-y a una escala logarítmica, aprendimos sobre la función <code>scale_x_log10()</code>. Agregue esta capa al objeto <code>p</code> para cambiar la escala y crear el gráfico.</p>
 <p>15. Repita el ejercicio anterior pero ahora cambie ambos ejes para que estén en la escala logarítmica.</p>
 <p>16. Ahora edite el código anterior para añadir el título “Gun murder data” al argumento. Sugerencia: use la función <code>ggtitle</code>.</p>
@@ -1380,7 +1379,6 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
     </div>
   </div>
 <script src="libs/gitbook-2.6.7/js/app.min.js"></script>
-<script src="libs/gitbook-2.6.7/js/lunr.js"></script>
 <script src="libs/gitbook-2.6.7/js/clipboard.min.js"></script>
 <script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
 <script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
@@ -1420,6 +1418,10 @@ gitbook.start({
 "text": null
 },
 "download": ["libro.pdf"],
+"search": {
+"engine": "fuse",
+"options": null
+},
 "toc": {
 "collapse": "section"
 }
