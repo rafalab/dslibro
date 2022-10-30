@@ -138,7 +138,7 @@ transformación logarítmica   |  |
 | panes | paneles |  |  |  |
 | parse | leer y procesar |  |  |  |
 | path  |ruta | Relative and full paths, the path of a file list | rutas | ruta |
-| pipe | _pipe_ | `%>%` |  _pipe_ | tubería |
+| pipe | _pipe_ | `|>` |  _pipe_ | tubería |
 | pipe (verb) | canalizar | We can continue to pipe values along |  |  |
 | pipeline | canalización |  |  |  |
 | placeholder | marcador de posición | |marcador de posición  |  |

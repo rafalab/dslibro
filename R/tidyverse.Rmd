@@ -200,9 +200,10 @@ filter(murders, population < 5000000 & region == "Northeast")
 
 Asegúrese que `murders` ha sido definido con `rate` y `rank` y todavía tiene todos los estados. Cree una tabla llamada `my_states` que contiene filas para los estados que satisfacen ambas condiciones: está localizado en el noreste u oeste y la tasa de asesinatos es inferior a 1. Use `select` para mostrar solo el nombre del estado, la tasa y el rango.
 
-## El _pipe_: `|>`
+## El _pipe_: `|>` o `%>%`
 
-Con __dplyr__, podemos realizar una serie de operaciones, por ejemplo `select` y entonces `filter`, enviando los resultados de una función a otra usando lo que se llama el _pipe operator_: `|>`. Algunos detalles se incluyen a continuación.
+En  R podemos realizar una serie de operaciones, por ejemplo `select` y entonces `filter`, enviando los resultados de una función a otra usando lo que se llama el _pipe operator_: `|>`. Esta función se hizo disponible a partir de la version 4.1.0 de R, pero antes de esto el tidyverse usaba el operador `%>%` del paquete `magrittr`. Algunos detalles se incluyen a continuación.
+
 
 Escribimos el código anterior para mostrar tres variables (estado, región, tasa) para los estados que tienen tasas de asesinatos por debajo de 0.71. Para hacer esto, definimos el objeto intermedio `new_table`. En __dplyr__, podemos escribir código que se parece más a una descripción de lo que queremos hacer sin objetos intermedios:
 
@@ -346,17 +347,7 @@ Este cálculo cuenta estados más grandes proporcionalmente a su tamaño, lo que
 
 ### Resúmenes múltiples
 
-Supongan que queremos tres resúmenes de una variable, como por ejemplo la mediana, el mínimo y el máximo. Podemos usar `summarize` así:
-
-
-```{r}
-heights |> 
-  filter(sex == "Female") |>
-  summarize(median = median(height), minimum = min(height), 
-            maximum = max(height))
-```
-
-Pero podemos obtener estos tres valores con una sola línea de código usando la función `quantile`: `quantile(x, c(0.5, 0, 1))` devuelve la mediana (percentil 50), el mínimo (percentil 0), y el máximo (percentil 100). Podemos usar la función con `summarize` así:
+Supongamos que queremos tres resúmenes de la misma variable, como las alturas mediana, mínima y máxima. La función `quantile`: `quantile(x, c(0.5, 0, 1))` devuelve la mediana (percentil 50), el mínimo (percentil 0) y el máximo (percentil 100) del vector `x`. Podemos usarlo con `summarize` así:
 
 ```{r}
 heights |> 
@@ -364,8 +355,7 @@ heights |>
   summarize(median_min_max = quantile(height, c(0.5, 0, 1)))
 ```
 
-Ahora noten que los resúmenes se devuelven en filas separadas. Para obtenerlos en columnas, tenemos que definir una función que devuelve un _data frame_ así:
-
+Sin embargo, observe que los resúmenes se devuelven en una fila cada uno. Para obtener los resultados en diferentes columnas, tenemos que definir una función que devuelva un marco de datos como este:
 
 ```{r}
 median_min_max <- function(x){
@@ -376,6 +366,7 @@ heights |>
   filter(sex == "Female") |>
   summarize(median_min_max(height))
 ```
+
 
 En la próxima sección veremos lo útil que esto puede ser cuando resumimos por grupo.
 
@@ -634,9 +625,9 @@ as_tibble(grades) |> class()
 ```
 
 
-## El operador punto
+## El marcador de posición
 
-Una de las ventajas de utilizar el _pipe_ `|>` es que no tenemos que seguir nombrando nuevos objetos mientras manipulamos el _data frame_. Recuerden que si queremos calcular la tasa de asesinatos promedio para los estados del sur, en lugar de escribir:
+Una de las ventajas de utilizar el _pipe_ `|>` es que no tenemos que seguir nombrando nuevos objetos mientras manipulamos el _data frame_. El objeto del lado izquierdo del _pipe_ se utiliza como primer argumento de la función del lado derecho del _pipe_. Pero, ¿y si queremos pasarlo como argumento a la función del lado derecho que no es la primera? La respuesta es el operador de marcador de posición `_` (para la canalización `%>%`, el marcador de posición es `.`). A continuación se muestra un ejemplo simple que pasa el argumento `base` a la función `log`. Los tres siguientes son equivalentes:
 
 ```{r}
 tab_1 <- filter(murders, region == "South")
@@ -652,17 +643,6 @@ filter(murders, region == "South") |>
   mutate(rate = total/ population * 10^5) |>
   summarize(median = median(rate)) |>
   pull(median)
-```
-
-Podemos hacer esto porque cada una de estas funciones toma un _data frame_ como primer argumento. Pero, ¿qué pasa si queremos acceder a un componente del _data frame_? Por ejemplo, ¿qué pasa si la función `pull` no está disponible y queremos acceder `tab_2$rate`? ¿Qué nombre de _data frame_ usamos? La respuesta es el operador punto (_dot operator_ en inglés).
-
-Por ejemplo, para acceder al vector de velocidad sin la función `pull`, podríamos usar:
-
-```{r}
-rates <-filter(murders, region == "South") |>
-  mutate(rate = total/ population * 10^5) |>
-  pull(rate)
-median(rates)
 ```
 
 
